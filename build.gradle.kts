@@ -20,9 +20,6 @@ plugins {
     application
 }
 
-group = "no.nav.meldeform"
-version = "1.0-SNAPSHOT"
-
 repositories {
     jcenter()
     maven("http://packages.confluent.io/maven")
