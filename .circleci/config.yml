@@ -7,9 +7,21 @@ jobs:
           TZ: "Europe/Oslo"
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "build.gradle.kts" }}
+            - v1-dependencies-
       - run:
           name: Bygger meldekortservice
           command: gradle build
+      - save_cache:
+        paths:
+          - ~/.gradle
+        key: v1-dependencies-{{ checksum "build.gradle.kts" }}
+      - persist_to_workspace:
+          root: .
+          paths:
+            - build/*
 
   bygg-og-push-docker:
     docker:
