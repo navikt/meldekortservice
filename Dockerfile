@@ -1,3 +1,3 @@
 FROM navikt/java:12
-COPY build/libs/*.jar /app/app.jar
+COPY build/libs/meldekortservice.jar /app/app.jar
 EXPOSE 8090

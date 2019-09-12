@@ -1,7 +1,7 @@
 apiVersion: nais.io/v1alpha1
 kind: Application
 metadata:
-  name: meldekortservice
+  name: {{reponame}}
   namespace: {{namespace}}
   labels:
     team: {{team}}
@@ -14,12 +14,12 @@ spec:
     - {{ingress2}}
   liveness:
     path: {{baseurl}}/internal/isAlive
-    initialDelay: 10
+    initialDelay: 60
   readiness:
     path: {{baseurl}}/internal/isReady
-    initialDelay: 10
+    initialDelay: 60
   vault:
-    enabled: true
+    enabled: false
   replicas:
     min: 2
     max: 4
