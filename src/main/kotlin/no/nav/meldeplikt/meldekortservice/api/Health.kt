@@ -3,13 +3,13 @@ package no.nav.meldeplikt.meldekortservice.api
 import io.ktor.application.call
 import io.ktor.http.ContentType
 import io.ktor.response.respondText
-import io.ktor.routing.Routing
+import io.ktor.routing.Route
 import io.ktor.routing.get
 import io.ktor.routing.route
 
-fun Routing.healthApi() {
+fun Route.healthApi() {
 
-    route("/meldekortservice/internal") {
+    route("/internal") {
 
         get("/isAlive") {
             call.respondText(text = "Alive", contentType = ContentType.Text.Plain)
