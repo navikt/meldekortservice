@@ -16,6 +16,7 @@ import io.ktor.routing.route
 import io.ktor.routing.routing
 import io.prometheus.client.hotspot.DefaultExports
 import no.nav.meldeplikt.meldekortservice.api.healthApi
+import no.nav.meldeplikt.meldekortservice.api.testApi
 import java.util.concurrent.TimeUnit
 
 object Server {
@@ -44,7 +45,7 @@ object Server {
                 route("/meldekortservice") {
                     healthApi()
                     authenticate {
-
+                        testApi()
                     }
                 }
             }
