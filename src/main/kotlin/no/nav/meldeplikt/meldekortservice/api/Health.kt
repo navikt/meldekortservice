@@ -9,7 +9,7 @@ import io.ktor.routing.route
 
 fun Routing.healthApi() {
 
-    route("/internal") {
+    route("/meldekortservice/internal") {
 
         get("/isAlive") {
             call.respondText(text = "Alive", contentType = ContentType.Text.Plain)
