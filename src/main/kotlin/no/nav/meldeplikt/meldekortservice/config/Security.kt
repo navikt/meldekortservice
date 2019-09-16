@@ -9,6 +9,7 @@ import io.ktor.auth.jwt.JWTAuthenticationProvider
 import io.ktor.auth.jwt.JWTCredential
 import io.ktor.auth.jwt.JWTPrincipal
 import io.ktor.util.pipeline.PipelineContext
+import no.nav.meldeplikt.meldekortservice.config.ConfigUtil.isCurrentlyRunningOnNais
 import java.net.URL
 import java.util.concurrent.TimeUnit
 
@@ -20,9 +21,9 @@ fun JWTAuthenticationProvider.Configuration.setupOidcAuthentication(environment:
         return@validate Security.validationLogicPerRequest(credentials, environment)
     }
 }
-
+// TODO Sette opp token support lokalt
 fun PipelineContext<Unit, ApplicationCall>.extractIdentFromLoginContext(): String =
-    (call.authentication.principal as JWTPrincipal).payload.subject
+    if (isCurrentlyRunningOnNais()) (call.authentication.principal as JWTPrincipal).payload.subject else "11111111111"
 
 object Security {
 

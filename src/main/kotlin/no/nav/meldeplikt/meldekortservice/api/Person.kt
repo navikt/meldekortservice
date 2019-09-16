@@ -14,7 +14,7 @@ fun Route.personApi(httpsClient: HttpClient) {
 
         // Henter historiske meldekort
         get("/historiskemeldekort") {
-            call.respondText(text = "Historiske meldekort er kke implementert", contentType = ContentType.Text.Plain)
+            call.respondText(text = "Historiske meldekort er ikke implementert", contentType = ContentType.Text.Plain)
         }
 
         // Henter personstatus (arenastatus)

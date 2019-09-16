@@ -49,7 +49,15 @@ object Server {
             routing {
                 route(basePath) {
                     healthApi()
-                    authenticate {
+
+                    // Midlertidig oppsett for å lettere kunne teste lokalt
+                    if (isCurrentlyRunningOnNais()) {
+                        authenticate {
+                            testApi()
+                            personApi(client)
+                            meldekortApi(client)
+                        }
+                    } else {
                         testApi()
                         personApi(client)
                         meldekortApi(client)
