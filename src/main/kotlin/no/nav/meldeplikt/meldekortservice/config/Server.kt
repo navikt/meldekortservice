@@ -16,15 +16,20 @@ import io.ktor.routing.route
 import io.ktor.routing.routing
 import io.prometheus.client.hotspot.DefaultExports
 import no.nav.meldeplikt.meldekortservice.api.healthApi
+import no.nav.meldeplikt.meldekortservice.api.meldekortApi
+import no.nav.meldeplikt.meldekortservice.api.personApi
 import no.nav.meldeplikt.meldekortservice.api.testApi
+import no.nav.meldeplikt.meldekortservice.config.ConfigUtil.isCurrentlyRunningOnNais
 import java.util.concurrent.TimeUnit
 
 object Server {
 
     private const val portNumber = 8090
+    private const val basePath = "/meldekortservice"
 
     fun configure(environment: Environment): NettyApplicationEngine {
         DefaultExports.initialize()
+        val client = HttpClient().client
         val app = embeddedServer(Netty, port = portNumber) {
             install(DefaultHeaders)
 
@@ -42,10 +47,12 @@ object Server {
             }
 
             routing {
-                route("/meldekortservice") {
+                route(basePath) {
                     healthApi()
                     authenticate {
                         testApi()
+                        personApi(client)
+                        meldekortApi(client)
                     }
                 }
             }

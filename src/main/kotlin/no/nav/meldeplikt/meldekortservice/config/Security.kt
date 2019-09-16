@@ -15,23 +15,22 @@ import java.util.concurrent.TimeUnit
 fun JWTAuthenticationProvider.Configuration.setupOidcAuthentication(environment: Environment) {
     val jwkProvider = Security.initJwkProvider(environment.securityJwksUri)
     verifier(jwkProvider, environment.securityJwksIssuer)
-    realm = "dittnav-event-handler"
+    realm = "meldekortservice"
     validate { credentials ->
         return@validate Security.validationLogicPerRequest(credentials, environment)
     }
 }
 
-fun PipelineContext<Unit, ApplicationCall>.extractIdentFromLoginContext() =
+fun PipelineContext<Unit, ApplicationCall>.extractIdentFromLoginContext(): String =
     (call.authentication.principal as JWTPrincipal).payload.subject
 
 object Security {
 
     fun initJwkProvider(securityJwksUri: URL): JwkProvider {
-        val jwkProvider = JwkProviderBuilder(securityJwksUri)
+        return JwkProviderBuilder(securityJwksUri)
             .cached(10, 24, TimeUnit.HOURS)
             .rateLimited(10, 1, TimeUnit.MINUTES)
             .build()
-        return jwkProvider
     }
 
     fun validationLogicPerRequest(credentials: JWTCredential, environment: Environment): JWTPrincipal? {
@@ -43,5 +42,4 @@ object Security {
 
     private fun isCorrectAudienceSet(credentials: JWTCredential, environment: Environment) =
         credentials.payload.audience.contains(environment.securityAudience)
-
 }
