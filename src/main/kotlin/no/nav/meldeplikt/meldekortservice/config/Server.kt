@@ -65,15 +65,15 @@ object Server {
                 }
             }
         }
-        if(isCurrentlyRunningOnNais()) {
-            addGraceTimeAtShutdownToAllowRunningRequestsToComplete(app)
-        }
+        addGraceTimeAtShutdownToAllowRunningRequestsToComplete(app)
         return app
     }
 
     private fun addGraceTimeAtShutdownToAllowRunningRequestsToComplete(app: NettyApplicationEngine) {
-        Runtime.getRuntime().addShutdownHook(Thread {
-            app.stop(5, 60, TimeUnit.SECONDS)
-        })
+        if(isCurrentlyRunningOnNais()) {
+            Runtime.getRuntime().addShutdownHook(Thread {
+                app.stop(5, 60, TimeUnit.SECONDS)
+            })
+        }
     }
 }
