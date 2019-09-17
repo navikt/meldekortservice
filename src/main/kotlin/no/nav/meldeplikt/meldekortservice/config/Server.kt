@@ -65,7 +65,9 @@ object Server {
                 }
             }
         }
-        addGraceTimeAtShutdownToAllowRunningRequestsToComplete(app)
+        if(isCurrentlyRunningOnNais()) {
+            addGraceTimeAtShutdownToAllowRunningRequestsToComplete(app)
+        }
         return app
     }
 
