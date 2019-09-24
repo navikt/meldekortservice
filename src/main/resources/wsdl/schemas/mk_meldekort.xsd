@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by Kjersti Torkildsen (Aetat Arbeidsdirektoratet) -->
+<!--$Header:   G:/pvcs_2002/archives/dev/xml/xsd/mk_meldekort.xsd-arc   1.14   Mar 08 2004 12:52:50   te-kt  $
+$Log:   G:/pvcs_2002/archives/dev/xml/xsd/mk_meldekort.xsd-arc  $
+
+   Rev 1.14   Mar 08 2004 12:52:50   te-kt
+Rettet restriksjon på felt ArbeidetTimerSum fra macExcl 99 til maxIncl 99
+Resolution for 12525: Feil restriksjon på ArbeidetTimerSum i mk_meldekort.xsd
+
+   Rev 1.13   Feb 27 2004 14:36:44   te-kt
+Fritekst satt til nillable.
+Arkivnøkkel satt til max lengde 21.
+Resolution for 12392: Endringer i mk_meldekort.xsd
+
+   Rev 1.12   Feb 11 2004 10:49:48   te-kt
+.
+Resolution for 10992: MKL Grensesnitt - trinn 1 - Mottak av meldekort til forportal
+Resolution for 11594: MKL grensesnitt - trinn 2 - Manuelle meldekort til synkron kontroll - XML
+Resolution for 11595: MKL grensesnitt - trinn 2 - Meldekort til kontroll v/ny meldegruppe (async-XML)
+
+   Rev 1.11   Feb 09 2004 18:30:14   te-kt
+satt fritekst til optional
+
+   Rev 1.10   Jan 30 2004 10:07:48   te-kt
+Satt felt ArbeidetTimerSum til optional
+
+   Rev 1.9   Jan 28 2004 11:33:18   te-kt
+.
+Resolution for 10992: MKL Grensesnitt - trinn 1 - Mottak av meldekort til forportal
+
+   Rev 1.8   Jan 27 2004 11:58:22   te-kt
+Endret ManueltTolket til boolean UsikkerVerdi.
+Fjernet Usikker Verdi for Meldeperiode, KortType, MeldeDato.
+Lagt til optilonal liste for ArbeidetTimer.
+
+   Rev 1.7   Jan 08 2004 14:54:00   te-kt
+assosiert
+Resolution for 10978: MKL Grensesnitt - trinn 1 - implementere XML-skjema
+Resolution for 10992: MKL Grensesnitt - trinn 1 - Mottak av meldekort til forportal
+-->
+<xs:schema targetNamespace="http://www.aetat.no/arena/mk_meldekort.xsd" xmlns="http://www.aetat.no/arena/mk_meldekort.xsd" xmlns:xdb="http://xmlns.oracle.com/xdb" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="Meldekort" type="MeldekortType" xdb:defaultTable="XIN_MK_MELDEKORT"/>
+	<xs:complexType name="KontrollresultatType">
+		<xs:sequence>
+			<xs:element name="Arsakskoder" nillable="true">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Arsakskode" type="ArsakskodeType" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Status">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="5"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Fritekst" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="255"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Veiledning" type="xs:boolean"/>
+			<xs:element name="Returbrev">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="2"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SvarType">
+		<xs:sequence>
+			<xs:element name="SvarJa" type="VerdiBooleanType"/>
+			<xs:element name="SvarNei" type="VerdiBooleanType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="MeldekortType">
+		<xs:sequence>
+			<xs:element name="Hode" type="HodeType"/>
+			<xs:element name="Spm" type="SpmType"/>
+			<xs:element name="Image" type="xs:base64Binary" minOccurs="0"/>
+			<xs:element name="Kontrollresultat" type="KontrollresultatType" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="Id" type="xs:string"/>
+	</xs:complexType>
+	<xs:complexType name="SpmType">
+		<xs:sequence>
+			<xs:element name="Arbeidssoker" type="SvarType"/>
+			<xs:element name="Arbeidet" type="SvarType"/>
+			<xs:element name="Syk" type="SvarType"/>
+			<xs:element name="AnnetFravaer" type="SvarType"/>
+			<xs:element name="Kurs" type="SvarType"/>
+			<xs:element name="Forskudd" type="VerdiBooleanType"/>
+			<xs:element name="MeldekortDager">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="MeldekortDag" type="MeldekortDagType" minOccurs="14" maxOccurs="14"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Signatur" type="VerdiBooleanType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="MeldekortDagType">
+		<xs:sequence>
+			<xs:element name="Dag">
+				<xs:simpleType>
+					<xs:restriction base="xs:int">
+						<xs:minInclusive value="1"/>
+						<xs:maxInclusive value="14"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="ArbeidetTimerSum" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Verdi">
+							<xs:simpleType>
+								<xs:restriction base="xs:float">
+									<xs:maxInclusive value="99"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="UsikkerVerdi" type="xs:boolean" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ArbeidetTimerListe" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="ArbeidetTimer" minOccurs="0" maxOccurs="13">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="AntallTimer" type="xs:float"/>
+									<xs:element name="UsikkerVerdi" type="xs:boolean" minOccurs="0"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Syk" type="VerdiBooleanType"/>
+			<xs:element name="AnnetFravaer" type="VerdiBooleanType"/>
+			<xs:element name="Kurs" type="VerdiBooleanType"/>
+			<xs:element name="Meldegruppe" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="5"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ArsakskodeType">
+		<xs:sequence>
+			<xs:element name="Kode">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="5"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Tekst">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="255"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="VerdiBooleanType">
+		<xs:sequence>
+			<xs:element name="Verdi" type="xs:boolean"/>
+			<xs:element name="UsikkerVerdi" type="xs:boolean" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="HodeType">
+		<xs:sequence>
+			<xs:element name="PersonId">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Verdi">
+							<xs:simpleType>
+								<xs:restriction base="xs:long">
+									<xs:totalDigits value="9"/>
+									<xs:minInclusive value="0"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="UsikkerVerdi" type="xs:boolean" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Fodselsnr">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Verdi">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="11"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="UsikkerVerdi" type="xs:boolean" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="MeldekortId">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Verdi">
+							<xs:simpleType>
+								<xs:restriction base="xs:long">
+									<xs:minInclusive value="0"/>
+									<xs:totalDigits value="10"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="UsikkerVerdi" type="xs:boolean" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Meldeperiode">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="6"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Arkivnokkel">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="21"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="KortType">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="2"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="MeldeDato" type="xs:date"/>
+			<xs:element name="LestDato" type="xs:date"/>
+			<xs:element name="Kommentar" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="255"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

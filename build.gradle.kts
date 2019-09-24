@@ -1,3 +1,4 @@
+import no.nils.wsdl2java.Wsdl2JavaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val prometheusVersion = "0.6.0"
@@ -9,6 +10,13 @@ val logbackVersion = "1.2.3"
 val vaultJdbcVersion = "1.3.1"
 val assertJVersion = "3.12.2"
 val jacksonVersion = "2.9.9"
+val jaxwsApiVersion = "2.3.1"
+val javaxAnnotationApiVersion = "1.3.2"
+val jaxbRuntimeVersion = "2.4.0-b180830.0438"
+val jaxbApiVersion = "2.4.0-b180830.0359"
+val javaxActivationVersion = "1.1.1"
+val jaxwsToolsVersion = "2.3.1"
+val javaxJaxwsApiVersion = "2.2.1"
 
 val mainClass = "no.nav.meldeplikt.meldekortservice.AppKt"
 
@@ -16,6 +24,8 @@ plugins {
     java
     kotlin("jvm") version "1.3.50"
     kotlin("plugin.allopen") version "1.3.41"
+
+    id("no.nils.wsdl2java") version "0.10"
 
     application
 }
@@ -48,6 +58,24 @@ dependencies {
     testCompile("org.assertj:assertj-core:$assertJVersion")
     testCompile(kotlin("test-junit5"))
     testImplementation("io.confluent:kafka-schema-registry:$confluentVersion")
+
+    wsdl2java("javax.annotation:javax.annotation-api:$javaxAnnotationApiVersion")
+    wsdl2java("javax.activation:activation:$javaxActivationVersion")
+    wsdl2java("org.glassfish.jaxb:jaxb-runtime:$jaxbRuntimeVersion")
+    wsdl2java("javax.xml.bind:jaxb-api:$jaxbApiVersion")
+    wsdl2java("javax.xml.ws:jaxws-api:$javaxJaxwsApiVersion")
+    wsdl2java("com.sun.xml.ws:jaxws-tools:$jaxwsToolsVersion") {
+        exclude(group = "com.sun.xml.ws", module = "policy")
+    }
+
+    implementation("javax.xml.ws:jaxws-api:$jaxwsApiVersion")
+    implementation("javax.annotation:javax.annotation-api:$javaxAnnotationApiVersion")
+    implementation("javax.xml.bind:jaxb-api:$jaxbApiVersion")
+    implementation("org.glassfish.jaxb:jaxb-runtime:$jaxbRuntimeVersion")
+    implementation("javax.activation:activation:$javaxActivationVersion")
+    implementation("com.sun.xml.ws:jaxws-tools:$jaxwsToolsVersion") {
+        exclude(group = "com.sun.xml.ws", module = "policy")
+    }
 }
 
 configure<JavaPluginConvention> {
@@ -55,6 +83,7 @@ configure<JavaPluginConvention> {
 }
 
 tasks.withType<KotlinCompile> {
+    dependsOn("wsdl2java")
     kotlinOptions.jvmTarget = "1.8"
 }
 
@@ -73,5 +102,12 @@ tasks {
     register("runServer", JavaExec::class) {
         main = application.mainClassName
         classpath = sourceSets["main"].runtimeClasspath
+    }
+
+    withType<Wsdl2JavaTask> {
+        wsdlDir = file("$projectDir/src/main/resources/wsdl")
+        wsdlsToGenerate = listOf(
+            mutableListOf("-xjc", "-b", "$projectDir/src/main/resources/xjb/bindings.xml", "$projectDir/src/main/resources/wsdl/amelding_EksternKontrolEmeldingService.wsdl")
+        )
     }
 }
