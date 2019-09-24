@@ -20,10 +20,23 @@ plugins {
     application
 }
 
+buildscript {
+    repositories {
+        maven("https://repo.adeo.no/repository/maven-central")
+    }
+    dependencies {
+        classpath("org.junit.platform:junit-platform-gradle-plugin:1.2.0")
+    }
+}
+
+
 repositories {
+    maven("https://repo.adeo.no/repository/maven-central")
+    maven("https://plugins.gradle.org/m2/")
+    maven("https://dl.bintray.com/kotlin/ktor/")
+    maven("http://repo.spring.io/plugins-release/")
     jcenter()
-    maven("http://packages.confluent.io/maven")
-    mavenLocal()
+    mavenCentral()
 }
 
 dependencies {
@@ -39,11 +52,10 @@ dependencies {
     compile("io.ktor:ktor-auth-jwt:$ktorVersion")
     compile("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     compile("io.ktor:ktor-jackson:$ktorVersion")
-    compile("io.confluent:kafka-avro-serializer:$confluentVersion")
+
     testCompile("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testCompile("org.assertj:assertj-core:$assertJVersion")
     testCompile(kotlin("test-junit5"))
-    testImplementation("io.confluent:kafka-schema-registry:$confluentVersion")
 }
 
 configure<JavaPluginConvention> {
