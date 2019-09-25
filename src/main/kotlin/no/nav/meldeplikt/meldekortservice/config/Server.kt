@@ -15,7 +15,6 @@ import io.ktor.jackson.jackson
 import io.ktor.routing.route
 import io.ktor.routing.routing
 import io.prometheus.client.hotspot.DefaultExports
-import no.aetat.amelding.externcontrolemelding.webservices.ExternControlEmeldingSOAP
 import no.nav.meldeplikt.meldekortservice.api.healthApi
 import no.nav.meldeplikt.meldekortservice.api.meldekortApi
 import no.nav.meldeplikt.meldekortservice.api.personApi

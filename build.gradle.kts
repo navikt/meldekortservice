@@ -17,15 +17,17 @@ val jaxbApiVersion = "2.4.0-b180830.0359"
 val javaxActivationVersion = "1.1.1"
 val jaxwsToolsVersion = "2.3.1"
 val javaxJaxwsApiVersion = "2.2.1"
+val navCommonVersion = "1.2019.09.13-12.30-cc1ac9ca61b6"
 
 val mainClass = "no.nav.meldeplikt.meldekortservice.AppKt"
 
 plugins {
     java
-    kotlin("jvm") version "1.3.50"
-    kotlin("plugin.allopen") version "1.3.41"
 
     id("no.nils.wsdl2java") version "0.10"
+
+    kotlin("jvm") version "1.3.50"
+    kotlin("plugin.allopen") version "1.3.41"
 
     application
 }
@@ -37,6 +39,12 @@ buildscript {
     }
     dependencies {
         classpath("org.junit.platform:junit-platform-gradle-plugin:1.2.0")
+        classpath("javax.xml.bind:jaxb-api:2.4.0-b180830.0359")
+        classpath("org.glassfish.jaxb:jaxb-runtime:2.4.0-b180830.0438")
+        classpath("com.sun.activation:javax.activation:1.2.0")
+        classpath("com.sun.xml.ws:jaxws-tools:2.3.1") {
+            exclude(group = "com.sun.xml.ws", module = "policy")
+        }
     }
 }
 
@@ -45,6 +53,15 @@ repositories {
 }
 
 dependencies {
+    wsdl2java("javax.annotation:javax.annotation-api:$javaxAnnotationApiVersion")
+    wsdl2java("javax.activation:activation:$javaxActivationVersion")
+    wsdl2java("org.glassfish.jaxb:jaxb-runtime:$jaxbRuntimeVersion")
+    wsdl2java("javax.xml.bind:jaxb-api:$jaxbApiVersion")
+    wsdl2java("javax.xml.ws:jaxws-api:$javaxJaxwsApiVersion")
+    wsdl2java("com.sun.xml.ws:jaxws-tools:$jaxwsToolsVersion") {
+        exclude(group = "com.sun.xml.ws", module = "policy")
+    }
+
     implementation(kotlin("stdlib-jdk8"))
     compile("no.nav:vault-jdbc:$vaultJdbcVersion")
     compile("ch.qos.logback:logback-classic:$logbackVersion")
@@ -60,19 +77,11 @@ dependencies {
     compile("io.ktor:ktor-client-gson:$ktorVersion")
     compile("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     compile("io.ktor:ktor-jackson:$ktorVersion")
+    compile("no.nav.common:cxf:$navCommonVersion")
 
     testCompile("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testCompile("org.assertj:assertj-core:$assertJVersion")
     testCompile(kotlin("test-junit5"))
-
-    wsdl2java("javax.annotation:javax.annotation-api:$javaxAnnotationApiVersion")
-    wsdl2java("javax.activation:activation:$javaxActivationVersion")
-    wsdl2java("org.glassfish.jaxb:jaxb-runtime:$jaxbRuntimeVersion")
-    wsdl2java("javax.xml.bind:jaxb-api:$jaxbApiVersion")
-    wsdl2java("javax.xml.ws:jaxws-api:$javaxJaxwsApiVersion")
-    wsdl2java("com.sun.xml.ws:jaxws-tools:$jaxwsToolsVersion") {
-        exclude(group = "com.sun.xml.ws", module = "policy")
-    }
 
     implementation("javax.xml.ws:jaxws-api:$jaxwsApiVersion")
     implementation("javax.annotation:javax.annotation-api:$javaxAnnotationApiVersion")
@@ -88,11 +97,6 @@ configure<JavaPluginConvention> {
     sourceCompatibility = JavaVersion.VERSION_1_8
 }
 
-tasks.withType<KotlinCompile> {
-    dependsOn("wsdl2java")
-    kotlinOptions.jvmTarget = "1.8"
-}
-
 application {
     mainClassName = mainClass
 }
@@ -105,9 +109,9 @@ tasks {
         from(configurations.runtime.get().map { if (it.isDirectory) it else zipTree(it) })
     }
 
-    register("runServer", JavaExec::class) {
-        main = application.mainClassName
-        classpath = sourceSets["main"].runtimeClasspath
+    withType<KotlinCompile> {
+        dependsOn("wsdl2java")
+        kotlinOptions.jvmTarget = "1.8"
     }
 
     withType<Wsdl2JavaTask> {
@@ -116,4 +120,11 @@ tasks {
             mutableListOf("-xjc", "-b", "$projectDir/src/main/resources/xjb/bindings.xml", "$projectDir/src/main/resources/wsdl/amelding_EksternKontrolEmeldingService.wsdl")
         )
     }
+
+    register("runServer", JavaExec::class) {
+        main = application.mainClassName
+        classpath = sourceSets["main"].runtimeClasspath
+    }
+
+
 }

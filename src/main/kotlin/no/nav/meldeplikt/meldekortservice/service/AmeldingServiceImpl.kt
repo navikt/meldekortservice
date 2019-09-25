@@ -4,12 +4,12 @@ import no.aetat.amelding.externcontrolemelding.webservices.ExternControlEmelding
 import no.aetat.arena.mk_meldekort.MeldekortType
 import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
 
-class AmeldingServiceImpl : AmeldingService {
+class AmeldingServiceImpl(externControlEmeldingSOAP: ExternControlEmeldingSOAP) : AmeldingService {
 
-    lateinit var externControlEmeldingSOAP: ExternControlEmeldingSOAP
+    private val amelding = externControlEmeldingSOAP
 
     override fun kontrollerMeldekort(meldekort: MeldekortType): MeldekortKontrollertType {
-        val meldekortKontrollertTypeSoap = externControlEmeldingSOAP.kontrollerEmeldingMeldekort(meldekort)
+        val meldekortKontrollertTypeSoap = amelding.kontrollerEmeldingMeldekort(meldekort)
 
         if (meldekortKontrollertTypeSoap.status == "OK") {
             // TODO Sett meldekort som innsendt

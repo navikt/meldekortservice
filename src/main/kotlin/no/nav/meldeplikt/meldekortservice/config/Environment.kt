@@ -7,7 +7,10 @@ data class Environment(
     val password: String = getEnvVar("FSS_SYSTEMUSER_PASSWORD", "password"),
     val securityAudience: String = getEnvVar("AUDIENCE", "dummyAudience"),
     val securityJwksIssuer: String = getEnvVar("JWKS_ISSUER", "dummyIssuer"),
-    val securityJwksUri: URL = URL(getEnvVar("JWKS_URI", "https://dummyUrl.com"))
+    val securityJwksUri: URL = URL(getEnvVar("JWKS_URI", "https://dummyUrl.com")),
+    val emeldingUrl: URL = URL(getEnvVar("EMELDING_URI", "https://dummyUrl.com")),
+    val personinfoUsername: String = getEnvVar("PERSONINFO_USERNAME", "username"),
+    val personinfoPassword: String = getEnvVar("PERSONINFO_PASSWORD", "password")
 )
 
 fun getEnvVar(varName: String, defaultValue: String? = null): String {

@@ -10,13 +10,14 @@ import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.route
 import no.aetat.arena.mk_meldekort.MeldekortType
-import no.nav.meldeplikt.meldekortservice.service.AmeldingServiceImpl
+import no.nav.meldeplikt.meldekortservice.config.Amelding
+import no.nav.meldeplikt.meldekortservice.config.Environment
 
 fun Route.personApi(httpClient: HttpClient) {
 
     route("/person") {
 
-        val ameldingService = AmeldingServiceImpl()
+        val environment = Environment()
 
         // Henter historiske meldekort
         get("/historiskemeldekort") {
@@ -35,7 +36,7 @@ fun Route.personApi(httpClient: HttpClient) {
 
         post("/meldekort") {
             val meldekort = call.receive<MeldekortType>()
-
+            Amelding.ameldingService(environment).kontrollerMeldekort(meldekort)
         }
     }
 }
