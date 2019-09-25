@@ -23,12 +23,12 @@ plugins {
 buildscript {
     repositories {
         maven("https://repo.adeo.no/repository/maven-central")
+        jcenter()
     }
     dependencies {
         classpath("org.junit.platform:junit-platform-gradle-plugin:1.2.0")
     }
 }
-
 
 repositories {
     jcenter()
