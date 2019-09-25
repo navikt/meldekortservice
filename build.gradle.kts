@@ -31,17 +31,11 @@ buildscript {
 
 
 repositories {
-    maven("https://repo.adeo.no/repository/maven-central")
-    maven("https://plugins.gradle.org/m2/")
-    maven("https://dl.bintray.com/kotlin/ktor/")
-    maven("http://repo.spring.io/plugins-release/")
     jcenter()
-    mavenCentral()
 }
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    // testCompile("junit", "junit", "4.12")
     compile("no.nav:vault-jdbc:$vaultJdbcVersion")
     compile("ch.qos.logback:logback-classic:$logbackVersion")
     compile("net.logstash.logback:logstash-logback-encoder:$logstashVersion")
