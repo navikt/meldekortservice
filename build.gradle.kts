@@ -30,15 +30,22 @@ plugins {
     application
 }
 
+buildscript {
+    repositories {
+        maven("https://repo.adeo.no/repository/maven-central")
+        jcenter()
+    }
+    dependencies {
+        classpath("org.junit.platform:junit-platform-gradle-plugin:1.2.0")
+    }
+}
+
 repositories {
     jcenter()
-    maven("http://packages.confluent.io/maven")
-    mavenLocal()
 }
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    // testCompile("junit", "junit", "4.12")
     compile("no.nav:vault-jdbc:$vaultJdbcVersion")
     compile("ch.qos.logback:logback-classic:$logbackVersion")
     compile("net.logstash.logback:logstash-logback-encoder:$logstashVersion")
@@ -53,11 +60,10 @@ dependencies {
     compile("io.ktor:ktor-client-gson:$ktorVersion")
     compile("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     compile("io.ktor:ktor-jackson:$ktorVersion")
-    compile("io.confluent:kafka-avro-serializer:$confluentVersion")
+
     testCompile("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testCompile("org.assertj:assertj-core:$assertJVersion")
     testCompile(kotlin("test-junit5"))
-    testImplementation("io.confluent:kafka-schema-registry:$confluentVersion")
 
     wsdl2java("javax.annotation:javax.annotation-api:$javaxAnnotationApiVersion")
     wsdl2java("javax.activation:activation:$javaxActivationVersion")
