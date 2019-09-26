@@ -12,11 +12,12 @@ import javax.security.auth.callback.CallbackHandler
 object Amelding {
 
     fun ameldingService(environment: Environment): AmeldingService {
-        if(ConfigUtil.isCurrentlyRunningOnNais()) {
+        return AmeldingServiceImpl(externControlEmeldingConfig(environment))
+        /*if(ConfigUtil.isCurrentlyRunningOnNais()) {
             return AmeldingServiceImpl(externControlEmeldingConfig(environment))
         } else {
             // RETURN MOCK!
-        }
+        }*/
     }
 
     private fun externControlEmeldingConfig(environment: Environment): ExternControlEmeldingSOAP {
