@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
 import no.nils.wsdl2java.Wsdl2JavaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -28,6 +30,8 @@ plugins {
 
     kotlin("jvm") version "1.3.50"
     kotlin("plugin.allopen") version "1.3.41"
+
+    id("com.github.johnrengelman.shadow") version "4.0.4"
 
     application
 }
@@ -108,10 +112,7 @@ application {
 
 tasks {
     withType<Jar> {
-        manifest {
-            attributes["Main-Class"] = application.mainClassName
-        }
-        from(configurations.runtime.get().map { if (it.isDirectory) it else zipTree(it) })
+        manifest.attributes["Main-Class"] = application.mainClassName
     }
 
     withType<KotlinCompile> {
@@ -124,6 +125,12 @@ tasks {
         wsdlsToGenerate = listOf(
             mutableListOf("-xjc", "-b", "$projectDir/src/main/resources/xjb/bindings.xml", "$projectDir/src/main/resources/wsdl/amelding_EksternKontrolEmeldingService.wsdl")
         )
+    }
+
+    withType<ShadowJar> {
+        transform(ServiceFileTransformer::class.java) {
+            setPath("META-INF/cxf")
+        }
     }
 
     register("runServer", JavaExec::class) {
