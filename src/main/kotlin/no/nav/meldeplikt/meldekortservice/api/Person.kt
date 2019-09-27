@@ -3,7 +3,9 @@ package no.nav.meldeplikt.meldekortservice.api
 import io.ktor.application.call
 import io.ktor.client.HttpClient
 import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
 import io.ktor.request.receive
+import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.routing.Route
 import io.ktor.routing.get
@@ -36,7 +38,8 @@ fun Route.personApi(httpClient: HttpClient) {
 
         post("/meldekort") {
             val meldekort = call.receive<MeldekortType>()
-            Amelding.ameldingService(environment).kontrollerMeldekort(meldekort)
+            val kontrollertType = Amelding.ameldingService(environment).kontrollerMeldekort(meldekort)
+            call.respond(status = HttpStatusCode.OK, message = kontrollertType)
         }
     }
 }

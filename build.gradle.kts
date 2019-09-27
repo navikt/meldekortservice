@@ -34,7 +34,7 @@ plugins {
 
 buildscript {
     repositories {
-        maven("https://repo.adeo.no/repository/maven-central/")
+        // maven("https://repo.adeo.no/repository/maven-central/")
         jcenter()
     }
     dependencies {
@@ -49,10 +49,10 @@ buildscript {
 }
 
 repositories {
-    maven("https://repo.adeo.no/repository/maven-central/")
+    /*maven("https://repo.adeo.no/repository/maven-central/")
     maven("https://plugins.gradle.org/m2/")
     maven("https://dl.bintray.com/kotlin/ktor/")
-    maven("http://repo.spring.io/plugins-release/")
+    maven("http://repo.spring.io/plugins-release/")*/
     jcenter()
 }
 
@@ -99,6 +99,7 @@ dependencies {
 
 configure<JavaPluginConvention> {
     sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 application {

@@ -3,6 +3,7 @@ package no.nav.meldeplikt.meldekortservice.config
 import no.aetat.amelding.externcontrolemelding.webservices.ExternControlEmeldingSOAP
 import no.nav.meldeplikt.meldekortservice.service.AmeldingService
 import no.nav.meldeplikt.meldekortservice.service.AmeldingServiceImpl
+import no.nav.meldeplikt.meldekortservice.service.AmeldingServiceMock
 import no.nav.sbl.dialogarena.common.cxf.CXFClient
 import org.apache.cxf.ws.security.wss4j.WSS4JOutInterceptor
 import org.apache.wss4j.common.ext.WSPasswordCallback
@@ -12,12 +13,11 @@ import javax.security.auth.callback.CallbackHandler
 object Amelding {
 
     fun ameldingService(environment: Environment): AmeldingService {
-        return AmeldingServiceImpl(externControlEmeldingConfig(environment))
-        /*if(ConfigUtil.isCurrentlyRunningOnNais()) {
-            return AmeldingServiceImpl(externControlEmeldingConfig(environment))
+        return if(ConfigUtil.isCurrentlyRunningOnNais()) {
+            AmeldingServiceImpl(externControlEmeldingConfig(environment))
         } else {
-            // RETURN MOCK!
-        }*/
+            AmeldingServiceMock()
+        }
     }
 
     private fun externControlEmeldingConfig(environment: Environment): ExternControlEmeldingSOAP {
