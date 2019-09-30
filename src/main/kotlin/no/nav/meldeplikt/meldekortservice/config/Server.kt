@@ -59,7 +59,6 @@ object Server {
                         println("Intercept!")
                         val text = call.receiveText()
                         println(text)
-                        return@intercept finish()
                     } catch (e: Exception) {
                         call.respond(HttpStatusCode.BadRequest, e.message ?: "")
                         return@intercept finish()
