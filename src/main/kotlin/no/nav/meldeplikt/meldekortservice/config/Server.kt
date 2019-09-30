@@ -2,6 +2,8 @@ package no.nav.meldeplikt.meldekortservice.config
 
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import io.ktor.application.ApplicationCallPipeline
+import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.auth.Authentication
 import io.ktor.auth.authenticate
@@ -11,7 +13,12 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.netty.NettyApplicationEngine
 import io.ktor.features.DefaultHeaders
+import io.ktor.http.HttpStatusCode
 import io.ktor.jackson.jackson
+import io.ktor.request.document
+import io.ktor.request.receive
+import io.ktor.request.receiveText
+import io.ktor.response.respond
 import io.ktor.routing.route
 import io.ktor.routing.routing
 import io.prometheus.client.hotspot.DefaultExports
@@ -47,6 +54,17 @@ object Server {
             }
 
             routing {
+                intercept(ApplicationCallPipeline.Setup) {
+                    try {
+                        println("Intercept!")
+                        val text = call.receiveText()
+                        println(text)
+                        return@intercept finish()
+                    } catch (e: Exception) {
+                        call.respond(HttpStatusCode.BadRequest, e.message ?: "")
+                        return@intercept finish()
+                    }
+                }
                 route(basePath) {
                     healthApi()
 
