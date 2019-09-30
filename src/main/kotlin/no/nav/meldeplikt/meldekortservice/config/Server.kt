@@ -56,9 +56,11 @@ object Server {
             routing {
                 intercept(ApplicationCallPipeline.Setup) {
                     try {
-                        println("Intercept!")
+                        /*println("Intercept!")
                         val text = call.receiveText()
-                        println(text)
+                        println(text)*/
+                        val text1 = call.receive<Any>()
+                        println("Test: $text1")
                     } catch (e: Exception) {
                         call.respond(HttpStatusCode.BadRequest, e.message ?: "")
                         return@intercept finish()
