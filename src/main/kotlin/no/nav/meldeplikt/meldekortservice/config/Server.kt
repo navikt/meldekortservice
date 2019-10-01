@@ -58,22 +58,6 @@ object Server {
                 route(basePath) {
                     healthApi()
 
-                    intercept(ApplicationCallPipeline.Setup) {
-                        try {
-                            /*println("Intercept!")
-                            val text = call.receiveText()
-                            println(text)*/
-                            val url = call.request.uri
-                            println("$url ble kalt!")
-                            val text1 = call.receive<Any>()
-                            println("Test: $text1")
-                        } catch (e: Exception) {
-                            println("Kunne ikke hente ut text: ${e.message}")
-                            //call.respond(HttpStatusCode.BadRequest, e.message ?: "")
-                            //return@intercept finish()
-                        }
-                    }
-
                     // Midlertidig oppsett for å lettere kunne teste lokalt
                     if (isCurrentlyRunningOnNais()) {
                         authenticate {
