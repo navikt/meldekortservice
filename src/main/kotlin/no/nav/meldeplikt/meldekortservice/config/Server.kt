@@ -1,12 +1,7 @@
 package no.nav.meldeplikt.meldekortservice.config
 
 import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.databind.util.StdDateFormat
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
-import io.ktor.application.ApplicationCallPipeline
-import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.auth.Authentication
 import io.ktor.auth.authenticate
@@ -16,13 +11,7 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.netty.NettyApplicationEngine
 import io.ktor.features.DefaultHeaders
-import io.ktor.http.HttpStatusCode
 import io.ktor.jackson.jackson
-import io.ktor.request.document
-import io.ktor.request.receive
-import io.ktor.request.receiveText
-import io.ktor.request.uri
-import io.ktor.response.respond
 import io.ktor.routing.route
 import io.ktor.routing.routing
 import io.prometheus.client.hotspot.DefaultExports
@@ -46,12 +35,8 @@ object Server {
 
             install(ContentNegotiation) {
                 jackson {
-                    registerModule(ParameterNamesModule())
-                    registerModule(Jdk8Module())
                     registerModule(JavaTimeModule())
                     enable(SerializationFeature.INDENT_OUTPUT)
-                    disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-                    dateFormat = StdDateFormat()
                 }
             }
 
@@ -64,22 +49,6 @@ object Server {
             routing {
                 route(basePath) {
                     healthApi()
-
-                    /*intercept(ApplicationCallPipeline.Setup) {
-                        try {
-                            *//*println("Intercept!")
-                            val text = call.receiveText()
-                            println(text)*//*
-                            val url = call.request.uri
-                            println("$url ble kalt!")
-                            val text1 = call.receive<Any>()
-                            println("Test: $text1")
-                        } catch (e: Exception) {
-                            println("Kunne ikke hente ut text: ${e.message}")
-                            //call.respond(HttpStatusCode.BadRequest, e.message ?: "")
-                            //return@intercept finish()
-                        }
-                    }*/
 
                     // Midlertidig oppsett for å lettere kunne teste lokalt
                     if (isCurrentlyRunningOnNais()) {

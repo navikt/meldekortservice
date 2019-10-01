@@ -83,9 +83,7 @@ dependencies {
     compile("io.ktor:ktor-client-json:$ktorVersion")
     compile("io.ktor:ktor-client-serialization-jvm:$ktorVersion")
     compile("io.ktor:ktor-client-gson:$ktorVersion")
-    compile("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")
     compile("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
-    compile("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonVersion")
     compile("io.ktor:ktor-jackson:$ktorVersion")
     compile("no.nav.common:cxf:$navCommonVersion")
 
