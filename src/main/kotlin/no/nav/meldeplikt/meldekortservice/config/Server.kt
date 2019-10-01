@@ -1,7 +1,10 @@
 package no.nav.meldeplikt.meldekortservice.config
 
 import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.databind.util.StdDateFormat
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
 import io.ktor.application.ApplicationCallPipeline
 import io.ktor.application.call
 import io.ktor.application.install
@@ -43,8 +46,12 @@ object Server {
 
             install(ContentNegotiation) {
                 jackson {
-                    enable(SerializationFeature.INDENT_OUTPUT)
+                    registerModule(ParameterNamesModule())
+                    registerModule(Jdk8Module())
                     registerModule(JavaTimeModule())
+                    enable(SerializationFeature.INDENT_OUTPUT)
+                    disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+                    dateFormat = StdDateFormat()
                 }
             }
 
@@ -58,11 +65,11 @@ object Server {
                 route(basePath) {
                     healthApi()
 
-                    intercept(ApplicationCallPipeline.Setup) {
+                    /*intercept(ApplicationCallPipeline.Setup) {
                         try {
-                            /*println("Intercept!")
+                            *//*println("Intercept!")
                             val text = call.receiveText()
-                            println(text)*/
+                            println(text)*//*
                             val url = call.request.uri
                             println("$url ble kalt!")
                             val text1 = call.receive<Any>()
@@ -72,7 +79,7 @@ object Server {
                             //call.respond(HttpStatusCode.BadRequest, e.message ?: "")
                             //return@intercept finish()
                         }
-                    }
+                    }*/
 
                     // Midlertidig oppsett for å lettere kunne teste lokalt
                     if (isCurrentlyRunningOnNais()) {
