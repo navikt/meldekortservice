@@ -39,6 +39,7 @@ fun Route.personApi(httpClient: HttpClient) {
 
         post("/meldekort") {
             val meldekort = call.receive<Meldekortdetaljer>()
+            println("Meldekortdetaljer: $meldekort")
             val kontrollertType = Amelding.ameldingService(environment).kontrollerMeldekort(meldekort)
             call.respond(status = HttpStatusCode.OK, message = kontrollertType)
         }
