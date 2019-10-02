@@ -113,6 +113,7 @@ application {
 tasks {
     withType<Jar> {
         manifest.attributes["Main-Class"] = application.mainClassName
+        from(configurations.runtime.get().map { if (it.isDirectory) it else zipTree(it) })
     }
 
     withType<KotlinCompile> {
