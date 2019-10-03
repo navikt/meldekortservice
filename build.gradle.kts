@@ -86,7 +86,9 @@ dependencies {
     compile("io.ktor:ktor-client-gson:$ktorVersion")
     compile("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     compile("io.ktor:ktor-jackson:$ktorVersion")
-    compile("no.nav.common:cxf:$navCommonVersion")
+    compile("no.nav.common:cxf:$navCommonVersion") {
+        exclude("org.codehaus.woodstox", "stax2-api")
+    }
     compile("io.github.microutils:kotlin-logging:$kotlinLoggerVersion")
 
     testCompile("org.junit.jupiter:junit-jupiter-api:$junitVersion")
