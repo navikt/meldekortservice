@@ -20,7 +20,7 @@ class AmeldingServiceImpl(externControlEmeldingSOAP: ExternControlEmeldingSOAP) 
         logger.info { "Environment variabler. env.emeldingUrl: ${env.emeldingUrl} environment.personinfoUsername: ${env.personinfoUsername}"}
         return try {
             val meldekortKontrollertTypeSoap = amelding.kontrollerEmeldingMeldekort(meldekort)
-            logger.info{ "Valideringstatus: ${meldekortKontrollertTypeSoap.status}" }
+            logger.info { "Valideringstatus: ${meldekortKontrollertTypeSoap.status}" }
             println("Valideringstatus: ${meldekortKontrollertTypeSoap.status}")
 
             meldekortKontrollertTypeSoap
