@@ -41,7 +41,12 @@ fun Route.personApi(httpClient: HttpClient) {
             val meldekort = call.receive<Meldekortdetaljer>()
             println("Meldekortdetaljer: $meldekort")
             val kontrollertType = Amelding.ameldingService(environment).kontrollerMeldekort(meldekort)
-            call.respond(status = HttpStatusCode.OK, message = kontrollertType)
+
+            if (kontrollertType.status == "OK") {
+                call.respond(status = HttpStatusCode.OK, message = kontrollertType)
+            } else {
+                call.respond(status = HttpStatusCode.BadRequest, message = "Meldekort ble ikke sendt inn")
+            }
         }
     }
 }

@@ -17,14 +17,10 @@ class AmeldingServiceImpl(externControlEmeldingSOAP: ExternControlEmeldingSOAP) 
     override fun kontrollerMeldekort(meldekortdetaljer: Meldekortdetaljer): MeldekortKontrollertType {
         val meldekort = MeldekortTypeMapper.mapMeldekortType(meldekortdetaljer)
         val env = Environment()
-        logger.info { "Environment variabler. env.emeldingUrl.path: ${env.emeldingUrl.path} environment.personinfoUsername: ${env.personinfoUsername}"}
+        logger.info { "Environment variabler. env.emeldingUrl: ${env.emeldingUrl} environment.personinfoUsername: ${env.personinfoUsername}"}
         return try {
             val meldekortKontrollertTypeSoap = amelding.kontrollerEmeldingMeldekort(meldekort)
 
-
-            if (meldekortKontrollertTypeSoap.status == "OK") {
-                // TODO Sett meldekort som innsendt
-            }
             meldekortKontrollertTypeSoap
         } catch (e: Exception) {
             logger.error(e) { "Innsending av meldekort feilet. Meldekortdetaljer: $meldekortdetaljer" }

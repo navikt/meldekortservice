@@ -32,7 +32,7 @@ object Amelding {
         interceptorConfigMap[WSHandlerConstants.PW_CALLBACK_REF] = passwordCallbackHandler
 
         return CXFClient(ExternControlEmeldingSOAP::class.java)
-            .address(environment.emeldingUrl.path)
+            .address(environment.emeldingUrl.toString())
             .withOutInterceptor(WSS4JOutInterceptor(interceptorConfigMap))
             .build()
     }
