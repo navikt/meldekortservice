@@ -12,28 +12,34 @@ import javax.security.auth.callback.CallbackHandler
 
 object Amelding {
 
-    fun ameldingService(environment: Environment): AmeldingService {
+    private val environment = Environment()
+
+    private val interceptorConfig: Map<String, Any>
+        get() {
+            val map = java.util.HashMap<String, Any>()
+            map[WSHandlerConstants.ACTION] = WSHandlerConstants.USERNAME_TOKEN
+            map[WSHandlerConstants.PASSWORD_TYPE] = "PasswordText"
+            map[WSHandlerConstants.USER] = environment.personinfoUsername
+            val passwordCallbackHandler = CallbackHandler { callbacks ->
+                val callback = callbacks[0] as WSPasswordCallback
+                callback.password = environment.personinfoPassword
+            }
+            map[WSHandlerConstants.PW_CALLBACK_REF] = passwordCallbackHandler
+            return map
+        }
+
+    fun ameldingService(): AmeldingService {
         return if(ConfigUtil.isCurrentlyRunningOnNais()) {
-            AmeldingServiceImpl(externControlEmeldingConfig(environment))
+            AmeldingServiceImpl(externControlEmeldingConfig())
         } else {
             AmeldingServiceMock()
         }
     }
 
-    private fun externControlEmeldingConfig(environment: Environment): ExternControlEmeldingSOAP {
-        val interceptorConfigMap = HashMap<String, Any>()
-        interceptorConfigMap[WSHandlerConstants.ACTION] = WSHandlerConstants.USERNAME_TOKEN
-        interceptorConfigMap[WSHandlerConstants.PASSWORD_TYPE] = "PasswordText"
-        interceptorConfigMap[WSHandlerConstants.USER] = environment.personinfoUsername
-        val passwordCallbackHandler = CallbackHandler { callbacks ->
-            val callback = callbacks[0] as WSPasswordCallback
-            callback.password = environment.personinfoPassword
-        }
-        interceptorConfigMap[WSHandlerConstants.PW_CALLBACK_REF] = passwordCallbackHandler
-
+    private fun externControlEmeldingConfig(): ExternControlEmeldingSOAP {
         return CXFClient(ExternControlEmeldingSOAP::class.java)
             .address(environment.emeldingUrl.toString())
-            .withOutInterceptor(WSS4JOutInterceptor(interceptorConfigMap))
+            .withOutInterceptor(WSS4JOutInterceptor(interceptorConfig))
             .build()
     }
 }

@@ -20,8 +20,6 @@ fun Route.personApi(httpClient: HttpClient) {
 
     route("/person") {
 
-        val environment = Environment()
-
         // Henter historiske meldekort
         get("/historiskemeldekort") {
             call.respondText(text = "Historiske meldekort er ikke implementert", contentType = ContentType.Text.Plain)
@@ -40,7 +38,7 @@ fun Route.personApi(httpClient: HttpClient) {
         post("/meldekort") {
             val meldekort = call.receive<Meldekortdetaljer>()
             println("Meldekortdetaljer: $meldekort")
-            val kontrollertType = Amelding.ameldingService(environment).kontrollerMeldekort(meldekort)
+            val kontrollertType = Amelding.ameldingService().kontrollerMeldekort(meldekort)
 
             if (kontrollertType.status == "OK") {
                 call.respond(status = HttpStatusCode.OK, message = kontrollertType)
