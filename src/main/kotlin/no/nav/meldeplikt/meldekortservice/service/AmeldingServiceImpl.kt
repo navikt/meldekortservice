@@ -25,6 +25,8 @@ class AmeldingServiceImpl(externControlEmeldingSOAP: ExternControlEmeldingSOAP) 
 
             meldekortKontrollertTypeSoap
         } catch (e: Exception) {
+            println("Innsending av meldekort feilet. Meldekortdetaljer: $meldekortdetaljer")
+            println("Feilmelding: ${e.message}")
             logger.error(e) { "Innsending av meldekort feilet. Meldekortdetaljer: $meldekortdetaljer" }
             val kontrollertType = MeldekortKontrollertType()
             kontrollertType.status = "Error"
