@@ -19,7 +19,7 @@ val jaxbApiVersion = "2.4.0-b180830.0359"
 val javaxActivationVersion = "1.1.1"
 val jaxwsToolsVersion = "2.3.1"
 val javaxJaxwsApiVersion = "2.2.1"
-val navCommonVersion = "1.2019.09.13-12.30-cc1ac9ca61b6"
+val navCommonVersion = "1.2019.05.08-08.52-482a48e1a056"
 val kotlinLoggerVersion = "1.5.4"
 
 val mainClass = "no.nav.meldeplikt.meldekortservice.AppKt"
@@ -86,9 +86,7 @@ dependencies {
     compile("io.ktor:ktor-client-gson:$ktorVersion")
     compile("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     compile("io.ktor:ktor-jackson:$ktorVersion")
-    compile("no.nav.common:cxf:$navCommonVersion") {
-        exclude("org.codehaus.woodstox", "stax2-api")
-    }
+    compile("no.nav.common:cxf:$navCommonVersion")
     compile("io.github.microutils:kotlin-logging:$kotlinLoggerVersion")
 
     testCompile("org.junit.jupiter:junit-jupiter-api:$junitVersion")
