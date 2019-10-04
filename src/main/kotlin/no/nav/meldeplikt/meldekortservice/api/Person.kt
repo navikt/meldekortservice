@@ -11,9 +11,7 @@ import io.ktor.routing.Route
 import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.route
-import no.aetat.arena.mk_meldekort.MeldekortType
 import no.nav.meldeplikt.meldekortservice.config.Amelding
-import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.model.Meldekortdetaljer
 
 fun Route.personApi(httpClient: HttpClient) {
@@ -37,13 +35,12 @@ fun Route.personApi(httpClient: HttpClient) {
 
         post("/meldekort") {
             val meldekort = call.receive<Meldekortdetaljer>()
-            println("Meldekortdetaljer: $meldekort")
-            val kontrollertType = Amelding.ameldingService().kontrollerMeldekort(meldekort)
 
-            if (kontrollertType.status == "OK") {
+            try {
+                val kontrollertType = Amelding.ameldingService().kontrollerMeldekort(meldekort)
                 call.respond(status = HttpStatusCode.OK, message = kontrollertType)
-            } else {
-                call.respond(status = HttpStatusCode.BadRequest, message = "Meldekort ble ikke sendt inn")
+            } catch (e: Exception) {
+                call.respond(status = HttpStatusCode.BadRequest, message = "Meldekort ble ikke sendt inn. ${e.message}")
             }
         }
     }

@@ -7,13 +7,13 @@ import io.ktor.auth.Authentication
 import io.ktor.auth.authenticate
 import io.ktor.auth.jwt.jwt
 import io.ktor.features.ContentNegotiation
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.netty.Netty
-import io.ktor.server.netty.NettyApplicationEngine
 import io.ktor.features.DefaultHeaders
 import io.ktor.jackson.jackson
 import io.ktor.routing.route
 import io.ktor.routing.routing
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.netty.Netty
+import io.ktor.server.netty.NettyApplicationEngine
 import io.prometheus.client.hotspot.DefaultExports
 import no.nav.meldeplikt.meldekortservice.api.healthApi
 import no.nav.meldeplikt.meldekortservice.api.meldekortApi

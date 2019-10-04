@@ -10,7 +10,6 @@ fun main() {
     Server.configure(environment).start()
 
     if (!ConfigUtil.isCurrentlyRunningOnNais()) {
-        // Mock / test
         println("************** MOCK / TEST **************")
     }
 }
