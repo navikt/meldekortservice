@@ -11,7 +11,7 @@ val logstashVersion = "5.2"
 val logbackVersion = "1.2.3"
 val vaultJdbcVersion = "1.3.1"
 val assertJVersion = "3.12.2"
-val jacksonVersion = "2.9.9"
+val jacksonVersion = "2.9.8"
 val jaxwsApiVersion = "2.3.1"
 val javaxAnnotationApiVersion = "1.3.2"
 val jaxbRuntimeVersion = "2.4.0-b180830.0438"
@@ -72,26 +72,26 @@ dependencies {
     }
 
     implementation(kotlin("stdlib-jdk8"))
-    compile("no.nav:vault-jdbc:$vaultJdbcVersion")
-    compile("ch.qos.logback:logback-classic:$logbackVersion")
-    compile("net.logstash.logback:logstash-logback-encoder:$logstashVersion")
-    compile("io.prometheus:simpleclient_common:$prometheusVersion")
-    compile("io.prometheus:simpleclient_hotspot:$prometheusVersion")
-    compile("io.ktor:ktor-server-netty:$ktorVersion")
-    compile("io.ktor:ktor-auth:$ktorVersion")
-    compile("io.ktor:ktor-auth-jwt:$ktorVersion")
-    compile("io.ktor:ktor-client-apache:$ktorVersion")
-    compile("io.ktor:ktor-client-json:$ktorVersion")
-    compile("io.ktor:ktor-client-serialization-jvm:$ktorVersion")
-    compile("io.ktor:ktor-client-gson:$ktorVersion")
-    compile("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
-    compile("io.ktor:ktor-jackson:$ktorVersion")
-    compile("no.nav.common:cxf:$navCommonVersion")
-    compile("io.github.microutils:kotlin-logging:$kotlinLoggerVersion")
+    api("no.nav:vault-jdbc:$vaultJdbcVersion")
+    api("ch.qos.logback:logback-classic:$logbackVersion")
+    api("net.logstash.logback:logstash-logback-encoder:$logstashVersion")
+    api("io.prometheus:simpleclient_common:$prometheusVersion")
+    api("io.prometheus:simpleclient_hotspot:$prometheusVersion")
+    api("io.ktor:ktor-server-netty:$ktorVersion")
+    api("io.ktor:ktor-auth:$ktorVersion")
+    api("io.ktor:ktor-auth-jwt:$ktorVersion")
+    api("io.ktor:ktor-client-apache:$ktorVersion")
+    api("io.ktor:ktor-client-json:$ktorVersion")
+    api("io.ktor:ktor-client-serialization-jvm:$ktorVersion")
+    api("io.ktor:ktor-client-gson:$ktorVersion")
+    api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
+    api("io.ktor:ktor-jackson:$ktorVersion")
+    api("no.nav.common:cxf:$navCommonVersion")
+    api("io.github.microutils:kotlin-logging:$kotlinLoggerVersion")
 
-    testCompile("org.junit.jupiter:junit-jupiter-api:$junitVersion")
-    testCompile("org.assertj:assertj-core:$assertJVersion")
-    testCompile(kotlin("test-junit5"))
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+    testImplementation("org.assertj:assertj-core:$assertJVersion")
+    testImplementation(kotlin("test-junit5"))
 
     implementation("javax.xml.ws:jaxws-api:$jaxwsApiVersion")
     implementation("javax.annotation:javax.annotation-api:$javaxAnnotationApiVersion")
