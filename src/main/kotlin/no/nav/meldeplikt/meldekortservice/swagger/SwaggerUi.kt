@@ -3,7 +3,6 @@ package no.nav.meldeplikt.meldekortservice.swagger
 import io.ktor.application.ApplicationCall
 import io.ktor.http.content.URIFileContent
 import io.ktor.response.respond
-import no.nav.meldeplikt.meldekortservice.config.swagger
 
 /**
  * @author Niels Falk, changed by Torstein Nesby
