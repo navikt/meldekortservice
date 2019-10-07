@@ -4,6 +4,7 @@ import no.aetat.amelding.externcontrolemelding.webservices.ExternControlEmelding
 import no.nav.meldeplikt.meldekortservice.service.AmeldingService
 import no.nav.meldeplikt.meldekortservice.service.AmeldingServiceImpl
 import no.nav.meldeplikt.meldekortservice.service.AmeldingServiceMock
+import no.nav.meldeplikt.meldekortservice.utils.ConfigUtil
 import no.nav.sbl.dialogarena.common.cxf.CXFClient
 import org.apache.cxf.ws.security.wss4j.WSS4JOutInterceptor
 import org.apache.wss4j.common.ext.WSPasswordCallback

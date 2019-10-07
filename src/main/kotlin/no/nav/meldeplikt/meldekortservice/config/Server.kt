@@ -1,26 +1,49 @@
 package no.nav.meldeplikt.meldekortservice.config
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.auth.Authentication
-import io.ktor.auth.authenticate
 import io.ktor.auth.jwt.jwt
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.DefaultHeaders
 import io.ktor.jackson.jackson
-import io.ktor.routing.route
-import io.ktor.routing.routing
+import io.ktor.locations.Locations
+import io.ktor.response.respond
+import io.ktor.response.respondRedirect
+import io.ktor.routing.Routing
+import io.ktor.routing.get
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.netty.NettyApplicationEngine
 import io.prometheus.client.hotspot.DefaultExports
-import no.nav.meldeplikt.meldekortservice.api.healthApi
-import no.nav.meldeplikt.meldekortservice.api.meldekortApi
-import no.nav.meldeplikt.meldekortservice.api.personApi
-import no.nav.meldeplikt.meldekortservice.api.testApi
-import no.nav.meldeplikt.meldekortservice.config.ConfigUtil.isCurrentlyRunningOnNais
+import no.nav.meldeplikt.meldekortservice.api.*
+import no.nav.meldeplikt.meldekortservice.utils.ConfigUtil.isCurrentlyRunningOnNais
+import no.nav.meldeplikt.meldekortservice.swagger.Contact
+import no.nav.meldeplikt.meldekortservice.swagger.Information
+import no.nav.meldeplikt.meldekortservice.swagger.Swagger
+import no.nav.meldeplikt.meldekortservice.swagger.SwaggerUi
+import no.nav.meldeplikt.meldekortservice.utils.API_PATH
+import no.nav.meldeplikt.meldekortservice.utils.BASE_PATH
+import no.nav.meldeplikt.meldekortservice.utils.INTERNAL_PATH
 import java.util.concurrent.TimeUnit
+
+val swagger = Swagger(
+    info = Information (
+        version = "1",
+        title = "Meldekortservice. Proxy-api for meldekort mot Arena og Amelding",
+        description = "[Meldekortservice](https://github.com/navikt/meldekortservice)",
+        contact = Contact(
+            name = "#meldeplikt på Slack",
+            url = "https://github.com/navikt/meldekortservice",
+            email = "meldeplikt@nav.no"
+        )
+    )
+)
+
+const val SWAGGER_URL_V1 = "/meldekortservice/internal/apidocs/index.html?url=swagger.json"
 
 object Server {
 
@@ -38,6 +61,7 @@ object Server {
                     registerModule(KotlinModule())
                     enable(SerializationFeature.INDENT_OUTPUT)
                     disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+                    setSerializationInclusion(JsonInclude.Include.NON_NULL)
                 }
             }
 
@@ -47,7 +71,27 @@ object Server {
                 }
             }
 
-            routing {
+            install(Locations)
+
+            val swaggerUI = SwaggerUi()
+
+            install(Routing) {
+                get(BASE_PATH) { call.respondRedirect(SWAGGER_URL_V1) }
+                get(API_PATH) { call.respondRedirect(SWAGGER_URL_V1) }
+                get("$INTERNAL_PATH/apidocs") { call.respondRedirect(SWAGGER_URL_V1) }
+                get("$INTERNAL_PATH/apidocs/{fileName}") {
+                    val fileName = call.parameters["fileName"]
+                    if (fileName == "swagger.json") call.respond(swagger) else swaggerUI.serve(fileName, call)
+                }
+
+                healthApi()
+
+                meldekortApi()
+            }
+
+            /*routing {
+                // swagger UI trigger routes
+
                 route(basePath) {
                     healthApi()
 
@@ -64,7 +108,7 @@ object Server {
                         meldekortApi(client)
                     }
                 }
-            }
+            }*/
         }
         addGraceTimeAtShutdownToAllowRunningRequestsToComplete(app)
         return app

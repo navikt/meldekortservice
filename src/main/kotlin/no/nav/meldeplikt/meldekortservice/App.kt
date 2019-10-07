@@ -1,6 +1,6 @@
 package no.nav.meldeplikt.meldekortservice
 
-import no.nav.meldeplikt.meldekortservice.config.ConfigUtil
+import no.nav.meldeplikt.meldekortservice.utils.ConfigUtil
 import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.config.Server
 

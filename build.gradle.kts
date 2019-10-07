@@ -21,6 +21,8 @@ val jaxwsToolsVersion = "2.3.1"
 val javaxJaxwsApiVersion = "2.2.1"
 val navCommonVersion = "1.2019.05.08-08.52-482a48e1a056"
 val kotlinLoggerVersion = "1.5.4"
+val ktorSwagger = "0.4.0"
+val swaggerVersion = "3.1.7"
 
 val mainClass = "no.nav.meldeplikt.meldekortservice.AppKt"
 
@@ -84,6 +86,7 @@ dependencies {
     api("io.ktor:ktor-client-json:$ktorVersion")
     api("io.ktor:ktor-client-serialization-jvm:$ktorVersion")
     api("io.ktor:ktor-client-gson:$ktorVersion")
+    api("io.ktor:ktor-locations:$ktorVersion")
     api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     api("io.ktor:ktor-jackson:$ktorVersion")
     api("no.nav.common:cxf:$navCommonVersion")
@@ -93,6 +96,7 @@ dependencies {
     testImplementation("org.assertj:assertj-core:$assertJVersion")
     testImplementation(kotlin("test-junit5"))
 
+    implementation("org.webjars:swagger-ui:$swaggerVersion")
     implementation("javax.xml.ws:jaxws-api:$jaxwsApiVersion")
     implementation("javax.annotation:javax.annotation-api:$javaxAnnotationApiVersion")
     implementation("javax.xml.bind:jaxb-api:$jaxbApiVersion")

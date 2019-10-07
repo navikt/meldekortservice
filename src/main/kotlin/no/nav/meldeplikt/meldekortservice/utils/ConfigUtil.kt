@@ -1,4 +1,4 @@
-package no.nav.meldeplikt.meldekortservice.config
+package no.nav.meldeplikt.meldekortservice.utils
 
 object ConfigUtil {
 

@@ -6,10 +6,11 @@ import io.ktor.response.respondText
 import io.ktor.routing.Route
 import io.ktor.routing.get
 import io.ktor.routing.route
+import no.nav.meldeplikt.meldekortservice.utils.INTERNAL_PATH
 
 fun Route.healthApi() {
 
-    route("/internal") {
+    route(INTERNAL_PATH) {
 
         get("/isAlive") {
             call.respondText(text = "Alive", contentType = ContentType.Text.Plain)
@@ -25,3 +26,17 @@ fun Route.healthApi() {
         }
     }
 }
+
+/*
+fun Route.swaggerRoutes() {
+
+    val swaggerUI = SwaggerUi()
+    val SWAGGER_URL_V1 = "/meldekortservice/internal/apidocs/index.html?url=swagger.json"
+
+    route("/internal") {
+        get("/swagger") {
+            println("inni swagger-endepukt")
+            swaggerUI.serve("swagger.json", call)
+        }
+    }
+}*/
