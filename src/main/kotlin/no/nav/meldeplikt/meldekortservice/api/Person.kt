@@ -28,11 +28,12 @@ fun Route.personApi(httpClient: HttpClient) {
             call.respondText(text = "Status er ikke implementert", contentType = ContentType.Text.Plain)
         }
 
-        // Henter person + meldekort
+        // Henter meldekort
         get("/meldekort") {
             call.respondText(text = "Meldekort er ikke implementert", contentType = ContentType.Text.Plain)
         }
 
+        //Innsending/kontroll av meldekort (Amelding)
         post("/meldekort") {
             val meldekort = call.receive<Meldekortdetaljer>()
 

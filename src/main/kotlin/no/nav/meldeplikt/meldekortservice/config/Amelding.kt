@@ -28,6 +28,7 @@ object Amelding {
             return map
         }
 
+    //Velger hvilke av Ameldingsservicene som skal returneres ettersom om appen kjører på nais eller ikke
     fun ameldingService(): AmeldingService {
         return if(ConfigUtil.isCurrentlyRunningOnNais()) {
             AmeldingServiceImpl(externControlEmeldingConfig())
@@ -36,6 +37,7 @@ object Amelding {
         }
     }
 
+    //Setter opp tilkobling mot Amelding
     private fun externControlEmeldingConfig(): ExternControlEmeldingSOAP {
         return CXFClient(ExternControlEmeldingSOAP::class.java)
             .address(environment.emeldingUrl.toString())

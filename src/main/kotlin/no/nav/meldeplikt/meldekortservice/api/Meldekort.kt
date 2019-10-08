@@ -15,6 +15,7 @@ fun Route.meldekortApi(httpClient: HttpClient) {
 
     route("/meldekort") {
 
+        //Intercepter request for å sjekke at id-parameteret er satt riktig
         intercept(ApplicationCallPipeline.Setup) {
             try {
                 call.parameters["id"]!!.toLongOrNull() ?: throw IllegalArgumentException("Fant ikke id eller id var ikke et nummer")
@@ -33,6 +34,7 @@ fun Route.meldekortApi(httpClient: HttpClient) {
             )
         }
 
+        //Henter meldekortid for nytt (korrigert) kort
         get("/{id}/korrigering") {
             val id = call.parameters["id"]!!.toLong()
             call.respondText(
