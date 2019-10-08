@@ -10,8 +10,6 @@ import no.nav.meldeplikt.meldekortservice.utils.LocalDateDeserializer
 import no.nav.meldeplikt.meldekortservice.utils.LocalDateSerializer
 import java.time.LocalDate
 
-@KtorExperimentalLocationsAPI
-@Location("/meldekortservice/person/meldekort")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class Meldekortdetaljer @JvmOverloads constructor (
     val id: String? = "",
