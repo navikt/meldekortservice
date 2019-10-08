@@ -86,7 +86,8 @@ object Server {
 
                 healthApi()
 
-                meldekortApi()
+                meldekortApi(client)
+                personApi(client)
             }
 
             /*routing {

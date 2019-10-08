@@ -1,5 +1,6 @@
 package no.nav.meldeplikt.meldekortservice.api
 
+import io.ktor.client.HttpClient
 import io.ktor.locations.Location
 import io.ktor.routing.Routing
 import no.nav.meldeplikt.meldekortservice.utils.swagger.*
@@ -8,7 +9,7 @@ import no.nav.meldeplikt.meldekortservice.utils.ErrorMessage
 import no.nav.meldeplikt.meldekortservice.utils.MELDEKORT_PATH
 import no.nav.meldeplikt.meldekortservice.utils.respondOrServiceUnavailable
 
-fun Routing.meldekortApi() {
+fun Routing.meldekortApi(httpClient: HttpClient) {
     getMeldekortdetaljer()
     getKorrigertMeldekort()
 }
@@ -21,9 +22,12 @@ data class GetMeldekortdetaljer(val meldekortId: Long)
 
 fun Routing.getMeldekortdetaljer() =
     get<GetMeldekortdetaljer>(
-        "Hent meldekortdetaljer".securityAndReponds(BearerTokenSecurity(), ok<String>(),
-            serviceUnavailable<ErrorMessage>(), unAuthorized<Error>())) { meldekortid ->
-        respondOrServiceUnavailable {
+        "Hent meldekortdetaljer".securityAndReponds(
+            BearerTokenSecurity(),
+            ok<String>(),
+            serviceUnavailable<ErrorMessage>(),
+            unAuthorized<Error>())) {
+            meldekortid -> respondOrServiceUnavailable {
             "Hent meldekortdetaljer er ikke implementert, men id var: ${meldekortid.meldekortId}"
         }
     }
