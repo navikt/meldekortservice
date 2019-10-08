@@ -15,5 +15,5 @@ data class Environment(
 
 fun getEnvVar(varName: String, defaultValue: String? = null): String {
     return System.getenv(varName) ?: defaultValue
-    ?: throw IllegalArgumentException("Variable $varName cannot be empty")
+    ?: throw IllegalArgumentException("Variabelen $varName kan ikke være tom")
 }

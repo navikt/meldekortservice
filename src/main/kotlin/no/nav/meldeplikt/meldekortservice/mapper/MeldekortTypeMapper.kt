@@ -36,10 +36,8 @@ object MeldekortTypeMapper {
         hodeTypeSoap.meldeperiode = meldekortdetaljer.meldeperiode
         hodeTypeSoap.arkivnokkel = meldekortdetaljer.arkivnokkel
         hodeTypeSoap.kortType = meldekortdetaljer.kortType.code
-        hodeTypeSoap.meldeDato = if(meldekortdetaljer.meldeDato is LocalDate)
-            fromLocalDateToXMLGregorianCalendar(meldekortdetaljer.meldeDato) else fromLocalDateToXMLGregorianCalendar(LocalDate.now())
-        hodeTypeSoap.lestDato = if(meldekortdetaljer.lestDato is LocalDate)
-            fromLocalDateToXMLGregorianCalendar(meldekortdetaljer.lestDato) else fromLocalDateToXMLGregorianCalendar(LocalDate.now())
+        hodeTypeSoap.meldeDato = konverterDato(meldekortdetaljer.meldeDato)
+        hodeTypeSoap.lestDato = konverterDato(meldekortdetaljer.lestDato)
         if(meldekortdetaljer.begrunnelse != null) {
             hodeTypeSoap.kommentar = meldekortdetaljer.begrunnelse
         }
@@ -114,5 +112,13 @@ object MeldekortTypeMapper {
 
     private fun fromLocalDateToXMLGregorianCalendar(localDate: LocalDate): XMLGregorianCalendar {
         return DatatypeFactory.newInstance().newXMLGregorianCalendar(localDate.toString())
+    }
+
+    private fun konverterDato(dato: LocalDate?): XMLGregorianCalendar {
+        return if(dato is LocalDate) {
+            fromLocalDateToXMLGregorianCalendar(dato)
+        } else {
+            fromLocalDateToXMLGregorianCalendar(LocalDate.now())
+        }
     }
 }
