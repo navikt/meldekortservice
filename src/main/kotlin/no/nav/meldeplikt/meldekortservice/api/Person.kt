@@ -96,35 +96,3 @@ fun Routing.kontrollerMeldekort() =
             call.respond(status = HttpStatusCode.ServiceUnavailable, message = errorMessage)
         }
     }
-/*
-fun Route.personApi(httpClient: HttpClient) {
-
-    route("/person") {
-
-        // Henter historiske meldekort
-        get("/historiskemeldekort") {
-            call.respondText(text = "Historiske meldekort er ikke implementert", contentType = ContentType.Text.Plain)
-        }
-
-        // Henter personstatus (arenastatus)
-        get("/status") {
-            call.respondText(text = "Status er ikke implementert", contentType = ContentType.Text.Plain)
-        }
-
-        // Henter person + meldekort
-        get("/meldekort") {
-            call.respondText(text = "Meldekort er ikke implementert", contentType = ContentType.Text.Plain)
-        }
-
-        post("/meldekort") {
-            val meldekort = call.receive<Meldekortdetaljer>()
-
-            try {
-                val kontrollertType = Amelding.ameldingService().kontrollerMeldekort(meldekort)
-                call.respond(status = HttpStatusCode.OK, message = kontrollertType)
-            } catch (e: Exception) {
-                call.respond(status = HttpStatusCode.BadRequest, message = "Meldekort ble ikke sendt inn. ${e.message}")
-            }
-        }
-    }
-}*/

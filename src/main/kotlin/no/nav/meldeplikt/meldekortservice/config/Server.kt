@@ -89,27 +89,6 @@ object Server {
                 meldekortApi(client)
                 personApi(client)
             }
-
-            /*routing {
-                // swagger UI trigger routes
-
-                route(basePath) {
-                    healthApi()
-
-                    // Midlertidig oppsett for å lettere kunne teste lokalt
-                    if (isCurrentlyRunningOnNais()) {
-                        authenticate {
-                            testApi()
-                            personApi(client)
-                            meldekortApi(client)
-                        }
-                    } else {
-                        testApi()
-                        personApi(client)
-                        meldekortApi(client)
-                    }
-                }
-            }*/
         }
         addGraceTimeAtShutdownToAllowRunningRequestsToComplete(app)
         return app
