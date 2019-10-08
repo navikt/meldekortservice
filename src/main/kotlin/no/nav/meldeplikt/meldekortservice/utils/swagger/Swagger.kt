@@ -1,8 +1,9 @@
 @file:Suppress("MemberVisibilityCanPrivate", "unused")
 
-package no.nav.meldeplikt.meldekortservice.swagger
+package no.nav.meldeplikt.meldekortservice.utils.swagger
 
 import io.ktor.http.HttpStatusCode
+import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Location
 import java.time.Instant
 import java.time.LocalDate
@@ -17,7 +18,7 @@ import mu.KotlinLogging
 import no.nav.meldeplikt.meldekortservice.config.swagger
 
 /**
- * @author Niels Falk, changed by Torstein Nesby
+ * @author Niels Falk, changed by Torstein Nesby and Yrjan Fraschetti
  */
 val log = KotlinLogging.logger { }
 
@@ -83,7 +84,7 @@ data class Contact(
 data class Tag(
     val name: String
 )
-
+@KtorExperimentalLocationsAPI
 class Operation(
     metadata: Metadata,
     location: Location,
@@ -164,7 +165,7 @@ class Parameter(
     val format: String? = property.format,
     val enum: List<String>? = property.enum,
     val items: Property? = property.items,
-    val schema: ModelReference? = property.`$ref`.let { ModelReference(it) }
+    val schema: ModelReference? = ModelReference(property.`$ref`)
 )
 
 enum class ParameterInputType {

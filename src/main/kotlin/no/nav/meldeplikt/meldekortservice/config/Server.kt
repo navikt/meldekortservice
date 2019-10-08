@@ -20,14 +20,14 @@ import io.ktor.server.netty.Netty
 import io.ktor.server.netty.NettyApplicationEngine
 import io.prometheus.client.hotspot.DefaultExports
 import no.nav.meldeplikt.meldekortservice.api.*
-import no.nav.meldeplikt.meldekortservice.utils.ConfigUtil.isCurrentlyRunningOnNais
-import no.nav.meldeplikt.meldekortservice.swagger.Contact
-import no.nav.meldeplikt.meldekortservice.swagger.Information
-import no.nav.meldeplikt.meldekortservice.swagger.Swagger
-import no.nav.meldeplikt.meldekortservice.swagger.SwaggerUi
+import no.nav.meldeplikt.meldekortservice.utils.swagger.Contact
+import no.nav.meldeplikt.meldekortservice.utils.swagger.Information
+import no.nav.meldeplikt.meldekortservice.utils.swagger.Swagger
+import no.nav.meldeplikt.meldekortservice.utils.swagger.SwaggerUi
 import no.nav.meldeplikt.meldekortservice.utils.API_PATH
 import no.nav.meldeplikt.meldekortservice.utils.BASE_PATH
 import no.nav.meldeplikt.meldekortservice.utils.INTERNAL_PATH
+import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import java.util.concurrent.TimeUnit
 
 val swagger = Swagger(

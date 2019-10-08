@@ -1,11 +1,11 @@
-package no.nav.meldeplikt.meldekortservice.swagger
+package no.nav.meldeplikt.meldekortservice.utils.swagger
 
 import io.ktor.application.ApplicationCall
 import io.ktor.http.content.URIFileContent
 import io.ktor.response.respond
 
 /**
- * @author Niels Falk, changed by Torstein Nesby
+ * @author Niels Falk, changed by Torstein Nesby and Yrjan Fraschetti
  */
 class SwaggerUi {
 

@@ -2,7 +2,7 @@ package no.nav.meldeplikt.meldekortservice.api
 
 import io.ktor.locations.Location
 import io.ktor.routing.Routing
-import no.nav.meldeplikt.meldekortservice.swagger.*
+import no.nav.meldeplikt.meldekortservice.utils.swagger.*
 import no.nav.meldeplikt.meldekortservice.utils.Error
 import no.nav.meldeplikt.meldekortservice.utils.ErrorMessage
 import no.nav.meldeplikt.meldekortservice.utils.MELDEKORT_PATH
