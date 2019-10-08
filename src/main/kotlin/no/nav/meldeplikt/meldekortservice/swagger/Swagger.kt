@@ -38,16 +38,33 @@ data class Key(
 )
 
 data class Swagger(
-    val swagger: String = "2.0",
+    val openapi: String = "3.0.0",
+    val swagger: String = "3.0",
     val info: Information,
     val paths: Paths = mutableMapOf(),
     val definitions: Definitions = mutableMapOf(),
-    val securityDefinitions: Map<String, Key> = mapOf("Bearer" to Key(
-        description = "Selvbetjening id-token (OIDC)",
-        type = "apiKey",
-        name = "Authorization",
-        `in` = "header"
-    ))
+    val components: Components = Components(
+        SecuritySchemes(
+            BearerAuth(
+                type = "http",
+                scheme = "bearer",
+                bearerFormat = "JWT"
+            )
+        ))
+)
+
+data class Components(
+    val securitySchemes: SecuritySchemes
+)
+
+data class SecuritySchemes(
+    val bearerAuth: BearerAuth
+)
+
+data class BearerAuth(
+    val type: String,
+    val scheme: String,
+    val bearerFormat: String
 )
 
 data class Information(

@@ -22,7 +22,7 @@ val javaxJaxwsApiVersion = "2.2.1"
 val navCommonVersion = "1.2019.05.08-08.52-482a48e1a056"
 val kotlinLoggerVersion = "1.5.4"
 val ktorSwagger = "0.4.0"
-val swaggerVersion = "3.1.7"
+val swaggerVersion = "3.23.8"
 
 val mainClass = "no.nav.meldeplikt.meldekortservice.AppKt"
 

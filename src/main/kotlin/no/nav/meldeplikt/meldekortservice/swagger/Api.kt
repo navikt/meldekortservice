@@ -29,7 +29,7 @@ import kotlin.reflect.KClass
 sealed class Security
 data class NoSecurity(val secSetting: List<Map<String, List<String>>> = emptyList()) : Security()
 data class BearerTokenSecurity(
-    val secSetting: List<Map<String, List<String>>> = listOf(mapOf("Authorization" to emptyList()))
+    val secSetting: List<Map<String, List<String>>> = listOf(mapOf("bearerAuth" to emptyList()))
 ) : Security()
 
 data class Metadata(
