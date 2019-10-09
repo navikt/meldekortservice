@@ -2,11 +2,20 @@ package no.nav.meldeplikt.meldekortservice.api
 
 import io.ktor.application.call
 import io.ktor.http.ContentType
+import io.ktor.response.respond
+import io.ktor.response.respondRedirect
 import io.ktor.response.respondText
 import io.ktor.routing.Route
+import io.ktor.routing.Routing
 import io.ktor.routing.get
 import io.ktor.routing.route
+import io.ktor.util.KtorExperimentalAPI
+import no.nav.meldeplikt.meldekortservice.config.SWAGGER_URL_V1
+import no.nav.meldeplikt.meldekortservice.config.swagger
+import no.nav.meldeplikt.meldekortservice.utils.API_PATH
+import no.nav.meldeplikt.meldekortservice.utils.BASE_PATH
 import no.nav.meldeplikt.meldekortservice.utils.INTERNAL_PATH
+import no.nav.meldeplikt.meldekortservice.utils.swagger.SwaggerUi
 
 fun Route.healthApi() {
 
@@ -27,16 +36,15 @@ fun Route.healthApi() {
     }
 }
 
-/*
-fun Route.swaggerRoutes() {
-
+@KtorExperimentalAPI
+fun Routing.swaggerRoutes() {
     val swaggerUI = SwaggerUi()
-    val SWAGGER_URL_V1 = "/meldekortservice/internal/apidocs/index.html?url=swagger.json"
 
-    route("/internal") {
-        get("/swagger") {
-            println("inni swagger-endepukt")
-            swaggerUI.serve("swagger.json", call)
-        }
+    get(BASE_PATH) { call.respondRedirect(SWAGGER_URL_V1) }
+    get(API_PATH) { call.respondRedirect(SWAGGER_URL_V1) }
+    get("$INTERNAL_PATH/apidocs") { call.respondRedirect(SWAGGER_URL_V1) }
+    get("$INTERNAL_PATH/apidocs/{fileName}") {
+        val fileName = call.parameters["fileName"]
+        if (fileName == "swagger.json") call.respond(swagger) else swaggerUI.serve(fileName, call)
     }
-}*/
+}
