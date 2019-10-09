@@ -43,7 +43,7 @@ data class Swagger(
     val swagger: String = "3.0",
     val info: Information,
     val paths: Paths = mutableMapOf(),
-    val definitions: Definitions = mutableMapOf(),
+    //val definitions: Definitions = mutableMapOf(),
     val components: Components = Components(
         SecuritySchemes(
             BearerAuth(
@@ -55,7 +55,8 @@ data class Swagger(
 )
 
 data class Components(
-    val securitySchemes: SecuritySchemes
+    val securitySchemes: SecuritySchemes,
+    val schemas: Definitions = mutableMapOf()
 )
 
 data class SecuritySchemes(
@@ -148,7 +149,7 @@ private fun KClass<*>.bodyParameter() =
 
 class Response(httpStatusCode: HttpStatusCode, kClass: KClass<*>) {
     val description = if (kClass == Unit::class) httpStatusCode.description else kClass.responseDescription()
-    val schema = if (kClass == Unit::class) null else ModelReference("#/definitions/" + kClass.modelName())
+    val schema = if (kClass == Unit::class) null else ModelReference("#/components/schemas/" + kClass.modelName())
 }
 
 fun KClass<*>.responseDescription(): String = modelName()
@@ -212,7 +213,7 @@ private fun KClass<*>.toModelProperty(returnType: KType? = null): Property =
                 }
 
 private fun KClass<*>.referenceProperty(): Property =
-        Property(`$ref` = "#/definitions/" + modelName(),
+        Property(`$ref` = "#/components/schemas/" + modelName(),
                 description = modelName(),
                 type = null)
 
@@ -227,9 +228,9 @@ open class Property(
 
 fun addDefinition(kClass: KClass<*>) {
     if (kClass != Unit::class) {
-        if (!swagger.definitions.containsKey(kClass.modelName())) {
+        if (!swagger.components.schemas.containsKey(kClass.modelName())) {
             log.info { "Generating swagger spec for model ${kClass.modelName()}" }
-            swagger.definitions[kClass.modelName()] = ModelData(kClass)
+            swagger.components.schemas[kClass.modelName()] = ModelData(kClass)
         }
     }
 }
