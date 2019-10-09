@@ -8,7 +8,9 @@ import io.ktor.response.respond
 import io.ktor.routing.Routing
 import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
 import no.nav.meldeplikt.meldekortservice.config.Amelding
+import no.nav.meldeplikt.meldekortservice.model.Meldeform
 import no.nav.meldeplikt.meldekortservice.model.Meldekortdetaljer
+import no.nav.meldeplikt.meldekortservice.model.Meldeperiode
 import no.nav.meldeplikt.meldekortservice.utils.Error
 import no.nav.meldeplikt.meldekortservice.utils.ErrorMessage
 import no.nav.meldeplikt.meldekortservice.utils.swagger.*
@@ -22,6 +24,7 @@ fun Routing.personApi(httpClient: HttpClient) {
     getStatus()
     getMeldekort()
     kontrollerMeldekort()
+    endreMeldeform()
 }
 
 private const val personGroup = "Person"
@@ -95,4 +98,20 @@ fun Routing.kontrollerMeldekort() =
             val errorMessage = ErrorMessage("Meldekort ble ikke sendt inn. ${e.message}")
             call.respond(status = HttpStatusCode.ServiceUnavailable, message = errorMessage)
         }
+    }
+
+@Group(personGroup)
+@Location("$PERSON_PATH/meldeform")
+class EndreMeldeform
+
+fun Routing.endreMeldeform() =
+    post<EndreMeldeform, Meldeform>(
+        "Oppdater meldeform".securityAndReponds(
+            BearerTokenSecurity(),
+            ok<Meldeperiode>(),
+            serviceUnavailable<ErrorMessage>(),
+            unAuthorized<Error>()
+        )
+    ) {_, meldeform ->
+        call.respond(status=HttpStatusCode.OK,message = "Meldeform er ikke implementert")
     }

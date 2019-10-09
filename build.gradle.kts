@@ -41,8 +41,8 @@ plugins {
 
 buildscript {
     repositories {
-        // maven("https://repo.adeo.no/repository/maven-central/")
-        jcenter()
+         maven("https://repo.adeo.no/repository/maven-central/")
+       // jcenter()
     }
     dependencies {
         classpath("org.junit.platform:junit-platform-gradle-plugin:1.2.0")
@@ -56,11 +56,11 @@ buildscript {
 }
 
 repositories {
-    /*maven("https://repo.adeo.no/repository/maven-central/")
+    maven("https://repo.adeo.no/repository/maven-central/")
     maven("https://plugins.gradle.org/m2/")
     maven("https://dl.bintray.com/kotlin/ktor/")
-    maven("http://repo.spring.io/plugins-release/")*/
-    jcenter()
+    maven("http://repo.spring.io/plugins-release/")
+   // jcenter()
 }
 
 dependencies {
@@ -84,7 +84,7 @@ dependencies {
     api("io.ktor:ktor-auth-jwt:$ktorVersion")
     api("io.ktor:ktor-client-apache:$ktorVersion")
     api("io.ktor:ktor-client-json:$ktorVersion")
-    api("io.ktor:ktor-client-serialization-jvm:$ktorVersion")
+   // api("io.ktor:ktor-client-serialization-jvm:$ktorVersion")
     api("io.ktor:ktor-client-gson:$ktorVersion")
     api("io.ktor:ktor-locations:$ktorVersion")
     api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
