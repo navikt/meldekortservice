@@ -18,7 +18,13 @@ import no.nav.meldeplikt.meldekortservice.utils.PERSON_PATH
 import no.nav.meldeplikt.meldekortservice.utils.respondOrServiceUnavailable
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Group
 
-
+/**
+REST-controller for meldekort-api som tilbyr operasjoner for å hente:
+- Historiske meldekort
+- Personstatus
+- Meldekort
+I tillegg sende inn/kontrollere meldekort
+ */
 fun Routing.personApi(httpClient: HttpClient) {
     getHistoriskeMeldekort()
     getStatus()
@@ -33,6 +39,7 @@ private const val personGroup = "Person"
 @Location("$PERSON_PATH/historiskemeldekort")
 class GetHistoriskeMeldekort
 
+// Henter historiske meldekort
 fun Routing.getHistoriskeMeldekort() =
     get<GetHistoriskeMeldekort>(
         "Hent tidligerer/historiske meldekort".securityAndReponds(
@@ -45,6 +52,7 @@ fun Routing.getHistoriskeMeldekort() =
         }
     }
 
+// Henter personstatus (arenastatus)
 @Group(personGroup)
 @Location("$PERSON_PATH/status")
 class GetStatus
@@ -65,6 +73,7 @@ fun Routing.getStatus() =
 @Location("$PERSON_PATH/meldekort")
 class GetMeldekort
 
+// Henter meldekort
 fun Routing.getMeldekort() =
     get<GetMeldekort>(
         "Hent meldekort".securityAndReponds(
@@ -81,6 +90,7 @@ fun Routing.getMeldekort() =
 @Location("$PERSON_PATH/meldekort")
 class KontrollerMeldekort
 
+//Innsending/kontroll av meldekort (Amelding)
 fun Routing.kontrollerMeldekort() =
     post<KontrollerMeldekort, Meldekortdetaljer>(
         "Kontrollering/innsending av meldekort til Amelding".securityAndReponds(
@@ -104,6 +114,7 @@ fun Routing.kontrollerMeldekort() =
 @Location("$PERSON_PATH/meldeform")
 class EndreMeldeform
 
+// Endre meldeform
 fun Routing.endreMeldeform() =
     post<EndreMeldeform, Meldeform>(
         "Oppdater meldeform".securityAndReponds(

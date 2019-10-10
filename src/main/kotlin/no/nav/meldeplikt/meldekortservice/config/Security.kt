@@ -13,6 +13,7 @@ import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import java.net.URL
 import java.util.concurrent.TimeUnit
 
+// Funksjon for oppsett av OIDC autentisering (bearer token)
 fun JWTAuthenticationProvider.Configuration.setupOidcAuthentication(environment: Environment) {
     val jwkProvider = Security.initJwkProvider(environment.securityJwksUri)
     verifier(jwkProvider, environment.securityJwksIssuer)
@@ -21,7 +22,9 @@ fun JWTAuthenticationProvider.Configuration.setupOidcAuthentication(environment:
         return@validate Security.validationLogicPerRequest(credentials, environment)
     }
 }
+
 // TODO Sette opp token support lokalt
+// Henter ut ident fra token
 fun PipelineContext<Unit, ApplicationCall>.extractIdentFromLoginContext(): String =
     if (isCurrentlyRunningOnNais()) (call.authentication.principal as JWTPrincipal).payload.subject else "11111111111"
 

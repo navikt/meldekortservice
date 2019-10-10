@@ -4,7 +4,7 @@ import no.nils.wsdl2java.Wsdl2JavaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val prometheusVersion = "0.6.0"
-val ktorVersion = "1.2.2"
+val ktorVersion = "1.2.4"
 val junitVersion = "5.4.1"
 val confluentVersion = "5.2.0"
 val logstashVersion = "5.2"
@@ -42,9 +42,10 @@ plugins {
 buildscript {
     repositories {
         // maven("https://repo.adeo.no/repository/maven-central/")
-       jcenter()
+        jcenter()
     }
     dependencies {
+        classpath("com.github.jengelman.gradle.plugins:shadow:4.0.4")
         classpath("org.junit.platform:junit-platform-gradle-plugin:1.2.0")
         classpath("javax.xml.bind:jaxb-api:2.4.0-b180830.0359")
         classpath("org.glassfish.jaxb:jaxb-runtime:2.4.0-b180830.0438")
@@ -56,10 +57,10 @@ buildscript {
 }
 
 repositories {
-   /* maven("https://repo.adeo.no/repository/maven-central/")
+    /*maven("https://repo.adeo.no/repository/maven-central/")
     maven("https://plugins.gradle.org/m2/")
     maven("https://dl.bintray.com/kotlin/ktor/")
-    maven("http://repo.spring.io/plugins-release/") */
+    maven("http://repo.spring.io/plugins-release/")*/
     jcenter()
 }
 
@@ -84,7 +85,6 @@ dependencies {
     api("io.ktor:ktor-auth-jwt:$ktorVersion")
     api("io.ktor:ktor-client-apache:$ktorVersion")
     api("io.ktor:ktor-client-json:$ktorVersion")
-   // api("io.ktor:ktor-client-serialization-jvm:$ktorVersion")
     api("io.ktor:ktor-client-gson:$ktorVersion")
     api("io.ktor:ktor-locations:$ktorVersion")
     api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
