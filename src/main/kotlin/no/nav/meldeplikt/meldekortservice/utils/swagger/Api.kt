@@ -70,7 +70,7 @@ fun <LOCATION : Any, BODY_TYPE : Any> Metadata.applyOperations(
 ) {
     swagger.paths
         .getOrPut(location.path) { mutableMapOf() }[method.value.toLowerCase()] =
-        Operation(this, location, group, locationType, entityType)
+        Operation(this, location, group, locationType, entityType, method)
 }
 
 fun String.responds(vararg pairs: Pair<HttpStatusCode, KClass<*>>): Metadata =

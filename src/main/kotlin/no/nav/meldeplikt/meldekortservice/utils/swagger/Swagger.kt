@@ -2,6 +2,7 @@
 
 package no.nav.meldeplikt.meldekortservice.utils.swagger
 
+import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Location
@@ -44,7 +45,6 @@ data class Swagger(
     val swagger: String = "3.0",
     val info: Information,
     val paths: Paths = mutableMapOf(),
-    //val definitions: Definitions = mutableMapOf(),
     val components: Components = Components(
         SecuritySchemes(
             BearerAuth(
@@ -92,23 +92,13 @@ class Operation(
     location: Location,
     group: Group?,
     locationType: KClass<*>,
-    entityType: KClass<*>
+    entityType: KClass<*>,
+    method: HttpMethod
 ) {
     val tags = group?.toList()
     val summary = metadata.summary
-    val requestBody = mutableListOf<Parameter>().apply {
-        if (entityType != Unit::class) {
-            addDefinition(entityType)
-            add(entityType.bodyParameter())
-        }
-        addAll(locationType.memberProperties.map { it.toParameter(location.path) })
-        metadata.parameter?.let {
-            addAll(it.memberProperties.map { it.toParameter(location.path, ParameterInputType.query) })
-        }
-        metadata.headers?.let {
-            addAll(it.memberProperties.map { it.toParameter(location.path, ParameterInputType.header) })
-        }
-    }.firstOrNull() ?: emptyList<Parameter>()
+    val parameters = setParameterList(entityType, locationType, location, metadata, method)
+    val requestBody = setRequestBody(entityType, locationType, location, metadata, method)
 
     val responses: Map<HttpStatus, Response> = metadata.responses.map {
         val (status, kClass) = it
@@ -119,6 +109,46 @@ class Operation(
     val security = when (metadata.security) {
         is NoSecurity -> metadata.security.secSetting
         is BearerTokenSecurity -> metadata.security.secSetting
+    }
+}
+
+private fun setRequestBody(entityType: KClass<*>, locationType: KClass<*>, location: Location, metadata: Metadata, method: HttpMethod): Any? {
+    if (method.value == "POST" || method.value == "PUT") {
+        return mutableListOf<RequestBody>().apply {
+            if (entityType != Unit::class) {
+                addDefinition(entityType)
+                add(entityType.bodyRequest())
+            }
+            addAll(locationType.memberProperties.map { it.toRequestBody(location.path) })
+            metadata.parameter?.let {
+                addAll(it.memberProperties.map { it.toRequestBody(location.path, ParameterInputType.query) })
+            }
+            metadata.headers?.let {
+                addAll(it.memberProperties.map { it.toRequestBody(location.path, ParameterInputType.header) })
+            }
+        }.firstOrNull() ?: emptyList<RequestBody>()
+    } else {
+        return null
+    }
+}
+
+private fun setParameterList(entityType: KClass<*>, locationType: KClass<*>, location: Location, metadata: Metadata, method: HttpMethod): List<Parameter> {
+    if (method.value == "GET" || method.value == "DELETE" || method.value == "HEAD") {
+        return mutableListOf<Parameter>().apply {
+            if (entityType != Unit::class) {
+                addDefinition(entityType)
+                add(entityType.bodyParameter())
+            }
+            addAll(locationType.memberProperties.map { it.toParameter(location.path) })
+            metadata.parameter?.let {
+                addAll(it.memberProperties.map { it.toParameter(location.path, ParameterInputType.query) })
+            }
+            metadata.headers?.let {
+                addAll(it.memberProperties.map { it.toParameter(location.path, ParameterInputType.header) })
+            }
+        }
+    } else {
+        return emptyList()
     }
 }
 
@@ -135,18 +165,38 @@ fun <T, R> KProperty1<T, R>.toParameter(
                 ParameterInputType.query
 ): Parameter {
     return Parameter(
-            toModelProperty(),
-          //  name,
-          //  inputType,
-            required = !returnType.isMarkedNullable)
+        toModelProperty(),
+        name,
+        inputType,
+        required = !returnType.isMarkedNullable)
 }
 
 private fun KClass<*>.bodyParameter() =
-        Parameter(referenceProperty(),
-               //name = "body",
-                description = modelName()
-              //  `in` = ParameterInputType.body
-        )
+    Parameter(
+        referenceProperty(),
+        name = "body",
+        description = modelName(),
+        `in` = ParameterInputType.body
+    )
+
+fun <T, R> KProperty1<T, R>.toRequestBody(
+    path: String,
+    inputType: ParameterInputType =
+        if (path.contains("{$name}"))
+            ParameterInputType.path
+        else
+            ParameterInputType.query
+): RequestBody {
+    return RequestBody(
+        toModelProperty(),
+        required = !returnType.isMarkedNullable)
+}
+
+private fun KClass<*>.bodyRequest() =
+    RequestBody(
+        referenceProperty(),
+        description = modelName()
+    )
 
 class Response(httpStatusCode: HttpStatusCode, kClass: KClass<*>) {
     val description = if (kClass == Unit::class) httpStatusCode.description else kClass.responseDescription()
@@ -157,18 +207,24 @@ fun KClass<*>.responseDescription(): String = modelName()
 
 class ModelReference(val `$ref`: String)
 
-class Parameter(
+class RequestBody(
     property: Property,
-   /* val name: String,
-    val `in`: ParameterInputType,*/
     val description: String = property.description,
     val required: Boolean = true,
-   /* val type: String? = property.type,
+    val content: MutableMap<String, MutableMap<String,ModelReference>> = mutableMapOf("application/json" to mutableMapOf("schema" to ModelReference(property.`$ref`)))
+)
+
+class Parameter(
+    property: Property,
+    val name: String,
+    val `in`: ParameterInputType,
+    val description: String = property.description,
+    val required: Boolean = true,
+    val type: String? = property.type,
     val format: String? = property.format,
     val enum: List<String>? = property.enum,
-    val items: Property? = property.items,*/
-    //val schema: ModelReference? = ModelReference(property.`$ref`),
-    val content: MutableMap<String, MutableMap<String,ModelReference>> = mutableMapOf("application/json" to mutableMapOf("schema" to ModelReference(property.`$ref`)))
+    val items: Property? = property.items,
+    val schema: ModelReference? = ModelReference(property.`$ref`)
 )
 
 enum class ParameterInputType {
