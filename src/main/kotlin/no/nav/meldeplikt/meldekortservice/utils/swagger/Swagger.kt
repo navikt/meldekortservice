@@ -18,7 +18,7 @@ import mu.KotlinLogging
 import no.nav.meldeplikt.meldekortservice.config.swagger
 
 /**
- * @author Niels Falk, changed by Torstein Nesby and Yrjan Fraschetti
+ * @author Niels Falk, changed by Torstein Nesby, Yrjan Fraschetti and Almir Lisic
  */
 val log = KotlinLogging.logger { }
 
@@ -30,6 +30,7 @@ typealias Paths = MutableMap<Path, Methods>
 typealias MethodName = String
 typealias HttpStatus = String
 typealias Methods = MutableMap<MethodName, Operation>
+typealias Content = MutableMap<String, MutableMap<String,ModelReference?>>
 
 data class Key(
     val description: String,
@@ -95,7 +96,7 @@ class Operation(
 ) {
     val tags = group?.toList()
     val summary = metadata.summary
-    val parameters = mutableListOf<Parameter>().apply {
+    val requestBody = mutableListOf<Parameter>().apply {
         if (entityType != Unit::class) {
             addDefinition(entityType)
             add(entityType.bodyParameter())
@@ -107,7 +108,7 @@ class Operation(
         metadata.headers?.let {
             addAll(it.memberProperties.map { it.toParameter(location.path, ParameterInputType.header) })
         }
-    }
+    }.firstOrNull() ?: emptyList<Parameter>()
 
     val responses: Map<HttpStatus, Response> = metadata.responses.map {
         val (status, kClass) = it
@@ -135,16 +136,16 @@ fun <T, R> KProperty1<T, R>.toParameter(
 ): Parameter {
     return Parameter(
             toModelProperty(),
-            name,
-            inputType,
+          //  name,
+          //  inputType,
             required = !returnType.isMarkedNullable)
 }
 
 private fun KClass<*>.bodyParameter() =
         Parameter(referenceProperty(),
-                name = "body",
-                description = modelName(),
-                `in` = ParameterInputType.body
+               //name = "body",
+                description = modelName()
+              //  `in` = ParameterInputType.body
         )
 
 class Response(httpStatusCode: HttpStatusCode, kClass: KClass<*>) {
@@ -158,15 +159,16 @@ class ModelReference(val `$ref`: String)
 
 class Parameter(
     property: Property,
-    val name: String,
-    val `in`: ParameterInputType,
+   /* val name: String,
+    val `in`: ParameterInputType,*/
     val description: String = property.description,
     val required: Boolean = true,
-    val type: String? = property.type,
+   /* val type: String? = property.type,
     val format: String? = property.format,
     val enum: List<String>? = property.enum,
-    val items: Property? = property.items,
-    val schema: ModelReference? = ModelReference(property.`$ref`)
+    val items: Property? = property.items,*/
+    //val schema: ModelReference? = ModelReference(property.`$ref`),
+    val content: MutableMap<String, MutableMap<String,ModelReference>> = mutableMapOf("application/json" to mutableMapOf("schema" to ModelReference(property.`$ref`)))
 )
 
 enum class ParameterInputType {
