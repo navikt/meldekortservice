@@ -14,6 +14,13 @@ import io.ktor.routing.route
 import no.nav.meldeplikt.meldekortservice.config.Amelding
 import no.nav.meldeplikt.meldekortservice.model.Meldekortdetaljer
 
+/**
+REST-controller for meldekort-api som tilbyr operasjoner for å hente:
+ - Historiske meldekort
+ - Personstatus
+ - Meldekort
+ I tillegg sende inn/kontrollere meldekort
+ */
 fun Route.personApi(httpClient: HttpClient) {
 
     route("/person") {

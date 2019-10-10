@@ -11,6 +11,9 @@ import io.ktor.routing.Route
 import io.ktor.routing.get
 import io.ktor.routing.route
 
+/**
+REST-controller for meldekort-api som tilbyr operasjoner for å hente meldekortdetaljer og korrigering for en NAV-bruker.
+ */
 fun Route.meldekortApi(httpClient: HttpClient) {
 
     route("/meldekort") {
