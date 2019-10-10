@@ -9,29 +9,32 @@ import io.ktor.auth.jwt.JWTAuthenticationProvider
 import io.ktor.auth.jwt.JWTCredential
 import io.ktor.auth.jwt.JWTPrincipal
 import io.ktor.util.pipeline.PipelineContext
+import no.nav.meldeplikt.meldekortservice.config.ConfigUtil.isCurrentlyRunningOnNais
 import java.net.URL
 import java.util.concurrent.TimeUnit
 
+// Funksjon for oppsett av OIDC autentisering (bearer token)
 fun JWTAuthenticationProvider.Configuration.setupOidcAuthentication(environment: Environment) {
     val jwkProvider = Security.initJwkProvider(environment.securityJwksUri)
     verifier(jwkProvider, environment.securityJwksIssuer)
-    realm = "dittnav-event-handler"
+    realm = "meldekortservice"
     validate { credentials ->
         return@validate Security.validationLogicPerRequest(credentials, environment)
     }
 }
 
-fun PipelineContext<Unit, ApplicationCall>.extractIdentFromLoginContext() =
-    (call.authentication.principal as JWTPrincipal).payload.subject
+// TODO Sette opp token support lokalt
+// Henter ut ident fra token
+fun PipelineContext<Unit, ApplicationCall>.extractIdentFromLoginContext(): String =
+    if (isCurrentlyRunningOnNais()) (call.authentication.principal as JWTPrincipal).payload.subject else "11111111111"
 
 object Security {
 
     fun initJwkProvider(securityJwksUri: URL): JwkProvider {
-        val jwkProvider = JwkProviderBuilder(securityJwksUri)
+        return JwkProviderBuilder(securityJwksUri)
             .cached(10, 24, TimeUnit.HOURS)
             .rateLimited(10, 1, TimeUnit.MINUTES)
             .build()
-        return jwkProvider
     }
 
     fun validationLogicPerRequest(credentials: JWTCredential, environment: Environment): JWTPrincipal? {
@@ -43,5 +46,4 @@ object Security {
 
     private fun isCorrectAudienceSet(credentials: JWTCredential, environment: Environment) =
         credentials.payload.audience.contains(environment.securityAudience)
-
 }
