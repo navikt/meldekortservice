@@ -37,11 +37,11 @@ private const val personGroup = "Person"
 
 @Group(personGroup)
 @Location("$PERSON_PATH/historiskemeldekort")
-class GetHistoriskeMeldekort
+class HistoriskeMeldekortInput
 
 // Henter historiske meldekort
 fun Routing.getHistoriskeMeldekort() =
-    get<GetHistoriskeMeldekort>(
+    get<HistoriskeMeldekortInput>(
         "Hent tidligerer/historiske meldekort".securityAndReponds(
             BearerTokenSecurity(),
             ok<String>(),
@@ -55,10 +55,10 @@ fun Routing.getHistoriskeMeldekort() =
 // Henter personstatus (arenastatus)
 @Group(personGroup)
 @Location("$PERSON_PATH/status")
-class GetStatus
+class StatusInput
 
 fun Routing.getStatus() =
-    get<GetStatus>(
+    get<StatusInput>(
         "Hent personstatus".securityAndReponds(
             BearerTokenSecurity(),
             ok<String>(),
@@ -71,11 +71,11 @@ fun Routing.getStatus() =
 
 @Group(personGroup)
 @Location("$PERSON_PATH/meldekort")
-class GetMeldekort
+class MeldekortInput
 
 // Henter meldekort
 fun Routing.getMeldekort() =
-    get<GetMeldekort>(
+    get<MeldekortInput>(
         "Hent meldekort".securityAndReponds(
             BearerTokenSecurity(),
             ok<String>(),

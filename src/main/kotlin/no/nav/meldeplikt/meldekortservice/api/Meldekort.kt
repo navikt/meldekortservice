@@ -21,11 +21,11 @@ private const val meldekortGroup = "Meldekort"
 
 @Group(meldekortGroup)
 @Location("$MELDEKORT_PATH/{meldekortId}")
-data class GetMeldekortdetaljer(val meldekortId: Long)
+data class MeldekortdetaljerInput(val meldekortId: Long)
 
 // Hent meldekortdetaljer
 fun Routing.getMeldekortdetaljer() =
-    get<GetMeldekortdetaljer>(
+    get<MeldekortdetaljerInput>(
         "Hent meldekortdetaljer".securityAndReponds(
             BearerTokenSecurity(),
             ok<String>(),
@@ -38,11 +38,11 @@ fun Routing.getMeldekortdetaljer() =
 
 @Group(meldekortGroup)
 @Location("$MELDEKORT_PATH/{meldekortId}/korrigering")
-data class GetKorrigertMeldekort(val meldekortId: Long)
+data class KorrigertMeldekortInput(val meldekortId: Long)
 
 //Henter meldekortid for nytt (korrigert) kort
 fun Routing.getKorrigertMeldekort() =
-    get<GetKorrigertMeldekort>(
+    get<KorrigertMeldekortInput>(
         "Hent korrigert meldekortid".securityAndReponds(BearerTokenSecurity(), ok<String>(),
             serviceUnavailable<ErrorMessage>(), unAuthorized<Error>())) { meldekortid ->
         respondOrServiceUnavailable {
