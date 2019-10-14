@@ -1,10 +1,10 @@
 package no.nav.meldeplikt.meldekortservice.model
 
-import java.util.*
+import java.time.LocalDate
 
 data class Meldeperiode (
     val id: String?,
     val meldeperiodeNavn: String,
-    val fraDato: Date,
-    val tilDato: Date
+    val fraDato: LocalDate,
+    val tilDato: LocalDate
 )

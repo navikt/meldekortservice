@@ -93,7 +93,7 @@ class KontrollerMeldekort
 //Innsending/kontroll av meldekort (Amelding)
 fun Routing.kontrollerMeldekort() =
     post<KontrollerMeldekort, Meldekortdetaljer>(
-        "Kontrollering/innsending av meldekort til Amelding".securityAndReponds(
+        "Kontroll/innsending av meldekort til Amelding".securityAndReponds(
             BearerTokenSecurity(),
             ok<MeldekortKontrollertType>(),
             serviceUnavailable<ErrorMessage>(),

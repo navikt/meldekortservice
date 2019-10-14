@@ -31,7 +31,7 @@ fun Route.healthApi() {
 
         get("/ping") {
             val pingJsonResponse = """{"ping": "pong"}"""
-            call.respondText(pingJsonResponse, ContentType.Application.Json)
+            call.respondText(text = pingJsonResponse, contentType = ContentType.Application.Json)
         }
     }
 }
@@ -45,6 +45,10 @@ fun Routing.swaggerRoutes() {
     get("$INTERNAL_PATH/apidocs") { call.respondRedirect(SWAGGER_URL_V1) }
     get("$INTERNAL_PATH/apidocs/{fileName}") {
         val fileName = call.parameters["fileName"]
-        if (fileName == "swagger.json") call.respond(swagger) else swaggerUI.serve(fileName, call)
+        if (fileName == "swagger.json") {
+            call.respond(swagger)
+        } else {
+            swaggerUI.serve(fileName, call)
+        }
     }
 }
