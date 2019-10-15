@@ -90,6 +90,7 @@ dependencies {
     api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     api("io.ktor:ktor-jackson:$ktorVersion")
     api("no.nav.common:cxf:$navCommonVersion")
+    api("no.nav.common:cache:$navCommonVersion")
     api("io.github.microutils:kotlin-logging:$kotlinLoggerVersion")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")

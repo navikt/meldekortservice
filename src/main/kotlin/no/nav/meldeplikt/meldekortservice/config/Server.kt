@@ -16,6 +16,9 @@ import io.ktor.server.netty.Netty
 import io.ktor.server.netty.NettyApplicationEngine
 import io.ktor.util.KtorExperimentalAPI
 import io.prometheus.client.hotspot.DefaultExports
+import no.nav.cache.Cache
+import no.nav.cache.CacheConfig
+import no.nav.cache.CacheUtils
 import no.nav.meldeplikt.meldekortservice.api.*
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Contact
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Information
@@ -35,6 +38,11 @@ val swagger = Swagger(
         )
     )
 )
+
+private val cacheAntallMinutter = 60
+// Årsaken til å multiplisere med 2 er at cache-implementasjonen dividerer timeout-verdien med 2...
+private val cacheTimeout: Long = cacheAntallMinutter.toLong() * 60 * 1000 * 2
+val cache: Cache<String, String> = CacheUtils.buildCache(CacheConfig.DEFAULT.withTimeToLiveMillis(cacheTimeout))
 
 const val SWAGGER_URL_V1 = "/meldekortservice/internal/apidocs/index.html?url=swagger.json"
 
