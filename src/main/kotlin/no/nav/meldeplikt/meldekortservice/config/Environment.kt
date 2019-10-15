@@ -10,7 +10,10 @@ data class Environment(
     val securityJwksUri: URL = URL(getEnvVar("JWKS_URI", "https://dummyUrl.com")),
     val emeldingUrl: URL = URL(getEnvVar("EMELDING_URI", "https://dummyUrl.com/path")),
     val personinfoUsername: String = getEnvVar("PERSONINFO_SERVICE_USERNAME", "username"),
-    val personinfoPassword: String = getEnvVar("PERSONINFO_SERVICE_PASSWORD", "password")
+    val personinfoPassword: String = getEnvVar("PERSONINFO_SERVICE_PASSWORD", "password"),
+    val ordsUrl: URL = URL(getEnvVar("ORDS_URI", "https://dummyUrl.com")),
+    val ordsClientId: String = getEnvVar("CLIENT_ID", "cLiEnTiD"),
+    val ordsClientSecret: String = getEnvVar("CLIENT_SECRET", "cLiEnTsEcReT")
 )
 
 fun getEnvVar(varName: String, defaultValue: String? = null): String {

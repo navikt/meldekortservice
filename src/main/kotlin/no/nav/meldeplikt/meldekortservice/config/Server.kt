@@ -44,6 +44,8 @@ private val cacheAntallMinutter = 60
 private val cacheTimeout: Long = cacheAntallMinutter.toLong() * 60 * 1000 * 2
 val cache: Cache<String, String> = CacheUtils.buildCache(CacheConfig.DEFAULT.withTimeToLiveMillis(cacheTimeout))
 
+val client = HttpClient().client
+
 const val SWAGGER_URL_V1 = "/meldekortservice/internal/apidocs/index.html?url=swagger.json"
 
 object Server {
@@ -54,7 +56,6 @@ object Server {
     @KtorExperimentalAPI
     fun configure(environment: Environment): NettyApplicationEngine {
         DefaultExports.initialize()
-        val client = HttpClient().client
         val app = embeddedServer(Netty, port = portNumber) {
             install(DefaultHeaders)
 

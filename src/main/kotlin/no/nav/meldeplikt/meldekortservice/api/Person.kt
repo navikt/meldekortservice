@@ -11,6 +11,7 @@ import no.nav.meldeplikt.meldekortservice.config.Amelding
 import no.nav.meldeplikt.meldekortservice.model.Meldeform
 import no.nav.meldeplikt.meldekortservice.model.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.model.Meldeperiode
+import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
 import no.nav.meldeplikt.meldekortservice.utils.Error
 import no.nav.meldeplikt.meldekortservice.utils.ErrorMessage
 import no.nav.meldeplikt.meldekortservice.utils.swagger.*
@@ -48,6 +49,7 @@ fun Routing.getHistoriskeMeldekort() =
             serviceUnavailable<ErrorMessage>(),
             unAuthorized<Error>())) {
         respondOrServiceUnavailable {
+            println(ArenaOrdsService.hentToken())
             "Historiske meldekort er ikke implementert"
         }
     }

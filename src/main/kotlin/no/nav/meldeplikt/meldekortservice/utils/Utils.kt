@@ -15,6 +15,8 @@ internal const val INTERNAL_PATH = "$BASE_PATH/internal"
 internal const val MELDEKORT_PATH = "$API_PATH/meldekort"
 internal const val PERSON_PATH = "$API_PATH/person"
 
+internal const val ARENA_ORDS_TOKEN_PATH = "/meldeplikt/oauth/token"
+
 internal data class ErrorMessage(val error: String)
 
 internal class Error
