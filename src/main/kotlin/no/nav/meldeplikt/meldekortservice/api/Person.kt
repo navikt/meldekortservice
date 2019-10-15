@@ -86,13 +86,9 @@ fun Routing.getMeldekort() =
         }
     }
 
-@Group(personGroup)
-@Location("$PERSON_PATH/meldekort")
-class KontrollerMeldekort
-
 //Innsending/kontroll av meldekort (Amelding)
 fun Routing.kontrollerMeldekort() =
-    post<KontrollerMeldekort, Meldekortdetaljer>(
+    post<MeldekortInput, Meldekortdetaljer>(
         "Kontroll/innsending av meldekort til Amelding".securityAndReponds(
             BearerTokenSecurity(),
             ok<MeldekortKontrollertType>(),
@@ -112,11 +108,11 @@ fun Routing.kontrollerMeldekort() =
 
 @Group(personGroup)
 @Location("$PERSON_PATH/meldeform")
-class EndreMeldeform
+class MeldeformInput
 
 // Endre meldeform
 fun Routing.endreMeldeform() =
-    post<EndreMeldeform, Meldeform>(
+    post<MeldeformInput, Meldeform>(
         "Oppdater meldeform".securityAndReponds(
             BearerTokenSecurity(),
             ok<Meldeperiode>(),
