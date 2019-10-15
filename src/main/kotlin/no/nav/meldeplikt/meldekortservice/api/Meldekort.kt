@@ -1,49 +1,51 @@
 package no.nav.meldeplikt.meldekortservice.api
 
-import io.ktor.application.ApplicationCallPipeline
-import io.ktor.application.call
 import io.ktor.client.HttpClient
-import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
-import io.ktor.response.respond
-import io.ktor.response.respondText
-import io.ktor.routing.Route
-import io.ktor.routing.get
-import io.ktor.routing.route
+import io.ktor.locations.Location
+import io.ktor.routing.Routing
+import no.nav.meldeplikt.meldekortservice.utils.swagger.*
+import no.nav.meldeplikt.meldekortservice.utils.Error
+import no.nav.meldeplikt.meldekortservice.utils.ErrorMessage
+import no.nav.meldeplikt.meldekortservice.utils.MELDEKORT_PATH
+import no.nav.meldeplikt.meldekortservice.utils.respondOrServiceUnavailable
 
 /**
 REST-controller for meldekort-api som tilbyr operasjoner for å hente meldekortdetaljer og korrigering for en NAV-bruker.
  */
-fun Route.meldekortApi(httpClient: HttpClient) {
+fun Routing.meldekortApi(httpClient: HttpClient) {
+    getMeldekortdetaljer()
+    getKorrigertMeldekort()
+}
 
-    route("/meldekort") {
+private const val meldekortGroup = "Meldekort"
 
-        //Intercepter request for å sjekke at id-parameteret er satt riktig
-        intercept(ApplicationCallPipeline.Setup) {
-            try {
-                call.parameters["id"]!!.toLongOrNull() ?: throw IllegalArgumentException("Fant ikke id eller id var ikke et nummer")
-            } catch (e: Exception) {
-                call.respond(HttpStatusCode.BadRequest, e.message ?: "")
-                return@intercept finish()
-            }
-        }
+@Group(meldekortGroup)
+@Location("$MELDEKORT_PATH/{meldekortId}")
+data class MeldekortdetaljerInput(val meldekortId: Long)
 
-        // Hent meldekortdetaljer
-        get("/{id}") {
-            val id = call.parameters["id"]!!.toLong()
-            call.respondText(
-                text = "Hent meldekortdetaljer er ikke implementert, men id var: $id",
-                contentType = ContentType.Text.Plain
-            )
-        }
-
-        //Henter meldekortid for nytt (korrigert) kort
-        get("/{id}/korrigering") {
-            val id = call.parameters["id"]!!.toLong()
-            call.respondText(
-                text = "Hent korrigert id er ikke implementert, men id var: $id",
-                contentType = ContentType.Text.Plain
-            )
+// Hent meldekortdetaljer
+fun Routing.getMeldekortdetaljer() =
+    get<MeldekortdetaljerInput>(
+        "Hent meldekortdetaljer".securityAndReponds(
+            BearerTokenSecurity(),
+            ok<String>(),
+            serviceUnavailable<ErrorMessage>(),
+            unAuthorized<Error>())) {
+            meldekortid -> respondOrServiceUnavailable {
+            "Hent meldekortdetaljer er ikke implementert, men id var: ${meldekortid.meldekortId}"
         }
     }
-}
+
+@Group(meldekortGroup)
+@Location("$MELDEKORT_PATH/{meldekortId}/korrigering")
+data class KorrigertMeldekortInput(val meldekortId: Long)
+
+//Henter meldekortid for nytt (korrigert) kort
+fun Routing.getKorrigertMeldekort() =
+    get<KorrigertMeldekortInput>(
+        "Hent korrigert meldekortid".securityAndReponds(BearerTokenSecurity(), ok<String>(),
+            serviceUnavailable<ErrorMessage>(), unAuthorized<Error>())) { meldekortid ->
+        respondOrServiceUnavailable {
+            "Hent korrigert id er ikke implementert, men id var: ${meldekortid.meldekortId}"
+        }
+    }

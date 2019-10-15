@@ -9,7 +9,7 @@ import io.ktor.auth.jwt.JWTAuthenticationProvider
 import io.ktor.auth.jwt.JWTCredential
 import io.ktor.auth.jwt.JWTPrincipal
 import io.ktor.util.pipeline.PipelineContext
-import no.nav.meldeplikt.meldekortservice.config.ConfigUtil.isCurrentlyRunningOnNais
+import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import java.net.URL
 import java.util.concurrent.TimeUnit
 

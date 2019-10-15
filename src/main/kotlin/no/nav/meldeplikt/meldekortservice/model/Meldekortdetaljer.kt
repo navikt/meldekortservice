@@ -3,6 +3,8 @@ package no.nav.meldeplikt.meldekortservice.model
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import io.ktor.locations.KtorExperimentalLocationsAPI
+import io.ktor.locations.Location
 import no.nav.meldeplikt.meldekortservice.model.enum.KortType
 import no.nav.meldeplikt.meldekortservice.utils.LocalDateDeserializer
 import no.nav.meldeplikt.meldekortservice.utils.LocalDateSerializer
