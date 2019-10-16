@@ -1,7 +1,7 @@
 package no.nav.meldeplikt.meldekortservice.model
 
 data class OrdsToken(
-    val accessToken: String?,
-    val tokenType: String?,
-    val expiresIn: Int?
+    val access_token: String?,
+    val token_type: String?,
+    val expires_in: Int?
 )

@@ -4,8 +4,6 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.client.request.post
-import io.ktor.util.InternalAPI
-import io.ktor.util.encodeBase64
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.config.cache
@@ -41,7 +39,7 @@ object ArenaOrdsService {
             }
         } else {
             println("Henter ikke token da appen kjører lokalt")
-            token = token.copy(accessToken = "token")
+            token = token.copy(access_token = "token")
         }
 
         return token
