@@ -19,8 +19,9 @@ object ArenaOrdsService {
     private val env = Environment()
 
     fun hentMeldekort(fnr: String): Person {
-        val person: Person = runBlocking {
-            client.get<Person>("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORT$fnr") {
+        lateinit var person: Person
+        runBlocking {
+            person = client.get<Person>("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORT$fnr") {
                 setupOrdsRequest()
             }
         }
