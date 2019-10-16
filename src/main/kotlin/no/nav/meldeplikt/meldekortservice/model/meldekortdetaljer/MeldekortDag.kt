@@ -1,4 +1,4 @@
-package no.nav.meldeplikt.meldekortservice.model
+package no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer
 
 import com.fasterxml.jackson.annotation.JsonInclude
 

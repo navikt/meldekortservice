@@ -1,4 +1,4 @@
-package no.nav.meldeplikt.meldekortservice.model
+package no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer
 
 data class Sporsmal @JvmOverloads constructor (
     val arbeidssoker: Boolean? = null,

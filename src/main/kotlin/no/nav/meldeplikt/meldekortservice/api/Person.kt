@@ -9,7 +9,7 @@ import io.ktor.routing.Routing
 import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
 import no.nav.meldeplikt.meldekortservice.config.Amelding
 import no.nav.meldeplikt.meldekortservice.model.Meldeform
-import no.nav.meldeplikt.meldekortservice.model.Meldekortdetaljer
+import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.model.Meldeperiode
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
 import no.nav.meldeplikt.meldekortservice.utils.Error

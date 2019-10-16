@@ -16,6 +16,7 @@ internal const val MELDEKORT_PATH = "$API_PATH/meldekort"
 internal const val PERSON_PATH = "$API_PATH/person"
 
 internal const val ARENA_ORDS_TOKEN_PATH = "/meldeplikt/oauth/token"
+internal const val ARENA_ORDS_HENT_MELDEKORT = "/meldeplikt/v1/meldekort/hent_meldekort/"
 
 internal data class ErrorMessage(val error: String)
 

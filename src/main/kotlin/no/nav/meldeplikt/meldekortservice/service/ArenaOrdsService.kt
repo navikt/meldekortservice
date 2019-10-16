@@ -9,6 +9,7 @@ import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.config.cache
 import no.nav.meldeplikt.meldekortservice.config.client
 import no.nav.meldeplikt.meldekortservice.model.OrdsToken
+import no.nav.meldeplikt.meldekortservice.utils.ARENA_ORDS_HENT_MELDEKORT
 import no.nav.meldeplikt.meldekortservice.utils.ARENA_ORDS_TOKEN_PATH
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import java.util.*
@@ -17,13 +18,15 @@ object ArenaOrdsService {
 
     val env = Environment()
 
-    suspend fun hentMeldekort(httpClient: HttpClient) {
-        httpClient.get<String>("") {
-            setupOrdsRequest()
+    fun hentMeldekort(fnr: String) {
+        runBlocking {
+            client.get<String>("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORT$fnr") {
+                setupOrdsRequest()
+            }
         }
     }
 
-    fun hentToken(): OrdsToken? {
+    fun hentToken(): OrdsToken {
         return cache.get("ordsToken", this::hentOrdsToken)
     }
 
@@ -39,7 +42,7 @@ object ArenaOrdsService {
             }
         } else {
             println("Henter ikke token da appen kjører lokalt")
-            token = token.copy(access_token = "token")
+            token = token.copy(accessToken = "token")
         }
 
         return token
@@ -47,7 +50,7 @@ object ArenaOrdsService {
 
     private fun HttpRequestBuilder.setupOrdsRequest() {
         headers.append("Accept", "application/xml")
-        headers.append("Authorization","Bearer ${hentToken()}")
+        headers.append("Authorization","Bearer ${hentToken().accessToken}")
     }
 
     private fun HttpRequestBuilder.setupTokenRequest() {
