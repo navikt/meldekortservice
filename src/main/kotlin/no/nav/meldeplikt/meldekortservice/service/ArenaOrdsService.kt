@@ -3,15 +3,14 @@ package no.nav.meldeplikt.meldekortservice.service
 import io.ktor.client.HttpClient
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
-import io.ktor.util.InternalAPI
-import io.ktor.util.encodeBase64
+import io.ktor.client.request.post
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.config.cache
 import no.nav.meldeplikt.meldekortservice.config.client
+import no.nav.meldeplikt.meldekortservice.model.OrdsToken
 import no.nav.meldeplikt.meldekortservice.utils.ARENA_ORDS_TOKEN_PATH
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
-import java.util.*
 
 object ArenaOrdsService {
 
@@ -23,23 +22,23 @@ object ArenaOrdsService {
         }
     }
 
-    fun hentToken(): String {
+    fun hentToken(): OrdsToken? {
         return cache.get("ordsToken", this::hentOrdsToken)
     }
 
-    private fun hentOrdsToken(): String {
+    private fun hentOrdsToken(): OrdsToken {
         println("Cache timet ut. Henter token")
-        var token = ""
+        var token = OrdsToken("", "", 0)
 
         if (isCurrentlyRunningOnNais()) {
             runBlocking {
-                token = client.get("${env.ordsUrl}$ARENA_ORDS_TOKEN_PATH") {
+                token = client.post("${env.ordsUrl}$ARENA_ORDS_TOKEN_PATH") {
                     setupTokenRequest()
                 }
             }
         } else {
             println("Henter ikke token da appen kjører lokalt")
-            token = "token"
+            token = token.copy(accessToken = "token")
         }
 
         return token
@@ -51,7 +50,8 @@ object ArenaOrdsService {
     }
 
     private fun HttpRequestBuilder.setupTokenRequest() {
-        val base = "${env.ordsClientId}:${env.ordsClientSecret}"
-        headers.append("Authorization", "Basic ${Base64.getEncoder().encodeToString(base.toByteArray())}")
+        headers.append("client_id", env.ordsClientId)
+        headers.append("client_scret", env.ordsClientSecret)
+        headers.append("grant_type", "client_credentials")
     }
 }
