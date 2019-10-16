@@ -16,7 +16,7 @@ data class Person (
     @SerializedName("MeldekortListe")
     val meldekortListe: List<Meldekort>,
     @SerializedName("AntallGjenstaaendeFeriedager")
-    val antallGjenstaaendeFeriedager: Int,
+    val antallGjenstaaendeFeriedager: Int = 0,
     @SerializedName("FravaerListe")
-    val fravaerListe: List<FravaerType>
+    val fravaerListe: List<FravaerType>?
 )
