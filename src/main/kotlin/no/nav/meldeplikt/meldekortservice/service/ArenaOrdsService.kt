@@ -54,6 +54,6 @@ object ArenaOrdsService {
 
     private fun HttpRequestBuilder.setupTokenRequest() {
         val base = "${env.ordsClientId}:${env.ordsClientSecret}"
-        headers.append("Authorization", "Basic ${Base64.getEncoder().encode(base.toByteArray())}")
+        headers.append("Authorization", "Basic ${Base64.getEncoder().encodeToString(base.toByteArray())}")
     }
 }
