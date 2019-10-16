@@ -35,7 +35,7 @@ object ArenaOrdsService {
 
         if (isCurrentlyRunningOnNais()) {
             runBlocking {
-                token = client.post("${env.ordsUrl}$ARENA_ORDS_TOKEN_PATH") {
+                token = client.post("${env.ordsUrl}$ARENA_ORDS_TOKEN_PATH?grant_type=client_credentials") {
                     setupTokenRequest()
                 }
             }
@@ -49,7 +49,7 @@ object ArenaOrdsService {
 
     private fun HttpRequestBuilder.setupOrdsRequest() {
         headers.append("Accept", "application/xml")
-        headers.append("Authorization","Bearer ${hentToken()}?grant_type=client_credentials")
+        headers.append("Authorization","Bearer ${hentToken()}")
     }
 
     private fun HttpRequestBuilder.setupTokenRequest() {
