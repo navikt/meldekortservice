@@ -8,9 +8,11 @@ import io.ktor.response.respond
 import io.ktor.routing.Routing
 import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
 import no.nav.meldeplikt.meldekortservice.config.Amelding
+import no.nav.meldeplikt.meldekortservice.config.extractIdentFromLoginContext
 import no.nav.meldeplikt.meldekortservice.model.Meldeform
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.model.Meldeperiode
+import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
 import no.nav.meldeplikt.meldekortservice.utils.Error
 import no.nav.meldeplikt.meldekortservice.utils.ErrorMessage
@@ -80,11 +82,12 @@ fun Routing.getMeldekort() =
     get<MeldekortInput>(
         "Hent meldekort".securityAndReponds(
             BearerTokenSecurity(),
-            ok<String>(),
+            ok<Person>(),
             serviceUnavailable<ErrorMessage>(),
             unAuthorized<Error>())) {
         respondOrServiceUnavailable {
-            "Meldekort er ikke implementert"
+            println("Fnr: ${extractIdentFromLoginContext()}")
+            ArenaOrdsService.hentMeldekort(extractIdentFromLoginContext())
         }
     }
 

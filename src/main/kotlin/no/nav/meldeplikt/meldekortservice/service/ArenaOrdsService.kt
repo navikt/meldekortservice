@@ -1,6 +1,5 @@
 package no.nav.meldeplikt.meldekortservice.service
 
-import io.ktor.client.HttpClient
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.client.request.post
@@ -9,6 +8,7 @@ import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.config.cache
 import no.nav.meldeplikt.meldekortservice.config.client
 import no.nav.meldeplikt.meldekortservice.model.OrdsToken
+import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.utils.ARENA_ORDS_HENT_MELDEKORT
 import no.nav.meldeplikt.meldekortservice.utils.ARENA_ORDS_TOKEN_PATH
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
@@ -16,11 +16,11 @@ import java.util.*
 
 object ArenaOrdsService {
 
-    val env = Environment()
+    private val env = Environment()
 
-    fun hentMeldekort(fnr: String) {
-        runBlocking {
-            client.get<String>("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORT$fnr") {
+    fun hentMeldekort(fnr: String): Person {
+        return runBlocking {
+            client.get<Person>("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORT$fnr") {
                 setupOrdsRequest()
             }
         }
