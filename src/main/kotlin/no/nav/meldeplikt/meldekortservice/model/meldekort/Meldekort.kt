@@ -28,7 +28,7 @@ data class Meldekort (
     val beregningstatus: String,
     @JsonProperty("Forskudd")
     val forskudd: Boolean,
-    @JsonProperty("MottatDato")
+    @JsonProperty("MottattDato")
     @JsonSerialize(using = LocalDateSerializer::class)
     @JsonDeserialize(using = LocalDateDeserializer::class)
     val mottattDato: LocalDate?,
