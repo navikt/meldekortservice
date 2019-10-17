@@ -31,7 +31,7 @@ internal class Error
 internal suspend fun PipelineContext<Unit, ApplicationCall>.respondOrServiceUnavailable(block: () -> Any) =
     try {
         val res = block()
-        call.respond(res)
+        call.respond(HttpStatusCode.OK, res)
     } catch (e: Exception) {
         application.environment.log.error("Feil i meldekortservice", e)
         val eMsg = when (e) {
