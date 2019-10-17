@@ -8,6 +8,11 @@ import no.nav.meldeplikt.meldekortservice.utils.objectMapper
 
 class HttpClient {
     val client: HttpClient = HttpClient(Apache) {
+        engine {
+            response.apply {
+                charset(Charsets.UTF_8.displayName())
+            }
+        }
         install(JsonFeature) {
             serializer = JacksonSerializer() { objectMapper }
         }

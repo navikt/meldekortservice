@@ -1,5 +1,6 @@
 package no.nav.meldeplikt.meldekortservice.utils
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
@@ -11,6 +12,7 @@ import io.ktor.application.application
 import io.ktor.application.call
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
+import io.ktor.response.respondText
 import io.ktor.util.pipeline.PipelineContext
 import mu.KotlinLogging
 
@@ -34,7 +36,7 @@ internal class Error
 internal suspend fun PipelineContext<Unit, ApplicationCall>.respondOrServiceUnavailable(block: () -> Any) =
     try {
         val res = block()
-        call.respond(res)
+        call.respond(HttpStatusCode.OK, res)
     } catch (e: Exception) {
         log.error(e) { "Feil i meldekortservice" }
         val eMsg = when (e) {
@@ -52,5 +54,7 @@ val objectMapper: ObjectMapper = ObjectMapper()
     .registerKotlinModule()
     .registerModule(JavaTimeModule())
     .registerModule(ParameterNamesModule())
-    .configure(SerializationFeature.INDENT_OUTPUT, true)
+    .enable(SerializationFeature.INDENT_OUTPUT)
+    .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+    .setSerializationInclusion(JsonInclude.Include.NON_NULL)
     .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)

@@ -18,9 +18,9 @@ object ArenaOrdsService {
 
     private val env = Environment()
 
-    fun hentMeldekort(fnr: String): Any {
+    fun hentMeldekort(fnr: String): String {
         return runBlocking {
-            client.get<Any>("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORT$fnr") {
+            client.get<String>("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORT$fnr") {
                 setupOrdsRequest()
             }
         }
