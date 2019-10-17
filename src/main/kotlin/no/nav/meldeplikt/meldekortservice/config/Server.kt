@@ -25,6 +25,7 @@ import no.nav.meldeplikt.meldekortservice.utils.swagger.Contact
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Information
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Swagger
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
+import no.nav.meldeplikt.meldekortservice.utils.objectMapper
 import java.util.concurrent.TimeUnit
 
 val swagger = Swagger(
@@ -61,12 +62,7 @@ object Server {
             install(DefaultHeaders)
 
             install(ContentNegotiation) {
-                jackson {
-                    registerModule(KotlinModule())
-                    enable(SerializationFeature.INDENT_OUTPUT)
-                    disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-                    setSerializationInclusion(JsonInclude.Include.NON_NULL)
-                }
+                jackson { objectMapper }
             }
 
             install(Authentication) {
@@ -78,8 +74,6 @@ object Server {
             install(Locations)
 
             install(Routing) {
-
-
                 healthApi()
                 swaggerRoutes()
                 meldekortApi(client)

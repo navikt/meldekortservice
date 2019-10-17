@@ -1,5 +1,6 @@
 package no.nav.meldeplikt.meldekortservice.utils
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
@@ -49,5 +50,7 @@ val objectMapper: ObjectMapper = ObjectMapper()
     .registerKotlinModule()
     .registerModule(JavaTimeModule())
     .registerModule(ParameterNamesModule())
-    .configure(SerializationFeature.INDENT_OUTPUT, true)
+    .enable(SerializationFeature.INDENT_OUTPUT)
+    .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+    .setSerializationInclusion(JsonInclude.Include.NON_NULL)
     .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
