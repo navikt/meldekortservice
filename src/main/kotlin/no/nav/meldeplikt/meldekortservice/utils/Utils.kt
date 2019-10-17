@@ -12,6 +12,7 @@ import io.ktor.application.application
 import io.ktor.application.call
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
+import io.ktor.response.respondText
 import io.ktor.util.pipeline.PipelineContext
 
 internal const val BASE_PATH = "/meldekortservice"

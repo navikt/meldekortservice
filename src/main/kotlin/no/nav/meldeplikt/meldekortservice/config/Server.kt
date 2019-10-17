@@ -9,6 +9,7 @@ import io.ktor.auth.jwt.jwt
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.DefaultHeaders
 import io.ktor.jackson.jackson
+import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Locations
 import io.ktor.routing.Routing
 import io.ktor.server.engine.embeddedServer
@@ -55,6 +56,7 @@ object Server {
     private const val portNumber = 8090
     private const val basePath = "/meldekortservice"
 
+    @KtorExperimentalLocationsAPI
     @KtorExperimentalAPI
     fun configure(environment: Environment): NettyApplicationEngine {
         DefaultExports.initialize()
