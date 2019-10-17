@@ -87,7 +87,7 @@ fun Routing.getMeldekort() =
             unAuthorized<Error>())) {
         respondOrServiceUnavailable {
             println("Fnr: ${extractIdentFromLoginContext()}")
-            val person: Person = ArenaOrdsService.hentMeldekort(extractIdentFromLoginContext())
+            val person: Any = ArenaOrdsService.hentMeldekort(extractIdentFromLoginContext())
             println(person)
             person
         }

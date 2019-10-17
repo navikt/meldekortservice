@@ -21,5 +21,7 @@ data class Meldekort (
     @SerializedName("Forskudd")
     val forskudd: Boolean,
     @SerializedName("MottatDato")
-    val mottattDato: LocalDate?
+    val mottattDato: LocalDate?,
+    @SerializedName("BruttoBelop")
+    val bruttoBelop: String
 )
