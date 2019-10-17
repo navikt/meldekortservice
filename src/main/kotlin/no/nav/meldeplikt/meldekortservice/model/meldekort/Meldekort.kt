@@ -33,5 +33,5 @@ data class Meldekort (
     @JsonDeserialize(using = LocalDateDeserializer::class)
     val mottattDato: LocalDate?,
     @JsonProperty("BruttoBelop")
-    val bruttoBelop: String
+    val bruttoBelop: String?
 )
