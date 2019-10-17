@@ -89,6 +89,7 @@ dependencies {
     api("io.ktor:ktor-locations:$ktorVersion")
     api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     api("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonVersion")
+    api("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion")
     api("io.ktor:ktor-jackson:$ktorVersion")
     api("no.nav.common:cxf:$navCommonVersion")
     api("no.nav.common:cache:$navCommonVersion")

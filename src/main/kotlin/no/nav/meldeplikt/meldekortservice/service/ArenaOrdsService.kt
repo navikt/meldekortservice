@@ -1,5 +1,6 @@
 package no.nav.meldeplikt.meldekortservice.service
 
+import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.client.request.post
@@ -18,12 +19,14 @@ object ArenaOrdsService {
 
     private val env = Environment()
 
-    fun hentMeldekort(fnr: String): String {
-        return runBlocking {
+    fun hentMeldekort(fnr: String): Person {
+        val person = runBlocking {
             client.get<String>("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORT$fnr") {
                 setupOrdsRequest()
             }
         }
+        val personMapper = XmlMapper()
+        return personMapper.readValue(person, Person::class.java)
     }
 
     fun hentToken(): OrdsToken {
