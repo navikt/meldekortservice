@@ -12,6 +12,9 @@ import io.ktor.application.call
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
 import io.ktor.util.pipeline.PipelineContext
+import mu.KotlinLogging
+
+private val log = KotlinLogging.logger { }
 
 internal const val BASE_PATH = "/meldekortservice"
 
@@ -33,7 +36,7 @@ internal suspend fun PipelineContext<Unit, ApplicationCall>.respondOrServiceUnav
         val res = block()
         call.respond(res)
     } catch (e: Exception) {
-        application.environment.log.error("Feil i meldekortservice", e)
+        log.error(e) { "Feil i meldekortservice" }
         val eMsg = when (e) {
             is java.util.concurrent.TimeoutException -> "Arena ikke tilgjengelig"
             else -> if (e.localizedMessage != null) e.localizedMessage else "exception occurred"
