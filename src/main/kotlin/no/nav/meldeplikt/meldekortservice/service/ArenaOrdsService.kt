@@ -20,7 +20,7 @@ object ArenaOrdsService {
 
     fun hentMeldekort(fnr: String): Any {
         return runBlocking {
-            client.get<Person>("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORT$fnr") {
+            client.get<Any>("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORT$fnr") {
                 setupOrdsRequest()
             }
         }
