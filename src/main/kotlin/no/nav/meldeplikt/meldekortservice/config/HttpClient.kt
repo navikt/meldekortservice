@@ -9,7 +9,7 @@ import no.nav.meldeplikt.meldekortservice.utils.objectMapper
 class HttpClient {
     val client: HttpClient = HttpClient(Apache) {
         install(JsonFeature) {
-            serializer = JacksonSerializer() {objectMapper}
+            serializer = JacksonSerializer() { objectMapper }
         }
     }
 }

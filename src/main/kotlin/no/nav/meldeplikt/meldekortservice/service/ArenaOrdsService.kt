@@ -49,7 +49,7 @@ object ArenaOrdsService {
     }
 
     private fun HttpRequestBuilder.setupOrdsRequest() {
-        headers.append("Accept", "application/xml")
+        headers.append("Accept", "application/xml; charset=UTF-8")
         headers.append("Authorization","Bearer ${hentToken().accessToken}")
     }
 
