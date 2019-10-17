@@ -1,27 +1,27 @@
 package no.nav.meldeplikt.meldekortservice.model.meldekort
 
-import com.google.gson.annotations.SerializedName
+import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDate
 
 data class Meldekort (
-    @SerializedName("MeldekortId")
+    @JsonProperty("MeldekortId")
     val meldekortId: Long,
-    @SerializedName("KortType")
+    @JsonProperty("KortType")
     val kortType: String,
-    @SerializedName("Meldeperiode")
+    @JsonProperty("Meldeperiode")
     val meldeperiode: String,
-    @SerializedName("FraDato")
+    @JsonProperty("FraDato")
     val fraDato: LocalDate,
-    @SerializedName("TilDato")
+    @JsonProperty("TilDato")
     val tilDato: LocalDate,
-    @SerializedName("HoyesteMeldegruppe")
+    @JsonProperty("HoyesteMeldegruppe")
     val hoyesteMeldegruppe: String,
-    @SerializedName("Beregningstatus")
+    @JsonProperty("Beregningstatus")
     val beregningstatus: String,
-    @SerializedName("Forskudd")
+    @JsonProperty("Forskudd")
     val forskudd: Boolean,
-    @SerializedName("MottatDato")
+    @JsonProperty("MottatDato")
     val mottattDato: LocalDate?,
-    @SerializedName("BruttoBelop")
+    @JsonProperty("BruttoBelop")
     val bruttoBelop: String
 )

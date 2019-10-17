@@ -1,22 +1,22 @@
 package no.nav.meldeplikt.meldekortservice.model.meldekort
 
-import com.google.gson.annotations.SerializedName
+import com.fasterxml.jackson.annotation.JsonProperty
 
 data class Person (
-    @SerializedName("PersonId")
+    @JsonProperty("PersonId")
     val personId: Long,
-    @SerializedName("Etternavn")
+    @JsonProperty("Etternavn")
     val etternavn: String,
-    @SerializedName("Fornavn")
+    @JsonProperty("Fornavn")
     val fornavn: String,
-    @SerializedName("Maalformkode")
+    @JsonProperty("Maalformkode")
     val maalformkode: String,
-    @SerializedName("Meldeform")
+    @JsonProperty("Meldeform")
     val meldeform: String,
-    @SerializedName("MeldekortListe")
+    @JsonProperty("MeldekortListe")
     val meldekortListe: List<Meldekort>,
-    @SerializedName("AntallGjenstaaendeFeriedager")
+    @JsonProperty("AntallGjenstaaendeFeriedager")
     val antallGjenstaaendeFeriedager: Int? = 0,
-    @SerializedName("FravaerListe")
+    @JsonProperty("FravaerListe")
     val fravaerListe: List<FravaerType>? = null
 )

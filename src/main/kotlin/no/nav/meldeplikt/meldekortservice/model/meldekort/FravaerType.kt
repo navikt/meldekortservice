@@ -1,13 +1,13 @@
 package no.nav.meldeplikt.meldekortservice.model.meldekort
 
-import com.google.gson.annotations.SerializedName
+import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDate
 
 data class FravaerType (
-    @SerializedName("FraDato")
+    @JsonProperty("FraDato")
     val fraDato: LocalDate,
-    @SerializedName("TilDato")
+    @JsonProperty("TilDato")
     val tilDato: LocalDate,
-    @SerializedName("Type")
+    @JsonProperty("Type")
     val type: String
 )

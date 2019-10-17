@@ -1,5 +1,11 @@
 package no.nav.meldeplikt.meldekortservice.utils
 
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
 import io.ktor.application.ApplicationCall
 import io.ktor.application.application
 import io.ktor.application.call
@@ -38,3 +44,10 @@ internal suspend fun PipelineContext<Unit, ApplicationCall>.respondOrServiceUnav
 fun isCurrentlyRunningOnNais(): Boolean {
     return System.getenv("NAIS_APP_NAME") != null
 }
+
+val objectMapper: ObjectMapper = ObjectMapper()
+    .registerKotlinModule()
+    .registerModule(JavaTimeModule())
+    .registerModule(ParameterNamesModule())
+    .configure(SerializationFeature.INDENT_OUTPUT, true)
+    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)

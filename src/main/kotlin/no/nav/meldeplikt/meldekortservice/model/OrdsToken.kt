@@ -1,12 +1,12 @@
 package no.nav.meldeplikt.meldekortservice.model
 
-import com.google.gson.annotations.SerializedName
+import com.fasterxml.jackson.annotation.JsonProperty
 
 data class OrdsToken(
-    @SerializedName("access_token")
+    @JsonProperty("access_token")
     val accessToken: String?,
-    @SerializedName("token_type")
+    @JsonProperty("token_type")
     val tokenType: String?,
-    @SerializedName("expires_in")
+    @JsonProperty("expires_in")
     val expiresIn: Int?
 )
