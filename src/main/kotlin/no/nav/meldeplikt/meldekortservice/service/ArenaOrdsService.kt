@@ -21,9 +21,9 @@ object ArenaOrdsService {
     private val env = Environment()
     private val xmlMapper = XmlMapper()
 
-    init {
+   /* init {
         xmlMapper.propertyNamingStrategy = PropertyNamingStrategy.UPPER_CAMEL_CASE
-    }
+    }*/
 
     fun hentMeldekort(fnr: String): Person {
         val person = runBlocking {
@@ -31,6 +31,7 @@ object ArenaOrdsService {
                 setupOrdsRequest()
             }
         }
+        println(person)
         return xmlMapper.readValue(person, Person::class.java)
     }
 

@@ -1,22 +1,23 @@
 package no.nav.meldeplikt.meldekortservice.model.meldekort
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 
 data class Person (
-    //@JsonProperty("PersonId")
+    @JacksonXmlProperty(localName = "PersonId")
     val personId: Long,
-    //@JsonProperty("Etternavn")
+    @JacksonXmlProperty(localName = "Etternavn")
     val etternavn: String,
-    //@JsonProperty("Fornavn")
+    @JacksonXmlProperty(localName = "Fornavn")
     val fornavn: String,
-    //@JsonProperty("Maalformkode")
+    @JacksonXmlProperty(localName = "Maalformkode")
     val maalformkode: String,
-    //@JsonProperty("Meldeform")
+    @JacksonXmlProperty(localName = "Meldeform")
     val meldeform: String,
-    //@JsonProperty("MeldekortListe")
+    @JacksonXmlProperty(localName = "MeldekortListe")
     val meldekortListe: List<Meldekort>,
-    //@JsonProperty("AntallGjenstaaendeFeriedager")
+    @JacksonXmlProperty(localName = "AntallGjenstaaendeFeriedager")
     val antallGjenstaaendeFeriedager: Int? = 0,
-    //@JsonProperty("FravaerListe")
+    @JacksonXmlProperty(localName = "FravaerListe")
     val fravaerListe: List<FravaerType>? = null
 )
