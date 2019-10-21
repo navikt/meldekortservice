@@ -1,5 +1,6 @@
 package no.nav.meldeplikt.meldekortservice.model.meldekort
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
@@ -7,6 +8,7 @@ import no.nav.meldeplikt.meldekortservice.utils.LocalDateDeserializer
 import no.nav.meldeplikt.meldekortservice.utils.LocalDateSerializer
 import java.time.LocalDate
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class Meldekort (
     @JacksonXmlProperty(localName = "MeldekortId")
     val meldekortId: Long,

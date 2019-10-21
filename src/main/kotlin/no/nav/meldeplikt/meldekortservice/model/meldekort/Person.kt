@@ -1,7 +1,9 @@
 package no.nav.meldeplikt.meldekortservice.model.meldekort
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class Person (
     @JacksonXmlProperty(localName = "PersonId")
     val personId: Long,
