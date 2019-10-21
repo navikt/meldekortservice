@@ -1,6 +1,5 @@
 package no.nav.meldeplikt.meldekortservice.service
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
@@ -21,21 +20,21 @@ object ArenaOrdsService {
     private val env = Environment()
     private val xmlMapper = XmlMapper()
 
-   /* init {
-        xmlMapper.propertyNamingStrategy = PropertyNamingStrategy.UPPER_CAMEL_CASE
-    }*/
-
     fun hentMeldekort(fnr: String): Person {
         val person = runBlocking {
             client.get<String>("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORT$fnr") {
                 setupOrdsRequest()
             }
         }
-        println(person)
         return xmlMapper.readValue(person, Person::class.java)
     }
 
-    fun hentToken(): OrdsToken {
+    private fun HttpRequestBuilder.setupOrdsRequest() {
+        headers.append("Accept", "application/xml; charset=UTF-8")
+        headers.append("Authorization","Bearer ${hentToken().accessToken}")
+    }
+
+    private fun hentToken(): OrdsToken {
         return cache.get("ordsToken", this::hentOrdsToken)
     }
 
@@ -55,11 +54,6 @@ object ArenaOrdsService {
         }
 
         return token
-    }
-
-    private fun HttpRequestBuilder.setupOrdsRequest() {
-        headers.append("Accept", "application/xml; charset=UTF-8")
-        headers.append("Authorization","Bearer ${hentToken().accessToken}")
     }
 
     private fun HttpRequestBuilder.setupTokenRequest() {

@@ -51,7 +51,6 @@ fun Routing.getHistoriskeMeldekort() =
             serviceUnavailable<ErrorMessage>(),
             unAuthorized<Error>())) {
         respondOrServiceUnavailable {
-            println(ArenaOrdsService.hentToken())
             "Historiske meldekort er ikke implementert"
         }
     }
@@ -86,10 +85,7 @@ fun Routing.getMeldekort() =
             serviceUnavailable<ErrorMessage>(),
             unAuthorized<Error>())) {
         respondOrServiceUnavailable {
-            println("Fnr: ${extractIdentFromLoginContext()}")
-            val person: Person = ArenaOrdsService.hentMeldekort(extractIdentFromLoginContext())
-            println(person)
-            person
+            ArenaOrdsService.hentMeldekort(extractIdentFromLoginContext())
         }
     }
 
