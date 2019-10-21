@@ -8,14 +8,14 @@ import no.nav.meldeplikt.meldekortservice.utils.LocalDateSerializer
 import java.time.LocalDate
 
 data class FravaerType (
-    @JsonProperty("FraDato")
+    //@JsonProperty("FraDato")
     @JsonSerialize(using = LocalDateSerializer::class)
     @JsonDeserialize(using = LocalDateDeserializer::class)
     val fraDato: LocalDate,
-    @JsonProperty("TilDato")
+    //@JsonProperty("TilDato")
     @JsonSerialize(using = LocalDateSerializer::class)
     @JsonDeserialize(using = LocalDateDeserializer::class)
     val tilDato: LocalDate,
-    @JsonProperty("Type")
+    //@JsonProperty("Type")
     val type: String
 )

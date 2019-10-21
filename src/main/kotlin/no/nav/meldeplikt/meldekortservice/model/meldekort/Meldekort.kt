@@ -8,30 +8,30 @@ import no.nav.meldeplikt.meldekortservice.utils.LocalDateSerializer
 import java.time.LocalDate
 
 data class Meldekort (
-    @JsonProperty("MeldekortId")
+    //@JsonProperty("MeldekortId")
     val meldekortId: Long,
-    @JsonProperty("KortType")
+    //@JsonProperty("KortType")
     val kortType: String,
-    @JsonProperty("Meldeperiode")
+    //@JsonProperty("Meldeperiode")
     val meldeperiode: String,
-    @JsonProperty("FraDato")
+    //@JsonProperty("FraDato")
     @JsonSerialize(using = LocalDateSerializer::class)
     @JsonDeserialize(using = LocalDateDeserializer::class)
     val fraDato: LocalDate,
-    @JsonProperty("TilDato")
+    //@JsonProperty("TilDato")
     @JsonSerialize(using = LocalDateSerializer::class)
     @JsonDeserialize(using = LocalDateDeserializer::class)
     val tilDato: LocalDate,
-    @JsonProperty("HoyesteMeldegruppe")
+    //@JsonProperty("HoyesteMeldegruppe")
     val hoyesteMeldegruppe: String,
-    @JsonProperty("Beregningstatus")
+    //@JsonProperty("Beregningstatus")
     val beregningstatus: String,
-    @JsonProperty("Forskudd")
+    //@JsonProperty("Forskudd")
     val forskudd: Boolean,
-    @JsonProperty("MottattDato")
+    //@JsonProperty("MottattDato")
     @JsonSerialize(using = LocalDateSerializer::class)
     @JsonDeserialize(using = LocalDateDeserializer::class)
     val mottattDato: LocalDate?,
-    @JsonProperty("BruttoBelop")
+    //@JsonProperty("BruttoBelop")
     val bruttoBelop: String?
 )
