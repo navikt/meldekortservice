@@ -33,7 +33,7 @@ data class Meldekort (
     @JacksonXmlProperty(localName = "MottattDato")
     @JsonSerialize(using = LocalDateSerializer::class)
     @JsonDeserialize(using = LocalDateDeserializer::class)
-    val mottattDato: LocalDate?,
+    val mottattDato: LocalDate? = null,
     @JacksonXmlProperty(localName = "BruttoBelop")
-    val bruttoBelop: String?
+    val bruttoBelop: Float = 0F
 )

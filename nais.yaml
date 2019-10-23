@@ -20,6 +20,9 @@ spec:
     initialDelay: 10
   vault:
     enabled: true
+    paths:
+      - kvPath: "serviceuser/data/test/srvmeldekortservice"
+        mountPath: "/secrets/srvmeldekortservice"
   replicas:
     min: 2
     max: 4
