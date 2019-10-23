@@ -14,15 +14,15 @@ spec:
     - {{ingress2}}
   liveness:
     path: {{baseurl}}/internal/isAlive
-    initialDelay: 20
+    initialDelay: 10
   readiness:
     path: {{baseurl}}/internal/isReady
-    initialDelay: 20
+    initialDelay: 10
   vault:
     enabled: true
-    #paths:
-    # - kvPath: "serviceuser/data/test/srvmeldekortservice"
-    #    mountPath: "/secrets/srvmeldekortservice"
+      paths:
+        - kvPath: "serviceuser/data/dev/srvmeldekortservice"
+          mountPath: "/secrets/srvmeldekortservice"
   replicas:
     min: 2
     max: 4
