@@ -9,6 +9,7 @@ import io.ktor.routing.Routing
 import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
 import no.nav.meldeplikt.meldekortservice.config.Amelding
 import no.nav.meldeplikt.meldekortservice.config.extractIdentFromLoginContext
+import no.nav.meldeplikt.meldekortservice.config.getVaultSecret
 import no.nav.meldeplikt.meldekortservice.model.Meldeform
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.model.Meldeperiode
@@ -68,7 +69,7 @@ fun Routing.getStatus() =
             serviceUnavailable<ErrorMessage>(),
             unAuthorized<Error>())) {
         respondOrServiceUnavailable {
-            "Status er ikke implementert"
+            "Status er ikke implementert. ${getVaultSecret()}"
         }
     }
 

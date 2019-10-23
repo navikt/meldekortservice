@@ -1,6 +1,8 @@
 package no.nav.meldeplikt.meldekortservice.config
 
 import java.net.URL
+import java.nio.file.Files
+import java.nio.file.Paths
 
 data class Environment(
     val username: String = getEnvVar("FSS_SYSTEMUSER_USERNAME", "username"),
@@ -20,3 +22,5 @@ fun getEnvVar(varName: String, defaultValue: String? = null): String {
     return System.getenv(varName) ?: defaultValue
     ?: throw IllegalArgumentException("Variabelen $varName kan ikke være tom")
 }
+
+fun getVaultSecret() = String(Files.readAllBytes(Paths.get("/var/run/secrets/nais.io/vault/srvmeldekortservice")))
