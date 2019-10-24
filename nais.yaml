@@ -22,7 +22,7 @@ spec:
     enabled: true
     paths:
       - kvPath: "serviceuser/data/dev/srvmeldekortservice"
-        mountPath: "/var/run/secrets/nais.io/vault/srvmeldekortservice"
+        mountPath: /var/run/secrets/nais.io/srvmeldekortservice
   replicas:
     min: 2
     max: 4

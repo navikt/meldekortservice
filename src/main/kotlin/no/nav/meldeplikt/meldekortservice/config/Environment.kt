@@ -1,5 +1,11 @@
 package no.nav.meldeplikt.meldekortservice.config
 
+import com.bettercloud.vault.SslConfig
+import com.bettercloud.vault.Vault
+import com.bettercloud.vault.VaultConfig
+import no.nav.meldeplikt.meldekortservice.utils.vaultKvPath
+import no.nav.meldeplikt.meldekortservice.utils.vaultTokenPath
+import no.nav.meldeplikt.meldekortservice.utils.vaultUrl
 import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -23,4 +29,23 @@ fun getEnvVar(varName: String, defaultValue: String? = null): String {
     ?: throw IllegalArgumentException("Variabelen $varName kan ikke være tom")
 }
 
-fun getVaultSecret() = String(Files.readAllBytes(Paths.get("/var/run/secrets/nais.io/vault/srvmeldekortservice")))
+// fun getVaultSecret() = String(Files.readAllBytes(Paths.get("/var/run/secrets/nais.io/vault/srvmeldekortservice")))
+
+fun vault() = Vault(VaultConfig()
+    .address(vaultUrl)
+    .token(String(Files.readAllBytes(Paths.get(vaultTokenPath))))
+    .openTimeout(5)
+    .readTimeout(30)
+    .sslConfig(SslConfig().build())
+    .build()
+)
+
+fun hentVaultCredentials(): String {
+    val credentials = vault().logical().read(vaultKvPath)
+    return credentials.toString()
+}
+
+data class VaultCredentials(
+    val username: String,
+    val password: String
+)
