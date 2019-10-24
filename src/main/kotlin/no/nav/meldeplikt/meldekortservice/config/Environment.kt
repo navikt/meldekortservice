@@ -41,6 +41,7 @@ fun vault() = Vault(VaultConfig()
 fun hentVaultCredentials(): VaultCredentials {
     val credentials = vault().logical().read("$vaultKvPath")
     println("Data: " + credentials.data)
+    println("Data.data: " + credentials.data["data"])
     println("Entries: " + credentials.data.entries)
     return VaultCredentials(credentials.data["username"], credentials.data["password"])
 }
