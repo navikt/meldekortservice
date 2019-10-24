@@ -31,7 +31,8 @@ fun Route.healthApi() {
         }
 
         get("/ping") {
-            val pingJsonResponse = """{"ping": "pong", "vault": "${hentVaultCredentials()}"}"""
+            val cred = hentVaultCredentials()
+            val pingJsonResponse = """{"ping": "pong", "user": "${cred.username}", "pass": "${cred.password}"}"""
             call.respondText(text = pingJsonResponse, contentType = ContentType.Application.Json)
         }
     }

@@ -38,12 +38,12 @@ fun vault() = Vault(VaultConfig()
     .build()
 )
 
-fun hentVaultCredentials(): String {
+fun hentVaultCredentials(): VaultCredentials {
     val credentials = vault().logical().read(vaultKvPath)
-    return credentials.toString()
+    return VaultCredentials(credentials.data["username"], credentials.data["password"])
 }
 
 data class VaultCredentials(
-    val username: String,
-    val password: String
+    val username: String?,
+    val password: String?
 )
