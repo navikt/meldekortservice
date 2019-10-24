@@ -3,6 +3,7 @@ package no.nav.meldeplikt.meldekortservice.config
 import com.bettercloud.vault.SslConfig
 import com.bettercloud.vault.Vault
 import com.bettercloud.vault.VaultConfig
+import com.bettercloud.vault.json.Json
 import no.nav.meldeplikt.meldekortservice.utils.vaultKvPath
 import no.nav.meldeplikt.meldekortservice.utils.vaultTokenPath
 import no.nav.meldeplikt.meldekortservice.utils.vaultUrl
@@ -42,7 +43,10 @@ fun hentVaultCredentials(): VaultCredentials {
     val credentials = vault().logical().read("$vaultKvPath")
     println("Data: " + credentials.data)
     println("Data.data: " + credentials.data["data"])
+    println("Data.data.pass: " + credentials.data["data"])
     println("Entries: " + credentials.data.entries)
+    val json = Json.parse(credentials.data["data"])
+    println("Json: $json")
     return VaultCredentials(credentials.data["username"], credentials.data["password"])
 }
 
