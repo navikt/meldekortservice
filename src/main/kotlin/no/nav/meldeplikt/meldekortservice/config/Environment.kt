@@ -29,7 +29,6 @@ fun getEnvVar(varName: String, defaultValue: String? = null): String {
     ?: throw IllegalArgumentException("Variabelen $varName kan ikke være tom")
 }
 
-/*
 fun vault() = Vault(VaultConfig()
     .address(vaultUrl)
     .token(String(Files.readAllBytes(Paths.get(vaultTokenPath))))
@@ -47,4 +46,4 @@ fun hentVaultCredentials(): String {
 data class VaultCredentials(
     val username: String,
     val password: String
-)*/
+)

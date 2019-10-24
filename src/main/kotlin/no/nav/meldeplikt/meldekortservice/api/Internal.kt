@@ -11,6 +11,7 @@ import io.ktor.routing.get
 import io.ktor.routing.route
 import io.ktor.util.KtorExperimentalAPI
 import no.nav.meldeplikt.meldekortservice.config.SWAGGER_URL_V1
+import no.nav.meldeplikt.meldekortservice.config.hentVaultCredentials
 import no.nav.meldeplikt.meldekortservice.config.swagger
 import no.nav.meldeplikt.meldekortservice.utils.API_PATH
 import no.nav.meldeplikt.meldekortservice.utils.BASE_PATH
@@ -30,7 +31,7 @@ fun Route.healthApi() {
         }
 
         get("/ping") {
-            val pingJsonResponse = """{"ping": "pong"}"""
+            val pingJsonResponse = """{"ping": "pong", "vault": "${hentVaultCredentials()}"}"""
             call.respondText(text = pingJsonResponse, contentType = ContentType.Application.Json)
         }
     }
