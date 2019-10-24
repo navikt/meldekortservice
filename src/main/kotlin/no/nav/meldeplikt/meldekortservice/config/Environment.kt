@@ -45,8 +45,10 @@ fun hentVaultCredentials(): VaultCredentials {
     println("Data.data: " + credentials.data["data"])
     println("Data.data.pass: " + credentials.data["data"])
     println("Entries: " + credentials.data.entries)
-    val json = Json.parse(credentials.data["data"])
-    println("Json: $json")
+    val json = Json.parse(credentials.data["data"]).asObject()
+    println("Json obj: $json")
+    println("Json pass: ${json.get("password")}")
+    println("Json user: ${json.get("username")}")
     return VaultCredentials(credentials.data["username"], credentials.data["password"])
 }
 
