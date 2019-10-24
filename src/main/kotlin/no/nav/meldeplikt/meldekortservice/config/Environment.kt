@@ -45,7 +45,7 @@ private fun vault() = Vault(VaultConfig()
 fun hentVaultCredentials(): VaultCredentials {
     return if(isCurrentlyRunningOnNais()) {
         val credentials = Json.parse(vault().logical().read(vaultKvPath).data["data"]).asObject()
-        VaultCredentials(credentials.get("password").asString(), credentials.get("username").asString())
+        VaultCredentials(credentials.get("username").asString(), credentials.get("password").asString())
     } else {
         VaultCredentials("test", "test")
     }
