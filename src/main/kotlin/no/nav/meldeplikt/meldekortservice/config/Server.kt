@@ -54,7 +54,7 @@ const val SWAGGER_URL_V1 = "/meldekortservice/internal/apidocs/index.html?url=sw
 
 object Server {
 
-    private const val portNumber = 8091
+    private const val portNumber = 8090
     private const val basePath = "/meldekortservice"
 
     @KtorExperimentalLocationsAPI
