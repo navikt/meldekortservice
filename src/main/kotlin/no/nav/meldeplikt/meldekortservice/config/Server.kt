@@ -1,8 +1,5 @@
 package no.nav.meldeplikt.meldekortservice.config
 
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.ktor.application.install
 import io.ktor.auth.Authentication
 import io.ktor.auth.jwt.jwt
@@ -27,6 +24,10 @@ import no.nav.meldeplikt.meldekortservice.utils.swagger.Information
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Swagger
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import no.nav.meldeplikt.meldekortservice.utils.objectMapper
+import no.nav.sbl.dialogarena.common.cxf.StsSecurityConstants
+import no.nav.sbl.util.EnvironmentUtils.setProperty
+import no.nav.sbl.util.EnvironmentUtils.Type.PUBLIC
+import no.nav.sbl.util.EnvironmentUtils.Type.SECRET
 import java.util.concurrent.TimeUnit
 
 val swagger = Swagger(
@@ -59,7 +60,9 @@ object Server {
     @KtorExperimentalLocationsAPI
     @KtorExperimentalAPI
     fun configure(environment: Environment): NettyApplicationEngine {
+
         DefaultExports.initialize()
+        setAppProperties(Environment())
         val app = embeddedServer(Netty, port = portNumber) {
             install(DefaultHeaders)
 
@@ -92,5 +95,12 @@ object Server {
                 app.stop(5, 60, TimeUnit.SECONDS)
             })
         }
+    }
+
+    private fun setAppProperties(environment: Environment) {
+        val systemuser = hentVaultCredentials()
+        setProperty(StsSecurityConstants.STS_URL_KEY, environment.securityTokenService, PUBLIC);
+        setProperty(StsSecurityConstants.SYSTEMUSER_USERNAME, systemuser.username, PUBLIC);
+        setProperty(StsSecurityConstants.SYSTEMUSER_PASSWORD, systemuser.password, SECRET);
     }
 }

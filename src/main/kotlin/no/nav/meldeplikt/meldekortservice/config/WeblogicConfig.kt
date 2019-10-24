@@ -7,9 +7,9 @@ object WeblogicConfig {
 
     private val environment = Environment()
 
-    private fun arbeidOgAktivitetSakV1(): ArbeidOgAktivitetSakV1 {
+    fun arbeidOgAktivitetSakV1(): ArbeidOgAktivitetSakV1 {
         return CXFClient(ArbeidOgAktivitetSakV1::class.java)
-            .address("")
+            .address(environment.arbeidOgAktivitetUri)
             .configureStsForSystemUser()
             .build()
     }

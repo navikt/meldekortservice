@@ -41,7 +41,7 @@ object Amelding {
     //Setter opp tilkobling mot Amelding
     private fun externControlEmeldingConfig(): ExternControlEmeldingSOAP {
         return CXFClient(ExternControlEmeldingSOAP::class.java)
-            .address(environment.emeldingUrl.toString())
+            .address(environment.ameldingUrl.toString())
             .withOutInterceptor(WSS4JOutInterceptor(interceptorConfig))
             .build()
     }

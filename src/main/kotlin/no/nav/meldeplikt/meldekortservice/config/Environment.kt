@@ -4,6 +4,7 @@ import com.bettercloud.vault.SslConfig
 import com.bettercloud.vault.Vault
 import com.bettercloud.vault.VaultConfig
 import com.bettercloud.vault.json.Json
+import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import no.nav.meldeplikt.meldekortservice.utils.vaultKvPath
 import no.nav.meldeplikt.meldekortservice.utils.vaultTokenPath
 import no.nav.meldeplikt.meldekortservice.utils.vaultUrl
@@ -17,12 +18,14 @@ data class Environment(
     val securityAudience: String = getEnvVar("AUDIENCE", "dummyAudience"),
     val securityJwksIssuer: String = getEnvVar("JWKS_ISSUER", "dummyIssuer"),
     val securityJwksUri: URL = URL(getEnvVar("JWKS_URI", "https://dummyUrl.com")),
-    val emeldingUrl: URL = URL(getEnvVar("EMELDING_URI", "https://dummyUrl.com/path")),
+    val ameldingUrl: URL = URL(getEnvVar("AMELDING_URI", "https://dummyUrl.com/path")),
     val personinfoUsername: String = getEnvVar("PERSONINFO_SERVICE_USERNAME", "username"),
     val personinfoPassword: String = getEnvVar("PERSONINFO_SERVICE_PASSWORD", "password"),
     val ordsUrl: URL = URL(getEnvVar("ORDS_URI", "https://dummyUrl.com")),
     val ordsClientId: String = getEnvVar("CLIENT_ID", "cLiEnTiD"),
-    val ordsClientSecret: String = getEnvVar("CLIENT_SECRET", "cLiEnTsEcReT")
+    val ordsClientSecret: String = getEnvVar("CLIENT_SECRET", "cLiEnTsEcReT"),
+    val securityTokenService: String = getEnvVar("SECURITYTOKENSERVICE", "https://dummyUrl.com"),
+    val arbeidOgAktivitetUri: String = getEnvVar("ARBEIDOGAKTIVITET_URI", "https://dummyUrl.com")
 )
 
 fun getEnvVar(varName: String, defaultValue: String? = null): String {
@@ -30,7 +33,7 @@ fun getEnvVar(varName: String, defaultValue: String? = null): String {
     ?: throw IllegalArgumentException("Variabelen $varName kan ikke være tom")
 }
 
-fun vault() = Vault(VaultConfig()
+private fun vault() = Vault(VaultConfig()
     .address(vaultUrl)
     .token(String(Files.readAllBytes(Paths.get(vaultTokenPath))))
     .openTimeout(5)
@@ -40,16 +43,12 @@ fun vault() = Vault(VaultConfig()
 )
 
 fun hentVaultCredentials(): VaultCredentials {
-    val credentials = vault().logical().read("$vaultKvPath")
-    println("Data: " + credentials.data)
-    println("Data.data: " + credentials.data["data"])
-    println("Data.data.pass: " + credentials.data["data"])
-    println("Entries: " + credentials.data.entries)
-    val json = Json.parse(credentials.data["data"]).asObject()
-    println("Json obj: $json")
-    println("Json pass: ${json.get("password")}")
-    println("Json user: ${json.get("username")}")
-    return VaultCredentials(credentials.data["username"], credentials.data["password"])
+    return if(isCurrentlyRunningOnNais()) {
+        val credentials = Json.parse(vault().logical().read(vaultKvPath).data["data"]).asObject()
+        VaultCredentials(credentials.get("password").asString(), credentials.get("username").asString())
+    } else {
+        VaultCredentials("test", "test")
+    }
 }
 
 data class VaultCredentials(
