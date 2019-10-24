@@ -54,7 +54,7 @@ const val SWAGGER_URL_V1 = "/meldekortservice/internal/apidocs/index.html?url=sw
 
 object Server {
 
-    private const val portNumber = 8090
+    private const val portNumber = 8091
     private const val basePath = "/meldekortservice"
 
     @KtorExperimentalLocationsAPI
@@ -62,7 +62,7 @@ object Server {
     fun configure(environment: Environment): NettyApplicationEngine {
 
         DefaultExports.initialize()
-        setAppProperties(Environment())
+        setAppProperties(environment)
         val app = embeddedServer(Netty, port = portNumber) {
             install(DefaultHeaders)
 
@@ -98,6 +98,7 @@ object Server {
     }
 
     private fun setAppProperties(environment: Environment) {
+        println(environment)
         val systemuser = hentVaultCredentials()
         setProperty(StsSecurityConstants.STS_URL_KEY, environment.securityTokenService, PUBLIC);
         setProperty(StsSecurityConstants.SYSTEMUSER_USERNAME, systemuser.username, PUBLIC);

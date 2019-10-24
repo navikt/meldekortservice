@@ -29,7 +29,6 @@ data class Environment(
 )
 
 fun getEnvVar(varName: String, defaultValue: String? = null): String {
-    println(System.getenv())
     return System.getenv(varName) ?: defaultValue
     ?: throw IllegalArgumentException("Variabelen $varName kan ikke være tom")
 }
