@@ -35,7 +35,7 @@ fun Route.healthApi() {
         get("/ping") {
             val cred = WeblogicConfig.arbeidOgAktivitetSakV1()
             val pingJsonResponse = try {
-                val response = cred.arbeidOgAktivitetSakV1Port.ping(Ping())
+                val response = cred.ping(Ping())
                 println("Alt ok!")
                 println(response)
                 """{"ping": "pong", "weblogic": "$response"}"""
