@@ -1,6 +1,5 @@
 package no.nav.meldeplikt.meldekortservice.api
 
-import com.bettercloud.vault.json.Json
 import io.ktor.application.call
 import io.ktor.http.ContentType
 import io.ktor.response.respond
@@ -13,14 +12,12 @@ import io.ktor.routing.route
 import io.ktor.util.KtorExperimentalAPI
 import no.nav.meldeplikt.meldekortservice.config.SWAGGER_URL_V1
 import no.nav.meldeplikt.meldekortservice.config.WeblogicConfig
-import no.nav.meldeplikt.meldekortservice.config.hentVaultCredentials
 import no.nav.meldeplikt.meldekortservice.config.swagger
 import no.nav.meldeplikt.meldekortservice.utils.API_PATH
 import no.nav.meldeplikt.meldekortservice.utils.BASE_PATH
 import no.nav.meldeplikt.meldekortservice.utils.INTERNAL_PATH
 import no.nav.meldeplikt.meldekortservice.utils.swagger.SwaggerUi
 import no.nav.tjeneste.virksomhet.arbeidogaktivitetsak.v1.Ping
-import org.springframework.http.codec.json.Jackson2JsonEncoder
 import java.lang.Exception
 
 fun Route.healthApi() {
@@ -38,10 +35,12 @@ fun Route.healthApi() {
         get("/ping") {
             val cred = WeblogicConfig.arbeidOgAktivitetSakV1()
             val pingJsonResponse = try {
-                val response = cred.ping(Ping())
+                val response = cred.arbeidOgAktivitetSakV1Port.ping(Ping())
+                println("Alt ok!")
                 println(response)
                 """{"ping": "pong", "weblogic": "$response"}"""
             } catch (e: Exception) {
+                println("Her gikk det galt!")
                 println(e)
                 """{"ping": "pong", "weblogic": "${e.message}"}"""
             }

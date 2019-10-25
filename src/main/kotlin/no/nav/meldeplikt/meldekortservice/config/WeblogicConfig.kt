@@ -1,7 +1,7 @@
 package no.nav.meldeplikt.meldekortservice.config
 
 import no.nav.sbl.dialogarena.common.cxf.CXFClient
-import no.nav.tjeneste.virksomhet.arbeidogaktivitetsak.v1.ArbeidOgAktivitetSakV1
+import no.nav.tjeneste.virksomhet.arbeidogaktivitetsak.v1.binding.ArbeidOgAktivitetSakV1
 
 object WeblogicConfig {
 
