@@ -136,7 +136,8 @@ tasks {
         wsdlDir = file("$projectDir/src/main/resources/wsdl")
         wsdlsToGenerate = listOf(
             mutableListOf("-xjc", "-b", "$projectDir/src/main/resources/xjb/bindings.xml", "$projectDir/src/main/resources/wsdl/amelding_EksternKontrolEmeldingService.wsdl"),
-            mutableListOf("-xjc", "-b", "$projectDir/src/main/resources/xjb/bindings.xml", "$projectDir/src/main/resources/wsdl/arbeidOgAktivitetSak.wsdl")
+            mutableListOf("-xjc", "-b", "$projectDir/src/main/resources/xjb/bindings.xml", "$projectDir/src/main/resources/wsdl/arbeidOgAktivitetSak.wsdl"),
+            mutableListOf("-xjc", "-b", "$projectDir/src/main/resources/xjb/bindings.xml", "$projectDir/src/main/resources/wsdl/Binding.wsdl")
         )
     }
 
