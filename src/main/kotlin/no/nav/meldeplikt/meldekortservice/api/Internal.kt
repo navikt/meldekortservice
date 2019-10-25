@@ -17,7 +17,7 @@ import no.nav.meldeplikt.meldekortservice.utils.API_PATH
 import no.nav.meldeplikt.meldekortservice.utils.BASE_PATH
 import no.nav.meldeplikt.meldekortservice.utils.INTERNAL_PATH
 import no.nav.meldeplikt.meldekortservice.utils.swagger.SwaggerUi
-import no.nav.tjeneste.virksomhet.arbeidogaktivitetsak.v1.Ping
+import no.nav.tjeneste.virksomhet.sakogaktivitet.v1.Ping
 import java.lang.Exception
 
 fun Route.healthApi() {

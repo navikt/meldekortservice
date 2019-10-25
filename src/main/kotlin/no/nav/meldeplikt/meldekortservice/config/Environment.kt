@@ -25,7 +25,7 @@ data class Environment(
     val ordsClientId: String = getEnvVar("CLIENT_ID", "cLiEnTiD"),
     val ordsClientSecret: String = getEnvVar("CLIENT_SECRET", "cLiEnTsEcReT"),
     val securityTokenService: String = getEnvVar("SECURITYTOKENSERVICE", "https://dummyUrl.com"),
-    val arbeidOgAktivitetUri: String = getEnvVar("ARBEIDOGAKTIVITET_URI", "https://dummyUrl.com")
+    val sakOgAktivitetUri: String = getEnvVar("https://arena-q1.adeo.no/ail_ws/SakOgAktivitet_v1", "https://dummyUrl.com")
 )
 
 fun getEnvVar(varName: String, defaultValue: String? = null): String {
