@@ -1,7 +1,10 @@
 package no.nav.meldeplikt.meldekortservice.api
 
+import io.ktor.application.call
 import io.ktor.client.HttpClient
+import io.ktor.http.HttpStatusCode
 import io.ktor.locations.Location
+import io.ktor.response.respond
 import io.ktor.routing.Routing
 import no.nav.meldeplikt.meldekortservice.config.SoapConfig
 import no.nav.meldeplikt.meldekortservice.utils.swagger.*
@@ -65,11 +68,5 @@ fun Routing.pingWeblogic() =
             ok<String>(),
             serviceUnavailable<ErrorMessage>(),
             unAuthorized<Error>())) {
-        respondOrServiceUnavailable {
-            if (!SoapConfig.oppfoelgingPing()) {
-                throw TimeoutException("Weblogic er nede")
-            }
-            "Weblogic er oppe"
-        }
+        call.respond(status = HttpStatusCode.OK, message = "${SoapConfig.oppfoelgingPing()}")
     }
-
