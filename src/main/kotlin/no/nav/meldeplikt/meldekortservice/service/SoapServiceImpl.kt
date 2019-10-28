@@ -20,7 +20,7 @@ class SoapServiceImpl(externControlEmeldingSOAP: ExternControlEmeldingSOAP) : So
     }
 
     override fun pingWeblogic(): WeblogicPing {
-        val oppfoelgingPing = SoapConfig.oppfoelgingPortType()
+        val oppfoelgingPing = SoapConfig.sakOgAktivitet()
             .configureStsForSystemUser()
             .build()
 

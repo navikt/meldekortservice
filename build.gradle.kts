@@ -24,7 +24,7 @@ val kotlinLoggerVersion = "1.5.4"
 val ktorSwagger = "0.4.0"
 val swaggerVersion = "3.23.8"
 val vaultVersion = "3.1.0"
-val tjenestespecVersion = "1.2019.04.03-23.09-56488320520a"
+val tjenestespecVersion = "1.2019.08.16-13.46-35cbdfd492d4"
 
 val mainClass = "no.nav.meldeplikt.meldekortservice.AppKt"
 
@@ -98,7 +98,7 @@ dependencies {
     api("no.nav.common:types:$navCommonVersion")
     api("io.github.microutils:kotlin-logging:$kotlinLoggerVersion")
     api("com.bettercloud:vault-java-driver:$vaultVersion")
-    api("no.nav.tjenestespesifikasjoner:nav-fim-oppfoelging-v1.2.0-tjenestespesifikasjon:$tjenestespecVersion")
+    api("no.nav.tjenestespesifikasjoner:arena-sakOgAktivitet_v1:$tjenestespecVersion")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testImplementation("org.assertj:assertj-core:$assertJVersion")

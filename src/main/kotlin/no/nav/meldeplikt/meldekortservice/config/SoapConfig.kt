@@ -6,7 +6,7 @@ import no.nav.meldeplikt.meldekortservice.service.SoapServiceImpl
 import no.nav.meldeplikt.meldekortservice.service.SoapServiceMock
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import no.nav.sbl.dialogarena.common.cxf.CXFClient
-import no.nav.tjeneste.virksomhet.oppfoelging.v1.OppfoelgingPortType
+import no.nav.tjeneste.virksomhet.sakogaktivitet.v1.SakOgAktivitetV1
 import org.apache.cxf.interceptor.LoggingOutInterceptor
 import org.apache.cxf.ws.security.wss4j.WSS4JOutInterceptor
 import org.apache.wss4j.common.ext.WSPasswordCallback
@@ -48,10 +48,10 @@ object SoapConfig {
             .build()
     }
 
-    fun oppfoelgingPortType(): CXFClient<OppfoelgingPortType> {
-        val url = environment.oppfoelgingUrl
+    fun sakOgAktivitet(): CXFClient<SakOgAktivitetV1> {
+        val url = environment.sakOgAktivitetUrl
         println("URL for Oppfoelging_V1 er $url")
-        return CXFClient(OppfoelgingPortType::class.java)
+        return CXFClient(SakOgAktivitetV1::class.java)
             .withOutInterceptor(LoggingOutInterceptor())
             .address(url)
     }
