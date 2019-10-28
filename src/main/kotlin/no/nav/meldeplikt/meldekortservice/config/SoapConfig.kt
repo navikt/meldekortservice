@@ -13,7 +13,7 @@ import org.apache.wss4j.common.ext.WSPasswordCallback
 import org.apache.wss4j.dom.handler.WSHandlerConstants
 import javax.security.auth.callback.CallbackHandler
 
-object Amelding {
+object SoapConfig {
 
     private val environment = Environment()
 
@@ -49,7 +49,7 @@ object Amelding {
     }
 
     private fun oppfoelgingPortType(): CXFClient<OppfoelgingPortType> {
-        val url = environment.sakOgAktivitetUri
+        val url = environment.oppfoelgingUrl
         println("URL for Oppfoelging_V1 er $url")
         return CXFClient(OppfoelgingPortType::class.java)
             .withOutInterceptor(LoggingOutInterceptor())

@@ -7,7 +7,7 @@ import io.ktor.locations.Location
 import io.ktor.response.respond
 import io.ktor.routing.Routing
 import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
-import no.nav.meldeplikt.meldekortservice.config.Amelding
+import no.nav.meldeplikt.meldekortservice.config.SoapConfig
 import no.nav.meldeplikt.meldekortservice.config.extractIdentFromLoginContext
 import no.nav.meldeplikt.meldekortservice.model.Meldeform
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
@@ -101,7 +101,7 @@ fun Routing.kontrollerMeldekort() =
     ) {_, meldekort ->
 
         try {
-            val kontrollertType = Amelding.ameldingService().kontrollerMeldekort(meldekort)
+            val kontrollertType = SoapConfig.ameldingService().kontrollerMeldekort(meldekort)
             call.respond(kontrollertType)
         } catch (e: Exception) {
             val errorMessage = ErrorMessage("Meldekort ble ikke sendt inn. ${e.message}")

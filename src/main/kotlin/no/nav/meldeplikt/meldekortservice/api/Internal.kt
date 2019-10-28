@@ -10,14 +10,13 @@ import io.ktor.routing.Routing
 import io.ktor.routing.get
 import io.ktor.routing.route
 import io.ktor.util.KtorExperimentalAPI
-import no.nav.meldeplikt.meldekortservice.config.Amelding
+import no.nav.meldeplikt.meldekortservice.config.SoapConfig
 import no.nav.meldeplikt.meldekortservice.config.SWAGGER_URL_V1
 import no.nav.meldeplikt.meldekortservice.config.swagger
 import no.nav.meldeplikt.meldekortservice.utils.API_PATH
 import no.nav.meldeplikt.meldekortservice.utils.BASE_PATH
 import no.nav.meldeplikt.meldekortservice.utils.INTERNAL_PATH
 import no.nav.meldeplikt.meldekortservice.utils.swagger.SwaggerUi
-import java.lang.Exception
 
 fun Route.healthApi() {
 
@@ -32,7 +31,7 @@ fun Route.healthApi() {
         }
 
         get("/ping") {
-            val ping = Amelding.oppfoelgingPing()
+            val ping = SoapConfig.oppfoelgingPing()
             val pingJsonResponse = """{"ping": "pong", "weblogic": "$ping"}"""
             call.respondText(text = pingJsonResponse, contentType = ContentType.Application.Json)
         }

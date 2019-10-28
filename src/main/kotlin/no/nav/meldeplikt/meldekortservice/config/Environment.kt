@@ -8,6 +8,7 @@ import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import no.nav.meldeplikt.meldekortservice.utils.vaultKvPath
 import no.nav.meldeplikt.meldekortservice.utils.vaultTokenPath
 import no.nav.meldeplikt.meldekortservice.utils.vaultUrl
+import no.nav.tjeneste.virksomhet.oppfoelging.v1.OppfoelgingPortType
 import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -25,7 +26,7 @@ data class Environment(
     val ordsClientId: String = getEnvVar("CLIENT_ID", "cLiEnTiD"),
     val ordsClientSecret: String = getEnvVar("CLIENT_SECRET", "cLiEnTsEcReT"),
     val securityTokenService: String = getEnvVar("SECURITYTOKENSERVICE", "https://dummyUrl.com"),
-    val sakOgAktivitetUri: String = getEnvVar("SAKOGAKTIVITET", "https://dummyUrl.com")
+    val oppfoelgingUrl: String = getEnvVar("OPPFOELDING_URI", "https://dummyUrl.com")
 )
 
 fun getEnvVar(varName: String, defaultValue: String? = null): String {
