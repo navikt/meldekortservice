@@ -2,7 +2,6 @@ package no.nav.meldeplikt.meldekortservice.api
 
 import io.ktor.application.call
 import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
 import io.ktor.response.respondRedirect
 import io.ktor.response.respondText
@@ -11,7 +10,6 @@ import io.ktor.routing.Routing
 import io.ktor.routing.get
 import io.ktor.routing.route
 import io.ktor.util.KtorExperimentalAPI
-import no.nav.meldeplikt.meldekortservice.config.SoapConfig
 import no.nav.meldeplikt.meldekortservice.config.SWAGGER_URL_V1
 import no.nav.meldeplikt.meldekortservice.config.swagger
 import no.nav.meldeplikt.meldekortservice.utils.API_PATH
@@ -33,11 +31,6 @@ fun Route.healthApi() {
 
         get("/ping") {
             val pingJsonResponse = """{"ping": "pong"}"""
-            call.respondText(text = pingJsonResponse, contentType = ContentType.Application.Json)
-        }
-
-        get("/weblogic") {
-            val pingJsonResponse = """{"ping": "${SoapConfig.oppfoelgingPing()}"}"""
             call.respondText(text = pingJsonResponse, contentType = ContentType.Application.Json)
         }
     }

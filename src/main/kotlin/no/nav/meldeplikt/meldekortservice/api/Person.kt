@@ -101,7 +101,7 @@ fun Routing.kontrollerMeldekort() =
     ) {_, meldekort ->
 
         try {
-            val kontrollertType = SoapConfig.ameldingService().kontrollerMeldekort(meldekort)
+            val kontrollertType = SoapConfig.soapService().kontrollerMeldekort(meldekort)
             call.respond(kontrollertType)
         } catch (e: Exception) {
             val errorMessage = ErrorMessage("Meldekort ble ikke sendt inn. ${e.message}")

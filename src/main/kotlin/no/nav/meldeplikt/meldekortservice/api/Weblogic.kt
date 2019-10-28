@@ -1,13 +1,13 @@
 package no.nav.meldeplikt.meldekortservice.api
 
-import io.ktor.application.call
-import io.ktor.http.ContentType
 import io.ktor.locations.Location
-import io.ktor.response.respondText
 import io.ktor.routing.Routing
 import no.nav.meldeplikt.meldekortservice.config.SoapConfig
+import no.nav.meldeplikt.meldekortservice.model.WeblogicPing
+import no.nav.meldeplikt.meldekortservice.utils.Error
+import no.nav.meldeplikt.meldekortservice.utils.ErrorMessage
 import no.nav.meldeplikt.meldekortservice.utils.WEBLOGIC_PING_PATH
-import no.nav.meldeplikt.meldekortservice.utils.swagger.Group
+import no.nav.meldeplikt.meldekortservice.utils.respondOrServiceUnavailable
 import no.nav.meldeplikt.meldekortservice.utils.swagger.*
 
 fun Routing.weblogicApi() {
@@ -16,16 +16,18 @@ fun Routing.weblogicApi() {
 
 @Group("Weblogic")
 @Location("$WEBLOGIC_PING_PATH")
-class WeblogicInput
+class PingWeblogicInput
 
 fun Routing.pingWeblogic() =
-    get<WeblogicInput>(
+    get<PingWeblogicInput>(
         "Ping av weblogic for å sjekke at Arena er oppe".securityAndReponds(
             BearerTokenSecurity(),
-            ok<String>(),
+            ok<WeblogicPing>(),
+            serviceUnavailable<ErrorMessage>(),
             unAuthorized<Error>()
         )
     ) {
-        val pingJsonResponse = """{"ping": "${SoapConfig.oppfoelgingPing()}"}"""
-        call.respondText(text = pingJsonResponse, contentType = ContentType.Application.Json)
+        respondOrServiceUnavailable {
+            SoapConfig.soapService().pingWeblogic()
+        }
     }

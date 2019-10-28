@@ -1,9 +1,9 @@
 package no.nav.meldeplikt.meldekortservice.config
 
 import no.aetat.amelding.externcontrolemelding.webservices.ExternControlEmeldingSOAP
-import no.nav.meldeplikt.meldekortservice.service.AmeldingService
-import no.nav.meldeplikt.meldekortservice.service.AmeldingServiceImpl
-import no.nav.meldeplikt.meldekortservice.service.AmeldingServiceMock
+import no.nav.meldeplikt.meldekortservice.service.SoapService
+import no.nav.meldeplikt.meldekortservice.service.SoapServiceImpl
+import no.nav.meldeplikt.meldekortservice.service.SoapServiceMock
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import no.nav.sbl.dialogarena.common.cxf.CXFClient
 import no.nav.tjeneste.virksomhet.oppfoelging.v1.OppfoelgingPortType
@@ -32,11 +32,11 @@ object SoapConfig {
         }
 
     //Velger hvilke av Ameldingsservicene som skal returneres ettersom om appen kjører på nais eller ikke
-    fun ameldingService(): AmeldingService {
+    fun soapService(): SoapService {
         return if(isCurrentlyRunningOnNais()) {
-            AmeldingServiceImpl(externControlEmeldingConfig())
+            SoapServiceImpl(externControlEmeldingConfig())
         } else {
-            AmeldingServiceMock()
+            SoapServiceMock()
         }
     }
 
@@ -48,27 +48,11 @@ object SoapConfig {
             .build()
     }
 
-    private fun oppfoelgingPortType(): CXFClient<OppfoelgingPortType> {
+    fun oppfoelgingPortType(): CXFClient<OppfoelgingPortType> {
         val url = environment.oppfoelgingUrl
         println("URL for Oppfoelging_V1 er $url")
         return CXFClient(OppfoelgingPortType::class.java)
             .withOutInterceptor(LoggingOutInterceptor())
             .address(url)
-    }
-
-    fun oppfoelgingPing(): Boolean {
-        val test = oppfoelgingPortType()
-            .configureStsForSystemUser()
-            .build()
-
-        return try {
-            test.ping()
-            println("Ping vellykket")
-            true
-        } catch (e: Exception) {
-            println(e)
-            false
-        }
-
     }
 }
