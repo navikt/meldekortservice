@@ -34,7 +34,6 @@ fun Routing.personApi(httpClient: HttpClient) {
     getMeldekort()
     kontrollerMeldekort()
     endreMeldeform()
-    pingWeblogic()
 }
 
 private const val personGroup = "Person"
@@ -125,19 +124,4 @@ fun Routing.endreMeldeform() =
         )
     ) {_, meldeform ->
         call.respond(status=HttpStatusCode.OK,message = "Meldeform er ikke implementert")
-    }
-
-@Group(personGroup)
-@Location("$PERSON_PATH/weblogic")
-class PingWeblogic
-
-//Pinger weblogic
-fun Routing.pingWeblogic() =
-    get<PingWeblogic>(
-        "Ping weblogic".securityAndReponds(
-            BearerTokenSecurity(),
-            ok<String>(),
-            serviceUnavailable<ErrorMessage>(),
-            unAuthorized<Error>())) {
-        call.respond(status = HttpStatusCode.OK, message = "${SoapConfig.oppfoelgingPing()}")
     }
