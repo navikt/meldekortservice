@@ -24,6 +24,7 @@ val kotlinLoggerVersion = "1.5.4"
 val ktorSwagger = "0.4.0"
 val swaggerVersion = "3.23.8"
 val vaultVersion = "3.1.0"
+val smCommonVersion = "2019.08.08-03-52-c78281e2409af36f3ef07df4369fa29b0ea81a46"
 
 val mainClass = "no.nav.meldeplikt.meldekortservice.AppKt"
 
@@ -94,6 +95,7 @@ dependencies {
     api("io.ktor:ktor-jackson:$ktorVersion")
     api("no.nav.common:cxf:$navCommonVersion")
     api("no.nav.common:cache:$navCommonVersion")
+    api("no.nav.common:types:$navCommonVersion")
     api("io.github.microutils:kotlin-logging:$kotlinLoggerVersion")
     api("com.bettercloud:vault-java-driver:$vaultVersion")
 
@@ -135,8 +137,7 @@ tasks {
     withType<Wsdl2JavaTask> {
         wsdlDir = file("$projectDir/src/main/resources/wsdl")
         wsdlsToGenerate = listOf(
-            mutableListOf("-xjc", "-b", "$projectDir/src/main/resources/xjb/bindings.xml", "$projectDir/src/main/resources/wsdl/amelding_EksternKontrolEmeldingService.wsdl"),
-            mutableListOf("-xjc", "-b", "$projectDir/src/main/resources/xjb/bindings.xml", "$projectDir/src/main/resources/wsdl/sakOgAktivitet.wsdl")
+            mutableListOf("-xjc", "-b", "$projectDir/src/main/resources/xjb/bindings.xml", "$projectDir/src/main/resources/wsdl/amelding_EksternKontrolEmeldingService.wsdl")
         )
     }
 
