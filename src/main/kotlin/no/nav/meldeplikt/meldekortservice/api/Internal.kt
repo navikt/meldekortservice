@@ -31,8 +31,7 @@ fun Route.healthApi() {
         }
 
         get("/ping") {
-            val ping = SoapConfig.oppfoelgingPing()
-            val pingJsonResponse = """{"ping": "pong", "weblogic": "$ping"}"""
+            val pingJsonResponse = """{"ping": "pong"}"""
             call.respondText(text = pingJsonResponse, contentType = ContentType.Application.Json)
         }
     }
