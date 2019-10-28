@@ -10,6 +10,7 @@ import io.ktor.routing.Routing
 import io.ktor.routing.get
 import io.ktor.routing.route
 import io.ktor.util.KtorExperimentalAPI
+import no.nav.meldeplikt.meldekortservice.config.Amelding
 import no.nav.meldeplikt.meldekortservice.config.SWAGGER_URL_V1
 import no.nav.meldeplikt.meldekortservice.config.swagger
 import no.nav.meldeplikt.meldekortservice.utils.API_PATH
@@ -31,7 +32,8 @@ fun Route.healthApi() {
         }
 
         get("/ping") {
-            val pingJsonResponse = """{"ping": "pong"}"""
+            val ping = Amelding.oppfoelgingPing()
+            val pingJsonResponse = """{"ping": "pong", "weblogic": "$ping"}"""
             call.respondText(text = pingJsonResponse, contentType = ContentType.Application.Json)
         }
     }

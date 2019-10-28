@@ -6,6 +6,8 @@ import no.nav.meldeplikt.meldekortservice.service.AmeldingServiceImpl
 import no.nav.meldeplikt.meldekortservice.service.AmeldingServiceMock
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import no.nav.sbl.dialogarena.common.cxf.CXFClient
+import no.nav.tjeneste.virksomhet.oppfoelging.v1.OppfoelgingPortType
+import org.apache.cxf.interceptor.LoggingOutInterceptor
 import org.apache.cxf.ws.security.wss4j.WSS4JOutInterceptor
 import org.apache.wss4j.common.ext.WSPasswordCallback
 import org.apache.wss4j.dom.handler.WSHandlerConstants
@@ -44,5 +46,29 @@ object Amelding {
             .address(environment.ameldingUrl.toString())
             .withOutInterceptor(WSS4JOutInterceptor(interceptorConfig))
             .build()
+    }
+
+    private fun oppfoelgingPortType(): CXFClient<OppfoelgingPortType> {
+        val url = environment.sakOgAktivitetUri
+        println("URL for Oppfoelging_V1 er $url")
+        return CXFClient(OppfoelgingPortType::class.java)
+            .withOutInterceptor(LoggingOutInterceptor())
+            .address(url)
+    }
+
+    fun oppfoelgingPing(): Boolean {
+        val test = oppfoelgingPortType()
+            .configureStsForSystemUser()
+            .build()
+
+        return try {
+            test.ping()
+            println("Ping vellykket")
+            true
+        } catch (e: Exception) {
+            println(e)
+            false
+        }
+
     }
 }
