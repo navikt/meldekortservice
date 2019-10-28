@@ -4,7 +4,6 @@ import io.ktor.client.HttpClient
 import io.ktor.locations.Location
 import io.ktor.routing.Routing
 import no.nav.meldeplikt.meldekortservice.config.SoapConfig
-import no.nav.meldeplikt.meldekortservice.service.AmeldingService
 import no.nav.meldeplikt.meldekortservice.utils.swagger.*
 import no.nav.meldeplikt.meldekortservice.utils.Error
 import no.nav.meldeplikt.meldekortservice.utils.ErrorMessage
@@ -22,27 +21,6 @@ fun Routing.meldekortApi(httpClient: HttpClient) {
 }
 
 private const val meldekortGroup = "Meldekort"
-
-@Group(meldekortGroup)
-@Location("$MELDEKORT_PATH/ping")
-class PingWeblogic
-
-//Pinger weblogic
-fun Routing.pingWeblogic() =
-    get<PingWeblogic>(
-        "Ping weblogic".securityAndReponds(
-            BearerTokenSecurity(),
-            ok<String>(),
-            serviceUnavailable<ErrorMessage>(),
-            unAuthorized<Error>())) {
-        respondOrServiceUnavailable {
-            if (!SoapConfig.oppfoelgingPing()) {
-                throw TimeoutException("Weblogic er nede")
-            }
-            "Weblogic er oppe"
-        }
-    }
-
 
 @Group(meldekortGroup)
 @Location("$MELDEKORT_PATH/{meldekortId}")
@@ -74,3 +52,24 @@ fun Routing.getKorrigertMeldekort() =
             "Hent korrigert id er ikke implementert, men id var: ${meldekortid.meldekortId}"
         }
     }
+
+@Group(meldekortGroup)
+@Location("$MELDEKORT_PATH/weblogic")
+class PingWeblogic
+
+//Pinger weblogic
+fun Routing.pingWeblogic() =
+    get<PingWeblogic>(
+        "Ping weblogic".securityAndReponds(
+            BearerTokenSecurity(),
+            ok<String>(),
+            serviceUnavailable<ErrorMessage>(),
+            unAuthorized<Error>())) {
+        respondOrServiceUnavailable {
+            if (!SoapConfig.oppfoelgingPing()) {
+                throw TimeoutException("Weblogic er nede")
+            }
+            "Weblogic er oppe"
+        }
+    }
+
