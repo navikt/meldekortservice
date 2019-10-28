@@ -81,6 +81,7 @@ object Server {
             install(Routing) {
                 healthApi()
                 swaggerRoutes()
+                weblogicApi()
                 meldekortApi(client)
                 personApi(client)
             }
