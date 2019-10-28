@@ -1,18 +1,13 @@
 package no.nav.meldeplikt.meldekortservice.api
 
-import io.ktor.application.call
 import io.ktor.client.HttpClient
-import io.ktor.http.HttpStatusCode
 import io.ktor.locations.Location
-import io.ktor.response.respond
 import io.ktor.routing.Routing
-import no.nav.meldeplikt.meldekortservice.config.SoapConfig
 import no.nav.meldeplikt.meldekortservice.utils.swagger.*
 import no.nav.meldeplikt.meldekortservice.utils.Error
 import no.nav.meldeplikt.meldekortservice.utils.ErrorMessage
 import no.nav.meldeplikt.meldekortservice.utils.MELDEKORT_PATH
 import no.nav.meldeplikt.meldekortservice.utils.respondOrServiceUnavailable
-import java.util.concurrent.TimeoutException
 
 /**
 REST-controller for meldekort-api som tilbyr operasjoner for å hente meldekortdetaljer og korrigering for en NAV-bruker.
@@ -20,7 +15,6 @@ REST-controller for meldekort-api som tilbyr operasjoner for å hente meldekortd
 fun Routing.meldekortApi(httpClient: HttpClient) {
     getMeldekortdetaljer()
     getKorrigertMeldekort()
-    pingWeblogic()
 }
 
 private const val meldekortGroup = "Meldekort"
@@ -54,19 +48,4 @@ fun Routing.getKorrigertMeldekort() =
         respondOrServiceUnavailable {
             "Hent korrigert id er ikke implementert, men id var: ${meldekortid.meldekortId}"
         }
-    }
-
-@Group(meldekortGroup)
-@Location("$MELDEKORT_PATH/weblogic")
-class PingWeblogic
-
-//Pinger weblogic
-fun Routing.pingWeblogic() =
-    get<PingWeblogic>(
-        "Ping weblogic".securityAndReponds(
-            BearerTokenSecurity(),
-            ok<String>(),
-            serviceUnavailable<ErrorMessage>(),
-            unAuthorized<Error>())) {
-        call.respond(status = HttpStatusCode.OK, message = "${SoapConfig.oppfoelgingPing()}")
     }
