@@ -20,7 +20,7 @@ fun Routing.meldekortApi(httpClient: HttpClient) {
 private const val meldekortGroup = "Meldekort"
 
 @Group(meldekortGroup)
-@Location("$MELDEKORT_PATH/{meldekortId}")
+@Location("$MELDEKORT_PATH")
 data class MeldekortdetaljerInput(val meldekortId: Long)
 
 // Hent meldekortdetaljer
@@ -31,21 +31,21 @@ fun Routing.getMeldekortdetaljer() =
             ok<String>(),
             serviceUnavailable<ErrorMessage>(),
             unAuthorized<Error>())) {
-            meldekortid -> respondOrServiceUnavailable {
-            "Hent meldekortdetaljer er ikke implementert, men id var: ${meldekortid.meldekortId}"
+            meldekortdetaljerInput -> respondOrServiceUnavailable {
+            "Hent meldekortdetaljer er ikke implementert, men id var: ${meldekortdetaljerInput.meldekortId}"
         }
     }
 
 @Group(meldekortGroup)
-@Location("$MELDEKORT_PATH/{meldekortId}/korrigering")
+@Location("$MELDEKORT_PATH/korrigering")
 data class KorrigertMeldekortInput(val meldekortId: Long)
 
 //Henter meldekortid for nytt (korrigert) kort
 fun Routing.getKorrigertMeldekort() =
     get<KorrigertMeldekortInput>(
         "Hent korrigert meldekortid".securityAndReponds(BearerTokenSecurity(), ok<String>(),
-            serviceUnavailable<ErrorMessage>(), unAuthorized<Error>())) { meldekortid ->
-        respondOrServiceUnavailable {
-            "Hent korrigert id er ikke implementert, men id var: ${meldekortid.meldekortId}"
+            serviceUnavailable<ErrorMessage>(), unAuthorized<Error>())) {
+            korrigertMeldekortInput -> respondOrServiceUnavailable {
+            "Hent korrigert id er ikke implementert, men id var: ${korrigertMeldekortInput.meldekortId}"
         }
     }
