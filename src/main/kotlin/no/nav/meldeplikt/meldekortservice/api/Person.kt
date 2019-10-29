@@ -40,18 +40,21 @@ private const val personGroup = "Person"
 
 @Group(personGroup)
 @Location("$PERSON_PATH/historiskemeldekort")
-class HistoriskeMeldekortInput
+data class HistoriskeMeldekortInput(val antallMeldeperioder: Int)
 
 // Henter historiske meldekort
 fun Routing.getHistoriskeMeldekort() =
     get<HistoriskeMeldekortInput>(
         "Hent tidligerer/historiske meldekort".securityAndReponds(
             BearerTokenSecurity(),
-            ok<String>(),
+            ok<Person>(),
             serviceUnavailable<ErrorMessage>(),
             unAuthorized<Error>())) {
-        respondOrServiceUnavailable {
-            "Historiske meldekort er ikke implementert"
+        historiskeMeldekortInput -> respondOrServiceUnavailable {
+            ArenaOrdsService.hentHistoriskeMeldekort(
+                extractIdentFromLoginContext(),
+                historiskeMeldekortInput.antallMeldeperioder
+            )
         }
     }
 
