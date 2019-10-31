@@ -94,6 +94,7 @@ dependencies {
     api("io.ktor:ktor-jackson:$ktorVersion")
     api("no.nav.common:cxf:$navCommonVersion")
     api("no.nav.common:cache:$navCommonVersion")
+    api("no.nav.common:log:$navCommonVersion")
     api("org.slf4j:slf4j-api:$slf4jVersion")
    // api("io.github.microutils:kotlin-logging:$kotlinLoggerVersion")
 
