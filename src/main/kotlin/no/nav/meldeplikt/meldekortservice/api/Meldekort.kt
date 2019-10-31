@@ -40,7 +40,7 @@ fun Routing.getMeldekortdetaljer() =
 @Location("$MELDEKORT_PATH/korrigering")
 data class KorrigertMeldekortInput(val meldekortId: Long)
 
-//Henter meldekortid for nytt (korrigert) kort
+// Henter meldekortid for nytt (korrigert) kort
 fun Routing.getKorrigertMeldekort() =
     get<KorrigertMeldekortInput>(
         "Hent korrigert meldekortid".securityAndReponds(BearerTokenSecurity(), ok<String>(),

@@ -92,7 +92,7 @@ fun Routing.getMeldekort() =
         }
     }
 
-//Innsending/kontroll av meldekort (Amelding)
+// Innsending/kontroll av meldekort (Amelding)
 fun Routing.kontrollerMeldekort() =
     post<MeldekortInput, Meldekortdetaljer>(
         "Kontroll/innsending av meldekort til Amelding".securityAndReponds(

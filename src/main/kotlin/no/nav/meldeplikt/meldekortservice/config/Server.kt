@@ -43,9 +43,9 @@ val swagger = Swagger(
     )
 )
 
-private val cacheAntallMinutter = 60
+private const val cacheAntallMinutter = 55
 // Årsaken til å multiplisere med 2 er at cache-implementasjonen dividerer timeout-verdien med 2...
-private val cacheTimeout: Long = cacheAntallMinutter.toLong() * 60 * 1000 * 2
+private const val cacheTimeout: Long = cacheAntallMinutter.toLong() * 60 * 1000 * 2
 val cache: Cache<String, OrdsToken> = CacheUtils.buildCache(CacheConfig.DEFAULT.withTimeToLiveMillis(cacheTimeout))
 
 val client = HttpClient().client
@@ -99,7 +99,6 @@ object Server {
     }
 
     private fun setAppProperties(environment: Environment) {
-        println(environment)
         val systemuser = hentVaultCredentials()
         setProperty(StsSecurityConstants.STS_URL_KEY, environment.securityTokenService, PUBLIC)
         setProperty(StsSecurityConstants.SYSTEMUSER_USERNAME, systemuser.username, PUBLIC)
