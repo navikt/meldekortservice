@@ -18,6 +18,7 @@ fun Routing.weblogicApi() {
 @Location("$WEBLOGIC_PING_PATH")
 class PingWeblogicInput
 
+// Endepunkt for ping av weblogic
 fun Routing.pingWeblogic() =
     get<PingWeblogicInput>(
         "Ping av weblogic for å sjekke at Arena er oppe".securityAndReponds(
