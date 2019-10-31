@@ -8,15 +8,10 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
 import io.ktor.application.ApplicationCall
-import io.ktor.application.application
 import io.ktor.application.call
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
-import io.ktor.response.respondText
 import io.ktor.util.pipeline.PipelineContext
-import mu.KotlinLogging
-
-private val log = KotlinLogging.logger { }
 
 internal const val BASE_PATH = "/meldekortservice"
 
@@ -33,12 +28,14 @@ internal data class ErrorMessage(val error: String)
 
 internal class Error
 
+private val logger = getLogger()
+
 internal suspend fun PipelineContext<Unit, ApplicationCall>.respondOrServiceUnavailable(block: () -> Any) =
     try {
         val res = block()
         call.respond(HttpStatusCode.OK, res)
     } catch (e: Exception) {
-        log.error(e) { "Feil i meldekortservice" }
+        logger.error("Feil i meldekortservice", e)
         val eMsg = when (e) {
             is java.util.concurrent.TimeoutException -> "Arena ikke tilgjengelig"
             else -> if (e.localizedMessage != null) e.localizedMessage else "exception occurred"

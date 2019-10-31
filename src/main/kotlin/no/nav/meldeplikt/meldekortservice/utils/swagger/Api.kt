@@ -15,6 +15,7 @@ import io.ktor.request.receive
 import io.ktor.routing.Route
 import io.ktor.util.pipeline.PipelineContext
 import no.nav.meldeplikt.meldekortservice.config.swagger
+import no.nav.meldeplikt.meldekortservice.utils.getLogger
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import kotlin.reflect.KClass
 
@@ -22,6 +23,7 @@ import kotlin.reflect.KClass
  * @author Niels Falk, changed by Torstein Nesby and Yrjan Fraschetti
  */
 
+private val logger = getLogger()
 sealed class Security
 data class NoSecurity(val secSetting: List<Map<String, List<String>>> = emptyList()) : Security()
 data class BearerTokenSecurity(
@@ -91,7 +93,7 @@ inline fun <reified LOCATION : Any, reified ENTITY : Any> Route.post(
     noinline body: suspend PipelineContext<Unit, ApplicationCall>.(LOCATION, ENTITY) -> Unit
 ): Route {
 
-    log.info { "Generating swagger spec for POST ${LOCATION::class.java.getAnnotation(Location::class.java)}" }
+    getLogger().info("Generating swagger spec for POST ${LOCATION::class.java.getAnnotation(Location::class.java)}")
     metadata.apply<LOCATION, ENTITY>(HttpMethod.Post)
 
     return when (metadata.security) {
@@ -110,7 +112,7 @@ inline fun <reified LOCATION : Any, reified ENTITY : Any> Route.put(
     noinline body: suspend PipelineContext<Unit, ApplicationCall>.(LOCATION, ENTITY) -> Unit
 ): Route {
 
-    log.info { "Generating swagger spec for PUT ${LOCATION::class.java.getAnnotation(Location::class.java)}" }
+    getLogger().info( "Generating swagger spec for PUT ${LOCATION::class.java.getAnnotation(Location::class.java)}" )
     metadata.apply<LOCATION, ENTITY>(HttpMethod.Put)
 
     return when (metadata.security) {
@@ -129,8 +131,8 @@ inline fun <reified LOCATION : Any> Route.get(
     noinline body: suspend PipelineContext<Unit, ApplicationCall>.(LOCATION) -> Unit
 ): Route {
 
-    log.info { "Generating swagger spec for GET ${LOCATION::class.java.getAnnotation(Location::class.java)}" }
-    metadata.apply<LOCATION, Unit>(HttpMethod.Get)
+    getLogger().info( "Generating swagger spec for GET ${LOCATION::class.java.getAnnotation(Location::class.java)}" )
+        metadata.apply<LOCATION, Unit>(HttpMethod.Get)
 
     return when (metadata.security) {
         is NoSecurity -> get<LOCATION> { body(this, it) }
@@ -148,7 +150,7 @@ inline fun <reified LOCATION : Any> Route.delete(
     noinline body: suspend PipelineContext<Unit, ApplicationCall>.(LOCATION) -> Unit
 ): Route {
 
-    log.info { "Generating swagger spec for DELETE ${LOCATION::class.java.getAnnotation(Location::class.java)}" }
+    getLogger().info ( "Generating swagger spec for DELETE ${LOCATION::class.java.getAnnotation(Location::class.java)}" )
     metadata.apply<LOCATION, Unit>(HttpMethod.Delete)
 
     return when (metadata.security) {

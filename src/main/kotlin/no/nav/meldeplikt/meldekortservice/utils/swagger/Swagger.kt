@@ -15,13 +15,12 @@ import kotlin.reflect.KProperty1
 import kotlin.reflect.KType
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.memberProperties
-import mu.KotlinLogging
 import no.nav.meldeplikt.meldekortservice.config.swagger
+import no.nav.meldeplikt.meldekortservice.utils.getLogger
 
 /**
  * @author Niels Falk, changed by Torstein Nesby, Yrjan Fraschetti and Almir Lisic
  */
-val log = KotlinLogging.logger { }
 
 typealias ModelName = String
 typealias PropertyName = String
@@ -32,6 +31,8 @@ typealias MethodName = String
 typealias HttpStatus = String
 typealias Methods = MutableMap<MethodName, Operation>
 typealias Content = MutableMap<String, MutableMap<String,ModelReference?>>
+
+private val logger = getLogger()
 
 data class Key(
     val description: String,
@@ -287,7 +288,7 @@ open class Property(
 fun addDefinition(kClass: KClass<*>) {
     if (kClass != Unit::class) {
         if (!swagger.components.schemas.containsKey(kClass.modelName())) {
-            log.info { "Generating swagger spec for model ${kClass.modelName()}" }
+            logger.info( "Generating swagger spec for model ${kClass.modelName()}" )
             swagger.components.schemas[kClass.modelName()] = ModelData(kClass)
         }
     }

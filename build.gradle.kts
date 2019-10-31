@@ -23,6 +23,7 @@ val navCommonVersion = "1.2019.05.08-08.52-482a48e1a056"
 val kotlinLoggerVersion = "1.5.4"
 val ktorSwagger = "0.4.0"
 val swaggerVersion = "3.23.8"
+val slf4jVersion = "1.7.26"
 
 val mainClass = "no.nav.meldeplikt.meldekortservice.AppKt"
 
@@ -77,6 +78,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     api("no.nav:vault-jdbc:$vaultJdbcVersion")
     api("ch.qos.logback:logback-classic:$logbackVersion")
+    api("ch.qos.logback:logback-core:$logbackVersion")
     api("net.logstash.logback:logstash-logback-encoder:$logstashVersion")
     api("io.prometheus:simpleclient_common:$prometheusVersion")
     api("io.prometheus:simpleclient_hotspot:$prometheusVersion")
@@ -92,7 +94,8 @@ dependencies {
     api("io.ktor:ktor-jackson:$ktorVersion")
     api("no.nav.common:cxf:$navCommonVersion")
     api("no.nav.common:cache:$navCommonVersion")
-    api("io.github.microutils:kotlin-logging:$kotlinLoggerVersion")
+    api("org.slf4j:slf4j-api:$slf4jVersion")
+   // api("io.github.microutils:kotlin-logging:$kotlinLoggerVersion")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testImplementation("org.assertj:assertj-core:$assertJVersion")
