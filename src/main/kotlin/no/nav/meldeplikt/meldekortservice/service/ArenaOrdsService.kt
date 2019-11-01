@@ -19,6 +19,8 @@ import java.util.*
 
 object ArenaOrdsService {
 
+    private val log = getLogger(ArenaOrdsService::class)
+
     private val env = Environment()
     private val xmlMapper = XmlMapper()
 
@@ -53,7 +55,7 @@ object ArenaOrdsService {
     }
 
     private fun hentOrdsToken(): OrdsToken {
-        println("Cache timet ut. Henter token")
+        log.info("Cache timet ut. Henter token")
         var token = OrdsToken(null, null, null)
 
         if (isCurrentlyRunningOnNais()) {
@@ -63,7 +65,7 @@ object ArenaOrdsService {
                 }
             }
         } else {
-            println("Henter ikke token da appen kjører lokalt")
+            log.info("Henter ikke token da appen kjører lokalt")
             token = token.copy(accessToken = "token")
         }
 

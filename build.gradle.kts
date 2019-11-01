@@ -25,6 +25,7 @@ val ktorSwagger = "0.4.0"
 val swaggerVersion = "3.23.8"
 val vaultVersion = "3.1.0"
 val tjenestespecVersion = "1.2019.08.16-13.46-35cbdfd492d4"
+val slf4jVersion = "1.7.26"
 
 val mainClass = "no.nav.meldeplikt.meldekortservice.AppKt"
 
@@ -79,6 +80,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     api("no.nav:vault-jdbc:$vaultJdbcVersion")
     api("ch.qos.logback:logback-classic:$logbackVersion")
+    api("ch.qos.logback:logback-core:$logbackVersion")
     api("net.logstash.logback:logstash-logback-encoder:$logstashVersion")
     api("io.prometheus:simpleclient_common:$prometheusVersion")
     api("io.prometheus:simpleclient_hotspot:$prometheusVersion")
@@ -95,6 +97,8 @@ dependencies {
     api("io.ktor:ktor-jackson:$ktorVersion")
     api("no.nav.common:cxf:$navCommonVersion")
     api("no.nav.common:cache:$navCommonVersion")
+    api("no.nav.common:log:$navCommonVersion")
+    api("org.slf4j:slf4j-api:$slf4jVersion")
     api("no.nav.common:types:$navCommonVersion")
     api("io.github.microutils:kotlin-logging:$kotlinLoggerVersion")
     api("com.bettercloud:vault-java-driver:$vaultVersion")

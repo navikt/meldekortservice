@@ -1,16 +1,16 @@
 package no.nav.meldeplikt.meldekortservice.service
 
-import mu.KLogging
 import no.aetat.amelding.externcontrolemelding.webservices.ExternControlEmeldingSOAP
 import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
 import no.nav.meldeplikt.meldekortservice.config.SoapConfig
 import no.nav.meldeplikt.meldekortservice.mapper.MeldekortTypeMapper
 import no.nav.meldeplikt.meldekortservice.model.WeblogicPing
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
+import no.nav.meldeplikt.meldekortservice.utils.getLogger
 
 class SoapServiceImpl(externControlEmeldingSOAP: ExternControlEmeldingSOAP) : SoapService {
 
-    companion object: KLogging()
+    private val log = getLogger(SoapServiceImpl::class)
 
     private val amelding = externControlEmeldingSOAP
 
@@ -26,10 +26,10 @@ class SoapServiceImpl(externControlEmeldingSOAP: ExternControlEmeldingSOAP) : So
 
         return try {
             oppfoelgingPing.ping()
-            println("Ping vellykket")
+            log.info("Ping vellykket")
             WeblogicPing(true)
         } catch (e: Exception) {
-            println(e)
+            log.info("Ingen svar fra WebLogic, ping feilet", e)
             WeblogicPing(false)
         }
     }
