@@ -6,4 +6,4 @@ import kotlin.reflect.KClass
 
 fun getLogger(name: KClass<*>): Logger = LoggerFactory.getLogger(name.java)
 
-val defaultLog = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME)
+val defaultLog: Logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME)
