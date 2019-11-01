@@ -99,7 +99,6 @@ dependencies {
     api("no.nav.common:cache:$navCommonVersion")
     api("no.nav.common:log:$navCommonVersion")
     api("org.slf4j:slf4j-api:$slf4jVersion")
-   // api("io.github.microutils:kotlin-logging:$kotlinLoggerVersion")
     api("no.nav.common:types:$navCommonVersion")
     api("io.github.microutils:kotlin-logging:$kotlinLoggerVersion")
     api("com.bettercloud:vault-java-driver:$vaultVersion")
