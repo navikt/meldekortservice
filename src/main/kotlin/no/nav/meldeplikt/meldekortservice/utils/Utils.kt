@@ -36,14 +36,12 @@ internal data class ErrorMessage(val error: String)
 
 internal class Error
 
-private val logger = getLogger()
-
 internal suspend fun PipelineContext<Unit, ApplicationCall>.respondOrServiceUnavailable(block: () -> Any) =
     try {
         val res = block()
         call.respond(HttpStatusCode.OK, res)
     } catch (e: Exception) {
-        logger.error("Feil i meldekortservice", e)
+        defaultLog.error("Feil i meldekortservice", e)
         val eMsg = when (e) {
             is java.util.concurrent.TimeoutException -> "Arena ikke tilgjengelig"
             else -> if (e.localizedMessage != null) e.localizedMessage else "exception occurred"

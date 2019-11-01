@@ -6,8 +6,11 @@ import no.nav.meldeplikt.meldekortservice.config.SoapConfig
 import no.nav.meldeplikt.meldekortservice.mapper.MeldekortTypeMapper
 import no.nav.meldeplikt.meldekortservice.model.WeblogicPing
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
+import no.nav.meldeplikt.meldekortservice.utils.getLogger
 
 class SoapServiceImpl(externControlEmeldingSOAP: ExternControlEmeldingSOAP) : SoapService {
+
+    private val log = getLogger(SoapServiceImpl::class)
 
     private val amelding = externControlEmeldingSOAP
 
@@ -23,10 +26,10 @@ class SoapServiceImpl(externControlEmeldingSOAP: ExternControlEmeldingSOAP) : So
 
         return try {
             oppfoelgingPing.ping()
-            println("Ping vellykket")
+            log.info("Ping vellykket")
             WeblogicPing(true)
         } catch (e: Exception) {
-            println(e)
+            log.info("Ingen svar fra WebLogic, ping feilet", e)
             WeblogicPing(false)
         }
     }

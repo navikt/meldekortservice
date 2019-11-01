@@ -1,9 +1,0 @@
-package no.nav.meldeplikt.meldekortservice.utils
-
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-import kotlin.reflect.KClass
-
-fun getLogger(): Logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME)
-
-fun getLogger(name: KClass<Any>): Logger = LoggerFactory.getLogger(name.java)
