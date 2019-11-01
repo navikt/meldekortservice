@@ -20,6 +20,11 @@ spec:
     initialDelay: 10
   vault:
     enabled: true
+    paths:
+      - kvPath: {{serviceUserKvPath}}
+        mountPath: /var/run/secrets/nais.io/srvmeldekortservice
+      - kvPath: {{envVarKvPath}}
+        mountPath: /var/run/secrets/nais.io/vault
   replicas:
     min: 2
     max: 4

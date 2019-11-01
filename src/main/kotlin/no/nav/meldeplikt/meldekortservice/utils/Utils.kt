@@ -20,9 +20,17 @@ internal const val INTERNAL_PATH = "$BASE_PATH/internal"
 
 internal const val MELDEKORT_PATH = "$API_PATH/meldekort"
 internal const val PERSON_PATH = "$API_PATH/person"
+internal const val WEBLOGIC_PING_PATH = "$API_PATH/weblogic"
 
-internal const val ARENA_ORDS_TOKEN_PATH = "/meldeplikt/oauth/token"
-internal const val ARENA_ORDS_HENT_MELDEKORT = "/meldeplikt/v1/meldekort/hent_meldekort/"
+internal const val ARENA_ORDS_API_V1 = "/api/v1"
+internal const val ARENA_ORDS_TOKEN_PATH = "/api/oauth/token"
+internal const val ARENA_ORDS_HENT_MELDEKORT = "$ARENA_ORDS_API_V1/meldekort?fnr="
+internal const val ARENA_ORDS_HENT_HISTORISKE_MELDEKORT = "$ARENA_ORDS_API_V1/meldekort/historiske?fnr="
+internal const val ARENA_ORDS_MELDEPERIODER_PARAM = "&antMeldeperioder="
+
+const val vaultUrl = "https://vault.adeo.no"
+const val vaultTokenPath = "/var/run/secrets/nais.io/vault/vault_token"
+const val vaultKvPath = "serviceuser/data/dev/srvmeldekortservice"
 
 internal data class ErrorMessage(val error: String)
 

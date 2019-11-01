@@ -23,6 +23,8 @@ val navCommonVersion = "1.2019.05.08-08.52-482a48e1a056"
 val kotlinLoggerVersion = "1.5.4"
 val ktorSwagger = "0.4.0"
 val swaggerVersion = "3.23.8"
+val vaultVersion = "3.1.0"
+val tjenestespecVersion = "1.2019.08.16-13.46-35cbdfd492d4"
 val slf4jVersion = "1.7.26"
 
 val mainClass = "no.nav.meldeplikt.meldekortservice.AppKt"
@@ -91,12 +93,17 @@ dependencies {
     api("io.ktor:ktor-locations:$ktorVersion")
     api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     api("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonVersion")
+    api("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion")
     api("io.ktor:ktor-jackson:$ktorVersion")
     api("no.nav.common:cxf:$navCommonVersion")
     api("no.nav.common:cache:$navCommonVersion")
     api("no.nav.common:log:$navCommonVersion")
     api("org.slf4j:slf4j-api:$slf4jVersion")
    // api("io.github.microutils:kotlin-logging:$kotlinLoggerVersion")
+    api("no.nav.common:types:$navCommonVersion")
+    api("io.github.microutils:kotlin-logging:$kotlinLoggerVersion")
+    api("com.bettercloud:vault-java-driver:$vaultVersion")
+    api("no.nav.tjenestespesifikasjoner:arena-sakOgAktivitet_v1:$tjenestespecVersion")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testImplementation("org.assertj:assertj-core:$assertJVersion")
