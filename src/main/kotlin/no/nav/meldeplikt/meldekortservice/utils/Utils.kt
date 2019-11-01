@@ -1,11 +1,22 @@
 package no.nav.meldeplikt.meldekortservice.utils
 
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
 import io.ktor.application.ApplicationCall
 import io.ktor.application.application
 import io.ktor.application.call
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
+import io.ktor.response.respondText
 import io.ktor.util.pipeline.PipelineContext
+import mu.KotlinLogging
+
+private val log = KotlinLogging.logger { }
 
 internal const val BASE_PATH = "/meldekortservice"
 
@@ -14,6 +25,17 @@ internal const val INTERNAL_PATH = "$BASE_PATH/internal"
 
 internal const val MELDEKORT_PATH = "$API_PATH/meldekort"
 internal const val PERSON_PATH = "$API_PATH/person"
+internal const val WEBLOGIC_PING_PATH = "$API_PATH/weblogic"
+
+internal const val ARENA_ORDS_API_V1 = "/api/v1"
+internal const val ARENA_ORDS_TOKEN_PATH = "/api/oauth/token"
+internal const val ARENA_ORDS_HENT_MELDEKORT = "$ARENA_ORDS_API_V1/meldekort?fnr="
+internal const val ARENA_ORDS_HENT_HISTORISKE_MELDEKORT = "$ARENA_ORDS_API_V1/meldekort/historiske?fnr="
+internal const val ARENA_ORDS_MELDEPERIODER_PARAM = "&antMeldeperioder="
+
+const val vaultUrl = "https://vault.adeo.no"
+const val vaultTokenPath = "/var/run/secrets/nais.io/vault/vault_token"
+const val vaultKvPath = "serviceuser/data/dev/srvmeldekortservice"
 
 internal data class ErrorMessage(val error: String)
 
@@ -22,9 +44,9 @@ internal class Error
 internal suspend fun PipelineContext<Unit, ApplicationCall>.respondOrServiceUnavailable(block: () -> Any) =
     try {
         val res = block()
-        call.respond(res)
+        call.respond(HttpStatusCode.OK, res)
     } catch (e: Exception) {
-        application.environment.log.error("Feil i meldekortservice", e)
+        log.error(e) { "Feil i meldekortservice" }
         val eMsg = when (e) {
             is java.util.concurrent.TimeoutException -> "Arena ikke tilgjengelig"
             else -> if (e.localizedMessage != null) e.localizedMessage else "exception occurred"
@@ -35,3 +57,12 @@ internal suspend fun PipelineContext<Unit, ApplicationCall>.respondOrServiceUnav
 fun isCurrentlyRunningOnNais(): Boolean {
     return System.getenv("NAIS_APP_NAME") != null
 }
+
+val objectMapper: ObjectMapper = ObjectMapper()
+    .registerKotlinModule()
+    .registerModule(JavaTimeModule())
+    .registerModule(ParameterNamesModule())
+    .enable(SerializationFeature.INDENT_OUTPUT)
+    .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+    .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)

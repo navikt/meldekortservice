@@ -7,10 +7,13 @@ import io.ktor.locations.Location
 import io.ktor.response.respond
 import io.ktor.routing.Routing
 import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
-import no.nav.meldeplikt.meldekortservice.config.Amelding
+import no.nav.meldeplikt.meldekortservice.config.SoapConfig
+import no.nav.meldeplikt.meldekortservice.config.extractIdentFromLoginContext
 import no.nav.meldeplikt.meldekortservice.model.Meldeform
-import no.nav.meldeplikt.meldekortservice.model.Meldekortdetaljer
+import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.model.Meldeperiode
+import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
+import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
 import no.nav.meldeplikt.meldekortservice.utils.Error
 import no.nav.meldeplikt.meldekortservice.utils.ErrorMessage
 import no.nav.meldeplikt.meldekortservice.utils.swagger.*
@@ -37,18 +40,21 @@ private const val personGroup = "Person"
 
 @Group(personGroup)
 @Location("$PERSON_PATH/historiskemeldekort")
-class HistoriskeMeldekortInput
+data class HistoriskeMeldekortInput(val antallMeldeperioder: Int)
 
 // Henter historiske meldekort
 fun Routing.getHistoriskeMeldekort() =
     get<HistoriskeMeldekortInput>(
         "Hent tidligerer/historiske meldekort".securityAndReponds(
             BearerTokenSecurity(),
-            ok<String>(),
+            ok<Person>(),
             serviceUnavailable<ErrorMessage>(),
             unAuthorized<Error>())) {
-        respondOrServiceUnavailable {
-            "Historiske meldekort er ikke implementert"
+        historiskeMeldekortInput -> respondOrServiceUnavailable {
+            ArenaOrdsService.hentHistoriskeMeldekort(
+                extractIdentFromLoginContext(),
+                historiskeMeldekortInput.antallMeldeperioder
+            )
         }
     }
 
@@ -65,7 +71,7 @@ fun Routing.getStatus() =
             serviceUnavailable<ErrorMessage>(),
             unAuthorized<Error>())) {
         respondOrServiceUnavailable {
-            "Status er ikke implementert"
+            "Status er ikke implementert.}"
         }
     }
 
@@ -78,15 +84,15 @@ fun Routing.getMeldekort() =
     get<MeldekortInput>(
         "Hent meldekort".securityAndReponds(
             BearerTokenSecurity(),
-            ok<String>(),
+            ok<Person>(),
             serviceUnavailable<ErrorMessage>(),
             unAuthorized<Error>())) {
         respondOrServiceUnavailable {
-            "Meldekort er ikke implementert"
+            ArenaOrdsService.hentMeldekort(extractIdentFromLoginContext())
         }
     }
 
-//Innsending/kontroll av meldekort (Amelding)
+// Innsending/kontroll av meldekort (Amelding)
 fun Routing.kontrollerMeldekort() =
     post<MeldekortInput, Meldekortdetaljer>(
         "Kontroll/innsending av meldekort til Amelding".securityAndReponds(
@@ -98,7 +104,7 @@ fun Routing.kontrollerMeldekort() =
     ) {_, meldekort ->
 
         try {
-            val kontrollertType = Amelding.ameldingService().kontrollerMeldekort(meldekort)
+            val kontrollertType = SoapConfig.soapService().kontrollerMeldekort(meldekort)
             call.respond(kontrollertType)
         } catch (e: Exception) {
             val errorMessage = ErrorMessage("Meldekort ble ikke sendt inn. ${e.message}")

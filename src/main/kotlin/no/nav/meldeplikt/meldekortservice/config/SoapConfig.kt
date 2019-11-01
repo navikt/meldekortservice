@@ -1,17 +1,19 @@
 package no.nav.meldeplikt.meldekortservice.config
 
 import no.aetat.amelding.externcontrolemelding.webservices.ExternControlEmeldingSOAP
-import no.nav.meldeplikt.meldekortservice.service.AmeldingService
-import no.nav.meldeplikt.meldekortservice.service.AmeldingServiceImpl
-import no.nav.meldeplikt.meldekortservice.service.AmeldingServiceMock
+import no.nav.meldeplikt.meldekortservice.service.SoapService
+import no.nav.meldeplikt.meldekortservice.service.SoapServiceImpl
+import no.nav.meldeplikt.meldekortservice.service.SoapServiceMock
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import no.nav.sbl.dialogarena.common.cxf.CXFClient
+import no.nav.tjeneste.virksomhet.sakogaktivitet.v1.SakOgAktivitetV1
+import org.apache.cxf.interceptor.LoggingOutInterceptor
 import org.apache.cxf.ws.security.wss4j.WSS4JOutInterceptor
 import org.apache.wss4j.common.ext.WSPasswordCallback
 import org.apache.wss4j.dom.handler.WSHandlerConstants
 import javax.security.auth.callback.CallbackHandler
 
-object Amelding {
+object SoapConfig {
 
     private val environment = Environment()
 
@@ -30,19 +32,27 @@ object Amelding {
         }
 
     //Velger hvilke av Ameldingsservicene som skal returneres ettersom om appen kjører på nais eller ikke
-    fun ameldingService(): AmeldingService {
+    fun soapService(): SoapService {
         return if(isCurrentlyRunningOnNais()) {
-            AmeldingServiceImpl(externControlEmeldingConfig())
+            SoapServiceImpl(externControlEmeldingConfig())
         } else {
-            AmeldingServiceMock()
+            SoapServiceMock()
         }
     }
 
     //Setter opp tilkobling mot Amelding
     private fun externControlEmeldingConfig(): ExternControlEmeldingSOAP {
         return CXFClient(ExternControlEmeldingSOAP::class.java)
-            .address(environment.emeldingUrl.toString())
+            .address(environment.ameldingUrl.toString())
             .withOutInterceptor(WSS4JOutInterceptor(interceptorConfig))
             .build()
+    }
+
+    fun sakOgAktivitet(): CXFClient<SakOgAktivitetV1> {
+        val url = environment.sakOgAktivitetUrl
+        println("URL for Oppfoelging_V1 er $url")
+        return CXFClient(SakOgAktivitetV1::class.java)
+            .withOutInterceptor(LoggingOutInterceptor())
+            .address(url)
     }
 }
