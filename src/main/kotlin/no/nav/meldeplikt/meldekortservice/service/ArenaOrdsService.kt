@@ -1,15 +1,10 @@
 package no.nav.meldeplikt.meldekortservice.service
 
-import com.bettercloud.vault.json.JsonObject
-import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
-import com.fasterxml.jackson.jaxrs.json.JsonMapperConfigurator
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.client.request.post
-import jdk.nashorn.internal.parser.JSONParser
 import kotlinx.coroutines.runBlocking
-import no.aetat.arena.mk_meldekort.MeldekortType
 import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.config.cache
 import no.nav.meldeplikt.meldekortservice.config.client
@@ -19,11 +14,6 @@ import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.ords.Meldekort
 import no.nav.meldeplikt.meldekortservice.utils.*
-import no.nav.meldeplikt.meldekortservice.utils.ARENA_ORDS_HENT_HISTORISKE_MELDEKORT
-import no.nav.meldeplikt.meldekortservice.utils.ARENA_ORDS_HENT_MELDEKORT
-import no.nav.meldeplikt.meldekortservice.utils.ARENA_ORDS_MELDEPERIODER_PARAM
-import no.nav.meldeplikt.meldekortservice.utils.ARENA_ORDS_TOKEN_PATH
-import org.json.JSONObject
 import java.util.*
 
 object ArenaOrdsService {
@@ -64,7 +54,7 @@ object ArenaOrdsService {
         log.info("Hent meldekortdetaljer. Meldekortdetaljer var: $meldekort")
         return Meldekortdetaljer(kortType = KortType.AAP)
     }
-
+z
     fun kopierMeldekort(meldekortId: Long): Long {
         val nyMeldekortId = runBlocking {
             client.get<Long>("${env.ordsUrl}$ARENA_ORDS_KOPIER_MELDEKORT$meldekortId") {
