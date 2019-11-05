@@ -3,6 +3,8 @@ package no.nav.meldeplikt.meldekortservice.api
 import io.ktor.client.HttpClient
 import io.ktor.locations.Location
 import io.ktor.routing.Routing
+import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
+import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
 import no.nav.meldeplikt.meldekortservice.utils.swagger.*
 import no.nav.meldeplikt.meldekortservice.utils.Error
 import no.nav.meldeplikt.meldekortservice.utils.ErrorMessage
@@ -12,7 +14,7 @@ import no.nav.meldeplikt.meldekortservice.utils.respondOrServiceUnavailable
 /**
 REST-controller for meldekort-api som tilbyr operasjoner for å hente meldekortdetaljer og korrigering for en NAV-bruker.
  */
-fun Routing.meldekortApi(httpClient: HttpClient) {
+fun Routing.meldekortApi() {
     getMeldekortdetaljer()
     getKorrigertMeldekort()
 }
@@ -28,11 +30,12 @@ fun Routing.getMeldekortdetaljer() =
     get<MeldekortdetaljerInput>(
         "Hent meldekortdetaljer".securityAndReponds(
             BearerTokenSecurity(),
-            ok<String>(),
+            ok<Meldekortdetaljer>(),
             serviceUnavailable<ErrorMessage>(),
             unAuthorized<Error>())) {
             meldekortdetaljerInput -> respondOrServiceUnavailable {
-            "Hent meldekortdetaljer er ikke implementert, men id var: ${meldekortdetaljerInput.meldekortId}"
+
+            ArenaOrdsService.hentMeldekortdetaljer(meldekortdetaljerInput.meldekortId)
         }
     }
 
@@ -45,7 +48,8 @@ fun Routing.getKorrigertMeldekort() =
     get<KorrigertMeldekortInput>(
         "Hent korrigert meldekortid".securityAndReponds(BearerTokenSecurity(), ok<String>(),
             serviceUnavailable<ErrorMessage>(), unAuthorized<Error>())) {
-            korrigertMeldekortInput -> respondOrServiceUnavailable {
-            "Hent korrigert id er ikke implementert, men id var: ${korrigertMeldekortInput.meldekortId}"
+            korrigertMeldekortInput -> respondOrServiceUnavailable{
+
+            ArenaOrdsService.kopierMeldekort(korrigertMeldekortInput.meldekortId)
         }
     }

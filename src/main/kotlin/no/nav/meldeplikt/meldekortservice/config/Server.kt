@@ -82,8 +82,8 @@ object Server {
                 healthApi()
                 swaggerRoutes()
                 weblogicApi()
-                meldekortApi(client)
-                personApi(client)
+                meldekortApi()
+                personApi()
             }
         }
         addGraceTimeAtShutdownToAllowRunningRequestsToComplete(app)

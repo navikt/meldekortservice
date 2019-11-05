@@ -1,20 +1,28 @@
 package no.nav.meldeplikt.meldekortservice.service
 
+import com.bettercloud.vault.json.JsonObject
+import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
+import com.fasterxml.jackson.jaxrs.json.JsonMapperConfigurator
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.client.request.post
+import jdk.nashorn.internal.parser.JSONParser
 import kotlinx.coroutines.runBlocking
+import no.aetat.arena.mk_meldekort.MeldekortType
 import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.config.cache
 import no.nav.meldeplikt.meldekortservice.config.client
 import no.nav.meldeplikt.meldekortservice.model.OrdsToken
+import no.nav.meldeplikt.meldekortservice.model.enum.KortType
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
+import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.utils.*
 import no.nav.meldeplikt.meldekortservice.utils.ARENA_ORDS_HENT_HISTORISKE_MELDEKORT
 import no.nav.meldeplikt.meldekortservice.utils.ARENA_ORDS_HENT_MELDEKORT
 import no.nav.meldeplikt.meldekortservice.utils.ARENA_ORDS_MELDEPERIODER_PARAM
 import no.nav.meldeplikt.meldekortservice.utils.ARENA_ORDS_TOKEN_PATH
+import org.json.JSONObject
 import java.util.*
 
 object ArenaOrdsService {
@@ -43,6 +51,26 @@ object ArenaOrdsService {
             }
         }
         return xmlMapper.readValue(person, Person::class.java)
+    }
+
+    fun hentMeldekortdetaljer(meldekortId: Long): Meldekortdetaljer {
+        val detaljer = runBlocking {
+            client.get<String>("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORTDETALJER$meldekortId") {
+                setupOrdsRequest()
+            }
+        }
+        val meldekort = xmlMapper.readValue(detaljer, MeldekortType::class.java)
+        log.info("Hent meldekortdetaljer. Meldekortdetaljer var: $meldekort")
+        return Meldekortdetaljer(kortType = KortType.AAP)
+    }
+
+    fun kopierMeldekort(meldekortId: Long): Long {
+        val nyMeldekortId = runBlocking {
+            client.get<Long>("${env.ordsUrl}$ARENA_ORDS_KOPIER_MELDEKORT$meldekortId") {
+                setupTokenRequest()
+            }
+        }
+        return nyMeldekortId
     }
 
     private fun HttpRequestBuilder.setupOrdsRequest() {

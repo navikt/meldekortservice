@@ -28,7 +28,7 @@ REST-controller for meldekort-api som tilbyr operasjoner for å hente:
 - Meldekort
 I tillegg sende inn/kontrollere meldekort
  */
-fun Routing.personApi(httpClient: HttpClient) {
+fun Routing.personApi() {
     getHistoriskeMeldekort()
     getStatus()
     getMeldekort()
