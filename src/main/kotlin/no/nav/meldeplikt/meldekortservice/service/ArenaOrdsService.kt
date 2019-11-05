@@ -54,7 +54,7 @@ object ArenaOrdsService {
         log.info("Hent meldekortdetaljer. Meldekortdetaljer var: $meldekort")
         return Meldekortdetaljer(kortType = KortType.AAP)
     }
-z
+
     fun kopierMeldekort(meldekortId: Long): Long {
         val nyMeldekortId = runBlocking {
             client.get<Long>("${env.ordsUrl}$ARENA_ORDS_KOPIER_MELDEKORT$meldekortId") {
