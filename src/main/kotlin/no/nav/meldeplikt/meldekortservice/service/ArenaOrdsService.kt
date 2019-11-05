@@ -17,6 +17,7 @@ import no.nav.meldeplikt.meldekortservice.model.OrdsToken
 import no.nav.meldeplikt.meldekortservice.model.enum.KortType
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
+import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.ords.Meldekort
 import no.nav.meldeplikt.meldekortservice.utils.*
 import no.nav.meldeplikt.meldekortservice.utils.ARENA_ORDS_HENT_HISTORISKE_MELDEKORT
 import no.nav.meldeplikt.meldekortservice.utils.ARENA_ORDS_HENT_MELDEKORT
@@ -59,7 +60,7 @@ object ArenaOrdsService {
                 setupOrdsRequest()
             }
         }
-        val meldekort = xmlMapper.readValue(detaljer, MeldekortType::class.java)
+        val meldekort = xmlMapper.readValue(detaljer, Meldekort::class.java)
         log.info("Hent meldekortdetaljer. Meldekortdetaljer var: $meldekort")
         return Meldekortdetaljer(kortType = KortType.AAP)
     }
