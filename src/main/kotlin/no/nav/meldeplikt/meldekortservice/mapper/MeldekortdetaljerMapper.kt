@@ -12,6 +12,7 @@ object MeldekortdetaljerMapper {
 
     fun mapOrdsMeldekortTilMeldekortdetaljer(meldekort: OrdsMeldekort): Meldekortdetaljer {
         return Meldekortdetaljer(
+            id = "1",
             personId = meldekort.hode.personId.verdi,
             fodselsnr = meldekort.hode.fodselsnr.verdi,
             meldekortId = meldekort.hode.meldekortId.verdi,
