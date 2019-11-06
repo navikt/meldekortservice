@@ -28,7 +28,7 @@ internal const val ARENA_ORDS_HENT_MELDEKORT = "$ARENA_ORDS_API_V1/meldekort?fnr
 internal const val ARENA_ORDS_HENT_HISTORISKE_MELDEKORT = "$ARENA_ORDS_API_V1/meldekort/historiske?fnr="
 internal const val ARENA_ORDS_MELDEPERIODER_PARAM = "&antMeldeperioder="
 internal const val ARENA_ORDS_HENT_MELDEKORTDETALJER = "$ARENA_ORDS_API_V1/meldekort/detaljer?meldekortId="
-internal const val ARENA_ORDS_KOPIER_MELDEKORT = "$ARENA_ORDS_API_V1/meldekort/kopi?meldekortId="
+internal const val ARENA_ORDS_KOPIER_MELDEKORT = "$ARENA_ORDS_API_V1/meldekort/kopi"
 
 const val vaultUrl = "https://vault.adeo.no"
 const val vaultTokenPath = "/var/run/secrets/nais.io/vault/vault_token"

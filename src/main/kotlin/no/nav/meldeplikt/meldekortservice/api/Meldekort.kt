@@ -3,13 +3,15 @@ package no.nav.meldeplikt.meldekortservice.api
 import io.ktor.client.HttpClient
 import io.ktor.locations.Location
 import io.ktor.routing.Routing
+import no.nav.meldeplikt.meldekortservice.config.extractIdentFromLoginContext
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
-import no.nav.meldeplikt.meldekortservice.utils.swagger.*
+import no.nav.meldeplikt.meldekortservice.utils.*
 import no.nav.meldeplikt.meldekortservice.utils.Error
 import no.nav.meldeplikt.meldekortservice.utils.ErrorMessage
 import no.nav.meldeplikt.meldekortservice.utils.MELDEKORT_PATH
 import no.nav.meldeplikt.meldekortservice.utils.respondOrServiceUnavailable
+import no.nav.meldeplikt.meldekortservice.utils.swagger.*
 
 /**
 REST-controller for meldekort-api som tilbyr operasjoner for å hente meldekortdetaljer og korrigering for en NAV-bruker.
@@ -35,7 +37,14 @@ fun Routing.getMeldekortdetaljer() =
             unAuthorized<Error>())) {
             meldekortdetaljerInput -> respondOrServiceUnavailable {
 
-            ArenaOrdsService.hentMeldekortdetaljer(meldekortdetaljerInput.meldekortId)
+            val meldekortdetaljer = ArenaOrdsService.hentMeldekortdetaljer(meldekortdetaljerInput.meldekortId)
+            if (meldekortdetaljer.fodselsnr == extractIdentFromLoginContext()) {
+                meldekortdetaljer
+            } else {
+                val msg = "Personidentifikator matcher ikke. Bruker kan derfor ikke hente ut meldekortdetaljer."
+                defaultLog.warn(msg)
+                throw SecurityException(msg)
+            }
         }
     }
 

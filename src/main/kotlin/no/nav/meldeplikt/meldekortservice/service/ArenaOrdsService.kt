@@ -11,6 +11,7 @@ import no.nav.meldeplikt.meldekortservice.config.client
 import no.nav.meldeplikt.meldekortservice.mapper.MeldekortdetaljerMapper
 import no.nav.meldeplikt.meldekortservice.model.OrdsToken
 import no.nav.meldeplikt.meldekortservice.model.enum.KortType
+import no.nav.meldeplikt.meldekortservice.model.korriger.KopierMeldekortResponse
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.ords.Meldekort
@@ -57,16 +58,20 @@ object ArenaOrdsService {
 
     fun kopierMeldekort(meldekortId: Long): Long {
         val nyMeldekortId = runBlocking {
-            client.get<Long>("${env.ordsUrl}$ARENA_ORDS_KOPIER_MELDEKORT$meldekortId") {
-                setupTokenRequest()
+            client.post<String>("${env.ordsUrl}$ARENA_ORDS_KOPIER_MELDEKORT") {
+                setupOrdsRequest(meldekortId)
             }
         }
-        return nyMeldekortId
+        val response = xmlMapper.readValue(nyMeldekortId, KopierMeldekortResponse::class.java)
+        return response.meldekortId
     }
 
-    private fun HttpRequestBuilder.setupOrdsRequest() {
+    private fun HttpRequestBuilder.setupOrdsRequest(meldekortId: Long? = null) {
         headers.append("Accept", "application/xml; charset=UTF-8")
         headers.append("Authorization","Bearer ${hentToken().accessToken}")
+        if (meldekortId != null) {
+            headers.append("meldekortId", meldekortId.toString())
+        }
     }
 
     private fun hentToken(): OrdsToken {
