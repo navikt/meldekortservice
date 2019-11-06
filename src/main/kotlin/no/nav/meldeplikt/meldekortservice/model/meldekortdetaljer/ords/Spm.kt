@@ -1,7 +1,10 @@
 package no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.ords
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
+import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.ords.verdi.BooleanVerdi
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class Spm (
     @JacksonXmlProperty(localName = "Arbeidssoker")
     val arbeidssoker: Svar,
@@ -15,6 +18,8 @@ data class Spm (
     val kurs: Svar,
     @JacksonXmlProperty(localName = "Forskudd")
     val forskudd: BooleanVerdi,
+    @JacksonXmlProperty(localName = "MeldekortDager")
+    val meldekortDager: List<MeldekortDag>? = null,
     @JacksonXmlProperty(localName = "Signatur")
     val signatur: BooleanVerdi
 )
@@ -25,9 +30,3 @@ data class Svar (
     @JacksonXmlProperty(localName = "SvarNei")
     val svarNei: BooleanVerdi
 )
-
-data class BooleanVerdi (
-    @JacksonXmlProperty(localName = "Verdi")
-    val verdi: Boolean
-)
-
