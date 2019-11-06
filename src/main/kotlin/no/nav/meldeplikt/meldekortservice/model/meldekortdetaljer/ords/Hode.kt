@@ -1,6 +1,10 @@
 package no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.ords
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
+import no.nav.meldeplikt.meldekortservice.utils.LocalDateDeserializer
+import no.nav.meldeplikt.meldekortservice.utils.LocalDateSerializer
 import java.time.LocalDate
 
 data class Hode (
@@ -17,8 +21,12 @@ data class Hode (
     @JacksonXmlProperty(localName = "KortType")
     val kortType: String,
     @JacksonXmlProperty(localName = "MeldeDato")
+    @JsonSerialize(using = LocalDateSerializer::class)
+    @JsonDeserialize(using = LocalDateDeserializer::class)
     val meldeDato: LocalDate? = null,
     @JacksonXmlProperty(localName = "LestDato")
+    @JsonSerialize(using = LocalDateSerializer::class)
+    @JsonDeserialize(using = LocalDateDeserializer::class)
     val lestDato: LocalDate? = null
 )
 
