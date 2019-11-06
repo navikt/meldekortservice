@@ -1,7 +1,6 @@
 package no.nav.meldeplikt.meldekortservice.api
 
 import io.ktor.application.call
-import io.ktor.client.HttpClient
 import io.ktor.http.HttpStatusCode
 import io.ktor.locations.Location
 import io.ktor.response.respond
@@ -18,7 +17,7 @@ import no.nav.meldeplikt.meldekortservice.utils.Error
 import no.nav.meldeplikt.meldekortservice.utils.ErrorMessage
 import no.nav.meldeplikt.meldekortservice.utils.swagger.*
 import no.nav.meldeplikt.meldekortservice.utils.PERSON_PATH
-import no.nav.meldeplikt.meldekortservice.utils.respondOrServiceUnavailable
+import no.nav.meldeplikt.meldekortservice.utils.respondOrError
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Group
 
 /**
@@ -50,7 +49,7 @@ fun Routing.getHistoriskeMeldekort() =
             ok<Person>(),
             serviceUnavailable<ErrorMessage>(),
             unAuthorized<Error>())) {
-        historiskeMeldekortInput -> respondOrServiceUnavailable {
+        historiskeMeldekortInput -> respondOrError {
             ArenaOrdsService.hentHistoriskeMeldekort(
                 extractIdentFromLoginContext(),
                 historiskeMeldekortInput.antallMeldeperioder
@@ -70,7 +69,7 @@ fun Routing.getStatus() =
             ok<String>(),
             serviceUnavailable<ErrorMessage>(),
             unAuthorized<Error>())) {
-        respondOrServiceUnavailable {
+        respondOrError {
             "Status er ikke implementert.}"
         }
     }
@@ -87,7 +86,7 @@ fun Routing.getMeldekort() =
             ok<Person>(),
             serviceUnavailable<ErrorMessage>(),
             unAuthorized<Error>())) {
-        respondOrServiceUnavailable {
+        respondOrError {
             ArenaOrdsService.hentMeldekort(extractIdentFromLoginContext())
         }
     }

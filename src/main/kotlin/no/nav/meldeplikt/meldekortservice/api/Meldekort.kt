@@ -1,6 +1,5 @@
 package no.nav.meldeplikt.meldekortservice.api
 
-import io.ktor.client.HttpClient
 import io.ktor.locations.Location
 import io.ktor.routing.Routing
 import no.nav.meldeplikt.meldekortservice.config.extractIdentFromLoginContext
@@ -10,7 +9,7 @@ import no.nav.meldeplikt.meldekortservice.utils.*
 import no.nav.meldeplikt.meldekortservice.utils.Error
 import no.nav.meldeplikt.meldekortservice.utils.ErrorMessage
 import no.nav.meldeplikt.meldekortservice.utils.MELDEKORT_PATH
-import no.nav.meldeplikt.meldekortservice.utils.respondOrServiceUnavailable
+import no.nav.meldeplikt.meldekortservice.utils.respondOrError
 import no.nav.meldeplikt.meldekortservice.utils.swagger.*
 
 /**
@@ -34,8 +33,9 @@ fun Routing.getMeldekortdetaljer() =
             BearerTokenSecurity(),
             ok<Meldekortdetaljer>(),
             serviceUnavailable<ErrorMessage>(),
+            badRequest<ErrorMessage>(),
             unAuthorized<Error>())) {
-            meldekortdetaljerInput -> respondOrServiceUnavailable {
+            meldekortdetaljerInput -> respondOrError {
 
             val meldekortdetaljer = ArenaOrdsService.hentMeldekortdetaljer(meldekortdetaljerInput.meldekortId)
             if (meldekortdetaljer.fodselsnr == extractIdentFromLoginContext()) {
@@ -55,9 +55,13 @@ data class KorrigertMeldekortInput(val meldekortId: Long)
 // Henter meldekortid for nytt (korrigert) kort
 fun Routing.getKorrigertMeldekort() =
     get<KorrigertMeldekortInput>(
-        "Hent korrigert meldekortid".securityAndReponds(BearerTokenSecurity(), ok<String>(),
-            serviceUnavailable<ErrorMessage>(), unAuthorized<Error>())) {
-            korrigertMeldekortInput -> respondOrServiceUnavailable{
+        "Hent korrigert meldekortid".securityAndReponds(
+            BearerTokenSecurity(),
+            ok<String>(),
+            serviceUnavailable<ErrorMessage>(),
+            badRequest<ErrorMessage>(),
+            unAuthorized<Error>())) {
+            korrigertMeldekortInput -> respondOrError{
 
             ArenaOrdsService.kopierMeldekort(korrigertMeldekortInput.meldekortId)
         }

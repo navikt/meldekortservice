@@ -38,7 +38,7 @@ internal data class ErrorMessage(val error: String)
 
 internal class Error
 
-internal suspend fun PipelineContext<Unit, ApplicationCall>.respondOrServiceUnavailable(block: () -> Any) =
+internal suspend fun PipelineContext<Unit, ApplicationCall>.respondOrError(block: () -> Any) =
     try {
         val res = block()
         call.respond(HttpStatusCode.OK, res)
@@ -48,7 +48,11 @@ internal suspend fun PipelineContext<Unit, ApplicationCall>.respondOrServiceUnav
             is java.util.concurrent.TimeoutException -> "Arena ikke tilgjengelig"
             else -> if (e.localizedMessage != null) e.localizedMessage else "exception occurred"
         }
-        call.respond(HttpStatusCode.ServiceUnavailable, ErrorMessage(eMsg))
+        if (e is SecurityException || eMsg.contains("400 Bad Request", true)) {
+            call.respond(HttpStatusCode.BadRequest, ErrorMessage(eMsg))
+        } else {
+            call.respond(HttpStatusCode.ServiceUnavailable, ErrorMessage(eMsg))
+        }
     }
 
 fun isCurrentlyRunningOnNais(): Boolean {
