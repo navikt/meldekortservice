@@ -29,5 +29,6 @@ data class Hode (
     @JacksonXmlProperty(localName = "LestDato")
     @JsonSerialize(using = LocalDateSerializer::class)
     @JsonDeserialize(using = LocalDateDeserializer::class)
-    val lestDato: LocalDate? = null
+    val lestDato: LocalDate? = null,
+    val kommentar: String? = null
 )

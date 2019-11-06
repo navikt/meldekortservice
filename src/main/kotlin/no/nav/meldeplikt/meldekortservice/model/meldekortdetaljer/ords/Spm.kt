@@ -23,10 +23,3 @@ data class Spm (
     @JacksonXmlProperty(localName = "Signatur")
     val signatur: BooleanVerdi
 )
-
-data class Svar (
-    @JacksonXmlProperty(localName = "SvarJa")
-    val svarJa: BooleanVerdi,
-    @JacksonXmlProperty(localName = "SvarNei")
-    val svarNei: BooleanVerdi
-)

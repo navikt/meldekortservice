@@ -8,6 +8,7 @@ import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.config.cache
 import no.nav.meldeplikt.meldekortservice.config.client
+import no.nav.meldeplikt.meldekortservice.mapper.MeldekortdetaljerMapper
 import no.nav.meldeplikt.meldekortservice.model.OrdsToken
 import no.nav.meldeplikt.meldekortservice.model.enum.KortType
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
@@ -51,8 +52,7 @@ object ArenaOrdsService {
             }
         }
         val meldekort = xmlMapper.readValue(detaljer, Meldekort::class.java)
-        log.info("Hent meldekortdetaljer. Meldekortdetaljer var: $meldekort")
-        return Meldekortdetaljer(kortType = KortType.AAP)
+        return MeldekortdetaljerMapper.mapOrdsMeldekortTilMeldekortdetaljer(meldekort)
     }
 
     fun kopierMeldekort(meldekortId: Long): Long {
