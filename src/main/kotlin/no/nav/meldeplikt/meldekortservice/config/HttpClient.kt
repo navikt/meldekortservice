@@ -7,7 +7,7 @@ import io.ktor.client.features.json.JsonFeature
 import no.nav.meldeplikt.meldekortservice.utils.objectMapper
 
 class HttpClient {
-    val client: HttpClient = HttpClient(Apache) {
+    val client: HttpClient = HttpClient() {
         engine {
             response.apply {
                 charset(Charsets.UTF_8.displayName())

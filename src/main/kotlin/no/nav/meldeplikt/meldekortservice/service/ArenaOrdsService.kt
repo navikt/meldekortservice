@@ -1,6 +1,11 @@
 package no.nav.meldeplikt.meldekortservice.service
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
+import io.ktor.client.HttpClient
+import io.ktor.client.call.call
+import io.ktor.client.call.receive
+import io.ktor.client.features.json.JacksonSerializer
+import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.client.request.post
@@ -10,11 +15,12 @@ import no.nav.meldeplikt.meldekortservice.config.cache
 import no.nav.meldeplikt.meldekortservice.config.client
 import no.nav.meldeplikt.meldekortservice.mapper.MeldekortdetaljerMapper
 import no.nav.meldeplikt.meldekortservice.model.OrdsToken
-import no.nav.meldeplikt.meldekortservice.model.enum.KortType
+import no.nav.meldeplikt.meldekortservice.model.feil.OrdsException
 import no.nav.meldeplikt.meldekortservice.model.korriger.KopierMeldekortResponse
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.ords.Meldekort
+import no.nav.meldeplikt.meldekortservice.model.response.OrdsStringResponse
 import no.nav.meldeplikt.meldekortservice.utils.*
 import java.util.*
 
@@ -25,13 +31,26 @@ object ArenaOrdsService {
     private val env = Environment()
     private val xmlMapper = XmlMapper()
 
-    fun hentMeldekort(fnr: String): Person {
-        val person = runBlocking {
-            client.get<String>("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORT$fnr") {
-                setupOrdsRequest()
+    private fun ordsClient() = HttpClient() {
+        engine {
+            response.apply {
+                charset(Charsets.UTF_8.displayName())
             }
         }
-        return xmlMapper.readValue(person, Person::class.java)
+        install(JsonFeature) {
+            serializer = JacksonSerializer() { objectMapper }
+        }
+    }
+
+    fun hentMeldekort(fnr: String): OrdsStringResponse = runBlocking {
+        val meldekort = ordsClient().call("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORT$fnr") {
+            setupOrdsRequest()
+        }
+        if (HTTP_STATUS_CODES_2XX.contains(meldekort.response.status.value)) {
+            OrdsStringResponse(meldekort.response.status, meldekort.response.receive())
+        } else {
+            throw OrdsException("Kunne ikke hente meldekort fra Arena Ords.")
+        }
     }
 
     fun hentHistoriskeMeldekort(fnr: String, antallMeldeperioder: Int): Person {

@@ -7,6 +7,7 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.HttpStatusCode.Companion.BadRequest
 import io.ktor.http.HttpStatusCode.Companion.InternalServerError
+import io.ktor.http.HttpStatusCode.Companion.NoContent
 import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.http.HttpStatusCode.Companion.ServiceUnavailable
 import io.ktor.http.HttpStatusCode.Companion.Unauthorized
@@ -82,6 +83,7 @@ fun String.securityAndReponds(security: Security, vararg pairs: Pair<HttpStatusC
         Metadata(responses = mapOf(*pairs), summary = this, security = security)
 
 inline fun <reified T> ok(): Pair<HttpStatusCode, KClass<*>> = OK to T::class
+inline fun <reified T> noContent(): Pair<HttpStatusCode, KClass<*>> = NoContent to T::class
 inline fun <reified T> failed(): Pair<HttpStatusCode, KClass<*>> = InternalServerError to T::class
 inline fun <reified T> serviceUnavailable(): Pair<HttpStatusCode, KClass<*>> = ServiceUnavailable to T::class
 inline fun <reified T> badRequest(): Pair<HttpStatusCode, KClass<*>> = BadRequest to T::class

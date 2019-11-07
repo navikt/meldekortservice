@@ -1,5 +1,6 @@
 package no.nav.meldeplikt.meldekortservice.api
 
+import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import io.ktor.application.call
 import io.ktor.http.HttpStatusCode
 import io.ktor.locations.Location
@@ -8,6 +9,7 @@ import io.ktor.routing.Routing
 import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
 import no.nav.meldeplikt.meldekortservice.config.SoapConfig
 import no.nav.meldeplikt.meldekortservice.config.extractIdentFromLoginContext
+import no.nav.meldeplikt.meldekortservice.model.response.EmptyResponse
 import no.nav.meldeplikt.meldekortservice.model.Meldeform
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.model.Meldeperiode
@@ -23,17 +25,18 @@ import no.nav.meldeplikt.meldekortservice.utils.swagger.Group
 /**
 REST-controller for meldekort-api som tilbyr operasjoner for å hente:
 - Historiske meldekort
-- Personstatus
 - Meldekort
-I tillegg sende inn/kontrollere meldekort
+- Endre meldeform
+I tillegg til å sende inn/kontrollere meldekort.
  */
 fun Routing.personApi() {
     getHistoriskeMeldekort()
-    getStatus()
     getMeldekort()
     kontrollerMeldekort()
     endreMeldeform()
 }
+
+private val xmlMapper = XmlMapper()
 
 private const val personGroup = "Person"
 
@@ -57,23 +60,6 @@ fun Routing.getHistoriskeMeldekort() =
         }
     }
 
-// Henter personstatus (arenastatus)
-@Group(personGroup)
-@Location("$PERSON_PATH/status")
-class StatusInput
-
-fun Routing.getStatus() =
-    get<StatusInput>(
-        "Hent personstatus".securityAndReponds(
-            BearerTokenSecurity(),
-            ok<String>(),
-            serviceUnavailable<ErrorMessage>(),
-            unAuthorized<Error>())) {
-        respondOrError {
-            "Status er ikke implementert.}"
-        }
-    }
-
 @Group(personGroup)
 @Location("$PERSON_PATH/meldekort")
 class MeldekortInput
@@ -84,10 +70,16 @@ fun Routing.getMeldekort() =
         "Hent meldekort".securityAndReponds(
             BearerTokenSecurity(),
             ok<Person>(),
+            noContent<EmptyResponse>(),
             serviceUnavailable<ErrorMessage>(),
             unAuthorized<Error>())) {
         respondOrError {
-            ArenaOrdsService.hentMeldekort(extractIdentFromLoginContext())
+            val response = ArenaOrdsService.hentMeldekort(extractIdentFromLoginContext())
+            if (response.status == HttpStatusCode.OK) {
+                xmlMapper.readValue(response.content, Person::class.java)
+            } else {
+                EmptyResponse()
+            }
         }
     }
 
@@ -100,8 +92,7 @@ fun Routing.kontrollerMeldekort() =
             serviceUnavailable<ErrorMessage>(),
             unAuthorized<Error>()
         )
-    ) {_, meldekort ->
-
+    ) {test, meldekort ->
         try {
             val kontrollertType = SoapConfig.soapService().kontrollerMeldekort(meldekort)
             call.respond(kontrollertType)

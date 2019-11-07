@@ -34,6 +34,8 @@ const val vaultUrl = "https://vault.adeo.no"
 const val vaultTokenPath = "/var/run/secrets/nais.io/vault/vault_token"
 const val vaultKvPath = "serviceuser/data/dev/srvmeldekortservice"
 
+internal val HTTP_STATUS_CODES_2XX = IntRange(200, 299)
+
 internal data class ErrorMessage(val error: String)
 
 internal class Error
