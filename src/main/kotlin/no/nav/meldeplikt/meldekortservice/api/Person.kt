@@ -70,7 +70,7 @@ fun Routing.getMeldekort() =
         "Hent meldekort".securityAndReponds(
             BearerTokenSecurity(),
             ok<Person>(),
-            noContent<EmptyResponse>(),
+            ok<EmptyResponse>(),
             serviceUnavailable<ErrorMessage>(),
             unAuthorized<Error>())) {
         respondOrError {
