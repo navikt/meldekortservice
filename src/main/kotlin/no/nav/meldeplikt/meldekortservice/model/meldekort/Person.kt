@@ -16,7 +16,7 @@ data class Person (
     @JacksonXmlProperty(localName = "Meldeform")
     val meldeform: String,
     @JacksonXmlProperty(localName = "MeldekortListe")
-    val meldekortListe: List<Meldekort>,
+    val meldekortListe: List<Meldekort>? = null,
     @JacksonXmlProperty(localName = "AntallGjenstaaendeFeriedager")
     val antallGjenstaaendeFeriedager: Int? = 0,
     @JacksonXmlProperty(localName = "FravaerListe")
