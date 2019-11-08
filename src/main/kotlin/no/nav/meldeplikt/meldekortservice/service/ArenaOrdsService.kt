@@ -12,7 +12,6 @@ import io.ktor.client.request.post
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.config.cache
-import no.nav.meldeplikt.meldekortservice.config.client
 import no.nav.meldeplikt.meldekortservice.mapper.MeldekortdetaljerMapper
 import no.nav.meldeplikt.meldekortservice.model.OrdsToken
 import no.nav.meldeplikt.meldekortservice.model.feil.OrdsException
@@ -55,7 +54,7 @@ object ArenaOrdsService {
 
     fun hentHistoriskeMeldekort(fnr: String, antallMeldeperioder: Int): Person {
         val person = runBlocking {
-            client.get<String>(
+            ordsClient().get<String>(
                 "${env.ordsUrl}$ARENA_ORDS_HENT_HISTORISKE_MELDEKORT$fnr" +
                         "$ARENA_ORDS_MELDEPERIODER_PARAM$antallMeldeperioder"
             ) {
@@ -67,7 +66,7 @@ object ArenaOrdsService {
 
     fun hentMeldekortdetaljer(meldekortId: Long): Meldekortdetaljer {
         val detaljer = runBlocking {
-            client.get<String>("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORTDETALJER$meldekortId") {
+            ordsClient().get<String>("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORTDETALJER$meldekortId") {
                 setupOrdsRequest()
             }
         }
@@ -77,7 +76,7 @@ object ArenaOrdsService {
 
     fun kopierMeldekort(meldekortId: Long): Long {
         val nyMeldekortId = runBlocking {
-            client.post<String>("${env.ordsUrl}$ARENA_ORDS_KOPIER_MELDEKORT") {
+            ordsClient().post<String>("${env.ordsUrl}$ARENA_ORDS_KOPIER_MELDEKORT") {
                 setupOrdsRequest(meldekortId)
             }
         }
@@ -103,7 +102,7 @@ object ArenaOrdsService {
 
         if (isCurrentlyRunningOnNais()) {
             runBlocking {
-                token = client.post("${env.ordsUrl}$ARENA_ORDS_TOKEN_PATH?grant_type=client_credentials") {
+                token = ordsClient().post("${env.ordsUrl}$ARENA_ORDS_TOKEN_PATH?grant_type=client_credentials") {
                     setupTokenRequest()
                 }
             }
