@@ -13,6 +13,7 @@ import no.nav.meldeplikt.meldekortservice.model.response.EmptyResponse
 import no.nav.meldeplikt.meldekortservice.model.Meldeform
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.model.Meldeperiode
+import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
 import no.nav.meldeplikt.meldekortservice.utils.Error
@@ -70,7 +71,7 @@ fun Routing.getMeldekort() =
         "Hent meldekort".securityAndReponds(
             BearerTokenSecurity(),
             ok<Person>(),
-            ok<EmptyResponse>(),
+            noContent<EmptyResponse>(),
             serviceUnavailable<ErrorMessage>(),
             unAuthorized<Error>())) {
         respondOrError {
@@ -78,7 +79,7 @@ fun Routing.getMeldekort() =
             if (response.status == HttpStatusCode.OK) {
                 xmlMapper.readValue(response.content, Person::class.java)
             } else {
-                EmptyResponse()
+                throw NoContentException()
             }
         }
     }

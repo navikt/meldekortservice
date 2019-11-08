@@ -12,6 +12,7 @@ import io.ktor.application.call
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
 import io.ktor.util.pipeline.PipelineContext
+import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 
 internal const val BASE_PATH = "/meldekortservice"
 
@@ -45,15 +46,19 @@ internal suspend fun PipelineContext<Unit, ApplicationCall>.respondOrError(block
         val res = block()
         call.respond(HttpStatusCode.OK, res)
     } catch (e: Exception) {
-        defaultLog.error("Feil i meldekortservice", e)
-        val eMsg = when (e) {
-            is java.util.concurrent.TimeoutException -> "Arena ikke tilgjengelig"
-            else -> if (e.localizedMessage != null) e.localizedMessage else "exception occurred"
-        }
-        if (e is SecurityException || eMsg.contains("400 Bad Request", true)) {
-            call.respond(HttpStatusCode.BadRequest, ErrorMessage(eMsg))
+        if (e is NoContentException) {
+            call.respond(HttpStatusCode.NoContent)
         } else {
-            call.respond(HttpStatusCode.ServiceUnavailable, ErrorMessage(eMsg))
+            defaultLog.error("Feil i meldekortservice", e)
+            val eMsg = when (e) {
+                is java.util.concurrent.TimeoutException -> "Arena ikke tilgjengelig"
+                else -> if (e.localizedMessage != null) e.localizedMessage else "exception occurred"
+            }
+            if (e is SecurityException || eMsg.contains("400 Bad Request", true)) {
+                call.respond(HttpStatusCode.BadRequest, ErrorMessage(eMsg))
+            } else {
+                call.respond(HttpStatusCode.ServiceUnavailable, ErrorMessage(eMsg))
+            }
         }
     }
 
