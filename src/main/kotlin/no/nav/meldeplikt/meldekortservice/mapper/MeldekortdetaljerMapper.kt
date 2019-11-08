@@ -48,7 +48,7 @@ object MeldekortdetaljerMapper {
             meldekortDagListe.add(
                 MeldekortDag(
                     dag = it.dag,
-                    arbeidetTimerSum = it.arbeidetTimerSum.verdi,
+                    arbeidetTimerSum = konverterFraStringTilFloat(it.arbeidetTimerSum.verdi),
                     syk = it.syk.verdi,
                     annetFravaer = it.annetFravaer.verdi,
                     kurs = it.kurs.verdi
@@ -57,4 +57,7 @@ object MeldekortdetaljerMapper {
         }
         return meldekortDagListe
     }
+
+    private fun konverterFraStringTilFloat(s: String): Float =
+        (if (s.contains(',')) s.replace(',', '.') else s).toFloat()
 }
