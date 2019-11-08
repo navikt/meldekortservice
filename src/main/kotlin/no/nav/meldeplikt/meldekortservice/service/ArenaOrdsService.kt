@@ -9,10 +9,12 @@ import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.client.request.post
+import io.ktor.client.request.request
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.config.cache
 import no.nav.meldeplikt.meldekortservice.mapper.MeldekortdetaljerMapper
+import no.nav.meldeplikt.meldekortservice.model.Meldeperiode
 import no.nav.meldeplikt.meldekortservice.model.OrdsToken
 import no.nav.meldeplikt.meldekortservice.model.feil.OrdsException
 import no.nav.meldeplikt.meldekortservice.model.korriger.KopierMeldekortResponse
@@ -82,6 +84,20 @@ object ArenaOrdsService {
         }
         val response = xmlMapper.readValue(nyMeldekortId, KopierMeldekortResponse::class.java)
         return response.meldekortId
+    }
+
+    fun endreMeldeform(fnr: String, meldeformNavn: String): Meldeperiode {
+        val meldeperiodeResponse = runBlocking {
+            ordsClient().post<String>("${env.ordsUrl}$ARENA_ORDS_ENDRE_MELDEFORM") {
+                setupOrdsRequest()
+                request {
+                    headers.append("fnr", fnr)
+                    headers.append("meldeform", meldeformNavn)
+                }
+            }
+        }
+        return xmlMapper.readValue(meldeperiodeResponse, Meldeperiode::class.java)
+
     }
 
     private fun HttpRequestBuilder.setupOrdsRequest(meldekortId: Long? = null) {

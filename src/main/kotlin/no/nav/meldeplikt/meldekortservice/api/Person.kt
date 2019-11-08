@@ -16,11 +16,12 @@ import no.nav.meldeplikt.meldekortservice.model.Meldeperiode
 import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
+import no.nav.meldeplikt.meldekortservice.utils.*
 import no.nav.meldeplikt.meldekortservice.utils.Error
 import no.nav.meldeplikt.meldekortservice.utils.ErrorMessage
-import no.nav.meldeplikt.meldekortservice.utils.swagger.*
 import no.nav.meldeplikt.meldekortservice.utils.PERSON_PATH
 import no.nav.meldeplikt.meldekortservice.utils.respondOrError
+import no.nav.meldeplikt.meldekortservice.utils.swagger.*
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Group
 
 /**
@@ -53,7 +54,8 @@ fun Routing.getHistoriskeMeldekort() =
             ok<Person>(),
             serviceUnavailable<ErrorMessage>(),
             unAuthorized<Error>())) {
-        historiskeMeldekortInput -> respondOrError {
+        historiskeMeldekortInput ->
+        respondOrError {
             ArenaOrdsService.hentHistoriskeMeldekort(
                 extractIdentFromLoginContext(),
                 historiskeMeldekortInput.antallMeldeperioder
@@ -93,12 +95,13 @@ fun Routing.kontrollerMeldekort() =
             serviceUnavailable<ErrorMessage>(),
             unAuthorized<Error>()
         )
-    ) {test, meldekort ->
+    ) {_, meldekort ->
         try {
             val kontrollertType = SoapConfig.soapService().kontrollerMeldekort(meldekort)
             call.respond(kontrollertType)
         } catch (e: Exception) {
             val errorMessage = ErrorMessage("Meldekort ble ikke sendt inn. ${e.message}")
+            defaultLog.error(errorMessage.error, e)
             call.respond(status = HttpStatusCode.ServiceUnavailable, message = errorMessage)
         }
     }
@@ -117,5 +120,12 @@ fun Routing.endreMeldeform() =
             unAuthorized<Error>()
         )
     ) {_, meldeform ->
-        call.respond(status=HttpStatusCode.OK,message = "Meldeform er ikke implementert")
+        try {
+            val meldeperiode = ArenaOrdsService.endreMeldeform(extractIdentFromLoginContext(), meldeform.meldeformNavn)
+            call.respond(meldeperiode)
+        } catch (e: Exception) {
+            val errorMessage = ErrorMessage("Kunne ikke endre meldeform til ${meldeform.meldeformNavn}. ${e.message}")
+            defaultLog.error(errorMessage.error, e)
+            call.respond(status = HttpStatusCode.ServiceUnavailable, message = errorMessage)
+        }
     }
