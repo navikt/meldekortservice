@@ -23,7 +23,7 @@ internal const val MELDEKORT_PATH = "$API_PATH/meldekort"
 internal const val PERSON_PATH = "$API_PATH/person"
 internal const val WEBLOGIC_PING_PATH = "$API_PATH/weblogic"
 
-internal const val ARENA_ORDS_API_V1 = "/api/v1"
+internal const val ARENA_ORDS_API_V1 = "/api/v1/meldeplikt"
 internal const val ARENA_ORDS_TOKEN_PATH = "/api/oauth/token"
 internal const val ARENA_ORDS_HENT_MELDEKORT = "$ARENA_ORDS_API_V1/meldekort?fnr="
 internal const val ARENA_ORDS_HENT_HISTORISKE_MELDEKORT = "$ARENA_ORDS_API_V1/meldekort/historiske?fnr="
