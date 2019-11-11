@@ -89,11 +89,9 @@ object ArenaOrdsService {
     fun endreMeldeform(fnr: String, meldeformNavn: String): Meldeperiode {
         val meldeperiodeResponse = runBlocking {
             ordsClient().post<String>("${env.ordsUrl}$ARENA_ORDS_ENDRE_MELDEFORM") {
-                setupOrdsRequest()
-                request {
+                    setupOrdsRequest()
                     headers.append("fnr", fnr)
                     headers.append("meldeform", meldeformNavn)
-                }
             }
         }
         return xmlMapper.readValue(meldeperiodeResponse, Meldeperiode::class.java)
