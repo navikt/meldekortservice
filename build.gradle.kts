@@ -26,6 +26,10 @@ val swaggerVersion = "3.23.8"
 val vaultVersion = "3.1.0"
 val tjenestespecVersion = "1.2019.08.16-13.46-35cbdfd492d4"
 val slf4jVersion = "1.7.26"
+val flywayVersion = "5.2.4"
+val postgresVersion = "42.2.5"
+val h2Version = "1.4.199"
+val kluentVersion = "1.52"
 
 val mainClass = "no.nav.meldeplikt.meldekortservice.AppKt"
 
@@ -103,10 +107,16 @@ dependencies {
     api("io.github.microutils:kotlin-logging:$kotlinLoggerVersion")
     api("com.bettercloud:vault-java-driver:$vaultVersion")
     api("no.nav.tjenestespesifikasjoner:arena-sakOgAktivitet_v1:$tjenestespecVersion")
+    api("org.flywaydb:flyway-core:$flywayVersion")
+    api("org.postgresql:postgresql:$postgresVersion")
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
-    testImplementation("org.assertj:assertj-core:$assertJVersion")
-    testImplementation(kotlin("test-junit5"))
+    testCompile("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+    testCompile(kotlin("test-junit5"))
+    //testImplementation("no.nav:kafka-embedded-env:2.1.1")
+    //testImplementation("io.confluent:kafka-schema-registry:$confluentVersion")
+    testImplementation("com.h2database:h2:$h2Version")
+    testImplementation("org.amshove.kluent:kluent:$kluentVersion")
+    testRuntime("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
 
     implementation("org.webjars:swagger-ui:$swaggerVersion")
     implementation("javax.xml.ws:jaxws-api:$jaxwsApiVersion")
@@ -132,6 +142,13 @@ tasks {
     withType<Jar> {
         manifest.attributes["Main-Class"] = application.mainClassName
         from(configurations.runtime.get().map { if (it.isDirectory) it else zipTree(it) })
+    }
+
+    withType<Test> {
+        useJUnitPlatform()
+        testLogging {
+            events("passed", "skipped", "failed")
+        }
     }
 
     withType<KotlinCompile> {
