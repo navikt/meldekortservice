@@ -9,8 +9,8 @@ import java.time.LocalDate
 
 data class Meldeperiode (
     @JacksonXmlProperty(localName = "Id")
-    val id: String?,
-    @JacksonXmlProperty(localName = "MeldeperiodeNavn")
+    val id: String? = "1",
+    @JacksonXmlProperty(localName = "Meldeperiode")
     val meldeperiodeNavn: String,
     @JacksonXmlProperty(localName = "FraDato")
     @JsonSerialize(using = LocalDateSerializer::class)
