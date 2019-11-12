@@ -1,11 +1,15 @@
 package no.nav.meldeplikt.meldekortservice.database
 
+import com.zaxxer.hikari.HikariDataSource
 import java.sql.Connection
+import java.sql.SQLException
+import java.sql.SQLRecoverableException
+import java.sql.SQLTransientException
 import javax.sql.DataSource
 
 interface Database {
 
-    val dataSource: DataSource
+    val dataSource: HikariDataSource
 
     suspend fun <T> dbQuery(operationToExecute: Connection.() -> T): T =
         dataSource.connection.use { openConnection ->
@@ -23,4 +27,26 @@ interface Database {
                 throw e
             }
         }
+
+    fun translateExternalExceptionsToInternalOnes(databaseActions: () -> Unit) {
+        try {
+            databaseActions()
+
+        } catch (te: SQLTransientException) {
+            val message = "Skriving til databasen feilet grunnet en periodisk feil."
+            throw RetriableDatabaseException(message, te)
+
+        } catch (re: SQLRecoverableException) {
+            val message = "Skriving til databasen feilet grunnet en periodisk feil."
+            throw RetriableDatabaseException(message, re)
+
+        } catch (se: SQLException) {
+            val message = "Det skjedde en SQL relatert feil ved skriving til databasen."
+            throw UnretriableDatabaseException(message, se)
+
+        } catch (e: Exception) {
+            val message = "Det skjedde en ukjent feil ved skriving til databasen."
+            throw UnretriableDatabaseException(message, e)
+        }
+    }
 }
