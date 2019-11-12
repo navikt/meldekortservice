@@ -48,8 +48,6 @@ private const val cacheAntallMinutter = 55
 private const val cacheTimeout: Long = cacheAntallMinutter.toLong() * 60 * 1000 * 2
 val cache: Cache<String, OrdsToken> = CacheUtils.buildCache(CacheConfig.DEFAULT.withTimeToLiveMillis(cacheTimeout))
 
-val client = HttpClient().client
-
 const val SWAGGER_URL_V1 = "/meldekortservice/internal/apidocs/index.html?url=swagger.json"
 
 object Server {
@@ -82,8 +80,8 @@ object Server {
                 healthApi()
                 swaggerRoutes()
                 weblogicApi()
-                meldekortApi(client)
-                personApi(client)
+                meldekortApi()
+                personApi()
             }
         }
         addGraceTimeAtShutdownToAllowRunningRequestsToComplete(app)

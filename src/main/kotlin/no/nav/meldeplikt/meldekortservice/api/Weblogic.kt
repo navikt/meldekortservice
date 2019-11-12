@@ -7,7 +7,7 @@ import no.nav.meldeplikt.meldekortservice.model.WeblogicPing
 import no.nav.meldeplikt.meldekortservice.utils.Error
 import no.nav.meldeplikt.meldekortservice.utils.ErrorMessage
 import no.nav.meldeplikt.meldekortservice.utils.WEBLOGIC_PING_PATH
-import no.nav.meldeplikt.meldekortservice.utils.respondOrServiceUnavailable
+import no.nav.meldeplikt.meldekortservice.utils.respondOrError
 import no.nav.meldeplikt.meldekortservice.utils.swagger.*
 
 fun Routing.weblogicApi() {
@@ -28,7 +28,7 @@ fun Routing.pingWeblogic() =
             unAuthorized<Error>()
         )
     ) {
-        respondOrServiceUnavailable {
+        respondOrError {
             SoapConfig.soapService().pingWeblogic()
         }
     }
