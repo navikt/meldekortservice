@@ -4,9 +4,9 @@ import no.nav.meldeplikt.meldekortservice.model.enum.KortType
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.MeldekortDag
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Sporsmal
-import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.ords.Meldekort as ArenaMeldekort
-import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.ords.Spm as ArenaSpm
-import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.ords.MeldekortDag as ArenaMeldekortDag
+import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.arena.Meldekort as ArenaMeldekort
+import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.arena.Spm as ArenaSpm
+import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.arena.MeldekortDag as ArenaMeldekortDag
 
 object MeldekortdetaljerMapper {
 
