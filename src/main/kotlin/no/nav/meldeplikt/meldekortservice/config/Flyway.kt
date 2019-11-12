@@ -1,9 +1,11 @@
 package no.nav.meldeplikt.meldekortservice.config
 
 import com.zaxxer.hikari.HikariDataSource
+import no.nav.meldeplikt.meldekortservice.database.H2Database
 import no.nav.meldeplikt.meldekortservice.database.PostgresDatabase
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import org.flywaydb.core.Flyway
+import org.flywaydb.core.api.Location
 import org.flywaydb.core.api.configuration.FluentConfiguration
 import javax.sql.DataSource
 

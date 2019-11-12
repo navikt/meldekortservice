@@ -106,10 +106,4 @@ object Server {
         setProperty(StsSecurityConstants.SYSTEMUSER_USERNAME, systemuser.username, PUBLIC)
         setProperty(StsSecurityConstants.SYSTEMUSER_PASSWORD, systemuser.password, SECRET)
     }
-
-    private fun Application.configureStartupHook(env: Environment) {
-        environment.monitor.subscribe(ApplicationStarted) {
-            Flyway.runFlywayMigrations(env)
-        }
-    }
 }
