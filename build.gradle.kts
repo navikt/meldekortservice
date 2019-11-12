@@ -1,6 +1,7 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
 import no.nils.wsdl2java.Wsdl2JavaTask
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val prometheusVersion = "0.6.0"
@@ -42,6 +43,8 @@ plugins {
     kotlin("plugin.allopen") version "1.3.41"
 
     id("com.github.johnrengelman.shadow") version "4.0.4"
+
+    id("org.flywaydb.flyway") version("5.2.4")
 
     application
 }
@@ -147,6 +150,7 @@ tasks {
     withType<Test> {
         useJUnitPlatform()
         testLogging {
+            exceptionFormat = TestExceptionFormat.FULL
             events("passed", "skipped", "failed")
         }
     }

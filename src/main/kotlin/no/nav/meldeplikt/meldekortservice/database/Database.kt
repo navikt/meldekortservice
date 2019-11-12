@@ -1,6 +1,8 @@
 package no.nav.meldeplikt.meldekortservice.database
 
 import com.zaxxer.hikari.HikariDataSource
+import no.nav.meldeplikt.meldekortservice.model.database.feil.RetriableDatabaseException
+import no.nav.meldeplikt.meldekortservice.model.database.feil.UnretriableDatabaseException
 import java.sql.Connection
 import java.sql.SQLException
 import java.sql.SQLRecoverableException

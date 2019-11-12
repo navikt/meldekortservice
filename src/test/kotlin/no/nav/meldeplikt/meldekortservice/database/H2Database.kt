@@ -6,19 +6,19 @@ import javax.sql.DataSource
 
 class H2Database : Database {
 
-    private val memDataSource: DataSource
+    private val memDataSource: HikariDataSource
 
     init {
         memDataSource = createDataSource()
         flyway()
     }
 
-    override val dataSource: DataSource
+    override val dataSource: HikariDataSource
         get() = memDataSource
 
     private fun createDataSource(): HikariDataSource {
         return HikariDataSource().apply {
-            jdbcUrl = "jdbc:h2:mem:testdb"
+            jdbcUrl = "jdbc:h2:mem:testdb;DATABASE_TO_UPPER=false"
             username = "sa"
             password = ""
             validate()

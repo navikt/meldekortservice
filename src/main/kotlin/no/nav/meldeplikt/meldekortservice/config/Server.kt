@@ -1,5 +1,7 @@
 package no.nav.meldeplikt.meldekortservice.config
 
+import io.ktor.application.Application
+import io.ktor.application.ApplicationStarted
 import io.ktor.application.install
 import io.ktor.auth.Authentication
 import io.ktor.auth.jwt.jwt
@@ -84,6 +86,8 @@ object Server {
                 personApi()
             }
         }
+        //configureStartupHook()
+        Flyway.runFlywayMigrations(environment)
         addGraceTimeAtShutdownToAllowRunningRequestsToComplete(app)
         return app
     }
@@ -101,5 +105,11 @@ object Server {
         setProperty(StsSecurityConstants.STS_URL_KEY, environment.securityTokenService, PUBLIC)
         setProperty(StsSecurityConstants.SYSTEMUSER_USERNAME, systemuser.username, PUBLIC)
         setProperty(StsSecurityConstants.SYSTEMUSER_PASSWORD, systemuser.password, SECRET)
+    }
+
+    private fun Application.configureStartupHook(env: Environment) {
+        environment.monitor.subscribe(ApplicationStarted) {
+            Flyway.runFlywayMigrations(env)
+        }
     }
 }
