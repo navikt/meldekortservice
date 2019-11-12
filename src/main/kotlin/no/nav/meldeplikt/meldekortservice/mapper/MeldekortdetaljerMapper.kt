@@ -4,13 +4,13 @@ import no.nav.meldeplikt.meldekortservice.model.enum.KortType
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.MeldekortDag
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Sporsmal
-import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.ords.Meldekort as OrdsMeldekort
-import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.ords.Spm as OrdsSpm
-import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.ords.MeldekortDag as OrdsMeldekortDag
+import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.ords.Meldekort as ArenaMeldekort
+import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.ords.Spm as ArenaSpm
+import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.ords.MeldekortDag as ArenaMeldekortDag
 
 object MeldekortdetaljerMapper {
 
-    fun mapOrdsMeldekortTilMeldekortdetaljer(meldekort: OrdsMeldekort): Meldekortdetaljer {
+    fun mapOrdsMeldekortTilMeldekortdetaljer(meldekort: ArenaMeldekort): Meldekortdetaljer {
         return Meldekortdetaljer(
             id = "1",
             personId = meldekort.hode.personId.verdi,
@@ -26,7 +26,7 @@ object MeldekortdetaljerMapper {
         )
     }
 
-    private fun mapOrdsSpmTilSporsmal(spm: OrdsSpm): Sporsmal {
+    private fun mapOrdsSpmTilSporsmal(spm: ArenaSpm): Sporsmal {
         return Sporsmal(
             arbeidssoker = spm.arbeidssoker.svarJa.verdi,
             arbeidet = spm.arbeidet.svarJa.verdi,
@@ -39,12 +39,12 @@ object MeldekortdetaljerMapper {
         )
     }
 
-    private fun mapOrdsMeldekortDagerTilMeldekortDager(ordsMeldekortDager: List<OrdsMeldekortDag>?): List<MeldekortDag>? {
-        if (ordsMeldekortDager == null) {
+    private fun mapOrdsMeldekortDagerTilMeldekortDager(arenaMeldekortDager: List<ArenaMeldekortDag>?): List<MeldekortDag>? {
+        if (arenaMeldekortDager == null) {
             return null
         }
         val meldekortDagListe = mutableListOf<MeldekortDag>()
-        ordsMeldekortDager.forEach {
+        arenaMeldekortDager.forEach {
             meldekortDagListe.add(
                 MeldekortDag(
                     dag = it.dag,
