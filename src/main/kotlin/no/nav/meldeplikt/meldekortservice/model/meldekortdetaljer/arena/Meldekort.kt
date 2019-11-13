@@ -1,4 +1,4 @@
-package no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.ords
+package no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.arena
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 
