@@ -20,7 +20,9 @@ import no.nav.cache.Cache
 import no.nav.cache.CacheConfig
 import no.nav.cache.CacheUtils
 import no.nav.meldeplikt.meldekortservice.api.*
+import no.nav.meldeplikt.meldekortservice.database.PostgresDatabase
 import no.nav.meldeplikt.meldekortservice.model.OrdsToken
+import no.nav.meldeplikt.meldekortservice.service.InnsendtMeldekortService
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Contact
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Information
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Swagger
@@ -63,6 +65,8 @@ object Server {
 
         DefaultExports.initialize()
         setAppProperties(environment)
+        val innsendtMeldekortService = InnsendtMeldekortService(PostgresDatabase(environment))
+
         val app = embeddedServer(Netty, port = portNumber) {
             install(DefaultHeaders)
 
@@ -83,7 +87,7 @@ object Server {
                 swaggerRoutes()
                 weblogicApi()
                 meldekortApi()
-                personApi()
+                personApi(innsendtMeldekortService)
             }
         }
         //configureStartupHook()
