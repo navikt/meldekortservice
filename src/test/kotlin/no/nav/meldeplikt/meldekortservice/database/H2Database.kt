@@ -2,7 +2,6 @@ package no.nav.meldeplikt.meldekortservice.database
 
 import com.zaxxer.hikari.HikariDataSource
 import org.flywaydb.core.Flyway
-import org.flywaydb.core.api.Location
 
 class H2Database : Database {
 
