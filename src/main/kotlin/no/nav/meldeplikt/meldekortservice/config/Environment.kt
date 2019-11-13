@@ -28,7 +28,7 @@ data class Environment(
     val sakOgAktivitetUrl: String = getEnvVar("SAKOGAKTIVITET_URI", "https://dummyUrl.com"),
 
     val dbHost: String = getEnvVar("DB_HOST", "localhost:5432"),
-    val dbName: String = getEnvVar("DB_NAME", "dittnav-event-cache-preprod"),
+    val dbName: String = getEnvVar("DB_NAME", "meldeplikt"),
     val dbAdmin: String = getEnvVar("DB_NAME", "test") + "-admin",
     val dbUser: String = getEnvVar("DB_NAME", "test") + "-user",
     val dbUrl: String = "jdbc:postgresql://$dbHost/$dbName",

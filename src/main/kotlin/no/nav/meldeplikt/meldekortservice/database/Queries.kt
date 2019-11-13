@@ -1,29 +1,35 @@
 package no.nav.meldeplikt.meldekortservice.database
 
-import no.nav.meldeplikt.meldekortservice.model.database.Message
+import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
 import java.sql.Connection
 import java.sql.ResultSet
-import java.sql.Statement
 
-fun Connection.getAllMessages(): List<Message> =
-    prepareStatement("""SELECT * FROM TEST""")
+fun Connection.hentAlleInnsendteMeldekort(): List<InnsendtMeldekort> =
+    prepareStatement("""SELECT * FROM INNSENDT_MELDEKORT""")
         .use {
             it.executeQuery().list {
-                toMessage()
+                tilInnsendtMeldekort()
             }
         }
 
-fun Connection.createMessage(message: Message): Int =
-    prepareStatement("""INSERT INTO TEST (message) VALUES (?)""", Statement.RETURN_GENERATED_KEYS).use {
-        it.setString(1, message.message)
+fun Connection.hentInnsendtMeldekort(meldekortId: Long): InnsendtMeldekort =
+    prepareStatement("""SELECT * FROM INNSENDT_MELDEKORT WHERE meldekortId = ?""")
+        .use {
+            it.setLong(1, meldekortId)
+            it.executeQuery().singleResult {
+                tilInnsendtMeldekort()
+            }
+        }
+
+fun Connection.opprettInnsendtMeldekort(innsendtMeldekort: InnsendtMeldekort): Int =
+    prepareStatement("""INSERT INTO INNSENDT_MELDEKORT (meldekortId) VALUES (?)""")
+        .use {
+        it.setLong(1, innsendtMeldekort.meldekortId)
         it.executeUpdate()
-        it.generatedKeys.next()
-        it.generatedKeys.getInt("id")
     }
 
-private fun ResultSet.toMessage(): Message {
-    return Message(
-        id = getInt("id"),
-        message = getString("message")
+private fun ResultSet.tilInnsendtMeldekort(): InnsendtMeldekort {
+    return InnsendtMeldekort(
+        meldekortId = getLong("meldekortId")
     )
 }
