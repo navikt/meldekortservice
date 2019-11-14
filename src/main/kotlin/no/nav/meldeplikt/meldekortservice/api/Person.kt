@@ -1,10 +1,13 @@
 package no.nav.meldeplikt.meldekortservice.api
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.application.call
+import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.locations.Location
 import io.ktor.response.respond
+import io.ktor.response.respondText
 import io.ktor.routing.Routing
 import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
 import no.nav.meldeplikt.meldekortservice.config.SoapConfig
@@ -106,8 +109,8 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
             if (kontrollertType.status == "OK") {
                 innsendtMeldekortService.settInnInnsendtMeldekort(InnsendtMeldekort(kontrollertType.meldekortId))
             }
-
-            call.respond(kontrollertType)
+//text = test, contentType = ContentType.Application.Json
+            call.respondText(jacksonObjectMapper().writeValueAsString(kontrollertType), contentType = ContentType.Application.Json)
         } catch (e: Exception) {
             val errorMessage = ErrorMessage("Meldekort med id ${meldekort.meldekortId} ble ikke sendt inn. ${e.message}")
             defaultLog.error(errorMessage.error, e)
@@ -138,3 +141,4 @@ fun Routing.endreMeldeform() =
             call.respond(status = HttpStatusCode.ServiceUnavailable, message = errorMessage)
         }
     }
+
