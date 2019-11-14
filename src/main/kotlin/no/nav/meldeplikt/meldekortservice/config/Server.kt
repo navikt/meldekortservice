@@ -90,7 +90,6 @@ object Server {
                 personApi(innsendtMeldekortService)
             }
         }
-        //configureStartupHook()
         Flyway.runFlywayMigrations(environment)
         addGraceTimeAtShutdownToAllowRunningRequestsToComplete(app)
         return app

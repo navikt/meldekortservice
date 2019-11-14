@@ -115,8 +115,6 @@ dependencies {
 
     testCompile("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testCompile(kotlin("test-junit5"))
-    //testImplementation("no.nav:kafka-embedded-env:2.1.1")
-    //testImplementation("io.confluent:kafka-schema-registry:$confluentVersion")
     testImplementation("com.h2database:h2:$h2Version")
     testImplementation("org.amshove.kluent:kluent:$kluentVersion")
     testRuntime("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
