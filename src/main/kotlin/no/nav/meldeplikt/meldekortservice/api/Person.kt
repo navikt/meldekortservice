@@ -45,6 +45,7 @@ fun Routing.personApi(innsendtMeldekortService: InnsendtMeldekortService) {
 }
 
 private val xmlMapper = XmlMapper()
+private val jsonMapper = jacksonObjectMapper()
 
 private const val personGroup = "Person"
 
@@ -109,8 +110,7 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
             if (kontrollertType.status == "OK") {
                 innsendtMeldekortService.settInnInnsendtMeldekort(InnsendtMeldekort(kontrollertType.meldekortId))
             }
-//text = test, contentType = ContentType.Application.Json
-            call.respondText(jacksonObjectMapper().writeValueAsString(kontrollertType), contentType = ContentType.Application.Json)
+            call.respondText(jsonMapper.writeValueAsString(kontrollertType), contentType = ContentType.Application.Json)
         } catch (e: Exception) {
             val errorMessage = ErrorMessage("Meldekort med id ${meldekort.meldekortId} ble ikke sendt inn. ${e.message}")
             defaultLog.error(errorMessage.error, e)
