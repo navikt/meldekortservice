@@ -1,21 +1,27 @@
 package no.nav.meldeplikt.meldekortservice.api
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.application.call
+import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.locations.Location
 import io.ktor.response.respond
+import io.ktor.response.respondText
 import io.ktor.routing.Routing
 import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
 import no.nav.meldeplikt.meldekortservice.config.SoapConfig
 import no.nav.meldeplikt.meldekortservice.config.extractIdentFromLoginContext
+import no.nav.meldeplikt.meldekortservice.mapper.MeldekortMapper
 import no.nav.meldeplikt.meldekortservice.model.response.EmptyResponse
 import no.nav.meldeplikt.meldekortservice.model.Meldeform
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.model.Meldeperiode
+import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
 import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
+import no.nav.meldeplikt.meldekortservice.service.InnsendtMeldekortService
 import no.nav.meldeplikt.meldekortservice.utils.*
 import no.nav.meldeplikt.meldekortservice.utils.Error
 import no.nav.meldeplikt.meldekortservice.utils.ErrorMessage
@@ -31,14 +37,15 @@ REST-controller for meldekort-api som tilbyr operasjoner for å hente:
 - Endre meldeform
 I tillegg til å sende inn/kontrollere meldekort.
  */
-fun Routing.personApi() {
+fun Routing.personApi(innsendtMeldekortService: InnsendtMeldekortService) {
     getHistoriskeMeldekort()
-    getMeldekort()
-    kontrollerMeldekort()
+    getMeldekort(innsendtMeldekortService)
+    kontrollerMeldekort(innsendtMeldekortService)
     endreMeldeform()
 }
 
 private val xmlMapper = XmlMapper()
+private val jsonMapper = jacksonObjectMapper()
 
 private const val personGroup = "Person"
 
@@ -68,7 +75,7 @@ fun Routing.getHistoriskeMeldekort() =
 class MeldekortInput
 
 // Henter meldekort
-fun Routing.getMeldekort() =
+fun Routing.getMeldekort(innsendtMeldekortService: InnsendtMeldekortService) =
     get<MeldekortInput>(
         "Hent meldekort".securityAndReponds(
             BearerTokenSecurity(),
@@ -79,7 +86,8 @@ fun Routing.getMeldekort() =
         respondOrError {
             val response = ArenaOrdsService.hentMeldekort(extractIdentFromLoginContext())
             if (response.status == HttpStatusCode.OK) {
-                xmlMapper.readValue(response.content, Person::class.java)
+                val person = xmlMapper.readValue(response.content, Person::class.java)
+                MeldekortMapper.filtrerMeldekortliste(person, innsendtMeldekortService)
             } else {
                 throw NoContentException()
             }
@@ -87,7 +95,7 @@ fun Routing.getMeldekort() =
     }
 
 // Innsending/kontroll av meldekort (Amelding)
-fun Routing.kontrollerMeldekort() =
+fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortService) =
     post<MeldekortInput, Meldekortdetaljer>(
         "Kontroll/innsending av meldekort til Amelding".securityAndReponds(
             BearerTokenSecurity(),
@@ -98,9 +106,13 @@ fun Routing.kontrollerMeldekort() =
     ) {_, meldekort ->
         try {
             val kontrollertType = SoapConfig.soapService().kontrollerMeldekort(meldekort)
-            call.respond(kontrollertType)
+
+            if (kontrollertType.status == "OK") {
+                innsendtMeldekortService.settInnInnsendtMeldekort(InnsendtMeldekort(kontrollertType.meldekortId))
+            }
+            call.respondText(jsonMapper.writeValueAsString(kontrollertType), contentType = ContentType.Application.Json)
         } catch (e: Exception) {
-            val errorMessage = ErrorMessage("Meldekort ble ikke sendt inn. ${e.message}")
+            val errorMessage = ErrorMessage("Meldekort med id ${meldekort.meldekortId} ble ikke sendt inn. ${e.message}")
             defaultLog.error(errorMessage.error, e)
             call.respond(status = HttpStatusCode.ServiceUnavailable, message = errorMessage)
         }
@@ -129,3 +141,4 @@ fun Routing.endreMeldeform() =
             call.respond(status = HttpStatusCode.ServiceUnavailable, message = errorMessage)
         }
     }
+

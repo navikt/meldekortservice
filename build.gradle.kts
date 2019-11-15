@@ -1,6 +1,7 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
 import no.nils.wsdl2java.Wsdl2JavaTask
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val prometheusVersion = "0.6.0"
@@ -26,6 +27,10 @@ val swaggerVersion = "3.23.8"
 val vaultVersion = "3.1.0"
 val tjenestespecVersion = "1.2019.08.16-13.46-35cbdfd492d4"
 val slf4jVersion = "1.7.26"
+val flywayVersion = "5.2.4"
+val postgresVersion = "42.2.5"
+val h2Version = "1.4.199"
+val kluentVersion = "1.52"
 
 val mainClass = "no.nav.meldeplikt.meldekortservice.AppKt"
 
@@ -38,6 +43,8 @@ plugins {
     kotlin("plugin.allopen") version "1.3.41"
 
     id("com.github.johnrengelman.shadow") version "4.0.4"
+
+    id("org.flywaydb.flyway") version("5.2.4")
 
     application
 }
@@ -103,10 +110,14 @@ dependencies {
     api("io.github.microutils:kotlin-logging:$kotlinLoggerVersion")
     api("com.bettercloud:vault-java-driver:$vaultVersion")
     api("no.nav.tjenestespesifikasjoner:arena-sakOgAktivitet_v1:$tjenestespecVersion")
+    api("org.flywaydb:flyway-core:$flywayVersion")
+    api("org.postgresql:postgresql:$postgresVersion")
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
-    testImplementation("org.assertj:assertj-core:$assertJVersion")
-    testImplementation(kotlin("test-junit5"))
+    testCompile("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+    testCompile(kotlin("test-junit5"))
+    testImplementation("com.h2database:h2:$h2Version")
+    testImplementation("org.amshove.kluent:kluent:$kluentVersion")
+    testRuntime("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
 
     implementation("org.webjars:swagger-ui:$swaggerVersion")
     implementation("javax.xml.ws:jaxws-api:$jaxwsApiVersion")
@@ -132,6 +143,14 @@ tasks {
     withType<Jar> {
         manifest.attributes["Main-Class"] = application.mainClassName
         from(configurations.runtime.get().map { if (it.isDirectory) it else zipTree(it) })
+    }
+
+    withType<Test> {
+        useJUnitPlatform()
+        testLogging {
+            exceptionFormat = TestExceptionFormat.FULL
+            events("passed", "skipped", "failed")
+        }
     }
 
     withType<KotlinCompile> {
