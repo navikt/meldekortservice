@@ -46,6 +46,7 @@ object ArenaOrdsService {
         val meldekort = ordsClient().call("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORT$fnr") {
             setupOrdsRequest()
         }
+        ordsClient().close()
         if (HTTP_STATUS_CODES_2XX.contains(meldekort.response.status.value)) {
             OrdsStringResponse(meldekort.response.status, meldekort.response.receive())
         } else {
@@ -62,6 +63,7 @@ object ArenaOrdsService {
                 setupOrdsRequest()
             }
         }
+        ordsClient().close()
         return xmlMapper.readValue(person, Person::class.java)
     }
 
@@ -71,6 +73,7 @@ object ArenaOrdsService {
                 setupOrdsRequest()
             }
         }
+        ordsClient().close()
         val meldekort = xmlMapper.readValue(detaljer, Meldekort::class.java)
         return MeldekortdetaljerMapper.mapOrdsMeldekortTilMeldekortdetaljer(meldekort)
     }
@@ -81,6 +84,7 @@ object ArenaOrdsService {
                 setupOrdsRequest(meldekortId)
             }
         }
+        ordsClient().close()
         val response = xmlMapper.readValue(nyMeldekortId, KopierMeldekortResponse::class.java)
         return response.meldekortId
     }
@@ -93,6 +97,7 @@ object ArenaOrdsService {
                     headers.append("meldeform", meldeformNavn)
             }
         }
+        ordsClient().close()
         return xmlMapper.readValue(meldeperiodeResponse, Meldeperiode::class.java)
 
     }
@@ -118,6 +123,7 @@ object ArenaOrdsService {
                 token = ordsClient().post("${env.ordsUrl}$ARENA_ORDS_TOKEN_PATH?grant_type=client_credentials") {
                     setupTokenRequest()
                 }
+                ordsClient().close()
             }
         } else {
             log.info("Henter ikke token da appen kjører lokalt")
