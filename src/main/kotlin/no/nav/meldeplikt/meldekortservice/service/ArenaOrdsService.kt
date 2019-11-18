@@ -24,14 +24,14 @@ import no.nav.meldeplikt.meldekortservice.model.response.OrdsStringResponse
 import no.nav.meldeplikt.meldekortservice.utils.*
 import java.util.*
 
-object ArenaOrdsService {
+class ArenaOrdsService {
 
     private val log = getLogger(ArenaOrdsService::class)
 
     private val env = Environment()
     private val xmlMapper = XmlMapper()
 
-    private fun ordsClient() = HttpClient() {
+    private val ordsClient: HttpClient = HttpClient() {
         engine {
             response.apply {
                 charset(Charsets.UTF_8.displayName())
@@ -43,10 +43,10 @@ object ArenaOrdsService {
     }
 
     fun hentMeldekort(fnr: String): OrdsStringResponse = runBlocking {
-        val meldekort = ordsClient().call("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORT$fnr") {
+        val meldekort = ordsClient.call("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORT$fnr") {
             setupOrdsRequest()
         }
-        ordsClient().close()
+        ordsClient.close()
         if (HTTP_STATUS_CODES_2XX.contains(meldekort.response.status.value)) {
             OrdsStringResponse(meldekort.response.status, meldekort.response.receive())
         } else {
@@ -56,48 +56,48 @@ object ArenaOrdsService {
 
     fun hentHistoriskeMeldekort(fnr: String, antallMeldeperioder: Int): Person {
         val person = runBlocking {
-            ordsClient().get<String>(
+            ordsClient.get<String>(
                 "${env.ordsUrl}$ARENA_ORDS_HENT_HISTORISKE_MELDEKORT$fnr" +
                         "$ARENA_ORDS_MELDEPERIODER_PARAM$antallMeldeperioder"
             ) {
                 setupOrdsRequest()
             }
         }
-        ordsClient().close()
+        ordsClient.close()
         return xmlMapper.readValue(person, Person::class.java)
     }
 
     fun hentMeldekortdetaljer(meldekortId: Long): Meldekortdetaljer {
         val detaljer = runBlocking {
-            ordsClient().get<String>("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORTDETALJER$meldekortId") {
+            ordsClient.get<String>("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORTDETALJER$meldekortId") {
                 setupOrdsRequest()
             }
         }
-        ordsClient().close()
+        ordsClient.close()
         val meldekort = xmlMapper.readValue(detaljer, Meldekort::class.java)
         return MeldekortdetaljerMapper.mapOrdsMeldekortTilMeldekortdetaljer(meldekort)
     }
 
     fun kopierMeldekort(meldekortId: Long): Long {
         val nyMeldekortId = runBlocking {
-            ordsClient().post<String>("${env.ordsUrl}$ARENA_ORDS_KOPIER_MELDEKORT") {
+            ordsClient.post<String>("${env.ordsUrl}$ARENA_ORDS_KOPIER_MELDEKORT") {
                 setupOrdsRequest(meldekortId)
             }
         }
-        ordsClient().close()
+        ordsClient.close()
         val response = xmlMapper.readValue(nyMeldekortId, KopierMeldekortResponse::class.java)
         return response.meldekortId
     }
 
     fun endreMeldeform(fnr: String, meldeformNavn: String): Meldeperiode {
         val meldeperiodeResponse = runBlocking {
-            ordsClient().post<String>("${env.ordsUrl}$ARENA_ORDS_ENDRE_MELDEFORM") {
+            ordsClient.post<String>("${env.ordsUrl}$ARENA_ORDS_ENDRE_MELDEFORM") {
                     setupOrdsRequest()
                     headers.append("fnr", fnr)
                     headers.append("meldeform", meldeformNavn)
             }
         }
-        ordsClient().close()
+        ordsClient.close()
         return xmlMapper.readValue(meldeperiodeResponse, Meldeperiode::class.java)
 
     }
@@ -120,10 +120,10 @@ object ArenaOrdsService {
 
         if (isCurrentlyRunningOnNais()) {
             runBlocking {
-                token = ordsClient().post("${env.ordsUrl}$ARENA_ORDS_TOKEN_PATH?grant_type=client_credentials") {
+                token = ordsClient.post("${env.ordsUrl}$ARENA_ORDS_TOKEN_PATH?grant_type=client_credentials") {
                     setupTokenRequest()
                 }
-                ordsClient().close()
+                ordsClient.close()
             }
         } else {
             log.info("Henter ikke token da appen kjører lokalt")

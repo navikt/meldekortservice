@@ -37,11 +37,11 @@ REST-controller for meldekort-api som tilbyr operasjoner for å hente:
 - Endre meldeform
 I tillegg til å sende inn/kontrollere meldekort.
  */
-fun Routing.personApi(innsendtMeldekortService: InnsendtMeldekortService) {
-    getHistoriskeMeldekort()
-    getMeldekort(innsendtMeldekortService)
+fun Routing.personApi(arenaOrdsService: ArenaOrdsService, innsendtMeldekortService: InnsendtMeldekortService) {
+    getHistoriskeMeldekort(arenaOrdsService)
+    getMeldekort(arenaOrdsService, innsendtMeldekortService)
     kontrollerMeldekort(innsendtMeldekortService)
-    endreMeldeform()
+    endreMeldeform(arenaOrdsService)
 }
 
 private val xmlMapper = XmlMapper()
@@ -54,7 +54,7 @@ private const val personGroup = "Person"
 data class HistoriskeMeldekortInput(val antallMeldeperioder: Int)
 
 // Henter historiske meldekort
-fun Routing.getHistoriskeMeldekort() =
+fun Routing.getHistoriskeMeldekort(arenaOrdsService: ArenaOrdsService) =
     get<HistoriskeMeldekortInput>(
         "Hent tidligerer/historiske meldekort".securityAndReponds(
             BearerTokenSecurity(),
@@ -63,7 +63,7 @@ fun Routing.getHistoriskeMeldekort() =
             unAuthorized<Error>())) {
         historiskeMeldekortInput ->
         respondOrError {
-            ArenaOrdsService.hentHistoriskeMeldekort(
+            arenaOrdsService.hentHistoriskeMeldekort(
                 extractIdentFromLoginContext(),
                 historiskeMeldekortInput.antallMeldeperioder
             )
@@ -75,7 +75,7 @@ fun Routing.getHistoriskeMeldekort() =
 class MeldekortInput
 
 // Henter meldekort
-fun Routing.getMeldekort(innsendtMeldekortService: InnsendtMeldekortService) =
+fun Routing.getMeldekort(arenaOrdsService: ArenaOrdsService, innsendtMeldekortService: InnsendtMeldekortService) =
     get<MeldekortInput>(
         "Hent meldekort".securityAndReponds(
             BearerTokenSecurity(),
@@ -84,7 +84,7 @@ fun Routing.getMeldekort(innsendtMeldekortService: InnsendtMeldekortService) =
             serviceUnavailable<ErrorMessage>(),
             unAuthorized<Error>())) {
         respondOrError {
-            val response = ArenaOrdsService.hentMeldekort(extractIdentFromLoginContext())
+            val response = arenaOrdsService.hentMeldekort(extractIdentFromLoginContext())
             if (response.status == HttpStatusCode.OK) {
                 val person = xmlMapper.readValue(response.content, Person::class.java)
                 MeldekortMapper.filtrerMeldekortliste(person, innsendtMeldekortService)
@@ -123,7 +123,7 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
 class MeldeformInput
 
 // Endre meldeform
-fun Routing.endreMeldeform() =
+fun Routing.endreMeldeform(arenaOrdsService: ArenaOrdsService) =
     post<MeldeformInput, Meldeform>(
         "Oppdater meldeform".securityAndReponds(
             BearerTokenSecurity(),
@@ -133,7 +133,7 @@ fun Routing.endreMeldeform() =
         )
     ) {_, meldeform ->
         try {
-            val meldeperiode = ArenaOrdsService.endreMeldeform(extractIdentFromLoginContext(), meldeform.meldeformNavn)
+            val meldeperiode = arenaOrdsService.endreMeldeform(extractIdentFromLoginContext(), meldeform.meldeformNavn)
             call.respond(meldeperiode)
         } catch (e: Exception) {
             val errorMessage = ErrorMessage("Kunne ikke endre meldeform til ${meldeform.meldeformNavn}. ${e.message}")
