@@ -14,10 +14,10 @@ spec:
     - {{ingress2}}
   liveness:
     path: {{baseurl}}/internal/isAlive
-    initialDelay: 15
+    initialDelay: 10
   readiness:
     path: {{baseurl}}/internal/isReady
-    initialDelay: 15
+    initialDelay: 10
   vault:
     enabled: true
     paths:
@@ -27,7 +27,7 @@ spec:
         mountPath: /var/run/secrets/nais.io/vault
   replicas:
     min: 2
-    max: 4
+    max: 6
     cpuThresholdPercentage: 10
   webproxy: true
   resources:
