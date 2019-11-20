@@ -42,7 +42,7 @@ internal data class ErrorMessage(val error: String)
 
 internal class Error
 
-internal suspend fun PipelineContext<Unit, ApplicationCall>.respondOrError(block: () -> Any) =
+internal suspend fun PipelineContext<Unit, ApplicationCall>.respondOrError(block: suspend() -> Any) =
     try {
         val res = block()
         call.respond(HttpStatusCode.OK, res)

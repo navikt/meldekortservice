@@ -9,6 +9,10 @@ import io.ktor.locations.Location
 import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.routing.Routing
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
 import no.nav.meldeplikt.meldekortservice.config.SoapConfig
 import no.nav.meldeplikt.meldekortservice.config.extractIdentFromLoginContext
@@ -29,6 +33,7 @@ import no.nav.meldeplikt.meldekortservice.utils.PERSON_PATH
 import no.nav.meldeplikt.meldekortservice.utils.respondOrError
 import no.nav.meldeplikt.meldekortservice.utils.swagger.*
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Group
+import kotlin.concurrent.thread
 
 /**
 REST-controller for meldekort-api som tilbyr operasjoner for å hente:
@@ -86,8 +91,7 @@ fun Routing.getMeldekort(arenaOrdsService: ArenaOrdsService, innsendtMeldekortSe
         respondOrError {
             val response = arenaOrdsService.hentMeldekort(extractIdentFromLoginContext())
             if (response.status == HttpStatusCode.OK) {
-                val person = xmlMapper.readValue(response.content, Person::class.java)
-                MeldekortMapper.filtrerMeldekortliste(person, innsendtMeldekortService)
+                MeldekortMapper.filtrerMeldekortliste(mapPersonXml(response.content), innsendtMeldekortService)
             } else {
                 throw NoContentException()
             }
