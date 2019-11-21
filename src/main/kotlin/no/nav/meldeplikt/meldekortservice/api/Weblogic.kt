@@ -21,8 +21,7 @@ class PingWeblogicInput
 // Endepunkt for ping av weblogic
 fun Routing.pingWeblogic() =
     get<PingWeblogicInput>(
-        "Ping av weblogic for å sjekke at Arena er oppe".securityAndReponds(
-            BearerTokenSecurity(),
+        "Ping av weblogic for å sjekke at Arena er oppe".responds(
             ok<WeblogicPing>(),
             serviceUnavailable<ErrorMessage>(),
             unAuthorized<Error>()
