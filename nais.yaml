@@ -28,7 +28,7 @@ spec:
   replicas:
     min: 2
     max: 6
-    cpuThresholdPercentage: 50
+    cpuThresholdPercentage: 25
   webproxy: true
   resources:
     limits:
