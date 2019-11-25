@@ -33,8 +33,6 @@ val h2Version = "1.4.199"
 val kluentVersion = "1.52"
 val tokenValidationVersion = "1.1.0"
 
-val mainClass = "no.nav.meldeplikt.meldekortservice.AppKt"
-
 plugins {
     java
 
@@ -138,7 +136,7 @@ configure<JavaPluginConvention> {
 }
 
 application {
-    mainClassName = mainClass
+    mainClassName = "io.ktor.server.netty.EngineMain"
 }
 
 tasks {
