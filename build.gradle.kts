@@ -31,6 +31,7 @@ val flywayVersion = "5.2.4"
 val postgresVersion = "42.2.5"
 val h2Version = "1.4.199"
 val kluentVersion = "1.52"
+val tokenValidationVersion = "1.1.0"
 
 val mainClass = "no.nav.meldeplikt.meldekortservice.AppKt"
 
@@ -112,6 +113,7 @@ dependencies {
     api("no.nav.tjenestespesifikasjoner:arena-sakOgAktivitet_v1:$tjenestespecVersion")
     api("org.flywaydb:flyway-core:$flywayVersion")
     api("org.postgresql:postgresql:$postgresVersion")
+    api("no.nav.security:token-validation-ktor:$tokenValidationVersion")
 
     testCompile("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testCompile(kotlin("test-junit5"))

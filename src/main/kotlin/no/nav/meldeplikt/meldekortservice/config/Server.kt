@@ -1,10 +1,7 @@
 package no.nav.meldeplikt.meldekortservice.config
 
-import io.ktor.application.Application
-import io.ktor.application.ApplicationStarted
 import io.ktor.application.install
 import io.ktor.auth.Authentication
-import io.ktor.auth.jwt.jwt
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.DefaultHeaders
 import io.ktor.jackson.jackson
@@ -33,6 +30,7 @@ import no.nav.sbl.dialogarena.common.cxf.StsSecurityConstants
 import no.nav.sbl.util.EnvironmentUtils.setProperty
 import no.nav.sbl.util.EnvironmentUtils.Type.PUBLIC
 import no.nav.sbl.util.EnvironmentUtils.Type.SECRET
+import no.nav.security.token.support.ktor.tokenValidationSupport
 import java.util.concurrent.TimeUnit
 
 val swagger = Swagger(
@@ -76,9 +74,12 @@ object Server {
                 jackson { objectMapper }
             }
 
+            val conf = this.environment.config
             install(Authentication) {
-                jwt {
-                    setupOidcAuthentication(environment)
+                if (isCurrentlyRunningOnNais()) {
+                    tokenValidationSupport(config = conf)
+                } else {
+                    provider { skipWhen{ true } }
                 }
             }
 
