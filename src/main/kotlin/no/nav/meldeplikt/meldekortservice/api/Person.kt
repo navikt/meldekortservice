@@ -91,7 +91,7 @@ fun Routing.getMeldekort(arenaOrdsService: ArenaOrdsService, innsendtMeldekortSe
         respondOrError {
             val response = arenaOrdsService.hentMeldekort(extractIdentFromLoginContext())
             if (response.status == HttpStatusCode.OK) {
-                MeldekortMapper.filtrerMeldekortliste(mapPersonXml(response.content), innsendtMeldekortService)
+                MeldekortMapper.filtrerMeldekortliste(mapFraXml(response.content, Person::class.java), innsendtMeldekortService)
             } else {
                 throw NoContentException()
             }

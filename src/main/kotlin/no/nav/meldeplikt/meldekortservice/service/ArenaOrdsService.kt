@@ -15,8 +15,10 @@ import no.nav.meldeplikt.meldekortservice.mapper.MeldekortdetaljerMapper
 import no.nav.meldeplikt.meldekortservice.model.Meldeperiode
 import no.nav.meldeplikt.meldekortservice.model.OrdsToken
 import no.nav.meldeplikt.meldekortservice.model.feil.OrdsException
+import no.nav.meldeplikt.meldekortservice.model.korriger.KopierMeldekortResponse
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
+import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.arena.Meldekort
 import no.nav.meldeplikt.meldekortservice.model.response.OrdsStringResponse
 import no.nav.meldeplikt.meldekortservice.utils.*
 import java.util.*
@@ -57,7 +59,7 @@ class ArenaOrdsService {
                 setupOrdsRequest()
             }
 
-        return mapPersonXml(person)
+        return mapFraXml(person, Person::class.java)
     }
 
     suspend fun hentMeldekortdetaljer(meldekortId: Long): Meldekortdetaljer {
@@ -65,7 +67,7 @@ class ArenaOrdsService {
                 setupOrdsRequest()
             }
 
-        return MeldekortdetaljerMapper.mapOrdsMeldekortTilMeldekortdetaljer(mapMeldekortXml(detaljer))
+        return MeldekortdetaljerMapper.mapOrdsMeldekortTilMeldekortdetaljer(mapFraXml(detaljer, Meldekort::class.java))
     }
 
     suspend fun kopierMeldekort(meldekortId: Long): Long {
@@ -73,7 +75,7 @@ class ArenaOrdsService {
                 setupOrdsRequest(meldekortId)
             }
 
-        return mapMeldekortIdXml(nyMeldekortId).meldekortId
+        return mapFraXml(nyMeldekortId, KopierMeldekortResponse::class.java).meldekortId
     }
 
     suspend fun endreMeldeform(fnr: String, meldeformNavn: String): Meldeperiode {
@@ -83,7 +85,7 @@ class ArenaOrdsService {
                     headers.append("meldeform", meldeformNavn)
             }
 
-        return mapMeldeperiodeXml(meldeperiodeResponse)
+        return mapFraXml(meldeperiodeResponse, Meldeperiode::class.java)
     }
 
     private fun HttpRequestBuilder.setupOrdsRequest(meldekortId: Long? = null) {

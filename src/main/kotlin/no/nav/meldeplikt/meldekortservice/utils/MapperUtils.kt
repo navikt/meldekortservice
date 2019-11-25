@@ -5,10 +5,11 @@ import no.nav.meldeplikt.meldekortservice.model.Meldeperiode
 import no.nav.meldeplikt.meldekortservice.model.korriger.KopierMeldekortResponse
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.arena.Meldekort
+import kotlin.reflect.KClass
 
 private val xmlMapper = XmlMapper()
 
-fun mapPersonXml(person: String): Person {
+/*fun mapPersonXml(person: String): Person {
     return xmlMapper.readValue(person, Person::class.java)
 }
 
@@ -21,5 +22,9 @@ fun mapMeldekortIdXml(nyMeldekortId: String): KopierMeldekortResponse {
 }
 
 fun mapMeldeperiodeXml(meldeperiode: String): Meldeperiode {
-    return xmlMapper.readValue(meldeperiode, Meldeperiode::class.java)
+
+}*/
+
+fun <T> mapFraXml(xml: String, responseKlasse: Class<T>): T {
+    return xmlMapper.readValue(xml, responseKlasse)
 }
