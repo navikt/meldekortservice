@@ -168,7 +168,7 @@ workflows:
           name: manuell-deploy-til-q0
           requires:
             - bekreft-deploy-til-q0
-      - deploy-til-q1:
+      - deploy-til-q0:
           name: automatisk-deploy-til-q0
           requires:
             - build
@@ -176,3 +176,18 @@ workflows:
           filters:
             branches:
               only: master
+      - bekreft-deploy-til-p:
+          type: approval
+          requires:
+            - build
+            - bygg_og_push
+            - manuell-deploy-til-q1
+            - manuell-deploy-til-q0
+          filters:
+            branches:
+              ignore: master
+      - deploy-til-p:
+          name: manuell-deploy-til-p
+          requires:
+            - bekreft-deploy-til-p
+
