@@ -176,18 +176,15 @@ workflows:
           filters:
             branches:
               only: master
-      - bekreft-deploy-til-p:
+      - bekreft-deploy-til-prod:
           type: approval
           requires:
             - build
             - bygg_og_push
             - manuell-deploy-til-q1
             - manuell-deploy-til-q0
-          filters:
-            branches:
-              ignore: master
-      - deploy-til-p:
-          name: manuell-deploy-til-p
+      - deploy-til-prod:
+          name: manuell-deploy-til-prod
           requires:
-            - bekreft-deploy-til-p
+            - bekreft-deploy-til-prod
 
