@@ -156,3 +156,23 @@ workflows:
           filters:
             branches:
               only: master
+      - bekreft-deploy-til-q0:
+          type: approval
+          requires:
+            - build
+            - bygg_og_push
+          filters:
+            branches:
+              ignore: master
+      - deploy-til-q0:
+          name: manuell-deploy-til-q0
+          requires:
+            - bekreft-deploy-til-q0
+      - deploy-til-q1:
+          name: automatisk-deploy-til-q0
+          requires:
+            - build
+            - bygg_og_push
+          filters:
+            branches:
+              only: master
