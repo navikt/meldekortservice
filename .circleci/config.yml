@@ -75,7 +75,7 @@ jobs:
           ingress1: https://$REPO_NAME.nais.adeo.no
           ingress2: https://app.adeo.no/$BASE_URL
           serviceUserKvPath: serviceuser/data/prod/srvmeldekortservice
-          envVarKvPath: kv/prod/fss/meldekortservice/
+          envVarKvPath: kv/prod/fss/meldekortservice/default
 
 commands:
   deploy:
