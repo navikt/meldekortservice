@@ -1,6 +1,5 @@
 package no.nav.meldeplikt.meldekortservice.service
 
-import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import io.ktor.client.HttpClient
 import io.ktor.client.call.call
 import io.ktor.client.call.receive
@@ -24,14 +23,13 @@ import no.nav.meldeplikt.meldekortservice.model.response.OrdsStringResponse
 import no.nav.meldeplikt.meldekortservice.utils.*
 import java.util.*
 
-object ArenaOrdsService {
+class ArenaOrdsService {
 
     private val log = getLogger(ArenaOrdsService::class)
 
     private val env = Environment()
-    private val xmlMapper = XmlMapper()
 
-    private fun ordsClient() = HttpClient() {
+    private val ordsClient: HttpClient = HttpClient() {
         engine {
             response.apply {
                 charset(Charsets.UTF_8.displayName())
@@ -42,59 +40,52 @@ object ArenaOrdsService {
         }
     }
 
-    fun hentMeldekort(fnr: String): OrdsStringResponse = runBlocking {
-        val meldekort = ordsClient().call("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORT$fnr") {
+    suspend fun hentMeldekort(fnr: String): OrdsStringResponse {
+        val meldekort = ordsClient.call("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORT$fnr") {
             setupOrdsRequest()
         }
         if (HTTP_STATUS_CODES_2XX.contains(meldekort.response.status.value)) {
-            OrdsStringResponse(meldekort.response.status, meldekort.response.receive())
+            return OrdsStringResponse(meldekort.response.status, meldekort.response.receive())
         } else {
             throw OrdsException("Kunne ikke hente meldekort fra Arena Ords.")
         }
     }
 
-    fun hentHistoriskeMeldekort(fnr: String, antallMeldeperioder: Int): Person {
-        val person = runBlocking {
-            ordsClient().get<String>(
+    suspend fun hentHistoriskeMeldekort(fnr: String, antallMeldeperioder: Int): Person {
+        val person =ordsClient.get<String>(
                 "${env.ordsUrl}$ARENA_ORDS_HENT_HISTORISKE_MELDEKORT$fnr" +
                         "$ARENA_ORDS_MELDEPERIODER_PARAM$antallMeldeperioder"
             ) {
                 setupOrdsRequest()
             }
-        }
-        return xmlMapper.readValue(person, Person::class.java)
+
+        return mapFraXml(person, Person::class.java)
     }
 
-    fun hentMeldekortdetaljer(meldekortId: Long): Meldekortdetaljer {
-        val detaljer = runBlocking {
-            ordsClient().get<String>("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORTDETALJER$meldekortId") {
+    suspend fun hentMeldekortdetaljer(meldekortId: Long): Meldekortdetaljer {
+        val detaljer = ordsClient.get<String>("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORTDETALJER$meldekortId") {
                 setupOrdsRequest()
             }
-        }
-        val meldekort = xmlMapper.readValue(detaljer, Meldekort::class.java)
-        return MeldekortdetaljerMapper.mapOrdsMeldekortTilMeldekortdetaljer(meldekort)
+
+        return MeldekortdetaljerMapper.mapOrdsMeldekortTilMeldekortdetaljer(mapFraXml(detaljer, Meldekort::class.java))
     }
 
-    fun kopierMeldekort(meldekortId: Long): Long {
-        val nyMeldekortId = runBlocking {
-            ordsClient().post<String>("${env.ordsUrl}$ARENA_ORDS_KOPIER_MELDEKORT") {
+    suspend fun kopierMeldekort(meldekortId: Long): Long {
+        val nyMeldekortId = ordsClient.post<String>("${env.ordsUrl}$ARENA_ORDS_KOPIER_MELDEKORT") {
                 setupOrdsRequest(meldekortId)
             }
-        }
-        val response = xmlMapper.readValue(nyMeldekortId, KopierMeldekortResponse::class.java)
-        return response.meldekortId
+
+        return mapFraXml(nyMeldekortId, KopierMeldekortResponse::class.java).meldekortId
     }
 
-    fun endreMeldeform(fnr: String, meldeformNavn: String): Meldeperiode {
-        val meldeperiodeResponse = runBlocking {
-            ordsClient().post<String>("${env.ordsUrl}$ARENA_ORDS_ENDRE_MELDEFORM") {
+    suspend fun endreMeldeform(fnr: String, meldeformNavn: String): Meldeperiode {
+        val meldeperiodeResponse = ordsClient.post<String>("${env.ordsUrl}$ARENA_ORDS_ENDRE_MELDEFORM") {
                     setupOrdsRequest()
                     headers.append("fnr", fnr)
                     headers.append("meldeform", meldeformNavn)
             }
-        }
-        return xmlMapper.readValue(meldeperiodeResponse, Meldeperiode::class.java)
 
+        return mapFraXml(meldeperiodeResponse, Meldeperiode::class.java)
     }
 
     private fun HttpRequestBuilder.setupOrdsRequest(meldekortId: Long? = null) {
@@ -115,7 +106,7 @@ object ArenaOrdsService {
 
         if (isCurrentlyRunningOnNais()) {
             runBlocking {
-                token = ordsClient().post("${env.ordsUrl}$ARENA_ORDS_TOKEN_PATH?grant_type=client_credentials") {
+                token = ordsClient.post("${env.ordsUrl}$ARENA_ORDS_TOKEN_PATH?grant_type=client_credentials") {
                     setupTokenRequest()
                 }
             }

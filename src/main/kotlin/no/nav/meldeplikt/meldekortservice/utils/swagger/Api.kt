@@ -17,7 +17,6 @@ import io.ktor.routing.Route
 import io.ktor.util.pipeline.PipelineContext
 import no.nav.meldeplikt.meldekortservice.config.swagger
 import no.nav.meldeplikt.meldekortservice.utils.defaultLog
-import no.nav.meldeplikt.meldekortservice.utils.getLogger
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import kotlin.reflect.KClass
 

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
@@ -38,11 +39,13 @@ const val vaultKvPath = "serviceuser/data/dev/srvmeldekortservice"
 
 internal val HTTP_STATUS_CODES_2XX = IntRange(200, 299)
 
+private val xmlMapper = XmlMapper()
+
 internal data class ErrorMessage(val error: String)
 
 internal class Error
 
-internal suspend fun PipelineContext<Unit, ApplicationCall>.respondOrError(block: () -> Any) =
+internal suspend fun PipelineContext<Unit, ApplicationCall>.respondOrError(block: suspend() -> Any) =
     try {
         val res = block()
         call.respond(HttpStatusCode.OK, res)
@@ -65,6 +68,10 @@ internal suspend fun PipelineContext<Unit, ApplicationCall>.respondOrError(block
 
 fun isCurrentlyRunningOnNais(): Boolean {
     return System.getenv("NAIS_APP_NAME") != null
+}
+
+fun <T> mapFraXml(xml: String, responseKlasse: Class<T>): T {
+    return xmlMapper.readValue(xml, responseKlasse)
 }
 
 val objectMapper: ObjectMapper = ObjectMapper()

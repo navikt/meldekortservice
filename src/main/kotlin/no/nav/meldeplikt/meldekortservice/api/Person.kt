@@ -11,7 +11,7 @@ import io.ktor.response.respondText
 import io.ktor.routing.Routing
 import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
 import no.nav.meldeplikt.meldekortservice.config.SoapConfig
-import no.nav.meldeplikt.meldekortservice.config.extractIdentFromLoginContext
+import no.nav.meldeplikt.meldekortservice.config.userIdent
 import no.nav.meldeplikt.meldekortservice.mapper.MeldekortMapper
 import no.nav.meldeplikt.meldekortservice.model.response.EmptyResponse
 import no.nav.meldeplikt.meldekortservice.model.Meldeform
@@ -37,11 +37,11 @@ REST-controller for meldekort-api som tilbyr operasjoner for å hente:
 - Endre meldeform
 I tillegg til å sende inn/kontrollere meldekort.
  */
-fun Routing.personApi(innsendtMeldekortService: InnsendtMeldekortService) {
-    getHistoriskeMeldekort()
-    getMeldekort(innsendtMeldekortService)
+fun Routing.personApi(arenaOrdsService: ArenaOrdsService, innsendtMeldekortService: InnsendtMeldekortService) {
+    getHistoriskeMeldekort(arenaOrdsService)
+    getMeldekort(arenaOrdsService, innsendtMeldekortService)
     kontrollerMeldekort(innsendtMeldekortService)
-    endreMeldeform()
+    endreMeldeform(arenaOrdsService)
 }
 
 private val xmlMapper = XmlMapper()
@@ -54,7 +54,7 @@ private const val personGroup = "Person"
 data class HistoriskeMeldekortInput(val antallMeldeperioder: Int)
 
 // Henter historiske meldekort
-fun Routing.getHistoriskeMeldekort() =
+fun Routing.getHistoriskeMeldekort(arenaOrdsService: ArenaOrdsService) =
     get<HistoriskeMeldekortInput>(
         "Hent tidligerer/historiske meldekort".securityAndReponds(
             BearerTokenSecurity(),
@@ -63,8 +63,8 @@ fun Routing.getHistoriskeMeldekort() =
             unAuthorized<Error>())) {
         historiskeMeldekortInput ->
         respondOrError {
-            ArenaOrdsService.hentHistoriskeMeldekort(
-                extractIdentFromLoginContext(),
+            arenaOrdsService.hentHistoriskeMeldekort(
+                userIdent,
                 historiskeMeldekortInput.antallMeldeperioder
             )
         }
@@ -75,7 +75,7 @@ fun Routing.getHistoriskeMeldekort() =
 class MeldekortInput
 
 // Henter meldekort
-fun Routing.getMeldekort(innsendtMeldekortService: InnsendtMeldekortService) =
+fun Routing.getMeldekort(arenaOrdsService: ArenaOrdsService, innsendtMeldekortService: InnsendtMeldekortService) =
     get<MeldekortInput>(
         "Hent meldekort".securityAndReponds(
             BearerTokenSecurity(),
@@ -84,10 +84,9 @@ fun Routing.getMeldekort(innsendtMeldekortService: InnsendtMeldekortService) =
             serviceUnavailable<ErrorMessage>(),
             unAuthorized<Error>())) {
         respondOrError {
-            val response = ArenaOrdsService.hentMeldekort(extractIdentFromLoginContext())
+            val response = arenaOrdsService.hentMeldekort(userIdent)
             if (response.status == HttpStatusCode.OK) {
-                val person = xmlMapper.readValue(response.content, Person::class.java)
-                MeldekortMapper.filtrerMeldekortliste(person, innsendtMeldekortService)
+                MeldekortMapper.filtrerMeldekortliste(mapFraXml(response.content, Person::class.java), innsendtMeldekortService)
             } else {
                 throw NoContentException()
             }
@@ -123,7 +122,7 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
 class MeldeformInput
 
 // Endre meldeform
-fun Routing.endreMeldeform() =
+fun Routing.endreMeldeform(arenaOrdsService: ArenaOrdsService) =
     post<MeldeformInput, Meldeform>(
         "Oppdater meldeform".securityAndReponds(
             BearerTokenSecurity(),
@@ -133,7 +132,7 @@ fun Routing.endreMeldeform() =
         )
     ) {_, meldeform ->
         try {
-            val meldeperiode = ArenaOrdsService.endreMeldeform(extractIdentFromLoginContext(), meldeform.meldeformNavn)
+            val meldeperiode = arenaOrdsService.endreMeldeform(userIdent, meldeform.meldeformNavn)
             call.respond(meldeperiode)
         } catch (e: Exception) {
             val errorMessage = ErrorMessage("Kunne ikke endre meldeform til ${meldeform.meldeformNavn}. ${e.message}")

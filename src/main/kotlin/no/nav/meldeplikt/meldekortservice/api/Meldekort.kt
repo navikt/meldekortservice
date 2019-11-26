@@ -2,7 +2,7 @@ package no.nav.meldeplikt.meldekortservice.api
 
 import io.ktor.locations.Location
 import io.ktor.routing.Routing
-import no.nav.meldeplikt.meldekortservice.config.extractIdentFromLoginContext
+import no.nav.meldeplikt.meldekortservice.config.userIdent
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
 import no.nav.meldeplikt.meldekortservice.utils.*
@@ -15,9 +15,9 @@ import no.nav.meldeplikt.meldekortservice.utils.swagger.*
 /**
 REST-controller for meldekort-api som tilbyr operasjoner for å hente meldekortdetaljer og korrigering for en NAV-bruker.
  */
-fun Routing.meldekortApi() {
-    getMeldekortdetaljer()
-    getKorrigertMeldekort()
+fun Routing.meldekortApi(arenaOrdsService: ArenaOrdsService) {
+    getMeldekortdetaljer(arenaOrdsService)
+    getKorrigertMeldekort(arenaOrdsService)
 }
 
 private const val meldekortGroup = "Meldekort"
@@ -27,7 +27,7 @@ private const val meldekortGroup = "Meldekort"
 data class MeldekortdetaljerInput(val meldekortId: Long)
 
 // Hent meldekortdetaljer
-fun Routing.getMeldekortdetaljer() =
+fun Routing.getMeldekortdetaljer(arenaOrdsService: ArenaOrdsService) =
     get<MeldekortdetaljerInput>(
         "Hent meldekortdetaljer".securityAndReponds(
             BearerTokenSecurity(),
@@ -37,8 +37,8 @@ fun Routing.getMeldekortdetaljer() =
             unAuthorized<Error>())) {
             meldekortdetaljerInput -> respondOrError {
 
-            val meldekortdetaljer = ArenaOrdsService.hentMeldekortdetaljer(meldekortdetaljerInput.meldekortId)
-            if (meldekortdetaljer.fodselsnr == extractIdentFromLoginContext()) {
+            val meldekortdetaljer = arenaOrdsService.hentMeldekortdetaljer(meldekortdetaljerInput.meldekortId)
+            if (meldekortdetaljer.fodselsnr == userIdent) {
                 meldekortdetaljer
             } else {
                 val msg = "Personidentifikator matcher ikke. Bruker kan derfor ikke hente ut meldekortdetaljer."
@@ -53,7 +53,7 @@ fun Routing.getMeldekortdetaljer() =
 data class KorrigertMeldekortInput(val meldekortId: Long)
 
 // Henter meldekortid for nytt (korrigert) kort
-fun Routing.getKorrigertMeldekort() =
+fun Routing.getKorrigertMeldekort(arenaOrdsService: ArenaOrdsService) =
     get<KorrigertMeldekortInput>(
         "Hent korrigert meldekortid".securityAndReponds(
             BearerTokenSecurity(),
@@ -63,6 +63,6 @@ fun Routing.getKorrigertMeldekort() =
             unAuthorized<Error>())) {
             korrigertMeldekortInput -> respondOrError{
 
-            ArenaOrdsService.kopierMeldekort(korrigertMeldekortInput.meldekortId)
+            arenaOrdsService.kopierMeldekort(korrigertMeldekortInput.meldekortId)
         }
     }

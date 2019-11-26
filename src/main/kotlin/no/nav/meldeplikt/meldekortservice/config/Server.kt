@@ -1,20 +1,13 @@
 package no.nav.meldeplikt.meldekortservice.config
 
 import io.ktor.application.Application
-import io.ktor.application.ApplicationStarted
 import io.ktor.application.install
 import io.ktor.auth.Authentication
-import io.ktor.auth.jwt.jwt
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.DefaultHeaders
 import io.ktor.jackson.jackson
-import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Locations
 import io.ktor.routing.Routing
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.netty.Netty
-import io.ktor.server.netty.NettyApplicationEngine
-import io.ktor.util.KtorExperimentalAPI
 import io.prometheus.client.hotspot.DefaultExports
 import no.nav.cache.Cache
 import no.nav.cache.CacheConfig
@@ -22,6 +15,7 @@ import no.nav.cache.CacheUtils
 import no.nav.meldeplikt.meldekortservice.api.*
 import no.nav.meldeplikt.meldekortservice.database.PostgresDatabase
 import no.nav.meldeplikt.meldekortservice.model.OrdsToken
+import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
 import no.nav.meldeplikt.meldekortservice.service.InnsendtMeldekortService
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Contact
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Information
@@ -32,7 +26,9 @@ import no.nav.sbl.dialogarena.common.cxf.StsSecurityConstants
 import no.nav.sbl.util.EnvironmentUtils.setProperty
 import no.nav.sbl.util.EnvironmentUtils.Type.PUBLIC
 import no.nav.sbl.util.EnvironmentUtils.Type.SECRET
-import java.util.concurrent.TimeUnit
+import no.nav.security.token.support.ktor.tokenValidationSupport
+
+fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 val swagger = Swagger(
     info = Information (
@@ -54,59 +50,43 @@ val cache: Cache<String, OrdsToken> = CacheUtils.buildCache(CacheConfig.DEFAULT.
 
 const val SWAGGER_URL_V1 = "/meldekortservice/internal/apidocs/index.html?url=swagger.json"
 
-object Server {
+fun Application.mainModule(env: Environment = Environment()) {
 
-    private const val portNumber = 8090
-    private const val basePath = "/meldekortservice"
+    DefaultExports.initialize()
+    setAppProperties(env)
+    val innsendtMeldekortService = InnsendtMeldekortService(PostgresDatabase(env))
+    val arenaOrdsService = ArenaOrdsService()
 
-    @KtorExperimentalLocationsAPI
-    @KtorExperimentalAPI
-    fun configure(environment: Environment): NettyApplicationEngine {
+    install(DefaultHeaders)
 
-        DefaultExports.initialize()
-        setAppProperties(environment)
-        val innsendtMeldekortService = InnsendtMeldekortService(PostgresDatabase(environment))
-
-        val app = embeddedServer(Netty, port = portNumber) {
-            install(DefaultHeaders)
-
-            install(ContentNegotiation) {
-                jackson { objectMapper }
-            }
-
-            install(Authentication) {
-                jwt {
-                    setupOidcAuthentication(environment)
-                }
-            }
-
-            install(Locations)
-
-            install(Routing) {
-                healthApi()
-                swaggerRoutes()
-                weblogicApi()
-                meldekortApi()
-                personApi(innsendtMeldekortService)
-            }
-        }
-        Flyway.runFlywayMigrations(environment)
-        addGraceTimeAtShutdownToAllowRunningRequestsToComplete(app)
-        return app
+    install(ContentNegotiation) {
+        jackson { objectMapper }
     }
 
-    private fun addGraceTimeAtShutdownToAllowRunningRequestsToComplete(app: NettyApplicationEngine) {
-        if(isCurrentlyRunningOnNais()) {
-            Runtime.getRuntime().addShutdownHook(Thread {
-                app.stop(5, 60, TimeUnit.SECONDS)
-            })
+    val conf = this.environment.config
+    install(Authentication) {
+        if (isCurrentlyRunningOnNais()) {
+            tokenValidationSupport(config = conf)
+        } else {
+            provider { skipWhen { true } }
         }
     }
 
-    private fun setAppProperties(environment: Environment) {
-        val systemuser = hentVaultCredentials()
-        setProperty(StsSecurityConstants.STS_URL_KEY, environment.securityTokenService, PUBLIC)
-        setProperty(StsSecurityConstants.SYSTEMUSER_USERNAME, systemuser.username, PUBLIC)
-        setProperty(StsSecurityConstants.SYSTEMUSER_PASSWORD, systemuser.password, SECRET)
+    install(Locations)
+
+    install(Routing) {
+        healthApi()
+        swaggerRoutes()
+        weblogicApi()
+        meldekortApi(arenaOrdsService)
+        personApi(arenaOrdsService, innsendtMeldekortService)
     }
+    Flyway.runFlywayMigrations(env)
+}
+
+private fun setAppProperties(environment: Environment) {
+    val systemuser = hentVaultCredentials()
+    setProperty(StsSecurityConstants.STS_URL_KEY, environment.securityTokenService, PUBLIC)
+    setProperty(StsSecurityConstants.SYSTEMUSER_USERNAME, systemuser.username, PUBLIC)
+    setProperty(StsSecurityConstants.SYSTEMUSER_PASSWORD, systemuser.password, SECRET)
 }
