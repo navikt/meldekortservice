@@ -5,6 +5,7 @@ import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.http.HttpHeaders
 import io.ktor.util.pipeline.PipelineContext
+import no.nav.meldeplikt.meldekortservice.utils.defaultLog
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 
 fun PipelineContext<Unit, ApplicationCall>.extractIdentFromToken(): String {
@@ -20,7 +21,9 @@ val PipelineContext<Unit, ApplicationCall>.userIdent get() = if (isCurrentlyRunn
 
 private fun verifyThatATokenWasFound(authToken: String?) {
     if (authToken == null) {
-        throw Exception("Token ble ikke funnet. Dette skal ikke kunne skje.")
+        val melding = "Token ble ikke funnet. Dette skal ikke kunne skje."
+        defaultLog.error(melding)
+        throw Exception(melding)
     }
 }
 
