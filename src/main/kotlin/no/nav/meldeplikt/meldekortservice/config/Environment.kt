@@ -47,8 +47,6 @@ private fun vault() = Vault(VaultConfig()
 
 fun hentVaultCredentials(env: Environment): VaultCredentials {
     return if(isCurrentlyRunningOnNais()) {
-        defaultLog.info("Envs: ${System.getenv()}")
-        defaultLog.info("VaultPath: ${env.serviceUserKvPath}")
         val credentials = Json.parse(vault().logical().read(env.serviceUserKvPath).data["data"]).asObject()
         VaultCredentials(credentials.get("username").asString(), credentials.get("password").asString())
     } else {
