@@ -9,13 +9,9 @@ import io.ktor.locations.Location
 import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.routing.Routing
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
 import no.nav.meldeplikt.meldekortservice.config.SoapConfig
-import no.nav.meldeplikt.meldekortservice.config.extractIdentFromLoginContext
+import no.nav.meldeplikt.meldekortservice.config.userIdent
 import no.nav.meldeplikt.meldekortservice.mapper.MeldekortMapper
 import no.nav.meldeplikt.meldekortservice.model.response.EmptyResponse
 import no.nav.meldeplikt.meldekortservice.model.Meldeform
@@ -33,7 +29,6 @@ import no.nav.meldeplikt.meldekortservice.utils.PERSON_PATH
 import no.nav.meldeplikt.meldekortservice.utils.respondOrError
 import no.nav.meldeplikt.meldekortservice.utils.swagger.*
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Group
-import kotlin.concurrent.thread
 
 /**
 REST-controller for meldekort-api som tilbyr operasjoner for å hente:
@@ -69,7 +64,7 @@ fun Routing.getHistoriskeMeldekort(arenaOrdsService: ArenaOrdsService) =
         historiskeMeldekortInput ->
         respondOrError {
             arenaOrdsService.hentHistoriskeMeldekort(
-                extractIdentFromLoginContext(),
+                userIdent,
                 historiskeMeldekortInput.antallMeldeperioder
             )
         }
@@ -89,7 +84,7 @@ fun Routing.getMeldekort(arenaOrdsService: ArenaOrdsService, innsendtMeldekortSe
             serviceUnavailable<ErrorMessage>(),
             unAuthorized<Error>())) {
         respondOrError {
-            val response = arenaOrdsService.hentMeldekort(extractIdentFromLoginContext())
+            val response = arenaOrdsService.hentMeldekort(userIdent)
             if (response.status == HttpStatusCode.OK) {
                 MeldekortMapper.filtrerMeldekortliste(mapFraXml(response.content, Person::class.java), innsendtMeldekortService)
             } else {
@@ -137,7 +132,7 @@ fun Routing.endreMeldeform(arenaOrdsService: ArenaOrdsService) =
         )
     ) {_, meldeform ->
         try {
-            val meldeperiode = arenaOrdsService.endreMeldeform(extractIdentFromLoginContext(), meldeform.meldeformNavn)
+            val meldeperiode = arenaOrdsService.endreMeldeform(userIdent, meldeform.meldeformNavn)
             call.respond(meldeperiode)
         } catch (e: Exception) {
             val errorMessage = ErrorMessage("Kunne ikke endre meldeform til ${meldeform.meldeformNavn}. ${e.message}")

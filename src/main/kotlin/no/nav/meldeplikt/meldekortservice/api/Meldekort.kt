@@ -2,7 +2,7 @@ package no.nav.meldeplikt.meldekortservice.api
 
 import io.ktor.locations.Location
 import io.ktor.routing.Routing
-import no.nav.meldeplikt.meldekortservice.config.extractIdentFromLoginContext
+import no.nav.meldeplikt.meldekortservice.config.userIdent
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
 import no.nav.meldeplikt.meldekortservice.utils.*
@@ -38,7 +38,7 @@ fun Routing.getMeldekortdetaljer(arenaOrdsService: ArenaOrdsService) =
             meldekortdetaljerInput -> respondOrError {
 
             val meldekortdetaljer = arenaOrdsService.hentMeldekortdetaljer(meldekortdetaljerInput.meldekortId)
-            if (meldekortdetaljer.fodselsnr == extractIdentFromLoginContext()) {
+            if (meldekortdetaljer.fodselsnr == userIdent) {
                 meldekortdetaljer
             } else {
                 val msg = "Personidentifikator matcher ikke. Bruker kan derfor ikke hente ut meldekortdetaljer."
