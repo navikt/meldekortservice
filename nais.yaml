@@ -37,3 +37,6 @@ spec:
     requests:
       cpu: 500m
       memory: 1024Mi
+  env:
+    - name: SERVICE_USER_KV_PATH
+      value: {{serviceUserKvPath}}

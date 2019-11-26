@@ -28,7 +28,7 @@ data class Environment(
     val dbUrl: String = "jdbc:postgresql://$dbHost/$dbName",
     val dbPassword: String = getEnvVar("DB_PASSWORD", "testpassword"),
     val dbMountPath: String = getEnvVar("DB_MOUNT_PATH", "notUsedOnLocalhost"),
-    val serviceUserKvPath: String = getEnvVar("serviceUserKvPath", "path")
+    val serviceUserKvPath: String = getEnvVar("SERVICE_USER_KV_PATH", "path")
 )
 
 fun getEnvVar(varName: String, defaultValue: String? = null): String {
