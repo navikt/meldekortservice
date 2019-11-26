@@ -85,7 +85,7 @@ fun Application.mainModule(env: Environment = Environment()) {
 }
 
 private fun setAppProperties(environment: Environment) {
-    val systemuser = hentVaultCredentials()
+    val systemuser = hentVaultCredentials(environment)
     setProperty(StsSecurityConstants.STS_URL_KEY, environment.securityTokenService, PUBLIC)
     setProperty(StsSecurityConstants.SYSTEMUSER_USERNAME, systemuser.username, PUBLIC)
     setProperty(StsSecurityConstants.SYSTEMUSER_PASSWORD, systemuser.password, SECRET)

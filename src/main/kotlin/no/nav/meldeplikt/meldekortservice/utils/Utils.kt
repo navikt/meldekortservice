@@ -35,7 +35,6 @@ internal const val ARENA_ORDS_ENDRE_MELDEFORM = "$ARENA_ORDS_API_V1/meldeform"
 
 const val vaultUrl = "https://vault.adeo.no"
 const val vaultTokenPath = "/var/run/secrets/nais.io/vault/vault_token"
-const val vaultKvPath = "serviceuser/data/dev/srvmeldekortservice"
 
 internal val HTTP_STATUS_CODES_2XX = IntRange(200, 299)
 

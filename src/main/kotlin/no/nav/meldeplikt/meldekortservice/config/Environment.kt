@@ -4,10 +4,7 @@ import com.bettercloud.vault.SslConfig
 import com.bettercloud.vault.Vault
 import com.bettercloud.vault.VaultConfig
 import com.bettercloud.vault.json.Json
-import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
-import no.nav.meldeplikt.meldekortservice.utils.vaultKvPath
-import no.nav.meldeplikt.meldekortservice.utils.vaultTokenPath
-import no.nav.meldeplikt.meldekortservice.utils.vaultUrl
+import no.nav.meldeplikt.meldekortservice.utils.*
 import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -30,7 +27,8 @@ data class Environment(
     val dbUser: String = getEnvVar("DB_NAME", "test") + "-user",
     val dbUrl: String = "jdbc:postgresql://$dbHost/$dbName",
     val dbPassword: String = getEnvVar("DB_PASSWORD", "testpassword"),
-    val dbMountPath: String = getEnvVar("DB_MOUNT_PATH", "notUsedOnLocalhost")
+    val dbMountPath: String = getEnvVar("DB_MOUNT_PATH", "notUsedOnLocalhost"),
+    val serviceUserKvPath: String = getEnvVar("serviceUserKvPath", "path")
 )
 
 fun getEnvVar(varName: String, defaultValue: String? = null): String {
@@ -47,9 +45,10 @@ private fun vault() = Vault(VaultConfig()
     .build()
 )
 
-fun hentVaultCredentials(): VaultCredentials {
+fun hentVaultCredentials(env: Environment): VaultCredentials {
     return if(isCurrentlyRunningOnNais()) {
-        val credentials = Json.parse(vault().logical().read(vaultKvPath).data["data"]).asObject()
+        defaultLog.info("VaultPath: ${env.serviceUserKvPath}")
+        val credentials = Json.parse(vault().logical().read(env.serviceUserKvPath).data["data"]).asObject()
         VaultCredentials(credentials.get("username").asString(), credentials.get("password").asString())
     } else {
         VaultCredentials("test", "test")
