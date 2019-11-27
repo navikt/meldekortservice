@@ -17,6 +17,8 @@ import no.nav.meldeplikt.meldekortservice.database.PostgresDatabase
 import no.nav.meldeplikt.meldekortservice.model.OrdsToken
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
 import no.nav.meldeplikt.meldekortservice.service.InnsendtMeldekortService
+import no.nav.meldeplikt.meldekortservice.utils.SBL_ARBEID_PASSWORD
+import no.nav.meldeplikt.meldekortservice.utils.SBL_ARBEID_USERNAME
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Contact
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Information
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Swagger
@@ -85,8 +87,11 @@ fun Application.mainModule(env: Environment = Environment()) {
 }
 
 private fun setAppProperties(environment: Environment) {
-    val systemuser = hentVaultCredentials(environment)
+    val systemuser = hentVaultCredentials(environment.serviceUserKvPath)
+    val srvSblArbeid = hentVaultCredentials(environment.srvSblArbeidPath)
     setProperty(StsSecurityConstants.STS_URL_KEY, environment.securityTokenService, PUBLIC)
     setProperty(StsSecurityConstants.SYSTEMUSER_USERNAME, systemuser.username, PUBLIC)
     setProperty(StsSecurityConstants.SYSTEMUSER_PASSWORD, systemuser.password, SECRET)
+    setProperty(SBL_ARBEID_USERNAME, srvSblArbeid.username, PUBLIC)
+    setProperty(SBL_ARBEID_PASSWORD, srvSblArbeid.password, SECRET)
 }
