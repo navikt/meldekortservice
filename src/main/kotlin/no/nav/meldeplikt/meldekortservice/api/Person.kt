@@ -104,6 +104,7 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
         )
     ) {_, meldekort ->
         try {
+            defaultLog.info("Detaljer: ${jacksonObjectMapper().writeValueAsString(meldekort)}")
             val kontrollertType = SoapConfig.soapService().kontrollerMeldekort(meldekort)
 
             if (kontrollertType.status == "OK") {
