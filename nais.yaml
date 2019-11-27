@@ -24,7 +24,7 @@ spec:
       - kvPath: {{serviceUserKvPath}}
         mountPath: /var/run/secrets/nais.io/srvmeldekortservice
       - kvPath: {{srvSblArbeidPath}}
-        mountPath: /var/run/secrets/nais.io/srvsblarbeid-sbs
+        mountPath: /var/run/secrets/nais.io/srvsblarbeid
       - kvPath: {{envVarKvPath}}
         mountPath: /var/run/secrets/nais.io/vault
   replicas:

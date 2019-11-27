@@ -47,7 +47,7 @@ jobs:
           ingress1: https://$REPO_NAME-q1.nais.preprod.local
           ingress2: https://app-q1.adeo.no/$BASE_URL
           serviceUserKvPath: serviceuser/data/dev/srvmeldekortservice
-          srvSblArbeidPath: serviceuser/data/dev/srvsblarbeid-sbs
+          srvSblArbeidPath: serviceuser/data/dev/srvsblarbeid
           envVarKvPath: kv/preprod/fss/meldekortservice/q1
 
   deploy-til-q0:
@@ -62,7 +62,7 @@ jobs:
           ingress1: https://$REPO_NAME-q0.nais.preprod.local
           ingress2: https://app-q0.adeo.no/$BASE_URL
           serviceUserKvPath: serviceuser/data/dev/srvmeldekortservice
-          srvSblArbeidPath: serviceuser/data/dev/srvsblarbeid-sbs
+          srvSblArbeidPath: serviceuser/data/dev/srvsblarbeid
           envVarKvPath: kv/preprod/fss/meldekortservice/q0
 
   deploy-til-prod:
@@ -77,7 +77,7 @@ jobs:
           ingress1: https://$REPO_NAME.nais.adeo.no
           ingress2: https://app.adeo.no/$BASE_URL
           serviceUserKvPath: serviceuser/data/prod/srvmeldekortservice
-          srvSblArbeidPath: serviceuser/data/prod/srvsblarbeid-sbs
+          srvSblArbeidPath: serviceuser/data/prod/srvsblarbeid
           envVarKvPath: kv/prod/fss/meldekortservice/default
 
 commands:
