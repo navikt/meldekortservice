@@ -42,7 +42,6 @@ object SoapConfig {
     //Velger hvilke av Ameldingsservicene som skal returneres ettersom om appen kjører på nais eller ikke
     fun soapService(): SoapService {
         return if(isCurrentlyRunningOnNais()) {
-            log.info("Kjører på nais. Setter opp SoapService. SBLArbeidBrukernavn: $sblArbeidUsername")
             SoapServiceImpl(externControlEmeldingConfig())
         } else {
             SoapServiceMock()
@@ -51,6 +50,7 @@ object SoapConfig {
 
     //Setter opp tilkobling mot Amelding
     private fun externControlEmeldingConfig(): ExternControlEmeldingSOAP {
+        log.info("Kjører på nais. Setter opp SoapService. SBLArbeidBrukernavn: $sblArbeidUsername/$sblArbeidPassword")
         return CXFClient(ExternControlEmeldingSOAP::class.java)
             .address(environment.ameldingUrl.toString())
             .withOutInterceptor(WSS4JOutInterceptor(interceptorConfig))
