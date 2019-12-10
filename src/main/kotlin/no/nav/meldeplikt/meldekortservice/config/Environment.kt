@@ -13,8 +13,6 @@ data class Environment(
     val username: String = getEnvVar("FSS_SYSTEMUSER_USERNAME", "username"),
     val password: String = getEnvVar("FSS_SYSTEMUSER_PASSWORD", "password"),
     val ameldingUrl: URL = URL(getEnvVar("AMELDING_URI", "https://dummyUrl.com/path")),
-    val personinfoUsername: String = getEnvVar("PERSONINFO_SERVICE_USERNAME", "username"),
-    val personinfoPassword: String = getEnvVar("PERSONINFO_SERVICE_PASSWORD", "password"),
     val ordsUrl: URL = URL(getEnvVar("ORDS_URI", "https://dummyUrl.com")),
     val ordsClientId: String = getEnvVar("CLIENT_ID", "cLiEnTiD"),
     val ordsClientSecret: String = getEnvVar("CLIENT_SECRET", "cLiEnTsEcReT"),
@@ -28,7 +26,9 @@ data class Environment(
     val dbUrl: String = "jdbc:postgresql://$dbHost/$dbName",
     val dbPassword: String = getEnvVar("DB_PASSWORD", "testpassword"),
     val dbMountPath: String = getEnvVar("DB_MOUNT_PATH", "notUsedOnLocalhost"),
-    val serviceUserKvPath: String = getEnvVar("serviceUserKvPath", "path")
+
+    val serviceUserKvPath: String = getEnvVar("SERVICE_USER_KV_PATH", "path"),
+    val srvSblArbeidPath: String = getEnvVar("SRV_SBL_ARBEID_PATH", "path")
 )
 
 fun getEnvVar(varName: String, defaultValue: String? = null): String {
@@ -45,10 +45,9 @@ private fun vault() = Vault(VaultConfig()
     .build()
 )
 
-fun hentVaultCredentials(env: Environment): VaultCredentials {
+fun hentVaultCredentials(path: String): VaultCredentials {
     return if(isCurrentlyRunningOnNais()) {
-        defaultLog.info("VaultPath: ${env.serviceUserKvPath}")
-        val credentials = Json.parse(vault().logical().read(env.serviceUserKvPath).data["data"]).asObject()
+        val credentials = Json.parse(vault().logical().read(path).data["data"]).asObject()
         VaultCredentials(credentials.get("username").asString(), credentials.get("password").asString())
     } else {
         VaultCredentials("test", "test")

@@ -23,12 +23,14 @@ spec:
     paths:
       - kvPath: {{serviceUserKvPath}}
         mountPath: /var/run/secrets/nais.io/srvmeldekortservice
+      - kvPath: {{srvSblArbeidPath}}
+        mountPath: /var/run/secrets/nais.io/srvsblarbeid
       - kvPath: {{envVarKvPath}}
         mountPath: /var/run/secrets/nais.io/vault
   replicas:
     min: 2
     max: 6
-    cpuThresholdPercentage: 25
+    cpuThresholdPercentage: 10
   webproxy: true
   resources:
     limits:
@@ -37,3 +39,8 @@ spec:
     requests:
       cpu: 500m
       memory: 1024Mi
+  env:
+    - name: SERVICE_USER_KV_PATH
+      value: {{serviceUserKvPath}}
+    - name: SRV_SBL_ARBEID_PATH
+      value: {{srvSblArbeidPath}}

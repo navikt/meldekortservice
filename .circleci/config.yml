@@ -47,6 +47,7 @@ jobs:
           ingress1: https://$REPO_NAME-q1.nais.preprod.local
           ingress2: https://app-q1.adeo.no/$BASE_URL
           serviceUserKvPath: serviceuser/data/dev/srvmeldekortservice
+          srvSblArbeidPath: serviceuser/data/dev/srvsblarbeid
           envVarKvPath: kv/preprod/fss/meldekortservice/q1
 
   deploy-til-q0:
@@ -61,6 +62,7 @@ jobs:
           ingress1: https://$REPO_NAME-q0.nais.preprod.local
           ingress2: https://app-q0.adeo.no/$BASE_URL
           serviceUserKvPath: serviceuser/data/dev/srvmeldekortservice
+          srvSblArbeidPath: serviceuser/data/dev/srvsblarbeid
           envVarKvPath: kv/preprod/fss/meldekortservice/q0
 
   deploy-til-prod:
@@ -75,6 +77,7 @@ jobs:
           ingress1: https://$REPO_NAME.nais.adeo.no
           ingress2: https://app.adeo.no/$BASE_URL
           serviceUserKvPath: serviceuser/data/prod/srvmeldekortservice
+          srvSblArbeidPath: serviceuser/data/prod/srvsblarbeid
           envVarKvPath: kv/prod/fss/meldekortservice/default
 
 commands:
@@ -89,6 +92,8 @@ commands:
       ingress2:
         type: string
       serviceUserKvPath:
+        type: string
+      srvSblArbeidPath:
         type: string
       envVarKvPath:
         type: string
@@ -109,6 +114,7 @@ commands:
                 --var version=$IMAGE_VERSION \
                 --var namespace=<< parameters.namespace >> \
                 --var serviceUserKvPath=<< parameters.serviceUserKvPath >> \
+                --var srvSblArbeidPath=<< parameters.srvSblArbeidPath >> \
                 --var envVarKvPath=<< parameters.envVarKvPath >> \
                 --key=gh_deploy_key.pem \
                 --ref=$COMMIT_SHORT \

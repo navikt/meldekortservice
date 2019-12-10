@@ -1,3 +1,3 @@
-FROM navikt/java:13-appdynamics
+FROM navikt/java:11
 COPY build/libs/meldekortservice.jar /app/app.jar
 EXPOSE 8090

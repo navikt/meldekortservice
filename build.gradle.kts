@@ -31,7 +31,7 @@ val flywayVersion = "5.2.4"
 val postgresVersion = "42.2.5"
 val h2Version = "1.4.199"
 val kluentVersion = "1.52"
-val tokenValidationVersion = "1.1.0"
+val tokenValidationVersion = "1.0.1"
 
 plugins {
     java

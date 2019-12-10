@@ -33,6 +33,9 @@ internal const val ARENA_ORDS_HENT_MELDEKORTDETALJER = "$ARENA_ORDS_API_V1/melde
 internal const val ARENA_ORDS_KOPIER_MELDEKORT = "$ARENA_ORDS_API_V1/meldekort/kopi"
 internal const val ARENA_ORDS_ENDRE_MELDEFORM = "$ARENA_ORDS_API_V1/meldeform"
 
+internal const val SBL_ARBEID_USERNAME = "srvSBLArbeid.username"
+internal const val SBL_ARBEID_PASSWORD = "srvSBLArbeid.password"
+
 const val vaultUrl = "https://vault.adeo.no"
 const val vaultTokenPath = "/var/run/secrets/nais.io/vault/vault_token"
 
