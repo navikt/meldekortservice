@@ -10,9 +10,6 @@ import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 
 fun PipelineContext<Unit, ApplicationCall>.extractIdentFromToken(): String {
     var authToken = getTokenFromHeader()
-    if (authToken == null) {
-        authToken = getTokenFromCookie()
-    }
     verifyThatATokenWasFound(authToken)
     return extractSubject(authToken)
 }
@@ -29,9 +26,6 @@ private fun verifyThatATokenWasFound(authToken: String?) {
 
 private fun PipelineContext<Unit, ApplicationCall>.getTokenFromHeader() =
     call.request.headers[HttpHeaders.Authorization]?.replace("Bearer ", "")
-
-private fun PipelineContext<Unit, ApplicationCall>.getTokenFromCookie() =
-    call.request.cookies["selvbetjening-idtoken"]
 
 private fun extractSubject(authToken: String?): String {
     val jwt = JWT.decode(authToken)
