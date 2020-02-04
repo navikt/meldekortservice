@@ -9,8 +9,15 @@ import no.nav.meldeplikt.meldekortservice.utils.defaultLog
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 
 fun PipelineContext<Unit, ApplicationCall>.extractIdentFromToken(): String {
-    var authToken = getTokenFromHeader()
+    val authTokenHeader = getTokenFromHeader()
+    val authTokenCookie = getTokenFromCookie()
+
+    verifyThatIdentIsConsistent(authTokenHeader, authTokenCookie)
+
+    val authToken = authTokenHeader ?: authTokenCookie
+
     verifyThatATokenWasFound(authToken)
+
     return extractSubject(authToken)
 }
 
@@ -24,8 +31,24 @@ private fun verifyThatATokenWasFound(authToken: String?) {
     }
 }
 
+private fun verifyThatIdentIsConsistent(authTokenHeader: String?, authTokenCookie: String?) {
+    if (authTokenHeader != null && authTokenCookie != null) {
+        val headerIdent = extractSubject(authTokenHeader)
+        val cookieIdent = extractSubject(authTokenCookie)
+
+        if (headerIdent != cookieIdent) {
+            val melding = "Ident i header er ulik ident i cookie. Dette skal ikke kunne skje."
+            defaultLog.error(melding)
+            throw Exception(melding)
+        }
+    }
+}
+
 private fun PipelineContext<Unit, ApplicationCall>.getTokenFromHeader() =
     call.request.headers[HttpHeaders.Authorization]?.replace("Bearer ", "")
+
+private fun PipelineContext<Unit, ApplicationCall>.getTokenFromCookie() =
+    call.request.cookies["selvbetjening-idtoken"]
 
 private fun extractSubject(authToken: String?): String {
     val jwt = JWT.decode(authToken)
