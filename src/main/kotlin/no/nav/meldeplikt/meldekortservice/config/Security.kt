@@ -9,11 +9,15 @@ import no.nav.meldeplikt.meldekortservice.utils.defaultLog
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 
 fun PipelineContext<Unit, ApplicationCall>.extractIdentFromToken(): String {
-    var authToken = getTokenFromHeader()
-    if (authToken == null) {
-        authToken = getTokenFromCookie()
-    }
+    val authTokenHeader = getTokenFromHeader()
+    val authTokenCookie = getTokenFromCookie()
+
+    verifyThatIdentIsConsistent(authTokenHeader, authTokenCookie)
+
+    val authToken = authTokenHeader ?: authTokenCookie
+
     verifyThatATokenWasFound(authToken)
+
     return extractSubject(authToken)
 }
 
@@ -24,6 +28,19 @@ private fun verifyThatATokenWasFound(authToken: String?) {
         val melding = "Token ble ikke funnet. Dette skal ikke kunne skje."
         defaultLog.error(melding)
         throw Exception(melding)
+    }
+}
+
+private fun verifyThatIdentIsConsistent(authTokenHeader: String?, authTokenCookie: String?) {
+    if (authTokenHeader != null && authTokenCookie != null) {
+        val headerIdent = extractSubject(authTokenHeader)
+        val cookieIdent = extractSubject(authTokenCookie)
+
+        if (headerIdent != cookieIdent) {
+            val melding = "Ident i header er ulik ident i cookie. Dette skal ikke kunne skje."
+            defaultLog.error(melding)
+            throw Exception(melding)
+        }
     }
 }
 
