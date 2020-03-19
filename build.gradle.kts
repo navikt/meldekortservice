@@ -45,8 +45,6 @@ plugins {
 
     id("org.flywaydb.flyway") version("5.2.4")
 
-    "maven-publish"
-
     application
 }
 
