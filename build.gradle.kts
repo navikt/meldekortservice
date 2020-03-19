@@ -36,7 +36,7 @@ val tokenValidationVersion = "1.0.1"
 plugins {
     java
 
-    id("no.nils.wsdl2java") version "0.10"
+//    id("no.nils.wsdl2java") version "0.10"
 
     kotlin("jvm") version "1.3.50"
     kotlin("plugin.allopen") version "1.3.41"
@@ -50,10 +50,12 @@ plugins {
 
 buildscript {
     repositories {
+        maven("https://plugins.gradle.org/m2/")
         maven("https://repo.adeo.no/repository/maven-central/")
         jcenter()
     }
     dependencies {
+        classpath("no.nils:wsdl2java:0.10")
         classpath("com.github.jengelman.gradle.plugins:shadow:4.0.4")
         classpath("org.junit.platform:junit-platform-gradle-plugin:1.2.0")
         classpath("javax.xml.bind:jaxb-api:2.4.0-b180830.0359")
@@ -64,6 +66,8 @@ buildscript {
         }
     }
 }
+
+apply(plugin = "no.nils.wsdl2java")
 
 repositories {
     maven("https://repo.adeo.no/repository/maven-central/")
