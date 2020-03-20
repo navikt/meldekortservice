@@ -50,12 +50,11 @@ plugins {
 
 buildscript {
     repositories {
-//        maven("https://plugins.gradle.org/m2/")
         maven("https://repo.adeo.no/repository/maven-central/")
+        maven("http://maven.adeo.no/nexus/content/groups/public")
 //        jcenter()
     }
     dependencies {
- //       classpath("no.nils:wsdl2java:0.10")
         classpath("com.github.jengelman.gradle.plugins:shadow:4.0.4")
         classpath("org.junit.platform:junit-platform-gradle-plugin:1.2.0")
         classpath("javax.xml.bind:jaxb-api:2.4.0-b180830.0359")
@@ -68,11 +67,14 @@ buildscript {
 }
 
 repositories {
+/*
     maven("https://repo.adeo.no/repository/maven-central/")
     maven("https://plugins.gradle.org/m2/")
     maven("https://dl.bintray.com/kotlin/ktor/")
     maven("http://repo.spring.io/plugins-release/")
     jcenter()
+*/
+    maven("http://maven.adeo.no/nexus/content/groups/public")
 }
 
 dependencies {
