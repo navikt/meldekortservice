@@ -11,6 +11,10 @@ import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
 //
 
 node {
+    environment {
+        NEXUSUSER = credentials('nexusUser')
+    }
+
     def KUBECTL = "/usr/bin/kubectl"
     def KUBECONFIG_FILE = "/data/kubectl/kubeconfig/meldeplikt.yaml"
     def DEFAULT_BUILD_USER = "Jenkins"

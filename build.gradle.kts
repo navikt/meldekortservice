@@ -74,7 +74,11 @@ repositories {
     maven("http://repo.spring.io/plugins-release/")
     jcenter()
 */
-    maven("http://maven.adeo.no/nexus/content/groups/public")
+    maven("http://maven.adeo.no/nexus/content/groups/public"){
+        credentials{
+            username = System.getenv("NEXUSUSER_USR")
+            password = System.getenv("NEXUSUSER_PSW")
+        }}
 }
 
 dependencies {
