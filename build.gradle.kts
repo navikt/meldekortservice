@@ -50,8 +50,8 @@ plugins {
 
 buildscript {
     repositories {
-        // maven("https://repo.adeo.no/repository/maven-central/")
-        jcenter()
+        maven("https://repo.adeo.no/repository/maven-central/")
+        //jcenter()
     }
     dependencies {
         classpath("com.github.jengelman.gradle.plugins:shadow:4.0.4")
@@ -66,11 +66,11 @@ buildscript {
 }
 
 repositories {
-    /*maven("https://repo.adeo.no/repository/maven-central/")
+    maven("https://repo.adeo.no/repository/maven-central/")
     maven("https://plugins.gradle.org/m2/")
     maven("https://dl.bintray.com/kotlin/ktor/")
-    maven("http://repo.spring.io/plugins-release/")*/
-    jcenter()
+    maven("http://repo.spring.io/plugins-release/")
+    //jcenter()
 }
 
 dependencies {
