@@ -12,18 +12,18 @@ import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
 
 node {
     def KUBECTL = "/usr/bin/kubectl"
-    def KUBECONFIG_FILE = "/data/kubectl/kubeconfig/meldeplikt.yaml"
+    def KUBECONFIG_FILE = "${KUBECONFIG}"
     def DEFAULT_BUILD_USER = "Jenkins"
 
     def NAISERATOR_YAML_FILE = "naiserator.yaml"
-    def DOCKER_REPO = "repo.adeo.no:5443"
+    def DOCKER_REPO = "${DOCKER_REPO}"
 
     // For oppdatering av deployet versjon i Vera
-    def VERA_UPDATE_URL = "https://vera.adeo.no/api/v1/deploylog"
+    def VERA_UPDATE_URL = "${VERA_UPDATE_URL}"
 
     // For opplasting av Naiserator yaml-fil
-    def NEXUS_REPO_URL = "http://maven.adeo.no/nexus/service/local/artifact/maven/content"
-    def NEXUS_REPO_ID = "m2internal"
+    def NEXUS_REPO_URL = "${NEXUS_REPO_URL}"
+    def NEXUS_REPO_ID = "${NEXUS_REPO_ID}"
 
     // Jobbparametere (definert i Jenkins-jobb)
     def miljo = getParameter(params.Miljo, "")
