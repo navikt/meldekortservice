@@ -96,7 +96,7 @@ node {
         }
 
         stage("Deploy to NAIS") {
-            prepareNaiseratorYaml(NAISERATOR_YAML_FILE, releaseVersion, namespace, domainName, slackAlertChannel, vaultKvEnv, vaultServiceuserEnv)
+            prepareNaiseratorYaml(NAISERATOR_YAML_FILE, releaseVersion, cluster, namespace, domainName, slackAlertChannel, vaultKvEnv, vaultServiceuserEnv)
 
             // set namespace to context
             sh "${KUBECTL} config --kubeconfig=${KUBECONFIG_FILE} set-context ${cluster} --namespace=${namespace}"
@@ -218,8 +218,9 @@ def getParameter(paramValue, defaultValue) {
     return (paramValue != null) ? paramValue : defaultValue
 }
 
-def prepareNaiseratorYaml(naiseratorFile, version, namespace, domainName, slackAlertChannel, vaultKvEnv, vaultServiceuserEnv) {
+def prepareNaiseratorYaml(naiseratorFile, version, cluster, namespace, domainName, slackAlertChannel, vaultKvEnv, vaultServiceuserEnv) {
     replaceInFile('##RELEASE_VERSION##', version, naiseratorFile)
+    replaceInFile('##CLUSTER##', cluster, naiseratorFile)
     replaceInFile('##NAMESPACE##', namespace, naiseratorFile)
     replaceInFile('##DOMAIN_NAME##', domainName, naiseratorFile)
     replaceInFile('##SLACK_ALERT_CHANNEL##', slackAlertChannel, naiseratorFile)

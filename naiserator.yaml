@@ -11,6 +11,7 @@ spec:
   ingresses:
     - https://meldekortservice##URL_NAMESPACE##.nais.##DOMAIN_NAME##
     - https://app##URL_NAMESPACE##.adeo.no/meldekortservice
+    - https://meldekortservice##URL_NAMESPACE##.##CLUSTER##.nais.io
   liveness:
     path: /meldekortservice/internal/isAlive
     initialDelay: 10
