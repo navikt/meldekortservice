@@ -1,0 +1,46 @@
+apiVersion: nais.io/v1alpha1
+kind: Application
+metadata:
+  name: meldekortservice
+  namespace: ##NAMESPACE##
+  labels:
+    team: meldekort
+spec:
+  image: repo.adeo.no:5443/meldeplikt/meldekortservice:##RELEASE_VERSION##
+  port: 8090
+  ingresses:
+    - https://meldekortservice##URL_NAMESPACE##.nais.##DOMAIN_NAME##
+    - https://app##URL_NAMESPACE##.adeo.no/meldekortservice
+    - https://meldekortservice##URL_NAMESPACE##.##CLUSTER##.nais.io
+  liveness:
+    path: /meldekortservice/internal/isAlive
+    initialDelay: 10
+  readiness:
+    path: /meldekortservice/internal/isReady
+    initialDelay: 10
+  vault:
+    enabled: true
+    paths:
+      - kvPath: serviceuser/data/##VAULT_SERVICEUSER_ENV##/srvmeldekortservice
+        mountPath: /var/run/secrets/nais.io/srvmeldekortservice
+      - kvPath: serviceuser/data/##VAULT_SERVICEUSER_ENV##/srvsblarbeid
+        mountPath: /var/run/secrets/nais.io/srvsblarbeid
+      - kvPath: kv/##VAULT_KV_ENV##/fss/meldekortservice/##NAMESPACE##
+        mountPath: /var/run/secrets/nais.io/vault
+  replicas:
+    min: 2
+    max: 6
+    cpuThresholdPercentage: 10
+  webproxy: true
+  resources:
+    limits:
+      cpu: '1'
+      memory: 1500Mi
+    requests:
+      cpu: 500m
+      memory: 1024Mi
+  env:
+    - name: SERVICE_USER_KV_PATH
+      value: serviceuser/data/##VAULT_SERVICEUSER_ENV##/srvmeldekortservice
+    - name: SRV_SBL_ARBEID_PATH
+      value: serviceuser/data/##VAULT_SERVICEUSER_ENV##/srvsblarbeid
