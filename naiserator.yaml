@@ -7,9 +7,6 @@ metadata:
     team: meldekort
 spec:
   image: repo.adeo.no:5443/meldeplikt/meldekortservice:##RELEASE_VERSION##
-  azure:
-    application:
-      enabled: true
   port: 8090
   ingresses:
     - https://meldekortservice##URL_NAMESPACE##.nais.##DOMAIN_NAME##
