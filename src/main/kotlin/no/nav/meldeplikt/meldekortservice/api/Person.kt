@@ -18,6 +18,7 @@ import no.nav.meldeplikt.meldekortservice.model.Meldeform
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.model.Meldeperiode
 import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
+import no.nav.meldeplikt.meldekortservice.model.database.feil.UnretriableDatabaseException
 import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
@@ -60,8 +61,9 @@ fun Routing.getHistoriskeMeldekort(arenaOrdsService: ArenaOrdsService) =
             BearerTokenSecurity(),
             ok<Person>(),
             serviceUnavailable<ErrorMessage>(),
-            unAuthorized<Error>())) {
-        historiskeMeldekortInput ->
+            unAuthorized<Error>()
+        )
+    ) { historiskeMeldekortInput ->
         respondOrError {
             arenaOrdsService.hentHistoriskeMeldekort(
                 userIdent,
@@ -82,11 +84,16 @@ fun Routing.getMeldekort(arenaOrdsService: ArenaOrdsService, innsendtMeldekortSe
             ok<Person>(),
             noContent<EmptyResponse>(),
             serviceUnavailable<ErrorMessage>(),
-            unAuthorized<Error>())) {
+            unAuthorized<Error>()
+        )
+    ) {
         respondOrError {
             val response = arenaOrdsService.hentMeldekort(userIdent)
             if (response.status == HttpStatusCode.OK) {
-                MeldekortMapper.filtrerMeldekortliste(mapFraXml(response.content, Person::class.java), innsendtMeldekortService)
+                MeldekortMapper.filtrerMeldekortliste(
+                    mapFraXml(response.content, Person::class.java),
+                    innsendtMeldekortService
+                )
             } else {
                 throw NoContentException()
             }
@@ -102,16 +109,28 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
             serviceUnavailable<ErrorMessage>(),
             unAuthorized<Error>()
         )
-    ) {_, meldekort ->
+    ) { _, meldekort ->
         try {
             val kontrollertType = SoapConfig.soapService().kontrollerMeldekort(meldekort)
 
             if (kontrollertType.status == "OK") {
-                innsendtMeldekortService.settInnInnsendtMeldekort(InnsendtMeldekort(kontrollertType.meldekortId))
+                try {
+                    // innsendtMeldekortService.settInnInnsendtMeldekort(InnsendtMeldekort(kontrollertType.meldekortId))
+                    // test
+                    throw UnretriableDatabaseException("Feil ved skriving til MIP-tabellen", null)
+                } catch (e: UnretriableDatabaseException) {
+                    // Meldekort er sendt inn ok til baksystem, men det oppstår feil ved skriving til MIP-tabellen i databasen.
+                    // Logger warning, og returnerer ok status til brukeren slik at den ikke forsøker å sende inn meldekortet på
+                    // nytt (gir dubletter).
+                    val errorMessage =
+                        ErrorMessage("Meldekort med id ${meldekort.meldekortId} ble sendt inn, men klarte ikke å skrive til MIP-tabellen. ${e.message}")
+                    defaultLog.warn(errorMessage.error, e)
+                }
             }
             call.respondText(jsonMapper.writeValueAsString(kontrollertType), contentType = ContentType.Application.Json)
         } catch (e: Exception) {
-            val errorMessage = ErrorMessage("Meldekort med id ${meldekort.meldekortId} ble ikke sendt inn. ${e.message}")
+            val errorMessage =
+                ErrorMessage("Meldekort med id ${meldekort.meldekortId} ble ikke sendt inn. ${e.message}")
             defaultLog.error(errorMessage.error, e)
             call.respond(status = HttpStatusCode.ServiceUnavailable, message = errorMessage)
         }
@@ -130,7 +149,7 @@ fun Routing.endreMeldeform(arenaOrdsService: ArenaOrdsService) =
             serviceUnavailable<ErrorMessage>(),
             unAuthorized<Error>()
         )
-    ) {_, meldeform ->
+    ) { _, meldeform ->
         try {
             val meldeperiode = arenaOrdsService.endreMeldeform(userIdent, meldeform.meldeformNavn)
             call.respond(meldeperiode)
@@ -140,4 +159,3 @@ fun Routing.endreMeldeform(arenaOrdsService: ArenaOrdsService) =
             call.respond(status = HttpStatusCode.ServiceUnavailable, message = errorMessage)
         }
     }
-
