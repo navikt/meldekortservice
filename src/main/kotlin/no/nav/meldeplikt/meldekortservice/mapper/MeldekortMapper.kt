@@ -1,6 +1,5 @@
 package no.nav.meldeplikt.meldekortservice.mapper
 
-import no.nav.meldeplikt.meldekortservice.model.database.feil.UnretriableDatabaseException
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Meldekort
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.service.InnsendtMeldekortService
@@ -20,14 +19,16 @@ object MeldekortMapper {
         }
     }
 
-    private fun fjernTidligereInnsendteMeldekort(meldekortListe: List<Meldekort>, meldekortService: InnsendtMeldekortService) =
+    private fun fjernTidligereInnsendteMeldekort(
+        meldekortListe: List<Meldekort>,
+        meldekortService: InnsendtMeldekortService
+    ) =
         meldekortListe.filter {
             !erMeldekortSendtInnTidligere(it.meldekortId, meldekortService)
         }
 
     private fun erMeldekortSendtInnTidligere(meldekortId: Long, meldekortService: InnsendtMeldekortService): Boolean {
         return try {
-            throw SQLException("Test")
             meldekortService.hentInnsendtMeldekort(meldekortId)
             true
         } catch (se: SQLException) {
