@@ -25,6 +25,8 @@ object MeldekortMapper {
 
     private fun erMeldekortSendtInnTidligere(meldekortId: Long, meldekortService: InnsendtMeldekortService): Boolean {
         return try {
+            // test
+            throw SQLException("Klarer ikke å lese innsendte meldekort fra MIP-tabellen")
             meldekortService.hentInnsendtMeldekort(meldekortId)
             true
         } catch (se: SQLException) {
