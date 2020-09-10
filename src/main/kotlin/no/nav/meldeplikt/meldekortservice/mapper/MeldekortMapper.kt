@@ -27,13 +27,18 @@ object MeldekortMapper {
 
     private fun erMeldekortSendtInnTidligere(meldekortId: Long, meldekortService: InnsendtMeldekortService): Boolean {
         return try {
+            throw SQLException("Test")
             meldekortService.hentInnsendtMeldekort(meldekortId)
             true
         } catch (se: SQLException) {
             if (se.message == "Found no rows") {
                 false
             } else {
-                throw UnretriableDatabaseException("Feil ved lesing av innsendte meldekort", se)
+                val errorMessage =
+                    ErrorMessage("Forsøkte å sjekke om meldekort med id ${meldekortId} er sendt inn tidligere, men klarte ikke å lese fra MIP-tabellen. ${se.message}")
+                defaultLog.warn(errorMessage.error, se)
+                false
+                // throw UnretriableDatabaseException("Feil ved lesing av innsendte meldekort", se)
             }
         }
     }

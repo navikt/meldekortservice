@@ -115,9 +115,7 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
 
             if (kontrollertType.status == "OK") {
                 try {
-                    // innsendtMeldekortService.settInnInnsendtMeldekort(InnsendtMeldekort(kontrollertType.meldekortId))
-                    // test
-                    throw UnretriableDatabaseException("Feil ved skriving til MIP-tabellen", null)
+                    innsendtMeldekortService.settInnInnsendtMeldekort(InnsendtMeldekort(kontrollertType.meldekortId))
                 } catch (e: UnretriableDatabaseException) {
                     // Meldekort er sendt inn ok til baksystem, men det oppstår feil ved skriving til MIP-tabellen i databasen.
                     // Logger warning, og returnerer ok status til brukeren slik at den ikke forsøker å sende inn meldekortet på
