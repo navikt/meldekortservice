@@ -18,7 +18,10 @@ object MeldekortMapper {
         }
     }
 
-    private fun fjernTidligereInnsendteMeldekort(meldekortListe: List<Meldekort>, meldekortService: InnsendtMeldekortService) =
+    private fun fjernTidligereInnsendteMeldekort(
+        meldekortListe: List<Meldekort>,
+        meldekortService: InnsendtMeldekortService
+    ) =
         meldekortListe.filter {
             !erMeldekortSendtInnTidligere(it.meldekortId, meldekortService)
         }
