@@ -69,6 +69,7 @@ repositories {
     maven("https://plugins.gradle.org/m2/")
 }
 
+
 dependencies {
     wsdl2java("javax.annotation:javax.annotation-api:$javaxAnnotationApiVersion")
     wsdl2java("javax.activation:activation:$javaxActivationVersion")

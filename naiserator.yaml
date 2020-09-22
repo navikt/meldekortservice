@@ -30,6 +30,8 @@ spec:
         mountPath: /var/run/secrets/nais.io/srvsblarbeid
       - kvPath: kv/##VAULT_KV_ENV##/fss/meldekortservice/##NAMESPACE##
         mountPath: /var/run/secrets/nais.io/vault
+      - kvPath: /azuread/data/dev/creds/meldekortservice
+        mountPath: /var/run/secrets/nais.io/azuread
   replicas:
     min: 2
     max: 6

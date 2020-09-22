@@ -10,6 +10,8 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 data class Environment(
+    val kontrollUrl: String = "https://meldekort-kontroll-q1.nais.preprod.local",
+
     val username: String = getEnvVar("FSS_SYSTEMUSER_USERNAME", "username"),
     val password: String = getEnvVar("FSS_SYSTEMUSER_PASSWORD", "password"),
     val ameldingUrl: URL = URL(getEnvVar("AMELDING_URI", "https://dummyUrl.com/path")),

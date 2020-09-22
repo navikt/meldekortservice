@@ -22,6 +22,7 @@ import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
 import no.nav.meldeplikt.meldekortservice.service.InnsendtMeldekortService
+import no.nav.meldeplikt.meldekortservice.service.KontrollService
 import no.nav.meldeplikt.meldekortservice.utils.*
 import no.nav.meldeplikt.meldekortservice.utils.Error
 import no.nav.meldeplikt.meldekortservice.utils.ErrorMessage
@@ -37,10 +38,10 @@ REST-controller for meldekort-api som tilbyr operasjoner for å hente:
 - Endre meldeform
 I tillegg til å sende inn/kontrollere meldekort.
  */
-fun Routing.personApi(arenaOrdsService: ArenaOrdsService, innsendtMeldekortService: InnsendtMeldekortService) {
+fun Routing.personApi(arenaOrdsService: ArenaOrdsService, innsendtMeldekortService: InnsendtMeldekortService, kontrollService: KontrollService) {
     getHistoriskeMeldekort(arenaOrdsService)
     getMeldekort(arenaOrdsService, innsendtMeldekortService)
-    kontrollerMeldekort(innsendtMeldekortService)
+    kontrollerMeldekort(innsendtMeldekortService, kontrollService)
     endreMeldeform(arenaOrdsService)
 }
 
@@ -94,7 +95,7 @@ fun Routing.getMeldekort(arenaOrdsService: ArenaOrdsService, innsendtMeldekortSe
     }
 
 // Innsending/kontroll av meldekort (Amelding)
-fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortService) =
+fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortService, kontrollService: KontrollService) =
     post<MeldekortInput, Meldekortdetaljer>(
         "Kontroll/innsending av meldekort til Amelding".securityAndReponds(
             BearerTokenSecurity(),
@@ -104,6 +105,10 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
         )
     ) {_, meldekort ->
         try {
+            val kontrollKontrollertType = kontrollService.ping()
+            defaultLog.info(kontrollKontrollertType.toString())
+
+
             val kontrollertType = SoapConfig.soapService().kontrollerMeldekort(meldekort)
 
             if (kontrollertType.status == "OK") {

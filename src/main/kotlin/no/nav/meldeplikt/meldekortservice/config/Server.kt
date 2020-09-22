@@ -17,6 +17,7 @@ import no.nav.meldeplikt.meldekortservice.database.PostgresDatabase
 import no.nav.meldeplikt.meldekortservice.model.OrdsToken
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
 import no.nav.meldeplikt.meldekortservice.service.InnsendtMeldekortService
+import no.nav.meldeplikt.meldekortservice.service.KontrollService
 import no.nav.meldeplikt.meldekortservice.utils.SBL_ARBEID_PASSWORD
 import no.nav.meldeplikt.meldekortservice.utils.SBL_ARBEID_USERNAME
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Contact
@@ -58,6 +59,7 @@ fun Application.mainModule(env: Environment = Environment()) {
     setAppProperties(env)
     val innsendtMeldekortService = InnsendtMeldekortService(PostgresDatabase(env))
     val arenaOrdsService = ArenaOrdsService()
+    val kontrollService = KontrollService()
 
     install(DefaultHeaders)
 
@@ -81,7 +83,7 @@ fun Application.mainModule(env: Environment = Environment()) {
         swaggerRoutes()
         weblogicApi()
         meldekortApi(arenaOrdsService)
-        personApi(arenaOrdsService, innsendtMeldekortService)
+        personApi(arenaOrdsService, innsendtMeldekortService, kontrollService)
     }
     Flyway.runFlywayMigrations(env)
 }
