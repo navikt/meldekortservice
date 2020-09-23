@@ -35,16 +35,16 @@ class KontrollService {
         }
     }
 
-    suspend fun ping(): OrdsStringResponse {
-        val msg = kontrollClient.call("${env.kontrollUrl}$KONTROLL_KONTROLL") {
-            setupKontrollRequestPing()
-        }
-        if (HTTP_STATUS_CODES_2XX.contains(msg.response.status.value)) {
-            return OrdsStringResponse(msg.response.status, msg.response.receive())
-        } else {
-            throw OrdsException("Kunne ikke pinge meldekort-kontroll.")
-        }
-    }
+//    suspend fun ping(): OrdsStringResponse {
+//        val msg = kontrollClient.call("${env.kontrollUrl}$KONTROLL_KONTROLL") {
+//            setupKontrollRequestPing()
+//        }
+//        if (HTTP_STATUS_CODES_2XX.contains(msg.response.status.value)) {
+//            return OrdsStringResponse(msg.response.status, msg.response.receive())
+//        } else {
+//            throw OrdsException("Kunne ikke pinge meldekort-kontroll.")
+//        }
+//    }
 
     suspend fun kontroll(meldekortdetaljer: Meldekortdetaljer): OrdsStringResponse {
         val msg = kontrollClient.call("${env.kontrollUrl}$KONTROLL_KONTROLL") {
@@ -66,9 +66,9 @@ class KontrollService {
         return req
     }
 
-    private fun HttpRequestBuilder.setupKontrollRequestPing() {
-        headers.append("Accept", "application/xml; charset=UTF-8")
-    }
+//    private fun HttpRequestBuilder.setupKontrollRequestPing() {
+//        headers.append("Accept", "application/xml; charset=UTF-8")
+//    }
 
     private fun hentToken(): OrdsToken {
         return cache.get("ordsToken", this::hentOrdsToken)
