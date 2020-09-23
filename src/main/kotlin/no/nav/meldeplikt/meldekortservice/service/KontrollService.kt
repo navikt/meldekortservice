@@ -1,12 +1,10 @@
 package no.nav.meldeplikt.meldekortservice.service
 
 import io.ktor.client.HttpClient
-import io.ktor.client.call.call
-import io.ktor.client.call.receive
+import io.ktor.client.call.*
 import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.post
+import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.config.Environment
@@ -46,14 +44,14 @@ class KontrollService {
 //        }
 //    }
 
-    suspend fun kontroll(meldekortdetaljer: Meldekortdetaljer): OrdsStringResponse {
-        val msg = kontrollClient.call("${env.kontrollUrl}$KONTROLL_KONTROLL") {
-            setupKontrollRequest(meldekortdetaljer)
-        }
-        if (HTTP_STATUS_CODES_2XX.contains(msg.response.status.value)) {
-            return OrdsStringResponse(msg.response.status, msg.response.receive())
-        } else {
-            throw OrdsException("Kunne ikke kontrollere meldekort i meldekort-kontroll.")
+    suspend fun kontroll(meldekortdetaljer: Meldekortdetaljer): String {
+        try {
+            val msg = kontrollClient.request<String>("${env.kontrollUrl}$KONTROLL_KONTROLL") {
+                setupKontrollRequest(meldekortdetaljer)
+            }
+            return msg
+        } catch(e: Exception) {
+            throw OrdsException("Kunne ikke kontrollere kort i meldekort-kontroll.")
         }
     }
 

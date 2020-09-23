@@ -115,8 +115,8 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
 //            val kontrollKontrollertType = kontrollService.ping()
 //            defaultLog.info(kontrollKontrollertType.toString())
 
-            val kontrollertType2 = kontrollService.kontroll(meldekort)
-            defaultLog.info(kontrollertType2.toString())
+            val m = kontrollService.kontroll(meldekort)
+            defaultLog.info(m.toString())
 
 
             val kontrollertType = SoapConfig.soapService().kontrollerMeldekort(meldekort)
