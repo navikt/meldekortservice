@@ -46,7 +46,7 @@ class KontrollService {
 
     suspend fun kontroll(meldekortdetaljer: Meldekortdetaljer): String {
         try {
-            val msg = kontrollClient.request<String>("${env.kontrollUrl}$KONTROLL_KONTROLL") {
+            val msg = kontrollClient.post<String>("${env.kontrollUrl}$KONTROLL_KONTROLL") {
                 setupKontrollRequest(meldekortdetaljer)
             }
             return msg
