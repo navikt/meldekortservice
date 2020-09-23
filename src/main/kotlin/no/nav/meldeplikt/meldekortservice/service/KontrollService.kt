@@ -51,7 +51,7 @@ class KontrollService {
             }
             return msg
         } catch(e: Exception) {
-            throw OrdsException("Kunne ikke kontrollere kort i meldekort-kontroll.")
+            throw Exception(e)
         }
     }
 
