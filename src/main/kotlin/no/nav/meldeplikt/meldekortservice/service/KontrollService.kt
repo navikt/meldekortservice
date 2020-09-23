@@ -6,19 +6,14 @@ import io.ktor.client.call.receive
 import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.get
 import io.ktor.client.request.post
+import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.config.cache
-import no.nav.meldeplikt.meldekortservice.mapper.MeldekortdetaljerMapper
-import no.nav.meldeplikt.meldekortservice.model.Meldeperiode
 import no.nav.meldeplikt.meldekortservice.model.OrdsToken
 import no.nav.meldeplikt.meldekortservice.model.feil.OrdsException
-import no.nav.meldeplikt.meldekortservice.model.korriger.KopierMeldekortResponse
-import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
-import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.arena.Meldekort
 import no.nav.meldeplikt.meldekortservice.model.response.OrdsStringResponse
 import no.nav.meldeplikt.meldekortservice.utils.*
 import java.util.*
@@ -42,7 +37,7 @@ class KontrollService {
 
     suspend fun ping(): OrdsStringResponse {
         val msg = kontrollClient.call("${env.kontrollUrl}$KONTROLL_KONTROLL") {
-            setupKontrollRequest()
+            setupKontrollRequestPing()
         }
         if (HTTP_STATUS_CODES_2XX.contains(msg.response.status.value)) {
             return OrdsStringResponse(msg.response.status, msg.response.receive())
@@ -51,20 +46,28 @@ class KontrollService {
         }
     }
 
-    suspend fun hentMeldekort(fnr: String): OrdsStringResponse {
-        val meldekort = kontrollClient.call("${env.ordsUrl}$KONTROLL_KONTROLL") {
-            setupKontrollRequest()
+    suspend fun kontroll(meldekortdetaljer: Meldekortdetaljer): OrdsStringResponse {
+        val msg = kontrollClient.call("${env.kontrollUrl}$KONTROLL_KONTROLL") {
+            setupKontrollRequest(meldekortdetaljer)
         }
-        if (HTTP_STATUS_CODES_2XX.contains(meldekort.response.status.value)) {
-            return OrdsStringResponse(meldekort.response.status, meldekort.response.receive())
+        if (HTTP_STATUS_CODES_2XX.contains(msg.response.status.value)) {
+            return OrdsStringResponse(msg.response.status, msg.response.receive())
         } else {
-            throw OrdsException("Kunne ikke hente meldekort fra Arena Ords.")
+            throw OrdsException("Kunne ikke kontrollere meldekort i meldekort-kontroll.")
         }
     }
 
-    private fun HttpRequestBuilder.setupKontrollRequest() {
+    private fun setupKontrollRequest(meldekortdetaljer: Meldekortdetaljer): HttpRequestBuilder {
+        val req = HttpRequestBuilder()
+        req.headers.append("Accept", "application/xml; charset=UTF-8")
+        req.headers.append("Authorization","Bearer ${hentToken().accessToken}")
+        req.method=HttpMethod.Post
+        req.body=meldekortdetaljer
+        return req
+    }
+
+    private fun HttpRequestBuilder.setupKontrollRequestPing() {
         headers.append("Accept", "application/xml; charset=UTF-8")
-        headers.append("Authorization","Bearer ${hentToken().accessToken}")
     }
 
     private fun hentToken(): OrdsToken {
