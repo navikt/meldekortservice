@@ -45,14 +45,14 @@ class KontrollService {
 //    }
 
     suspend fun kontroll(meldekortdetaljer: Meldekortdetaljer): String {
-        try {
+ //       try {
             val msg = kontrollClient.post<String>("${env.kontrollUrl}$KONTROLL_KONTROLL") {
                 setupKontrollRequest(meldekortdetaljer)
             }
             return msg
-        } catch(e: Exception) {
-            throw Exception(e)
-        }
+ //       } catch(e: Exception) {
+ //           throw Exception(e)
+ //       }
     }
 
     private fun setupKontrollRequest(meldekortdetaljer: Meldekortdetaljer): HttpRequestBuilder {
