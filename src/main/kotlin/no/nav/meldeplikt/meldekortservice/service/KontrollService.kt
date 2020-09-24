@@ -1,19 +1,17 @@
 package no.nav.meldeplikt.meldekortservice.service
 
 import io.ktor.client.HttpClient
-import io.ktor.client.call.*
 import io.ktor.client.engine.apache.*
 import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
+import no.nav.meldeplikt.meldekortservice.api.MeldekortInput
 import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.config.cache
 import no.nav.meldeplikt.meldekortservice.model.OrdsToken
-import no.nav.meldeplikt.meldekortservice.model.feil.OrdsException
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
-import no.nav.meldeplikt.meldekortservice.model.response.OrdsStringResponse
 import no.nav.meldeplikt.meldekortservice.utils.*
 import java.util.*
 
@@ -29,17 +27,14 @@ class KontrollService {
         }
     }
 
-    suspend fun kontroller(meldekortdetaljer: Meldekortdetaljer): String {
+    suspend fun kontroller(meldekort: MeldekortInput): String {
         val message = client.post<Meldekortdetaljer> {
             url("${env.kontrollUrl}$KONTROLL_KONTROLL")
             contentType(ContentType.Application.Json)
-            body = meldekortdetaljer
+            body = meldekort
         }
         return message.toString()
     }
-
-
-    data class HelloWorld(val hello: String)
 
     private val kontrollClient: HttpClient = HttpClient() {
         engine {

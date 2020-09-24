@@ -110,12 +110,12 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
             serviceUnavailable<ErrorMessage>(),
             unAuthorized<Error>()
         )
-    ) { _, meldekort ->
+    ) { meldekortInput: MeldekortInput, meldekort: Meldekortdetaljer ->
         try {
 //            val kontrollKontrollertType = kontrollService.ping()
 //            defaultLog.info(kontrollKontrollertType.toString())
 
-            val m = kontrollService.kontroller(meldekort)
+            val m = kontrollService.kontroller(meldekortInput)
             defaultLog.info(m)
 
 
