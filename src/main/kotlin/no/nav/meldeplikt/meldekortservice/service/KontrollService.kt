@@ -2,6 +2,7 @@ package no.nav.meldeplikt.meldekortservice.service
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.*
+import io.ktor.client.engine.apache.*
 import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.request.*
@@ -21,6 +22,24 @@ class KontrollService {
     private val log = getLogger(KontrollService::class)
 
     private val env = Environment()
+
+    val client = HttpClient(Apache) {
+        install(JsonFeature) {
+            serializer = JacksonSerializer() { objectMapper }
+        }
+    }
+
+    suspend fun kontroller(meldekortdetaljer: Meldekortdetaljer): String {
+        val message = client.post<Meldekortdetaljer> {
+            url("${env.kontrollUrl}$KONTROLL_KONTROLL")
+            contentType(ContentType.Application.Json)
+            body = meldekortdetaljer
+        }
+        return message.toString()
+    }
+
+
+    data class HelloWorld(val hello: String)
 
     private val kontrollClient: HttpClient = HttpClient() {
         engine {
@@ -44,16 +63,20 @@ class KontrollService {
 //        }
 //    }
 
-    suspend fun kontroll(meldekortdetaljer: Meldekortdetaljer): String {
- //       try {
-            val msg = kontrollClient.post<String>("${env.kontrollUrl}$KONTROLL_KONTROLL") {
-                setupKontrollRequest(meldekortdetaljer)
-            }
-            return msg
- //       } catch(e: Exception) {
- //           throw Exception(e)
- //       }
-    }
+//    suspend fun kontroll(meldekortdetaljer: Meldekortdetaljer): String {
+// //       try {
+//        val req = HttpRequestBuilder()
+//        req.headers.append("Accept", "application/xml; charset=UTF-8")
+//        //req.headers.append("Authorization","Bearer ${hentToken().accessToken}")
+//        req.method=HttpMethod.Post
+//        req.url = URLBuilder( Url("${env.kontrollUrl}$KONTROLL_KONTROLL"))
+//        req.body=meldekortdetaljer
+//        val msg = kontrollClient.request<String>(req)
+//        return msg
+// //       } catch(e: Exception) {
+// //           throw Exception(e)
+// //       }
+//    }
 
     private fun setupKontrollRequest(meldekortdetaljer: Meldekortdetaljer): HttpRequestBuilder {
         val req = HttpRequestBuilder()

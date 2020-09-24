@@ -115,7 +115,7 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
 //            val kontrollKontrollertType = kontrollService.ping()
 //            defaultLog.info(kontrollKontrollertType.toString())
 
-            val m = kontrollService.kontroll(meldekort)
+            val m = kontrollService.kontroller(meldekort)
             defaultLog.info(m)
 
 
