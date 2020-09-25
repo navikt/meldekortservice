@@ -23,7 +23,7 @@ spec:
     paths:
       - kvPath: oracle/data/##VAULT_SERVICEUSER_ENV##/creds/meldekortservice_##NAMESPACE##-user
         mountPath: /var/run/secrets/nais.io/meldekortserviceDB
-      - kvPath: oracle/data/##VAULT_SERVICEUSER_ENV##/config/meldekortapi_##NAMESPACE##
+      - kvPath: oracle/data/##VAULT_SERVICEUSER_ENV##/config/meldekortservice_##NAMESPACE##
         mountPath: /var/run/secrets/nais.io/meldekortserviceDBConf
       - kvPath: serviceuser/data/##VAULT_SERVICEUSER_ENV##/srvmeldekortservice
         mountPath: /var/run/secrets/nais.io/srvmeldekortservice
@@ -47,7 +47,7 @@ spec:
     - name: MELDEKORTSERVICE_DS_CREDS_KV_PATH
       value: oracle/data/##VAULT_SERVICEUSER_ENV##/creds/meldekortservice_##NAMESPACE##-user
     - name: MELDEKORTSERVICE_DS_CONF_KV_PATH
-      value: oracle/data/##VAULT_SERVICEUSER_ENV##/config/meldekortapi_##NAMESPACE##
+      value: oracle/data/##VAULT_SERVICEUSER_ENV##/config/meldekortservice_##NAMESPACE##
     - name: SERVICE_USER_KV_PATH
       value: serviceuser/data/##VAULT_SERVICEUSER_ENV##/srvmeldekortservice
     - name: SRV_SBL_ARBEID_PATH
