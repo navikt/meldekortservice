@@ -35,7 +35,7 @@ class MeldekortkontrollMapper {
     }
 
     private fun trekkutFravaersdager(meldekort: Meldekortdetaljer): List<FravaerInn> {
-        var fravaer: MutableList<FravaerInn> = emptyList<FravaerInn>() as MutableList<FravaerInn>
+        var fravaer = mutableListOf<FravaerInn>()
         val fraD: LocalDate = ukeTilDato(meldekort.meldeperiode)
         for (mdag in meldekort.sporsmal?.meldekortDager!!) {
             var mtype = "A"
