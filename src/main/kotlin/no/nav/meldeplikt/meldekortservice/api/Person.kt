@@ -117,6 +117,7 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
 //            val kontrollKontrollertType = kontrollService.ping()
 //            defaultLog.info(kontrollKontrollertType.toString())
 
+            defaultLog.info(jsonMapper.writeValueAsString(meldekortkontrollMapper.mapMeldekortTilMeldekortkontroll(meldekort)))
             val m = kontrollService.kontroller(meldekort = meldekortkontrollMapper.mapMeldekortTilMeldekortkontroll(meldekort))
             defaultLog.info(m)
 

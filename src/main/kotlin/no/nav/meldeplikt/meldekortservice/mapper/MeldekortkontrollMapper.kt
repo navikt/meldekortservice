@@ -14,7 +14,7 @@ class MeldekortkontrollMapper {
         return Meldekortkontroll(
             meldekortId = meldekort.meldekortId,
             kortType = meldekort.kortType.name,
-            kortStatus = "xxx",
+            kortStatus = "SENDT", // TODO!
             meldegruppe = trekkutMeldegruppe(meldekort),
             meldeperiode = trekkutMeldeperiode(meldekort),
             fravaersdager = trekkutFravaersdager(meldekort),
