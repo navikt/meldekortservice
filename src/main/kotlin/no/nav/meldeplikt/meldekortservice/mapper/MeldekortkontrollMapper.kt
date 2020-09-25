@@ -38,10 +38,10 @@ class MeldekortkontrollMapper {
         var fravaer = mutableListOf<FravaerInn>()
         val fraD: LocalDate = ukeTilDato(meldekort.meldeperiode)
         for (mdag in meldekort.sporsmal?.meldekortDager!!) {
-            var mtype = "A"
-            if (mdag.annetFravaer!!) mtype = "X"
-            if (mdag.kurs!!) mtype = "K"
-            if (mdag.syk!!) mtype = "S"
+            var mtype = "ARBEIDS_FRAVAER"
+            if (mdag.annetFravaer!!) mtype = "ANNET_FRAVAER"
+            if (mdag.kurs!!) mtype = "KURS_UTDANNING"
+            if (mdag.syk!!) mtype = "SYKDOM"
 
             fravaer.add(FravaerInn(
                 dag = fraD.plusDays(mdag.dag.toLong()),
