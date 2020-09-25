@@ -32,6 +32,7 @@ class OracleDatabase(env: Environment) : Database {
 
         private fun hikariCommonConfig(env: Environment): HikariConfig {
             return HikariConfig().apply {
+                driverClassName = "oracle.jdbc.OracleDriver"
                 jdbcUrl = env.dbConfOracle.jdbcUrl
                 isAutoCommit = false
                 connectionTimeout = 1000
