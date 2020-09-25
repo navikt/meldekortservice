@@ -8,7 +8,7 @@ import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
 
 class InnsendtMeldekortService(private val database: Database) {
 
-    suspend fun settInnInnsendtMeldekort(innsendtMeldekort: InnsendtMeldekort) {
+    fun settInnInnsendtMeldekort(innsendtMeldekort: InnsendtMeldekort) {
         database.translateExternalExceptionsToInternalOnes {
             runBlocking {
                 database.dbQuery {

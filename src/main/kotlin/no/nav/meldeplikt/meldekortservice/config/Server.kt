@@ -13,17 +13,16 @@ import no.nav.cache.Cache
 import no.nav.cache.CacheConfig
 import no.nav.cache.CacheUtils
 import no.nav.meldeplikt.meldekortservice.api.*
-import no.nav.meldeplikt.meldekortservice.database.PostgresDatabase
+import no.nav.meldeplikt.meldekortservice.database.Database
 import no.nav.meldeplikt.meldekortservice.model.OrdsToken
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
 import no.nav.meldeplikt.meldekortservice.service.InnsendtMeldekortService
+import no.nav.meldeplikt.meldekortservice.utils.*
 import no.nav.meldeplikt.meldekortservice.utils.SBL_ARBEID_PASSWORD
 import no.nav.meldeplikt.meldekortservice.utils.SBL_ARBEID_USERNAME
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Contact
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Information
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Swagger
-import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
-import no.nav.meldeplikt.meldekortservice.utils.objectMapper
 import no.nav.sbl.dialogarena.common.cxf.StsSecurityConstants
 import no.nav.sbl.util.EnvironmentUtils.setProperty
 import no.nav.sbl.util.EnvironmentUtils.Type.PUBLIC
@@ -56,7 +55,8 @@ fun Application.mainModule(env: Environment = Environment()) {
 
     DefaultExports.initialize()
     setAppProperties(env)
-    val innsendtMeldekortService = InnsendtMeldekortService(PostgresDatabase(env))
+//    val innsendtMeldekortService = InnsendtMeldekortService(PostgresDatabase(env))
+    val innsendtMeldekortService = InnsendtMeldekortService(Database(env))
     val arenaOrdsService = ArenaOrdsService()
 
     install(DefaultHeaders)
@@ -89,9 +89,14 @@ fun Application.mainModule(env: Environment = Environment()) {
 private fun setAppProperties(environment: Environment) {
     val systemuser = hentVaultCredentials(environment.serviceUserKvPath)
     val srvSblArbeid = hentVaultCredentials(environment.srvSblArbeidPath)
+//    val dbUserOracle = hentVaultCredentials(environment.dbUserOracleKvPath)
+//    val dbConfigOracle = hentVaultDbConfig(environment.);
+
     setProperty(StsSecurityConstants.STS_URL_KEY, environment.securityTokenService, PUBLIC)
     setProperty(StsSecurityConstants.SYSTEMUSER_USERNAME, systemuser.username, PUBLIC)
     setProperty(StsSecurityConstants.SYSTEMUSER_PASSWORD, systemuser.password, SECRET)
     setProperty(SBL_ARBEID_USERNAME, srvSblArbeid.username, PUBLIC)
     setProperty(SBL_ARBEID_PASSWORD, srvSblArbeid.password, SECRET)
+//    setProperty(DB_ORACLE_USERNAME, dbUserOracle.username, PUBLIC)
+//    setProperty(DB_ORACLE_PASSWORD, dbUserOracle.password, SECRET)
 }

@@ -1,19 +1,38 @@
 package no.nav.meldeplikt.meldekortservice.database
 
 import com.zaxxer.hikari.HikariDataSource
+import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.model.database.feil.RetriableDatabaseException
 import no.nav.meldeplikt.meldekortservice.model.database.feil.UnretriableDatabaseException
+import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import java.sql.Connection
 import java.sql.SQLException
 import java.sql.SQLRecoverableException
 import java.sql.SQLTransientException
-import javax.sql.DataSource
 
-interface Database {
+class Database(env: Environment) {
+    private val dataSource: HikariDataSource = createCorrectConnectionForEnvironment(env)
 
-    val dataSource: HikariDataSource
+    private fun createCorrectConnectionForEnvironment(env: Environment): HikariDataSource {
+        return when (isCurrentlyRunningOnNais()) {
+            true -> OracleDatabase(env).createConnectionViaVaultWithDbUser(env)
+            false -> PostgreSqlDatabase(env).createConnectionForLocalDbWithDbUser(env)
+        }
+    }
 
-    suspend fun <T> dbQuery(operationToExecute: Connection.() -> T): T =
+/*
+    private val postgreSqlDatabase = PostgreSqlDatabase(env)
+    private val oracleDatabase = OracleDatabase(env)
+    private val dataSource: HikariDataSource = createCorrectConnectionForEnvironment(env)
+
+    private fun createCorrectConnectionForEnvironment(env: Environment): HikariDataSource {
+        return when (isCurrentlyRunningOnNais()) {
+            true -> oracleDatabase.createConnectionViaVaultWithDbUser(env)
+            false -> postgreSqlDatabase.createConnectionForLocalDbWithDbUser(env)
+        }
+    }
+*/
+    fun <T> dbQuery(operationToExecute: Connection.() -> T): T =
         dataSource.connection.use { openConnection ->
             try {
                 openConnection.operationToExecute().apply {
