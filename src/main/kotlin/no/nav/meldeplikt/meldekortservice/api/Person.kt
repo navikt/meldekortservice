@@ -13,6 +13,7 @@ import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
 import no.nav.meldeplikt.meldekortservice.config.SoapConfig
 import no.nav.meldeplikt.meldekortservice.config.userIdent
 import no.nav.meldeplikt.meldekortservice.mapper.MeldekortMapper
+import no.nav.meldeplikt.meldekortservice.mapper.MeldekortkontrollMapper
 import no.nav.meldeplikt.meldekortservice.model.response.EmptyResponse
 import no.nav.meldeplikt.meldekortservice.model.Meldeform
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
@@ -48,6 +49,7 @@ fun Routing.personApi(arenaOrdsService: ArenaOrdsService, innsendtMeldekortServi
 
 private val xmlMapper = XmlMapper()
 private val jsonMapper = jacksonObjectMapper()
+private val meldekortkontrollMapper = MeldekortkontrollMapper()
 
 private const val personGroup = "Person"
 
@@ -115,7 +117,7 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
 //            val kontrollKontrollertType = kontrollService.ping()
 //            defaultLog.info(kontrollKontrollertType.toString())
 
-            val m = kontrollService.kontroller(meldekortInput)
+            val m = kontrollService.kontroller(meldekort = meldekortkontrollMapper.mapMeldekortTilMeldekortkontroll(meldekort))
             defaultLog.info(m)
 
 

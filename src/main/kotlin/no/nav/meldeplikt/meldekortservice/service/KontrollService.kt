@@ -12,6 +12,7 @@ import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.config.cache
 import no.nav.meldeplikt.meldekortservice.model.OrdsToken
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
+import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.Meldekortkontroll
 import no.nav.meldeplikt.meldekortservice.utils.*
 import java.util.*
 
@@ -27,7 +28,7 @@ class KontrollService {
         }
     }
 
-    suspend fun kontroller(meldekort: MeldekortInput): String {
+    suspend fun kontroller(meldekort: Meldekortkontroll): String {
         val message = client.post<Meldekortdetaljer> {
             url("${env.kontrollUrl}$KONTROLL_KONTROLL")
             contentType(ContentType.Application.Json)
