@@ -31,19 +31,13 @@ class OracleDatabase(env: Environment) : Database {
         }
 
         private fun hikariCommonConfig(env: Environment): HikariConfig {
-            val config = HikariConfig().apply {
-                driverClassName = "oracle.jdbc.OracleDriver"
+            return HikariConfig().apply {
                 jdbcUrl = env.dbConfOracle.jdbcUrl
-                minimumIdle = 1
-                maxLifetime = 30001
-                maximumPoolSize = 3
-                connectionTimeout = 500
-                validationTimeout = 250
-                idleTimeout = 10001
                 isAutoCommit = false
-                transactionIsolation = "TRANSACTION_REPEATABLE_READ"
+                connectionTimeout = 1000
+                maxLifetime = 30001
+                validationTimeout = 500
             }
-            return config
         }
     }
 }
