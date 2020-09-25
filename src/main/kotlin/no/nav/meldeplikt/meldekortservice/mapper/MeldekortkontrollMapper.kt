@@ -24,7 +24,7 @@ class MeldekortkontrollMapper {
 
     private fun trekkutMeldeperiode(meldekort: Meldekortdetaljer): MeldeperiodeInn {
         val dagerFoer = 1L // TODO: Hent fra parameter
-        val fraD: LocalDate = LocalDate.parse(meldekort.meldeperiode.substring(0, 3)+"-W"+meldekort.meldeperiode.substring(4, 5)+"-1", ISO_WEEK_DATE)
+        val fraD: LocalDate = ukeTilDato(meldekort.meldeperiode)
         return MeldeperiodeInn(
             fra = fraD,
             til = fraD.plusDays(13L),
@@ -36,7 +36,7 @@ class MeldekortkontrollMapper {
 
     private fun trekkutFravaersdager(meldekort: Meldekortdetaljer): List<FravaerInn> {
         var fravaer: MutableList<FravaerInn> = emptyList<FravaerInn>() as MutableList<FravaerInn>
-        val fraD: LocalDate = LocalDate.parse(meldekort.meldeperiode.substring(0, 3)+"-W"+meldekort.meldeperiode.substring(4, 5)+"-1", ISO_WEEK_DATE)
+        val fraD: LocalDate = ukeTilDato(meldekort.meldeperiode)
         for (mdag in meldekort.sporsmal?.meldekortDager!!) {
             var mtype = "A"
             if (mdag.annetFravaer!!) mtype = "X"
@@ -50,6 +50,10 @@ class MeldekortkontrollMapper {
             ))
         }
         return fravaer
+    }
+
+    private fun ukeTilDato(meldeperiode: String): LocalDate {
+        return LocalDate.parse(meldeperiode.substring(0, 4)+"-W"+meldeperiode.substring(4, 6)+"-1", ISO_WEEK_DATE)
     }
 
     private fun trekkutSporsmal(meldekort: Meldekortdetaljer): Sporsmal {
