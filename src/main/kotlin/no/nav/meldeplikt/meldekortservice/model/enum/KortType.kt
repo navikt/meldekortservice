@@ -33,5 +33,6 @@ enum class KortType constructor(val code: String) {
             val kortType = values!![code]
             return kortType ?: throw IllegalArgumentException("Ugyldig kode [ $code ]")
         }
+        
     }
 }

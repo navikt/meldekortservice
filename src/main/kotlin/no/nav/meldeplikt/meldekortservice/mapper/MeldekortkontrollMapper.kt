@@ -13,7 +13,7 @@ class MeldekortkontrollMapper {
     fun mapMeldekortTilMeldekortkontroll(meldekort: Meldekortdetaljer): Meldekortkontroll {
         return Meldekortkontroll(
             meldekortId = meldekort.meldekortId,
-            kortType = meldekort.kortType.toString(),
+            kortType = meldekort.kortType.name,
             kortStatus = "xxx",
             meldegruppe = trekkutMeldegruppe(meldekort),
             meldeperiode = trekkutMeldeperiode(meldekort),
