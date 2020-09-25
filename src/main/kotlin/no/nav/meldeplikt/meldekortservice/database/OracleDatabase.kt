@@ -3,11 +3,8 @@ package no.nav.meldeplikt.meldekortservice.database
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import no.nav.meldeplikt.meldekortservice.config.Environment
-import no.nav.meldeplikt.meldekortservice.utils.DB_ORACLE_USERNAME
-import no.nav.meldeplikt.meldekortservice.utils.SBL_ARBEID_USERNAME
-import no.nav.vault.jdbc.hikaricp.HikariCPVaultUtil
 
-class OracleDatabase(env: Environment) {
+class OracleDatabase(env: Environment) : Database {
 
     private val envDataSource: HikariDataSource
 
@@ -15,9 +12,12 @@ class OracleDatabase(env: Environment) {
         envDataSource = createConnectionViaVaultWithDbUser(env)
     }
 
-    fun createConnectionViaVaultWithDbUser(env: Environment): HikariDataSource {
+    private fun createConnectionViaVaultWithDbUser(env: Environment): HikariDataSource {
         return hikariDatasourceViaVault(env)
     }
+
+    override val dataSource: HikariDataSource
+        get() = envDataSource
 
     companion object {
 

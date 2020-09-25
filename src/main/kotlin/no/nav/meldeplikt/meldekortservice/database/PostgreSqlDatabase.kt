@@ -4,15 +4,18 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import no.nav.meldeplikt.meldekortservice.config.Environment
 
-class PostgreSqlDatabase(env: Environment) {
+class PostgreSqlDatabase(env: Environment) : Database {
 
     private val envDataSource: HikariDataSource
 
     init {
-        envDataSource = hikariFromLocalDb(env, env.dbUserPostgreSQL)
+        envDataSource = createConnectionForLocalDbWithDbUser(env)
     }
 
-    fun createConnectionForLocalDbWithDbUser(env: Environment): HikariDataSource {
+    override val dataSource: HikariDataSource
+        get() = envDataSource
+
+    private fun createConnectionForLocalDbWithDbUser(env: Environment): HikariDataSource {
         return hikariFromLocalDb(env, env.dbUserPostgreSQL)
     }
 

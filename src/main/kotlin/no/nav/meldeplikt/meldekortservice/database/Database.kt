@@ -1,24 +1,15 @@
 package no.nav.meldeplikt.meldekortservice.database
 
 import com.zaxxer.hikari.HikariDataSource
-import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.model.database.feil.RetriableDatabaseException
 import no.nav.meldeplikt.meldekortservice.model.database.feil.UnretriableDatabaseException
-import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import java.sql.Connection
 import java.sql.SQLException
 import java.sql.SQLRecoverableException
 import java.sql.SQLTransientException
 
-class Database(env: Environment) {
-    private val dataSource: HikariDataSource = createCorrectConnectionForEnvironment(env)
-
-    private fun createCorrectConnectionForEnvironment(env: Environment): HikariDataSource {
-        return when (isCurrentlyRunningOnNais()) {
-            true -> OracleDatabase(env).createConnectionViaVaultWithDbUser(env)
-            false -> PostgreSqlDatabase(env).createConnectionForLocalDbWithDbUser(env)
-        }
-    }
+interface Database {
+    val dataSource: HikariDataSource
 
     fun <T> dbQuery(operationToExecute: Connection.() -> T): T =
         dataSource.connection.use { openConnection ->
