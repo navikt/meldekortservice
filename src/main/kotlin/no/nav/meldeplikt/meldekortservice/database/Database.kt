@@ -20,18 +20,6 @@ class Database(env: Environment) {
         }
     }
 
-/*
-    private val postgreSqlDatabase = PostgreSqlDatabase(env)
-    private val oracleDatabase = OracleDatabase(env)
-    private val dataSource: HikariDataSource = createCorrectConnectionForEnvironment(env)
-
-    private fun createCorrectConnectionForEnvironment(env: Environment): HikariDataSource {
-        return when (isCurrentlyRunningOnNais()) {
-            true -> oracleDatabase.createConnectionViaVaultWithDbUser(env)
-            false -> postgreSqlDatabase.createConnectionForLocalDbWithDbUser(env)
-        }
-    }
-*/
     fun <T> dbQuery(operationToExecute: Connection.() -> T): T =
         dataSource.connection.use { openConnection ->
             try {

@@ -55,7 +55,6 @@ fun Application.mainModule(env: Environment = Environment()) {
 
     DefaultExports.initialize()
     setAppProperties(env)
-//    val innsendtMeldekortService = InnsendtMeldekortService(PostgresDatabase(env))
     val innsendtMeldekortService = InnsendtMeldekortService(Database(env))
     val arenaOrdsService = ArenaOrdsService()
 
@@ -89,14 +88,10 @@ fun Application.mainModule(env: Environment = Environment()) {
 private fun setAppProperties(environment: Environment) {
     val systemuser = hentVaultCredentials(environment.serviceUserKvPath)
     val srvSblArbeid = hentVaultCredentials(environment.srvSblArbeidPath)
-//    val dbUserOracle = hentVaultCredentials(environment.dbUserOracleKvPath)
-//    val dbConfigOracle = hentVaultDbConfig(environment.);
 
     setProperty(StsSecurityConstants.STS_URL_KEY, environment.securityTokenService, PUBLIC)
     setProperty(StsSecurityConstants.SYSTEMUSER_USERNAME, systemuser.username, PUBLIC)
     setProperty(StsSecurityConstants.SYSTEMUSER_PASSWORD, systemuser.password, SECRET)
     setProperty(SBL_ARBEID_USERNAME, srvSblArbeid.username, PUBLIC)
     setProperty(SBL_ARBEID_PASSWORD, srvSblArbeid.password, SECRET)
-//    setProperty(DB_ORACLE_USERNAME, dbUserOracle.username, PUBLIC)
-//    setProperty(DB_ORACLE_PASSWORD, dbUserOracle.password, SECRET)
 }

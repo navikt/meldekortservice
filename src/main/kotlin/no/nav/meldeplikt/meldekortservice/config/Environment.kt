@@ -22,11 +22,9 @@ data class Environment(
     // PostgreSQL
     val dbHostPostgreSQL: String = getEnvVar("DB_HOST", "localhost:5432"),
     val dbNamePostgreSQL: String = getEnvVar("DB_NAME", "meldeplikt"),
-//    val dbAdmin: String = getEnvVar("DB_NAME", "test") + "-admin",
     val dbUserPostgreSQL: String = getEnvVar("DB_NAME", "test") + "-user",
     val dbUrlPostgreSQL: String = "jdbc:postgresql://$dbHostPostgreSQL/$dbNamePostgreSQL",
     val dbPasswordPostgreSQL: String = getEnvVar("DB_PASSWORD", "testpassword"),
-//    val dbMountPath: String = getEnvVar("DB_MOUNT_PATH", "notUsedOnLocalhost"),
 
     // Oracle
     val dbUserOracleKvPath: String = getEnvVar("MELDEKORTSERVICE_DS_CREDS_KV_PATH", "path"),
@@ -34,8 +32,6 @@ data class Environment(
 
     val dbUserOracle: VaultCredentials = hentVaultCredentials(dbUserOracleKvPath),
     val dbConfOracle: VaultDbConfig = hentVaultDbConfig(dbConfOracleKvPath),
-//    val dbPasswordOracle: String = getEnvVar("DB_PASSWORD", "testpassword"),
-//    val dbMountPath: String = getEnvVar("DB_MOUNT_PATH", "notUsedOnLocalhost"),
 
     // Serviceusers
     val serviceUserKvPath: String = getEnvVar("SERVICE_USER_KV_PATH", "path"),
