@@ -29,15 +29,17 @@ class KontrollService {
     }
 
     suspend fun kontroller(meldekort: Meldekortkontroll): String {
-        val message = client.post<Meldekortdetaljer> {
+        val message = client.post<String> {
             url("${env.kontrollUrl}$KONTROLL_KONTROLL")
             contentType(ContentType.Application.Json)
             body = meldekort
         }
-        return message.toString()
+        defaultLog.info(message)
+
+        return message
     }
 
-    private val kontrollClient: HttpClient = HttpClient() {
+    private val kontrollClient: HttpClient = HttpClient {
         engine {
             response.apply {
                 charset(Charsets.UTF_8.displayName())
@@ -48,43 +50,13 @@ class KontrollService {
         }
     }
 
-//    suspend fun ping(): OrdsStringResponse {
-//        val msg = kontrollClient.call("${env.kontrollUrl}$KONTROLL_KONTROLL") {
-//            setupKontrollRequestPing()
-//        }
-//        if (HTTP_STATUS_CODES_2XX.contains(msg.response.status.value)) {
-//            return OrdsStringResponse(msg.response.status, msg.response.receive())
-//        } else {
-//            throw OrdsException("Kunne ikke pinge meldekort-kontroll.")
-//        }
-//    }
-
-//    suspend fun kontroll(meldekortdetaljer: Meldekortdetaljer): String {
-// //       try {
+//    private fun setupKontrollRequest(meldekortdetaljer: Meldekortdetaljer): HttpRequestBuilder {
 //        val req = HttpRequestBuilder()
 //        req.headers.append("Accept", "application/xml; charset=UTF-8")
-//        //req.headers.append("Authorization","Bearer ${hentToken().accessToken}")
+//        req.headers.append("Authorization","Bearer ${hentToken().accessToken}")
 //        req.method=HttpMethod.Post
-//        req.url = URLBuilder( Url("${env.kontrollUrl}$KONTROLL_KONTROLL"))
 //        req.body=meldekortdetaljer
-//        val msg = kontrollClient.request<String>(req)
-//        return msg
-// //       } catch(e: Exception) {
-// //           throw Exception(e)
-// //       }
-//    }
-
-    private fun setupKontrollRequest(meldekortdetaljer: Meldekortdetaljer): HttpRequestBuilder {
-        val req = HttpRequestBuilder()
-        req.headers.append("Accept", "application/xml; charset=UTF-8")
-        req.headers.append("Authorization","Bearer ${hentToken().accessToken}")
-        req.method=HttpMethod.Post
-        req.body=meldekortdetaljer
-        return req
-    }
-
-//    private fun HttpRequestBuilder.setupKontrollRequestPing() {
-//        headers.append("Accept", "application/xml; charset=UTF-8")
+//        return req
 //    }
 
     private fun hentToken(): OrdsToken {

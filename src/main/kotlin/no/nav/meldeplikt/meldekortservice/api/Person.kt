@@ -114,14 +114,12 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
         )
     ) { meldekortInput: MeldekortInput, meldekort: Meldekortdetaljer ->
         try {
-//            val kontrollKontrollertType = kontrollService.ping()
-//            defaultLog.info(kontrollKontrollertType.toString())
-
+            // Send først kortet til kontroll i meldekort-kontroll
             defaultLog.info(jsonMapper.writeValueAsString(meldekortkontrollMapper.mapMeldekortTilMeldekortkontroll(meldekort)))
             val m = kontrollService.kontroller(meldekort = meldekortkontrollMapper.mapMeldekortTilMeldekortkontroll(meldekort))
             defaultLog.info(m)
 
-
+            // Hvis dette gikk bra, send det til Amelding
             val kontrollertType = SoapConfig.soapService().kontrollerMeldekort(meldekort)
 
             if (kontrollertType.status == "OK") {
