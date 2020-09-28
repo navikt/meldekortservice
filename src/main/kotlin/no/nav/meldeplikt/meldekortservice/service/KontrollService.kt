@@ -7,11 +7,13 @@ import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
-import no.nav.meldeplikt.meldekortservice.api.MeldekortInput
+import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
 import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.config.cache
+import no.nav.meldeplikt.meldekortservice.mapper.KontrollertTypeMapper
+import no.nav.meldeplikt.meldekortservice.mapper.MeldekortkontrollMapper
 import no.nav.meldeplikt.meldekortservice.model.OrdsToken
-import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
+import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.response.KontrollResponse
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.Meldekortkontroll
 import no.nav.meldeplikt.meldekortservice.utils.*
 import java.util.*
@@ -19,8 +21,8 @@ import java.util.*
 class KontrollService {
 
     private val log = getLogger(KontrollService::class)
-
     private val env = Environment()
+    private val responseMapper = KontrollertTypeMapper()
 
     val client = HttpClient(Apache) {
         install(JsonFeature) {
@@ -28,15 +30,15 @@ class KontrollService {
         }
     }
 
-    suspend fun kontroller(meldekort: Meldekortkontroll): String {
-        val message = client.post<String> {
+    suspend fun kontroller(meldekort: Meldekortkontroll): MeldekortKontrollertType {
+        val message = client.post<KontrollResponse> {
             url("${env.kontrollUrl}$KONTROLL_KONTROLL")
             contentType(ContentType.Application.Json)
             body = meldekort
         }
-        defaultLog.info(message)
+        defaultLog.info(message.toString())
 
-        return message
+        return responseMapper.mapKontrollResponseToKontrollertType(message)
     }
 
     private val kontrollClient: HttpClient = HttpClient {

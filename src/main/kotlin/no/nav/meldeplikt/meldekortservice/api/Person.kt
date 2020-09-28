@@ -115,16 +115,16 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
     ) { meldekortInput: MeldekortInput, meldekort: Meldekortdetaljer ->
         try {
             // Send først kortet til kontroll i meldekort-kontroll
-            defaultLog.info(jsonMapper.writeValueAsString(meldekortkontrollMapper.mapMeldekortTilMeldekortkontroll(meldekort)))
-            val m = kontrollService.kontroller(meldekort = meldekortkontrollMapper.mapMeldekortTilMeldekortkontroll(meldekort))
-            defaultLog.info(m)
+            val kontrollResponse = kontrollService.kontroller(meldekort = meldekortkontrollMapper.mapMeldekortTilMeldekortkontroll(meldekort))
+            if (kontrollResponse.arsakskoder.arsakskode.size > 0) defaultLog.info("Kontroll feilet i meldekort-kontroll: "+jsonMapper.writeValueAsString(kontrollResponse))
 
             // Hvis dette gikk bra, send det til Amelding
-            val kontrollertType = SoapConfig.soapService().kontrollerMeldekort(meldekort)
+            val ameldingResponse = SoapConfig.soapService().kontrollerMeldekort(meldekort)
+            if (ameldingResponse.arsakskoder.arsakskode.size > 0) defaultLog.info("Kontroll feilet i Amelding: "+jsonMapper.writeValueAsString(kontrollResponse))
 
-            if (kontrollertType.status == "OK") {
+            if (ameldingResponse.status == "OK" && kontrollResponse.status == "OK") {
                 try {
-                    innsendtMeldekortService.settInnInnsendtMeldekort(InnsendtMeldekort(kontrollertType.meldekortId))
+                    innsendtMeldekortService.settInnInnsendtMeldekort(InnsendtMeldekort(ameldingResponse.meldekortId))
                 } catch (e: UnretriableDatabaseException) {
                     // Meldekort er sendt inn ok til baksystem, men det oppstår feil ved skriving til MIP-tabellen i databasen.
                     // Logger warning, og returnerer ok status til brukeren slik at den ikke forsøker å sende inn meldekortet på
@@ -134,7 +134,7 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
                     defaultLog.warn(errorMessage.error, e)
                 }
             }
-            call.respondText(jsonMapper.writeValueAsString(kontrollertType), contentType = ContentType.Application.Json)
+            call.respondText(jsonMapper.writeValueAsString(kontrollResponse), contentType = ContentType.Application.Json)
         } catch (e: Exception) {
             val errorMessage =
                 ErrorMessage("Meldekort med id ${meldekort.meldekortId} ble ikke sendt inn. ${e.message}")
