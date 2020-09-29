@@ -115,7 +115,9 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
     ) { meldekortInput: MeldekortInput, meldekort: Meldekortdetaljer ->
         try {
             // Send først kortet til kontroll i meldekort-kontroll
+            defaultLog.info("Sender til meldekort-kontroll: "+jsonMapper.writeValueAsString(meldekortkontrollMapper.mapMeldekortTilMeldekortkontroll(meldekort)))
             val kontrollResponse = kontrollService.kontroller(meldekort = meldekortkontrollMapper.mapMeldekortTilMeldekortkontroll(meldekort))
+            defaultLog.info("Svar fra meldekort-kontroll: "+jsonMapper.writeValueAsString(kontrollResponse))
             if (kontrollResponse.arsakskoder.arsakskode.size > 0) defaultLog.info("Kontroll feilet i meldekort-kontroll: "+jsonMapper.writeValueAsString(kontrollResponse))
 
             // Hvis dette gikk bra, send det til Amelding
