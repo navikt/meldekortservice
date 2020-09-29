@@ -12,7 +12,7 @@ import java.time.LocalDate
 
 data class KontrollResponse constructor (
     var meldekortId: Long = 0,
-    var kortStatus: String,
+    var status: String,
     var arsakskoder: List<KontrollArsakskode>,
     var meldekortdager: List<KontrollMeldekortDag>
 
