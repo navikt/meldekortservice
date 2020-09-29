@@ -12,12 +12,12 @@ import java.time.LocalDate
 // Denne typen tilsvarer det som brukes i frontend og i meldekort-kontroll
 
 data class Meldekortkontroll constructor (
-    val meldekortId: Long = 0,
-    val kortType: String,
-    val kortStatus: String,
-    val meldegruppe: String,
-    val meldeperiode: MeldeperiodeInn,
-    val fravaersdager: List<FravaerInn>,
-    val sporsmal: Sporsmal
+    var meldekortId: Long = 0,
+    var kortType: String,
+    var kortStatus: String?,
+    var meldegruppe: String,
+    var meldeperiode: MeldeperiodeInn,
+    var fravaersdager: List<FravaerInn>,
+    var sporsmal: Sporsmal
 
 )
