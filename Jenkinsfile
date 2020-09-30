@@ -230,8 +230,10 @@ def prepareNaiseratorYaml(naiseratorFile, version, cluster, namespace, domainNam
 
     if (namespace == "default") {
         replaceInFile('##URL_NAMESPACE##', '', naiseratorFile)
+        replaceInFile('##DB_NAMESPACE##', '', naiseratorFile)
     } else {
         replaceInFile('##URL_NAMESPACE##', "-${namespace}" as String, naiseratorFile)
+        replaceInFile('##DB_NAMESPACE##', "_${namespace}" as String, naiseratorFile)
     }
 }
 
