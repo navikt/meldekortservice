@@ -11,7 +11,7 @@ import java.sql.SQLTransientException
 interface Database {
     val dataSource: HikariDataSource
 
-    fun <T> dbQuery(operationToExecute: Connection.() -> T): T =
+    suspend fun <T> dbQuery(operationToExecute: Connection.() -> T): T =
         dataSource.connection.use { openConnection ->
             try {
                 openConnection.operationToExecute().apply {
