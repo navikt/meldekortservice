@@ -1,7 +1,8 @@
 package no.nav.meldeplikt.meldekortservice.config
 
 import com.zaxxer.hikari.HikariDataSource
-import no.nav.meldeplikt.meldekortservice.database.PostgresDatabase
+import no.nav.meldeplikt.meldekortservice.database.OracleDatabase
+import no.nav.meldeplikt.meldekortservice.database.PostgreSqlDatabase
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.configuration.FluentConfiguration
@@ -19,24 +20,21 @@ object Flyway {
         val dataSource = createCorrectAdminDatasourceForEnvironment(env)
         configBuilder.dataSource(dataSource)
 
-        if (isCurrentlyRunningOnNais()) {
-            configBuilder.initSql("SET ROLE \"${env.dbAdmin}\"")
-        }
         return configBuilder
     }
 
     private fun createCorrectAdminDatasourceForEnvironment(env: Environment): DataSource {
         return when (isCurrentlyRunningOnNais()) {
-            true -> createDataSourceViaVaultWithAdminUser(env)
+            true -> createDataSourceViaVault(env)
             false -> createDataSourceForLocalDbWithAdminUser(env)
         }
     }
 
-    private fun createDataSourceViaVaultWithAdminUser(env: Environment): HikariDataSource {
-        return PostgresDatabase.hikariDatasourceViaVault(env, env.dbAdmin)
+    private fun createDataSourceViaVault(env: Environment): HikariDataSource {
+        return OracleDatabase.hikariDatasourceViaVault(env)
     }
 
     private fun createDataSourceForLocalDbWithAdminUser(env: Environment): HikariDataSource {
-        return PostgresDatabase.hikariFromLocalDb(env, env.dbUser)
+        return PostgreSqlDatabase.hikariFromLocalDb(env, env.dbUserPostgreSQL)
     }
 }

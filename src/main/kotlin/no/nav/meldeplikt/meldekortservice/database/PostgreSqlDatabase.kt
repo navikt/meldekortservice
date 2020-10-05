@@ -3,34 +3,20 @@ package no.nav.meldeplikt.meldekortservice.database
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import no.nav.meldeplikt.meldekortservice.config.Environment
-import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
-import no.nav.vault.jdbc.hikaricp.HikariCPVaultUtil
 
-class PostgresDatabase(env: Environment) : Database {
+class PostgreSqlDatabase(env: Environment) : Database {
 
     private val envDataSource: HikariDataSource
 
     init {
-        envDataSource = createCorrectConnectionForEnvironment(env)
+        envDataSource = createConnectionForLocalDbWithDbUser(env)
     }
 
     override val dataSource: HikariDataSource
         get() = envDataSource
 
-
-    private fun createCorrectConnectionForEnvironment(env: Environment): HikariDataSource {
-        return when (isCurrentlyRunningOnNais()) {
-            true -> createConnectionViaVaultWithDbUser(env)
-            false -> createConnectionForLocalDbWithDbUser(env)
-        }
-    }
-
     private fun createConnectionForLocalDbWithDbUser(env: Environment): HikariDataSource {
-        return hikariFromLocalDb(env, env.dbUser)
-    }
-
-    private fun createConnectionViaVaultWithDbUser(env: Environment): HikariDataSource {
-        return hikariDatasourceViaVault(env, env.dbUser)
+        return hikariFromLocalDb(env, env.dbUserPostgreSQL)
     }
 
     companion object {
@@ -38,22 +24,16 @@ class PostgresDatabase(env: Environment) : Database {
         fun hikariFromLocalDb(env: Environment, dbUser: String): HikariDataSource {
             val config = hikariCommonConfig(env).apply {
                 username = dbUser
-                password = env.dbPassword
+                password = env.dbPasswordPostgreSQL
                 validate()
             }
             return HikariDataSource(config)
         }
 
-        fun hikariDatasourceViaVault(env: Environment, dbUser: String): HikariDataSource {
-            val config = hikariCommonConfig(env)
-            config.validate()
-            return HikariCPVaultUtil.createHikariDataSourceWithVaultIntegration(config, env.dbMountPath, dbUser)
-        }
-
         private fun hikariCommonConfig(env: Environment): HikariConfig {
             val config = HikariConfig().apply {
                 driverClassName = "org.postgresql.Driver"
-                jdbcUrl = env.dbUrl
+                jdbcUrl = env.dbUrlPostgreSQL
                 minimumIdle = 1
                 maxLifetime = 30001
                 maximumPoolSize = 3

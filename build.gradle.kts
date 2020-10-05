@@ -27,11 +27,12 @@ val swaggerVersion = "3.23.8"
 val vaultVersion = "3.1.0"
 val tjenestespecVersion = "1.2019.08.16-13.46-35cbdfd492d4"
 val slf4jVersion = "1.7.26"
-val flywayVersion = "5.2.4"
+val flywayVersion = "6.5.7"
 val postgresVersion = "42.2.5"
 val h2Version = "1.4.199"
 val kluentVersion = "1.52"
 val tokenValidationVersion = "1.1.5"
+val ojdbc8Version = "19.3.0.0"
 
 plugins {
     java
@@ -108,6 +109,7 @@ dependencies {
     api("org.flywaydb:flyway-core:$flywayVersion")
     api("org.postgresql:postgresql:$postgresVersion")
     api("no.nav.security:token-validation-ktor:$tokenValidationVersion")
+    implementation ("com.oracle.ojdbc:ojdbc8:$ojdbc8Version")
 
     testCompile("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testCompile(kotlin("test-junit5"))
