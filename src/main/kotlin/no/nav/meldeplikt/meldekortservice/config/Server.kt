@@ -13,28 +13,29 @@ import no.nav.cache.Cache
 import no.nav.cache.CacheConfig
 import no.nav.cache.CacheUtils
 import no.nav.meldeplikt.meldekortservice.api.*
-import no.nav.meldeplikt.meldekortservice.database.PostgresDatabase
+import no.nav.meldeplikt.meldekortservice.database.OracleDatabase
+import no.nav.meldeplikt.meldekortservice.database.PostgreSqlDatabase
 import no.nav.meldeplikt.meldekortservice.model.OrdsToken
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
 import no.nav.meldeplikt.meldekortservice.service.InnsendtMeldekortService
 import no.nav.meldeplikt.meldekortservice.service.KontrollService
 import no.nav.meldeplikt.meldekortservice.utils.SBL_ARBEID_PASSWORD
 import no.nav.meldeplikt.meldekortservice.utils.SBL_ARBEID_USERNAME
+import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
+import no.nav.meldeplikt.meldekortservice.utils.objectMapper
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Contact
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Information
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Swagger
-import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
-import no.nav.meldeplikt.meldekortservice.utils.objectMapper
 import no.nav.sbl.dialogarena.common.cxf.StsSecurityConstants
-import no.nav.sbl.util.EnvironmentUtils.setProperty
 import no.nav.sbl.util.EnvironmentUtils.Type.PUBLIC
 import no.nav.sbl.util.EnvironmentUtils.Type.SECRET
+import no.nav.sbl.util.EnvironmentUtils.setProperty
 import no.nav.security.token.support.ktor.tokenValidationSupport
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 val swagger = Swagger(
-    info = Information (
+    info = Information(
         version = "1",
         title = "Meldekortservice. Proxy-api for meldekort mot Arena og Amelding",
         description = "[Meldekortservice](https://github.com/navikt/meldekortservice)",
@@ -57,7 +58,12 @@ fun Application.mainModule(env: Environment = Environment()) {
 
     DefaultExports.initialize()
     setAppProperties(env)
-    val innsendtMeldekortService = InnsendtMeldekortService(PostgresDatabase(env))
+    val innsendtMeldekortService = InnsendtMeldekortService(
+        when (isCurrentlyRunningOnNais()) {
+            true -> OracleDatabase(env)
+            false -> PostgreSqlDatabase(env)
+        }
+    )
     val arenaOrdsService = ArenaOrdsService()
     val kontrollService = KontrollService()
 
@@ -91,6 +97,7 @@ fun Application.mainModule(env: Environment = Environment()) {
 private fun setAppProperties(environment: Environment) {
     val systemuser = hentVaultCredentials(environment.serviceUserKvPath)
     val srvSblArbeid = hentVaultCredentials(environment.srvSblArbeidPath)
+
     setProperty(StsSecurityConstants.STS_URL_KEY, environment.securityTokenService, PUBLIC)
     setProperty(StsSecurityConstants.SYSTEMUSER_USERNAME, systemuser.username, PUBLIC)
     setProperty(StsSecurityConstants.SYSTEMUSER_PASSWORD, systemuser.password, SECRET)

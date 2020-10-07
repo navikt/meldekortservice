@@ -7,10 +7,8 @@ import java.sql.Connection
 import java.sql.SQLException
 import java.sql.SQLRecoverableException
 import java.sql.SQLTransientException
-import javax.sql.DataSource
 
 interface Database {
-
     val dataSource: HikariDataSource
 
     suspend fun <T> dbQuery(operationToExecute: Connection.() -> T): T =

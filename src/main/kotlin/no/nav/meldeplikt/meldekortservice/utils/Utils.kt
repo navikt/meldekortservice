@@ -38,6 +38,9 @@ internal const val ARENA_ORDS_ENDRE_MELDEFORM = "$ARENA_ORDS_API_V1/meldeform"
 internal const val SBL_ARBEID_USERNAME = "srvSBLArbeid.username"
 internal const val SBL_ARBEID_PASSWORD = "srvSBLArbeid.password"
 
+internal const val DB_ORACLE_USERNAME = "oracleDbUser.username"
+internal const val DB_ORACLE_PASSWORD = "oracleDbUser.password"
+
 const val vaultUrl = "https://vault.adeo.no"
 const val vaultTokenPath = "/var/run/secrets/nais.io/vault/vault_token"
 

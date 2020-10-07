@@ -21,14 +21,21 @@ data class Environment(
     val securityTokenService: String = getEnvVar("SECURITYTOKENSERVICE", "https://dummyUrl.com"),
     val sakOgAktivitetUrl: String = getEnvVar("SAKOGAKTIVITET_URI", "https://dummyUrl.com"),
 
-    val dbHost: String = getEnvVar("DB_HOST", "localhost:5432"),
-    val dbName: String = getEnvVar("DB_NAME", "meldeplikt"),
-    val dbAdmin: String = getEnvVar("DB_NAME", "test") + "-admin",
-    val dbUser: String = getEnvVar("DB_NAME", "test") + "-user",
-    val dbUrl: String = "jdbc:postgresql://$dbHost/$dbName",
-    val dbPassword: String = getEnvVar("DB_PASSWORD", "testpassword"),
-    val dbMountPath: String = getEnvVar("DB_MOUNT_PATH", "notUsedOnLocalhost"),
+    // PostgreSQL
+    val dbHostPostgreSQL: String = getEnvVar("DB_HOST", "localhost:5432"),
+    val dbNamePostgreSQL: String = getEnvVar("DB_NAME", "meldeplikt"),
+    val dbUserPostgreSQL: String = getEnvVar("DB_NAME", "test") + "-user",
+    val dbUrlPostgreSQL: String = "jdbc:postgresql://$dbHostPostgreSQL/$dbNamePostgreSQL",
+    val dbPasswordPostgreSQL: String = getEnvVar("DB_PASSWORD", "testpassword"),
 
+    // Oracle
+    val dbUserOracleKvPath: String = getEnvVar("MELDEKORTSERVICE_DS_CREDS_KV_PATH", "path"),
+    val dbConfOracleKvPath: String = getEnvVar("MELDEKORTSERVICE_DS_CONF_KV_PATH", "path"),
+
+    val dbUserOracle: VaultCredentials = hentVaultCredentials(dbUserOracleKvPath),
+    val dbConfOracle: VaultDbConfig = hentVaultDbConfig(dbConfOracleKvPath),
+
+    // Serviceusers
     val serviceUserKvPath: String = getEnvVar("SERVICE_USER_KV_PATH", "path"),
     val srvSblArbeidPath: String = getEnvVar("SRV_SBL_ARBEID_PATH", "path")
 )
@@ -59,4 +66,17 @@ fun hentVaultCredentials(path: String): VaultCredentials {
 data class VaultCredentials(
     val username: String?,
     val password: String?
+)
+
+fun hentVaultDbConfig(path: String): VaultDbConfig {
+    return if (isCurrentlyRunningOnNais()) {
+        val config = Json.parse(vault().logical().read(path).data["data"]).asObject()
+        VaultDbConfig(config.get("jdbc_url").asString())
+    } else {
+        VaultDbConfig("test")
+    }
+}
+
+data class VaultDbConfig(
+    val jdbcUrl: String?
 )
