@@ -35,7 +35,6 @@ val tokenValidationVersion = "1.1.5"
 val ojdbc8Version = "19.3.0.0"
 
 plugins {
-    java
 
     id("no.nils.wsdl2java") version "0.10"
 
@@ -110,6 +109,7 @@ dependencies {
     api("org.flywaydb:flyway-core:$flywayVersion")
     api("org.postgresql:postgresql:$postgresVersion")
     api("no.nav.security:token-validation-ktor:$tokenValidationVersion")
+    api("no.nav.security:token-client-spring:$tokenValidationVersion")
     implementation ("com.oracle.ojdbc:ojdbc8:$ojdbc8Version")
 
     testCompile("org.junit.jupiter:junit-jupiter-api:$junitVersion")
