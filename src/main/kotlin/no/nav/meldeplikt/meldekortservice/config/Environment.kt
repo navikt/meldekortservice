@@ -30,9 +30,6 @@ data class Environment(
     val dbUserOracleKvPath: String = getEnvVar("MELDEKORTSERVICE_DS_CREDS_KV_PATH", "path"),
     val dbConfOracleKvPath: String = getEnvVar("MELDEKORTSERVICE_DS_CONF_KV_PATH", "path"),
 
-    val dbUserOracle: VaultCredentials = hentVaultCredentials(dbUserOracleKvPath),
-    val dbConfOracle: VaultDbConfig = hentVaultDbConfig(dbConfOracleKvPath),
-
     // Serviceusers
     val serviceUserKvPath: String = getEnvVar("SERVICE_USER_KV_PATH", "path"),
     val srvSblArbeidPath: String = getEnvVar("SRV_SBL_ARBEID_PATH", "path")
@@ -43,17 +40,18 @@ fun getEnvVar(varName: String, defaultValue: String? = null): String {
     ?: throw IllegalArgumentException("Variabelen $varName kan ikke være tom")
 }
 
-private fun vault() = Vault(VaultConfig()
-    .address(vaultUrl)
-    .token(String(Files.readAllBytes(Paths.get(vaultTokenPath))))
-    .openTimeout(5)
-    .readTimeout(30)
-    .sslConfig(SslConfig().build())
-    .build()
+private fun vault() = Vault(
+    VaultConfig()
+        .address(vaultUrl)
+        .token(String(Files.readAllBytes(Paths.get(vaultTokenPath))))
+        .openTimeout(5)
+        .readTimeout(30)
+        .sslConfig(SslConfig().build())
+        .build()
 )
 
 fun hentVaultCredentials(path: String): VaultCredentials {
-    return if(isCurrentlyRunningOnNais()) {
+    return if (isCurrentlyRunningOnNais()) {
         val credentials = Json.parse(vault().logical().read(path).data["data"]).asObject()
         VaultCredentials(credentials.get("username").asString(), credentials.get("password").asString())
     } else {
