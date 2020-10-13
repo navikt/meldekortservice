@@ -33,6 +33,8 @@ val h2Version = "1.4.199"
 val kluentVersion = "1.52"
 val tokenValidationVersion = "1.1.5"
 val ojdbc8Version = "19.3.0.0"
+val kotlinResultVersion = "1.1.9"
+val konfigVersion = "1.6.10.0"
 
 plugins {
 
@@ -67,10 +69,12 @@ buildscript {
 repositories {
     mavenCentral()
     maven("https://plugins.gradle.org/m2/")
+    maven("https://dl.bintray.com/michaelbull/maven")
 }
 
 
 dependencies {
+
     wsdl2java("javax.annotation:javax.annotation-api:$javaxAnnotationApiVersion")
     wsdl2java("javax.activation:activation:$javaxActivationVersion")
     wsdl2java("org.glassfish.jaxb:jaxb-runtime:$jaxbRuntimeVersion")
@@ -80,37 +84,39 @@ dependencies {
         exclude(group = "com.sun.xml.ws", module = "policy")
     }
 
+    api("com.natpryce:konfig:$konfigVersion")
     implementation(kotlin("stdlib-jdk8"))
-    api("no.nav:vault-jdbc:$vaultJdbcVersion")
-    api("ch.qos.logback:logback-classic:$logbackVersion")
-    api("ch.qos.logback:logback-core:$logbackVersion")
-    api("net.logstash.logback:logstash-logback-encoder:$logstashVersion")
-    api("io.prometheus:simpleclient_common:$prometheusVersion")
-    api("io.prometheus:simpleclient_hotspot:$prometheusVersion")
-    api("io.ktor:ktor-server-netty:$ktorVersion")
-    api("io.ktor:ktor-auth:$ktorVersion")
-    api("io.ktor:ktor-auth-jwt:$ktorVersion")
-    api("io.ktor:ktor-client-apache:$ktorVersion")
-    api("io.ktor:ktor-client-json:$ktorVersion")
-    api("io.ktor:ktor-client-jackson:$ktorVersion")
-    api("io.ktor:ktor-locations:$ktorVersion")
-    api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
-    api("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonVersion")
-    api("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion")
-    api("io.ktor:ktor-jackson:$ktorVersion")
-    api("no.nav.common:cxf:$navCommonVersion")
-    api("no.nav.common:cache:$navCommonVersion")
-    api("no.nav.common:log:$navCommonVersion")
-    api("org.slf4j:slf4j-api:$slf4jVersion")
-    api("no.nav.common:types:$navCommonVersion")
-    api("io.github.microutils:kotlin-logging:$kotlinLoggerVersion")
-    api("com.bettercloud:vault-java-driver:$vaultVersion")
-    api("no.nav.tjenestespesifikasjoner:arena-sakOgAktivitet_v1:$tjenestespecVersion")
-    api("org.flywaydb:flyway-core:$flywayVersion")
-    api("org.postgresql:postgresql:$postgresVersion")
-    api("no.nav.security:token-validation-ktor:$tokenValidationVersion")
-    api("no.nav.security:token-client-spring:$tokenValidationVersion")
-    implementation ("com.oracle.ojdbc:ojdbc8:$ojdbc8Version")
+    implementation("no.nav:vault-jdbc:$vaultJdbcVersion")
+    implementation("ch.qos.logback:logback-classic:$logbackVersion")
+    implementation("ch.qos.logback:logback-core:$logbackVersion")
+    implementation("net.logstash.logback:logstash-logback-encoder:$logstashVersion")
+    implementation("io.prometheus:simpleclient_common:$prometheusVersion")
+    implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
+    implementation("io.ktor:ktor-server-netty:$ktorVersion")
+    implementation("io.ktor:ktor-auth:$ktorVersion")
+    implementation("io.ktor:ktor-auth-jwt:$ktorVersion")
+    implementation("io.ktor:ktor-client-apache:$ktorVersion")
+    implementation("io.ktor:ktor-client-json:$ktorVersion")
+    implementation("io.ktor:ktor-client-jackson:$ktorVersion")
+    implementation("io.ktor:ktor-locations:$ktorVersion")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
+    implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonVersion")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion")
+    implementation("io.ktor:ktor-jackson:$ktorVersion")
+    implementation("no.nav.common:cxf:$navCommonVersion")
+    implementation("no.nav.common:cache:$navCommonVersion")
+    implementation("no.nav.common:log:$navCommonVersion")
+    implementation("org.slf4j:slf4j-api:$slf4jVersion")
+    implementation("no.nav.common:types:$navCommonVersion")
+    implementation("io.github.microutils:kotlin-logging:$kotlinLoggerVersion")
+    implementation("com.bettercloud:vault-java-driver:$vaultVersion")
+    implementation("no.nav.tjenestespesifikasjoner:arena-sakOgAktivitet_v1:$tjenestespecVersion")
+    implementation("org.flywaydb:flyway-core:$flywayVersion")
+    implementation("org.postgresql:postgresql:$postgresVersion")
+    implementation("no.nav.security:token-validation-ktor:$tokenValidationVersion")
+    implementation("no.nav.security:token-client-spring:$tokenValidationVersion")
+    implementation("com.oracle.ojdbc:ojdbc8:$ojdbc8Version")
+    implementation("com.michael-bull.kotlin-result:kotlin-result:$kotlinResultVersion")
 
     testCompile("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testCompile(kotlin("test-junit5"))
