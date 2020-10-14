@@ -37,9 +37,10 @@ class OracleDatabase : Database {
                 driverClassName = "oracle.jdbc.OracleDriver"
                 jdbcUrl = System.getProperty(DB_ORACLE_CONF, "jdbcUrl")
                 isAutoCommit = false
-                connectionTimeout = 1000
+                connectionTimeout = 5000
                 maxLifetime = 30001
-                validationTimeout = 500
+                maximumPoolSize = 20
+                validationTimeout = 2500
             }
         }
     }
