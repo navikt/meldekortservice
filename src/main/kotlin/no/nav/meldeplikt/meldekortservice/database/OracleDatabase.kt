@@ -39,6 +39,7 @@ class OracleDatabase : Database {
                 isAutoCommit = false
                 connectionTimeout = 5000
                 maxLifetime = 30001
+                minimumIdle = 5
                 maximumPoolSize = 20
                 validationTimeout = 2500
             }
