@@ -90,25 +90,17 @@ fun Application.mainModule(env: Environment = Environment()) {
 }
 
 private fun setAppProperties(environment: Environment) {
-    try {
-        val systemuser = hentVaultCredentials(environment.serviceUserKvPath)
-        val srvSblArbeid = hentVaultCredentials(environment.srvSblArbeidPath)
-        val dbUserOracle = hentVaultCredentials(environment.dbUserOracleKvPath)
-        val dbConfOracle = hentVaultDbConfig(environment.dbConfOracleKvPath + "INVALID_PATH")
+    val systemuser = hentVaultCredentials(environment.serviceUserKvPath)
+    val srvSblArbeid = hentVaultCredentials(environment.srvSblArbeidPath)
+    val dbUserOracle = hentVaultCredentials(environment.dbUserOracleKvPath)
+    val dbConfOracle = hentVaultDbConfig(environment.dbConfOracleKvPath)
 
-        setProperty(StsSecurityConstants.STS_URL_KEY, environment.securityTokenService, PUBLIC)
-        setProperty(StsSecurityConstants.SYSTEMUSER_USERNAME, systemuser.username, PUBLIC)
-        setProperty(StsSecurityConstants.SYSTEMUSER_PASSWORD, systemuser.password, SECRET)
-        setProperty(SBL_ARBEID_USERNAME, srvSblArbeid.username, PUBLIC)
-        setProperty(SBL_ARBEID_PASSWORD, srvSblArbeid.password, SECRET)
-        setProperty(DB_ORACLE_USERNAME, dbUserOracle.username, PUBLIC)
-        setProperty(DB_ORACLE_PASSWORD, dbUserOracle.password, SECRET)
-        setProperty(DB_ORACLE_CONF, dbConfOracle.jdbcUrl, PUBLIC)
-    } catch (e: Exception) {
-        val errorMessage =
-            ErrorMessage("Feil ved lesing fra Vault eller setting av app-properties. ${e.message}")
-        defaultLog.error(errorMessage.error, e)
-
-        throw e
-    }
+    setProperty(StsSecurityConstants.STS_URL_KEY, environment.securityTokenService, PUBLIC)
+    setProperty(StsSecurityConstants.SYSTEMUSER_USERNAME, systemuser.username, PUBLIC)
+    setProperty(StsSecurityConstants.SYSTEMUSER_PASSWORD, systemuser.password, SECRET)
+    setProperty(SBL_ARBEID_USERNAME, srvSblArbeid.username, PUBLIC)
+    setProperty(SBL_ARBEID_PASSWORD, srvSblArbeid.password, SECRET)
+    setProperty(DB_ORACLE_USERNAME, dbUserOracle.username, PUBLIC)
+    setProperty(DB_ORACLE_PASSWORD, dbUserOracle.password, SECRET)
+    setProperty(DB_ORACLE_CONF, dbConfOracle.jdbcUrl, PUBLIC)
 }
