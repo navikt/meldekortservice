@@ -62,7 +62,7 @@ class KontrollService(
 
     // TODO: Cache
     private suspend fun hentAadToken(): AccessToken {
-        log.info("Henter token")
+        log.info("Henter token fra AAD")
 
         val ret = if (isCurrentlyRunningOnNais()) {
             getAccessTokenForResource(meldekortKontrollResource)
@@ -87,11 +87,14 @@ class KontrollService(
             par)
     }
 
-    private suspend inline fun submitForm(formParameters: Parameters): AccessToken =
-        httpClient.submitForm(
-            url = config.azureAd.openIdConfiguration.tokenEndpoint,
+    private suspend inline fun submitForm(formParameters: Parameters): AccessToken {
+        val u = config.azureAd.openIdConfiguration.tokenEndpoint
+        log.info("AAD Url: $u")
+        return httpClient.submitForm(
+            url = u,
             formParameters = formParameters
         )
+    }
 
 
     internal object GrantType {
