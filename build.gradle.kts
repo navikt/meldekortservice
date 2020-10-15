@@ -33,8 +33,6 @@ val h2Version = "1.4.199"
 val kluentVersion = "1.52"
 val tokenValidationVersion = "1.1.5"
 val ojdbc8Version = "19.3.0.0"
-val kotlinResultVersion = "1.1.9"
-val konfigVersion = "1.6.10.0"
 
 plugins {
 
@@ -69,12 +67,10 @@ buildscript {
 repositories {
     mavenCentral()
     maven("https://plugins.gradle.org/m2/")
-    maven("https://dl.bintray.com/michaelbull/maven")
 }
 
 
 dependencies {
-
     wsdl2java("javax.annotation:javax.annotation-api:$javaxAnnotationApiVersion")
     wsdl2java("javax.activation:activation:$javaxActivationVersion")
     wsdl2java("org.glassfish.jaxb:jaxb-runtime:$jaxbRuntimeVersion")
@@ -84,7 +80,6 @@ dependencies {
         exclude(group = "com.sun.xml.ws", module = "policy")
     }
 
-    api("com.natpryce:konfig:$konfigVersion")
     implementation(kotlin("stdlib-jdk8"))
     implementation("no.nav:vault-jdbc:$vaultJdbcVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
@@ -116,7 +111,6 @@ dependencies {
     implementation("no.nav.security:token-validation-ktor:$tokenValidationVersion")
     implementation("no.nav.security:token-client-spring:$tokenValidationVersion")
     implementation("com.oracle.ojdbc:ojdbc8:$ojdbc8Version")
-    implementation("com.michael-bull.kotlin-result:kotlin-result:$kotlinResultVersion")
 
     testCompile("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testCompile(kotlin("test-junit5"))

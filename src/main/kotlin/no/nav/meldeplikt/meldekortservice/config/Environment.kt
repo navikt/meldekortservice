@@ -4,13 +4,20 @@ import com.bettercloud.vault.SslConfig
 import com.bettercloud.vault.Vault
 import com.bettercloud.vault.VaultConfig
 import com.bettercloud.vault.json.Json
-import no.nav.meldeplikt.meldekortservice.utils.*
+import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
+import no.nav.meldeplikt.meldekortservice.utils.vaultTokenPath
+import no.nav.meldeplikt.meldekortservice.utils.vaultUrl
 import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Paths
 
 data class Environment(
-    val kontrollUrl: String = "https://meldekort-kontroll-q0.nais.preprod.local",
+    val meldekortKontrollUrl: String = "https://meldekort-kontroll-q0.nais.preprod.local",
+    val meldekortKontrollClientid: String = "932822c2-3a7c-41d3-a900-d90f87f0ae22",
+
+    val oauthClientId: String = System.getenv("AZURE_CLIENT_ID"),
+    val oauthJwk: String = System.getenv("AZURE_JWK"),
+    val oauthClientSecret: String = System.getenv("AZURE_CLIENT_SECRET"),
 
     val username: String = getEnvVar("FSS_SYSTEMUSER_USERNAME", "username"),
     val password: String = getEnvVar("FSS_SYSTEMUSER_PASSWORD", "password"),
@@ -45,13 +52,14 @@ fun getEnvVar(varName: String, defaultValue: String? = null): String {
     ?: throw IllegalArgumentException("Variabelen $varName kan ikke være tom")
 }
 
-private fun vault() = Vault(VaultConfig()
-    .address(vaultUrl)
-    .token(String(Files.readAllBytes(Paths.get(vaultTokenPath))))
-    .openTimeout(5)
-    .readTimeout(30)
-    .sslConfig(SslConfig().build())
-    .build()
+private fun vault() = Vault(
+    VaultConfig()
+        .address(vaultUrl)
+        .token(String(Files.readAllBytes(Paths.get(vaultTokenPath))))
+        .openTimeout(5)
+        .readTimeout(30)
+        .sslConfig(SslConfig().build())
+        .build()
 )
 
 fun hentVaultCredentials(path: String): VaultCredentials {

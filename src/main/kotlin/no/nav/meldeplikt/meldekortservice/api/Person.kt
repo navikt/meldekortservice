@@ -48,7 +48,7 @@ fun Routing.personApi(arenaOrdsService: ArenaOrdsService, innsendtMeldekortServi
 }
 
 private val xmlMapper = XmlMapper()
-private val jsonMapper = jacksonObjectMapper()
+val jsonMapper = jacksonObjectMapper()
 private val meldekortkontrollMapper = MeldekortkontrollMapper()
 
 private const val personGroup = "Person"
