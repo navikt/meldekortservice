@@ -14,12 +14,8 @@ import no.nav.meldeplikt.meldekortservice.mapper.KontrollertTypeMapper
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.Meldekortkontroll
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.response.KontrollResponse
 import no.nav.meldeplikt.meldekortservice.utils.*
-import org.apache.http.NameValuePair
-import org.apache.http.client.entity.UrlEncodedFormEntity
-import org.apache.http.client.methods.CloseableHttpResponse
-import org.apache.http.client.methods.HttpPost
-import org.apache.http.impl.client.HttpClients
-import org.apache.http.message.BasicNameValuePair
+import org.bouncycastle.asn1.ua.DSTU4145NamedCurves.params
+import java.net.URLEncoder
 import java.util.*
 
 
@@ -55,6 +51,17 @@ class KontrollService(
     }
 
     private val kontrollClient: HttpClient = HttpClient {
+        engine {
+            response.apply {
+                charset(Charsets.UTF_8.displayName())
+            }
+        }
+        install(JsonFeature) {
+            serializer = JacksonSerializer() { objectMapper }
+        }
+    }
+
+    private val azureClient: HttpClient = HttpClient {
         engine {
             response.apply {
                 charset(Charsets.UTF_8.displayName())
@@ -103,27 +110,58 @@ class KontrollService(
         )
     }
 
-    private inline fun postForm(resource: Resource): AccessToken {
+    // application/x-www-form-urlencoded
+//
+//    private inline fun urlEncode(par: Parameters): String {
+//        val result = StringBuilder()
+//        var first = true
+//        for ((key, value) in params.entrySet()) {
+//            if (first) first = false else result.append("&")
+//            result.append(URLEncoder.encode(key, "UTF-8"))
+//            result.append("=")
+//            result.append(URLEncoder.encode(value, "UTF-8"))
+//        }
+//        return result.toString()
+//    }
+//
+    private suspend inline fun postForm(resource: Resource): AccessToken {
         val u = config.azureAd.openIdConfiguration.tokenEndpoint
         log.info("AAD Url: $u")
+        var p = Params.clientId+"="+env.oauthClientId
+        p+="&"+Params.clientSecret+"="+env.oauthClientSecret
+        p+="&"+Params.scope+"="+resource.formatScopes()
+        p+="&"+Params.grantType+"="+GrantType.clientCredentials
+        log.info("Body: $p")
+        val message = azureClient.post<AccessToken> {
+            url(u)
+            contentType(ContentType.Application.FormUrlEncoded)
+            body = p
+        }
+        log.info("Token: $message")
 
+        return message
+//
+////        conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+//        val httpPost: HttpPost = HttpPost(u)
+//        httpPost.setHeader(Params.clientId, env.oauthClientId);
+//        httpPost.setHeader(Params.clientSecret, env.oauthClientSecret);
+//        httpPost.setHeader(Params.scope, resource.formatScopes());
+//        httpPost.setHeader(Params.grantType, GrantType.clientCredentials);
+//        client..
+//
+//        val params: MutableList<NameValuePair> = ArrayList()
+//        params.add(BasicNameValuePair(Params.clientId, env.oauthClientId))
+//        params.add(BasicNameValuePair(Params.clientSecret, env.oauthClientSecret))
+//        params.add(BasicNameValuePair(Params.scope, resource.formatScopes()))
+//        params.add(BasicNameValuePair(Params.grantType, GrantType.clientCredentials))
+//        httpPost.entity = UrlEncodedFormEntity(params)
+//
 
-        val client = HttpClients.createDefault()
-
-        val httpPost: HttpPost = HttpPost(u)
-        val params: MutableList<NameValuePair> = ArrayList()
-        params.add(BasicNameValuePair(Params.clientId, env.oauthClientId))
-        params.add(BasicNameValuePair(Params.clientSecret, env.oauthClientSecret))
-        params.add(BasicNameValuePair(Params.scope, resource.formatScopes()))
-        params.add(BasicNameValuePair(Params.grantType, GrantType.clientCredentials))
-        httpPost.entity = UrlEncodedFormEntity(params)
-
-
-        val response: CloseableHttpResponse = client.execute(httpPost)
-//        assertThat(response.statusLine.statusCode, equalTo(200))
-        log.info("Response: $response")
-        client.close()
-        return AccessToken("0", 0, "0")
+//        val response: CloseableHttpResponse = client.execute(httpPost)
+////        assertThat(response.statusLine.statusCode, equalTo(200))
+//        log.info("Response: $response")
+//        client.close()
+//        return AccessToken("0", 0, "0")
     }
 
     internal object GrantType {
