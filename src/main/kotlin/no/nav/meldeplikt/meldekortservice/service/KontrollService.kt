@@ -52,16 +52,11 @@ class KontrollService(
         }
     }
 
-    private val httpClient = HttpClient(Apache) {
-        install(JsonFeature) {
-            serializer = JacksonSerializer() { objectMapper }
-        }
-    }
     suspend fun kontroller(meldekort: Meldekortkontroll): MeldekortKontrollertType {
         val message = kontrollClient.post<KontrollResponse> {
             url("${env.meldekortKontrollUrl}$KONTROLL_KONTROLL")
             contentType(ContentType.Application.Json)
-            header("Authorization", "Bearer " + hentAadToken())
+            header("Authorization", "Bearer " + hentAadToken().accessToken)
             body = meldekort
         }
         defaultLog.info(message.toString())
@@ -115,7 +110,6 @@ class KontrollService(
         }
         log.info("par: $par")
         return submitForm(par)
-//        return postForm(resource)
     }
 
     private suspend inline fun submitForm(formParameters: Parameters): AccessToken {
@@ -127,42 +121,28 @@ class KontrollService(
         )
     }
 
-    // application/x-www-form-urlencoded
+//    private suspend inline fun postForm(resource: Resource): AccessToken {
+//        val u = config.azureAd.openIdConfiguration.tokenEndpoint
+//        log.info("AAD Url: $u")
+//        var p = Params.clientId+"="+env.oauthClientId
+//        p+="&"+Params.clientSecret+"="+env.oauthClientSecret
+//        p+="&"+Params.scope+"="+resource.formatScopes()
+//        p+="&"+Params.grantType+"="+GrantType.clientCredentials
+//        log.info("Body: $p")
+//        val b2 = TextContent(mapper.writeValueAsString(p), contentType = ContentType.Application.FormUrlEncoded)
+//        log.info("Body2: $b2")
+//        val message = azureClient.post<AccessToken> {
+//            url(u)
+//            contentType(ContentType.Application.FormUrlEncoded)
+//            body = b2
 //
-//    private inline fun urlEncode(par: Parameters): String {
-//        val result = StringBuilder()
-//        var first = true
-//        for ((key, value) in params.entrySet()) {
-//            if (first) first = false else result.append("&")
-//            result.append(URLEncoder.encode(key, "UTF-8"))
-//            result.append("=")
-//            result.append(URLEncoder.encode(value, "UTF-8"))
+////            body = p
 //        }
-//        return result.toString()
-//    }
+//        log.info("Token: $message")
 //
-    private suspend inline fun postForm(resource: Resource): AccessToken {
-        val u = config.azureAd.openIdConfiguration.tokenEndpoint
-        log.info("AAD Url: $u")
-        var p = Params.clientId+"="+env.oauthClientId
-        p+="&"+Params.clientSecret+"="+env.oauthClientSecret
-        p+="&"+Params.scope+"="+resource.formatScopes()
-        p+="&"+Params.grantType+"="+GrantType.clientCredentials
-        log.info("Body: $p")
-        val b2 = TextContent(mapper.writeValueAsString(p), contentType = ContentType.Application.FormUrlEncoded)
-        log.info("Body2: $b2")
-        val message = azureClient.post<AccessToken> {
-            url(u)
-            contentType(ContentType.Application.FormUrlEncoded)
-            body = b2
-
-//            body = p
-        }
-        log.info("Token: $message")
-
-        return message
-
-    }
+//        return message
+//
+//    }
 
     internal object GrantType {
         const val clientCredentials = "client_credentials"
