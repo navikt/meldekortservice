@@ -52,6 +52,12 @@ class KontrollService(
         }
     }
 
+    private val httpClient = HttpClient(Apache) {
+        install(JsonFeature) {
+            serializer = JacksonSerializer() { objectMapper }
+        }
+    }
+    
     suspend fun kontroller(meldekort: Meldekortkontroll): MeldekortKontrollertType {
         val t = "Bearer " + hentAadToken().accessToken;
         log.info ("Header: "+t)
