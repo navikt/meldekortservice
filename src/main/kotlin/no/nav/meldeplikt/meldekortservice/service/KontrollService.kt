@@ -11,7 +11,9 @@ import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
 import no.nav.meldeplikt.meldekortservice.config.Environment
+import no.nav.meldeplikt.meldekortservice.config.KontrollServiceConfiguration
 import no.nav.meldeplikt.meldekortservice.config.cache
+import no.nav.meldeplikt.meldekortservice.config.defaultHttpClient
 import no.nav.meldeplikt.meldekortservice.mapper.KontrollertTypeMapper
 import no.nav.meldeplikt.meldekortservice.model.OrdsToken
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.response.KontrollResponse
@@ -19,7 +21,9 @@ import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.Melde
 import no.nav.meldeplikt.meldekortservice.utils.*
 import java.util.*
 
-class KontrollService {
+class KontrollService(
+    private val config: KontrollServiceConfiguration.AzureAd
+    ) {
 
     private val log = getLogger(KontrollService::class)
     private val env = Environment()
@@ -33,8 +37,6 @@ class KontrollService {
             serializer = JacksonSerializer() { objectMapper }
         }
     }
-//    private val httpClient: HttpClient = client
-
     suspend fun kontroller(meldekort: Meldekortkontroll): MeldekortKontrollertType {
         val message = kontrollClient.post<KontrollResponse> {
             url("${env.meldekortKontrollUrl}$KONTROLL_KONTROLL")
@@ -68,12 +70,12 @@ class KontrollService {
             log.info("Henter ikke token da appen kjører lokalt")
             AccessToken("lokalt", 0, "Lokal")
         }
-        defaultLog.info(ret.toString());
-        return ret;
+        defaultLog.info(ret.toString())
+        return ret
     }
 
     // Service-to-service access token request (client credentials grant)
-    suspend fun getAccessTokenForResource(resource: Resource): AccessToken {
+    private suspend fun getAccessTokenForResource(resource: Resource): AccessToken {
         val par = Parameters.build {
             append(Params.clientId, env.oauthClientId)
             append(Params.clientSecret, env.oauthClientSecret)
@@ -87,36 +89,16 @@ class KontrollService {
 
     private suspend inline fun submitForm(formParameters: Parameters): AccessToken =
         httpClient.submitForm(
-            url = "https://login.microsoftonline.com",
+            url = config.openIdConfiguration.tokenEndpoint,
             formParameters = formParameters
         )
 
-//    data class AzureAd(
-//        val clientId: String = "xxx",
-//        val clientSecret: String = "yyy",
-//        val tenant: String = "zzz",
-//        val authorityEndpoint: String = "oauthserver".removeSuffix("/"),
-//        val openIdConfiguration: AzureAdOpenIdConfiguration = runBlocking {
-//            httpClient.get<AzureAdOpenIdConfiguration>("$authorityEndpoint/$tenant/v2.0/.well-known/openid-configuration")
-//        }
-//    )
 
     internal object GrantType {
         const val clientCredentials = "client_credentials"
         const val jwt = "urn:ietf:params:oauth:grant-type:jwt-bearer"
     }
 
-    // Lese fra env
-    data class AzureAdOpenIdConfiguration(
-        @JsonProperty("jwks_uri")
-        val jwksUri: String,
-        @JsonProperty("issuer")
-        val issuer: String,
-        @JsonProperty("token_endpoint")
-        val tokenEndpoint: String,
-        @JsonProperty("authorization_endpoint")
-        val authorizationEndpoint: String
-    )
 
     data class AccessToken(
         @JsonProperty("access_token")
@@ -127,17 +109,17 @@ class KontrollService {
         val tokenType: String
     )
 
-    data class ThrowableErrorMessage(
-        val message: String,
-        val throwable: Throwable
-    ) {
-        fun toErrorResponse() = ErrorResponse(message, throwable.toString())
-    }
+//    data class ThrowableErrorMessage(
+//        val message: String,
+//        val throwable: Throwable
+//    ) {
+//        fun toErrorResponse() = ErrorResponse(message, throwable.toString())
+//    }
 
-    data class ErrorResponse(
-        val message: String,
-        val cause: String
-    )
+//    data class ErrorResponse(
+//        val message: String,
+//        val cause: String
+//    )
 
     internal object Params {
         const val assertion: String = "assertion"

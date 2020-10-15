@@ -12,13 +12,6 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 data class Environment(
-    val meldekortKontrollUrl: String = "https://meldekort-kontroll-q0.nais.preprod.local",
-    val meldekortKontrollClientid: String = "932822c2-3a7c-41d3-a900-d90f87f0ae22",
-
-    val oauthClientId: String = System.getenv("AZURE_CLIENT_ID"),
-    val oauthJwk: String = System.getenv("AZURE_JWK"),
-    val oauthClientSecret: String = System.getenv("AZURE_CLIENT_SECRET"),
-
     val username: String = getEnvVar("FSS_SYSTEMUSER_USERNAME", "username"),
     val password: String = getEnvVar("FSS_SYSTEMUSER_PASSWORD", "password"),
     val ameldingUrl: URL = URL(getEnvVar("AMELDING_URI", "https://dummyUrl.com/path")),
@@ -27,6 +20,18 @@ data class Environment(
     val ordsClientSecret: String = getEnvVar("CLIENT_SECRET", "cLiEnTsEcReT"),
     val securityTokenService: String = getEnvVar("SECURITYTOKENSERVICE", "https://dummyUrl.com"),
     val sakOgAktivitetUrl: String = getEnvVar("SAKOGAKTIVITET_URI", "https://dummyUrl.com"),
+
+    // Meldekort-kontroll
+    // TODO: trenger URL for alle miljøer
+    val meldekortKontrollUrl: String = "https://meldekort-kontroll-q0.nais.preprod.local",
+    val meldekortKontrollClientid: String = "932822c2-3a7c-41d3-a900-d90f87f0ae22",
+
+    // Azure AD
+    val oauthClientId: String = System.getenv("AZURE_CLIENT_ID"),
+    val oauthJwk: String = System.getenv("AZURE_JWK"),
+    val oauthClientSecret: String = System.getenv("AZURE_CLIENT_SECRET"),
+    val oauthEndpoint: String = "https://login.microsoftonline.com",
+    val oauthTenant: String = "966ac572-f5b7-4bbe-aa88-c76419c0f851",
 
     // PostgreSQL
     val dbHostPostgreSQL: String = getEnvVar("DB_HOST", "localhost:5432"),
