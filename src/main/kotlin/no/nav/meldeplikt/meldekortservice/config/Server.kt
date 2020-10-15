@@ -84,7 +84,7 @@ fun Application.mainModule(env: Environment = Environment()) {
         }
     )
     val arenaOrdsService = ArenaOrdsService()
-    val kontrollService = KontrollService()
+    val kontrollService = KontrollService(KontrollServiceConfiguration())
 
     install(DefaultHeaders)
 

@@ -22,7 +22,7 @@ import no.nav.meldeplikt.meldekortservice.utils.*
 import java.util.*
 
 class KontrollService(
-    private val config: KontrollServiceConfiguration.AzureAd
+    private val config: KontrollServiceConfiguration
     ) {
 
     private val log = getLogger(KontrollService::class)
@@ -89,7 +89,7 @@ class KontrollService(
 
     private suspend inline fun submitForm(formParameters: Parameters): AccessToken =
         httpClient.submitForm(
-            url = config.openIdConfiguration.tokenEndpoint,
+            url = config.azureAd.openIdConfiguration.tokenEndpoint,
             formParameters = formParameters
         )
 
