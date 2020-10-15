@@ -25,13 +25,13 @@ object Flyway {
 
     private fun createCorrectAdminDatasourceForEnvironment(env: Environment): DataSource {
         return when (isCurrentlyRunningOnNais()) {
-            true -> createDataSourceViaVault(env)
+            true -> createDataSourceViaVault()
             false -> createDataSourceForLocalDbWithAdminUser(env)
         }
     }
 
-    private fun createDataSourceViaVault(env: Environment): HikariDataSource {
-        return OracleDatabase.hikariDatasourceViaVault(env)
+    private fun createDataSourceViaVault(): HikariDataSource {
+        return OracleDatabase.hikariDatasourceViaVault()
     }
 
     private fun createDataSourceForLocalDbWithAdminUser(env: Environment): HikariDataSource {

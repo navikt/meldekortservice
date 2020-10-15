@@ -2,18 +2,20 @@ package no.nav.meldeplikt.meldekortservice.database
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import no.nav.meldeplikt.meldekortservice.config.Environment
+import no.nav.meldeplikt.meldekortservice.utils.DB_ORACLE_CONF
+import no.nav.meldeplikt.meldekortservice.utils.DB_ORACLE_PASSWORD
+import no.nav.meldeplikt.meldekortservice.utils.DB_ORACLE_USERNAME
 
-class OracleDatabase(env: Environment) : Database {
+class OracleDatabase : Database {
 
     private val envDataSource: HikariDataSource
 
     init {
-        envDataSource = createConnectionViaVaultWithDbUser(env)
+        envDataSource = createConnectionViaVaultWithDbUser()
     }
 
-    private fun createConnectionViaVaultWithDbUser(env: Environment): HikariDataSource {
-        return hikariDatasourceViaVault(env)
+    private fun createConnectionViaVaultWithDbUser(): HikariDataSource {
+        return hikariDatasourceViaVault()
     }
 
     override val dataSource: HikariDataSource
@@ -21,23 +23,25 @@ class OracleDatabase(env: Environment) : Database {
 
     companion object {
 
-        fun hikariDatasourceViaVault(env: Environment): HikariDataSource {
-            val config = hikariCommonConfig(env).apply {
-                username = env.dbUserOracle.username
-                password = env.dbUserOracle.password
+        fun hikariDatasourceViaVault(): HikariDataSource {
+            val config = hikariCommonConfig().apply {
+                username = System.getProperty(DB_ORACLE_USERNAME, "username")
+                password = System.getProperty(DB_ORACLE_PASSWORD, "password")
                 validate()
             }
             return HikariDataSource(config)
         }
 
-        private fun hikariCommonConfig(env: Environment): HikariConfig {
+        private fun hikariCommonConfig(): HikariConfig {
             return HikariConfig().apply {
                 driverClassName = "oracle.jdbc.OracleDriver"
-                jdbcUrl = env.dbConfOracle.jdbcUrl
+                jdbcUrl = System.getProperty(DB_ORACLE_CONF, "jdbcUrl")
                 isAutoCommit = false
-                connectionTimeout = 1000
+                connectionTimeout = 5000
                 maxLifetime = 30001
-                validationTimeout = 500
+                minimumIdle = 5
+                maximumPoolSize = 20
+                validationTimeout = 2500
             }
         }
     }
