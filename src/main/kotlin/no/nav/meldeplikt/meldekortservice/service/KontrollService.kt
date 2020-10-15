@@ -53,10 +53,12 @@ class KontrollService(
     }
 
     suspend fun kontroller(meldekort: Meldekortkontroll): MeldekortKontrollertType {
+        val t = "Bearer " + hentAadToken().accessToken;
+        log.info ("Header: "+t)
         val message = kontrollClient.post<KontrollResponse> {
             url("${env.meldekortKontrollUrl}$KONTROLL_KONTROLL")
             contentType(ContentType.Application.Json)
-            header("Authorization", "Bearer " + hentAadToken().accessToken)
+            header("Authorization", t)
             body = meldekort
         }
         defaultLog.info(message.toString())
@@ -100,7 +102,6 @@ class KontrollService(
         return ret
     }
 
-    // Service-to-service access token request (client credentials grant)
     private suspend fun getAccessTokenForResource(resource: Resource): AccessToken {
         val par = Parameters.build {
             append(Params.clientId, env.oauthClientId)
@@ -120,29 +121,6 @@ class KontrollService(
             formParameters = formParameters
         )
     }
-
-//    private suspend inline fun postForm(resource: Resource): AccessToken {
-//        val u = config.azureAd.openIdConfiguration.tokenEndpoint
-//        log.info("AAD Url: $u")
-//        var p = Params.clientId+"="+env.oauthClientId
-//        p+="&"+Params.clientSecret+"="+env.oauthClientSecret
-//        p+="&"+Params.scope+"="+resource.formatScopes()
-//        p+="&"+Params.grantType+"="+GrantType.clientCredentials
-//        log.info("Body: $p")
-//        val b2 = TextContent(mapper.writeValueAsString(p), contentType = ContentType.Application.FormUrlEncoded)
-//        log.info("Body2: $b2")
-//        val message = azureClient.post<AccessToken> {
-//            url(u)
-//            contentType(ContentType.Application.FormUrlEncoded)
-//            body = b2
-//
-////            body = p
-//        }
-//        log.info("Token: $message")
-//
-//        return message
-//
-//    }
 
     internal object GrantType {
         const val clientCredentials = "client_credentials"
