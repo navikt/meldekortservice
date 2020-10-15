@@ -92,6 +92,7 @@ class KontrollService(
         log.info("AAD Url: $u")
         return httpClient.submitForm(
             url = u,
+            method = HttpMethod.Post,
             formParameters = formParameters
         )
     }
