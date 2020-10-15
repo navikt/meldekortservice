@@ -1,6 +1,8 @@
 package no.nav.meldeplikt.meldekortservice.service
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.ktor.client.*
 import io.ktor.client.engine.apache.*
@@ -16,6 +18,8 @@ import no.nav.meldeplikt.meldekortservice.mapper.KontrollertTypeMapper
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.Meldekortkontroll
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.response.KontrollResponse
 import no.nav.meldeplikt.meldekortservice.utils.*
+import org.apache.http.impl.conn.SystemDefaultRoutePlanner
+import java.net.ProxySelector
 import java.util.*
 
 
@@ -35,6 +39,18 @@ class KontrollService(
         url = env.meldekortKontrollUrl
     )
 
+    internal val azureClient2 = HttpClient(Apache) {
+        install(JsonFeature) {
+            serializer = JacksonSerializer {
+                configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                setSerializationInclusion(JsonInclude.Include.NON_NULL)
+            }
+        }
+        engine {
+            customizeClient { setRoutePlanner(SystemDefaultRoutePlanner(ProxySelector.getDefault())) }
+        }
+    }
+
     private val httpClient = HttpClient(Apache) {
         install(JsonFeature) {
             serializer = JacksonSerializer() { objectMapper }
@@ -44,7 +60,7 @@ class KontrollService(
         val message = kontrollClient.post<KontrollResponse> {
             url("${env.meldekortKontrollUrl}$KONTROLL_KONTROLL")
             contentType(ContentType.Application.Json)
-            header("Authorization", "Bearer " + hentAadToken())
+            header("Authorization", "Bearer " + hentAadToken().accessToken)
             body = meldekort
         }
         defaultLog.info(message.toString())
@@ -97,17 +113,15 @@ class KontrollService(
             append(Params.grantType, GrantType.clientCredentials)
         }
         log.info("par: $par")
-//        return submitForm(par)
-        return postForm(resource)
+        return submitForm(par)
+//        return postForm(resource)
     }
 
     private suspend inline fun submitForm(formParameters: Parameters): AccessToken {
         val u = config.azureAd.openIdConfiguration.tokenEndpoint
         log.info("AAD Url: $u")
-        return httpClient.submitForm(
+        return azureClient2.submitForm(
             url = u,
-
-//            method = HttpMethod.Post,
             formParameters = formParameters
         )
     }
@@ -126,28 +140,28 @@ class KontrollService(
 //        return result.toString()
 //    }
 //
-    private suspend inline fun postForm(resource: Resource): AccessToken {
-        val u = config.azureAd.openIdConfiguration.tokenEndpoint
-        log.info("AAD Url: $u")
-        var p = Params.clientId+"="+env.oauthClientId
-        p+="&"+Params.clientSecret+"="+env.oauthClientSecret
-        p+="&"+Params.scope+"="+resource.formatScopes()
-        p+="&"+Params.grantType+"="+GrantType.clientCredentials
-        log.info("Body: $p")
-        val b2 = TextContent(mapper.writeValueAsString(p), contentType = ContentType.Application.FormUrlEncoded)
-        log.info("Body2: $b2")
-        val message = azureClient.post<AccessToken> {
-            url(u)
-            contentType(ContentType.Application.FormUrlEncoded)
-            body = b2
-
-//            body = p
-        }
-        log.info("Token: $message")
-
-        return message
-
-    }
+//    private suspend inline fun postForm(resource: Resource): AccessToken {
+//        val u = config.azureAd.openIdConfiguration.tokenEndpoint
+//        log.info("AAD Url: $u")
+//        var p = Params.clientId+"="+env.oauthClientId
+//        p+="&"+Params.clientSecret+"="+env.oauthClientSecret
+//        p+="&"+Params.scope+"="+resource.formatScopes()
+//        p+="&"+Params.grantType+"="+GrantType.clientCredentials
+//        log.info("Body: $p")
+//        val b2 = TextContent(mapper.writeValueAsString(p), contentType = ContentType.Application.FormUrlEncoded)
+//        log.info("Body2: $b2")
+//        val message = azureClient.post<AccessToken> {
+//            url(u)
+//            contentType(ContentType.Application.FormUrlEncoded)
+//            body = b2
+//
+////            body = p
+//        }
+//        log.info("Token: $message")
+//
+//        return message
+//
+//    }
 
     internal object GrantType {
         const val clientCredentials = "client_credentials"
