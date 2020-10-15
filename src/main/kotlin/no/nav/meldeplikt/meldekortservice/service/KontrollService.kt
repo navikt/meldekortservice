@@ -1,6 +1,8 @@
 package no.nav.meldeplikt.meldekortservice.service
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.ktor.client.*
 import io.ktor.client.engine.apache.*
@@ -16,6 +18,9 @@ import no.nav.meldeplikt.meldekortservice.mapper.KontrollertTypeMapper
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.Meldekortkontroll
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.response.KontrollResponse
 import no.nav.meldeplikt.meldekortservice.utils.*
+import org.apache.http.impl.conn.SystemDefaultRoutePlanner
+import java.net.ProxySelector
+import java.net.URLEncoder
 import java.util.*
 
 
@@ -34,6 +39,18 @@ class KontrollService(
         ClientId(env.meldekortKontrollClientid),
         url = env.meldekortKontrollUrl
     )
+
+    internal val azureHttpClient = HttpClient(Apache) {
+        install(JsonFeature) {
+            serializer = JacksonSerializer {
+                configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                setSerializationInclusion(JsonInclude.Include.NON_NULL)
+            }
+        }
+        engine {
+            customizeClient { setRoutePlanner(SystemDefaultRoutePlanner(ProxySelector.getDefault())) }
+        }
+    }
 
     private val httpClient = HttpClient(Apache) {
         install(JsonFeature) {
@@ -84,7 +101,7 @@ class KontrollService(
             log.info("Henter ikke token da appen kjører lokalt")
             AccessToken("lokalt", 0, "Lokal")
         }
-        defaultLog.info(ret.toString())
+        defaultLog.info("Return: "+ret.toString())
         return ret
     }
 
@@ -97,17 +114,15 @@ class KontrollService(
             append(Params.grantType, GrantType.clientCredentials)
         }
         log.info("par: $par")
-//        return submitForm(par)
-        return postForm(resource)
+        return submitForm(par)
+//        return postForm(resource)
     }
 
     private suspend inline fun submitForm(formParameters: Parameters): AccessToken {
         val u = config.azureAd.openIdConfiguration.tokenEndpoint
         log.info("AAD Url: $u")
-        return httpClient.submitForm(
+        return azureHttpClient.submitForm(
             url = u,
-
-//            method = HttpMethod.Post,
             formParameters = formParameters
         )
     }
