@@ -1,12 +1,14 @@
 package no.nav.meldeplikt.meldekortservice.service
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.ktor.client.*
 import io.ktor.client.engine.apache.*
 import io.ktor.client.features.json.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
+import io.ktor.http.content.*
 import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
 import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.config.KontrollServiceConfiguration
@@ -14,14 +16,14 @@ import no.nav.meldeplikt.meldekortservice.mapper.KontrollertTypeMapper
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.Meldekortkontroll
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.response.KontrollResponse
 import no.nav.meldeplikt.meldekortservice.utils.*
-import org.bouncycastle.asn1.ua.DSTU4145NamedCurves.params
-import java.net.URLEncoder
 import java.util.*
 
 
 class KontrollService(
     private val config: KontrollServiceConfiguration
 ) {
+
+    private val mapper = ObjectMapper()
 
     private val log = getLogger(KontrollService::class)
     private val env = Environment()
@@ -132,36 +134,19 @@ class KontrollService(
         p+="&"+Params.scope+"="+resource.formatScopes()
         p+="&"+Params.grantType+"="+GrantType.clientCredentials
         log.info("Body: $p")
+        val b2 = TextContent(mapper.writeValueAsString(p), contentType = ContentType.Application.FormUrlEncoded)
+        log.info("Body2: $b2")
         val message = azureClient.post<AccessToken> {
             url(u)
             contentType(ContentType.Application.FormUrlEncoded)
-            body = p
+            body = b2
+
+//            body = p
         }
         log.info("Token: $message")
 
         return message
-//
-////        conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-//        val httpPost: HttpPost = HttpPost(u)
-//        httpPost.setHeader(Params.clientId, env.oauthClientId);
-//        httpPost.setHeader(Params.clientSecret, env.oauthClientSecret);
-//        httpPost.setHeader(Params.scope, resource.formatScopes());
-//        httpPost.setHeader(Params.grantType, GrantType.clientCredentials);
-//        client..
-//
-//        val params: MutableList<NameValuePair> = ArrayList()
-//        params.add(BasicNameValuePair(Params.clientId, env.oauthClientId))
-//        params.add(BasicNameValuePair(Params.clientSecret, env.oauthClientSecret))
-//        params.add(BasicNameValuePair(Params.scope, resource.formatScopes()))
-//        params.add(BasicNameValuePair(Params.grantType, GrantType.clientCredentials))
-//        httpPost.entity = UrlEncodedFormEntity(params)
-//
 
-//        val response: CloseableHttpResponse = client.execute(httpPost)
-////        assertThat(response.statusLine.statusCode, equalTo(200))
-//        log.info("Response: $response")
-//        client.close()
-//        return AccessToken("0", 0, "0")
     }
 
     internal object GrantType {
