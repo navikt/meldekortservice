@@ -60,26 +60,30 @@ class KontrollService {
 
     // TODO: Cache
     private suspend fun hentAadToken(): AccessToken {
-//        log.info("Cache timet ut. Henter token")
+        log.info("Henter token")
 
-        return if (isCurrentlyRunningOnNais()) {
+        val ret = if (isCurrentlyRunningOnNais()) {
             getAccessTokenForResource(meldekortKontrollResource)
         } else {
             log.info("Henter ikke token da appen kjører lokalt")
             AccessToken("lokalt", 0, "Lokal")
         }
+        defaultLog.info(ret.toString());
+        return ret;
     }
 
     // Service-to-service access token request (client credentials grant)
-    suspend fun getAccessTokenForResource(resource: Resource): AccessToken =
-        submitForm(
-            Parameters.build {
-                append(Params.clientId, env.oauthClientId)
-                append(Params.clientSecret, env.oauthClientSecret)
-                append(Params.scope, resource.formatScopes())
-                append(Params.grantType, GrantType.clientCredentials)
-            }
-        )
+    suspend fun getAccessTokenForResource(resource: Resource): AccessToken {
+        val par = Parameters.build {
+            append(Params.clientId, env.oauthClientId)
+            append(Params.clientSecret, env.oauthClientSecret)
+            append(Params.scope, resource.formatScopes())
+            append(Params.grantType, GrantType.clientCredentials)
+        }
+        log.info("par: $par")
+        return submitForm(
+            par)
+    }
 
     private suspend inline fun submitForm(formParameters: Parameters): AccessToken =
         httpClient.submitForm(
