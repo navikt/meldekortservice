@@ -1,36 +1,41 @@
 package no.nav.meldeplikt.meldekortservice.service
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import io.ktor.client.HttpClient
+import io.ktor.client.*
 import io.ktor.client.engine.apache.*
-import io.ktor.client.features.json.JacksonSerializer
-import io.ktor.client.features.json.JsonFeature
+import io.ktor.client.features.json.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
-import kotlinx.coroutines.runBlocking
 import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
 import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.config.KontrollServiceConfiguration
-import no.nav.meldeplikt.meldekortservice.config.cache
-import no.nav.meldeplikt.meldekortservice.config.defaultHttpClient
 import no.nav.meldeplikt.meldekortservice.mapper.KontrollertTypeMapper
-import no.nav.meldeplikt.meldekortservice.model.OrdsToken
-import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.response.KontrollResponse
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.Meldekortkontroll
+import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.response.KontrollResponse
 import no.nav.meldeplikt.meldekortservice.utils.*
+import org.apache.http.NameValuePair
+import org.apache.http.client.entity.UrlEncodedFormEntity
+import org.apache.http.client.methods.CloseableHttpResponse
+import org.apache.http.client.methods.HttpPost
+import org.apache.http.impl.client.HttpClients
+import org.apache.http.message.BasicNameValuePair
 import java.util.*
+
 
 class KontrollService(
     private val config: KontrollServiceConfiguration
-    ) {
+) {
 
     private val log = getLogger(KontrollService::class)
     private val env = Environment()
     private val responseMapper = KontrollertTypeMapper()
 
     private val azureGraphClientId: ClientId = ClientId("https://graph.microsoft.com")
-    private val meldekortKontrollResource: Resource = Resource(ClientId(env.meldekortKontrollClientid), url = env.meldekortKontrollUrl)
+    private val meldekortKontrollResource: Resource = Resource(
+        ClientId(env.meldekortKontrollClientid),
+        url = env.meldekortKontrollUrl
+    )
 
     private val httpClient = HttpClient(Apache) {
         install(JsonFeature) {
@@ -41,7 +46,7 @@ class KontrollService(
         val message = kontrollClient.post<KontrollResponse> {
             url("${env.meldekortKontrollUrl}$KONTROLL_KONTROLL")
             contentType(ContentType.Application.Json)
-            header("Authorization", "Bearer "+hentAadToken())
+            header("Authorization", "Bearer " + hentAadToken())
             body = meldekort
         }
         defaultLog.info(message.toString())
@@ -83,8 +88,8 @@ class KontrollService(
             append(Params.grantType, GrantType.clientCredentials)
         }
         log.info("par: $par")
-        return submitForm(
-            par)
+//        return submitForm(par)
+        return postForm(resource)
     }
 
     private suspend inline fun submitForm(formParameters: Parameters): AccessToken {
@@ -92,11 +97,34 @@ class KontrollService(
         log.info("AAD Url: $u")
         return httpClient.submitForm(
             url = u,
-            method = HttpMethod.Post,
+
+//            method = HttpMethod.Post,
             formParameters = formParameters
         )
     }
 
+    private inline fun postForm(resource: Resource): AccessToken {
+        val u = config.azureAd.openIdConfiguration.tokenEndpoint
+        log.info("AAD Url: $u")
+
+
+        val client = HttpClients.createDefault()
+
+        val httpPost: HttpPost = HttpPost(u)
+        val params: MutableList<NameValuePair> = ArrayList()
+        params.add(BasicNameValuePair(Params.clientId, env.oauthClientId))
+        params.add(BasicNameValuePair(Params.clientSecret, env.oauthClientSecret))
+        params.add(BasicNameValuePair(Params.scope, resource.formatScopes()))
+        params.add(BasicNameValuePair(Params.grantType, GrantType.clientCredentials))
+        httpPost.entity = UrlEncodedFormEntity(params)
+
+
+        val response: CloseableHttpResponse = client.execute(httpPost)
+//        assertThat(response.statusLine.statusCode, equalTo(200))
+        log.info("Response: $response")
+        client.close()
+        return AccessToken("0", 0, "0")
+    }
 
     internal object GrantType {
         const val clientCredentials = "client_credentials"
