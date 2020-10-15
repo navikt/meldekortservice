@@ -57,10 +57,12 @@ class KontrollService(
         }
     }
     suspend fun kontroller(meldekort: Meldekortkontroll): MeldekortKontrollertType {
+        val b = "Bearer " + hentAadToken().accessToken
+        log.info("Header: "+b)
         val message = kontrollClient.post<KontrollResponse> {
             url("${env.meldekortKontrollUrl}$KONTROLL_KONTROLL")
             contentType(ContentType.Application.Json)
-            header("Authorization", "Bearer " + hentAadToken().accessToken)
+            header("Authorization", b)
             body = meldekort
         }
         defaultLog.info(message.toString())
