@@ -14,12 +14,16 @@ import no.nav.meldeplikt.meldekortservice.utils.getLogger
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import org.apache.http.impl.conn.SystemDefaultRoutePlanner
 import java.net.ProxySelector
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 class AadService (
     private val config: AadServiceConfiguration
 ){
     private val log = getLogger(KontrollService::class)
     private val env = Environment()
+    private var aadToken: String = ""
+    private var aadTokenExpires: LocalDate = LocalDate.now()
 
     private val meldekortKontrollResource: Resource = Resource(
         ClientId(env.meldekortKontrollClientid),
@@ -38,15 +42,20 @@ class AadService (
         }
     }
 
-    // TODO: Cache
-    suspend fun hentAadToken(): AccessToken {
-        return if (isCurrentlyRunningOnNais()) {
-            log.info("Henter nytt token fra AAD")
-            getAccessTokenForResource(meldekortKontrollResource)
-        } else {
-            log.info("Henter ikke token da appen kjører lokalt")
-            AccessToken("lokalt", 0, "Lokal")
+    suspend fun hentAadToken(): String {
+        if (aadTokenExpires.isBefore(LocalDate.now())) {
+            if (isCurrentlyRunningOnNais()) {
+                log.info("Henter nytt token fra AAD")
+                val token = getAccessTokenForResource(meldekortKontrollResource)
+                aadToken = token.accessToken
+                aadTokenExpires = LocalDate.now().plus(token.expiresIn.toLong(), ChronoUnit.SECONDS)
+            } else {
+                log.info("Henter ikke token da appen kjører lokalt")
+                aadToken = "Lokalt"
+                aadTokenExpires = LocalDate.now().plusYears(1L)
+            }
         }
+        return aadToken
     }
 
     // Service-to-service access token request (client credentials grant)
