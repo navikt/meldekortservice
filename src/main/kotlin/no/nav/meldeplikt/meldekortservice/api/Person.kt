@@ -126,26 +126,26 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
             defaultLog.info("Svar fra meldekort-kontroll: "+jsonMapper.writeValueAsString(kontrollResponse))
             if (kontrollResponse.arsakskoder.arsakskode.size > 0) defaultLog.info("Kontroll feilet i meldekort-kontroll: "+jsonMapper.writeValueAsString(kontrollResponse))
 
-            // Hvis dette gikk bra, send det til Amelding
-//            if (kontrollResponse.status == "OK") {
-//                defaultLog.info("Sender kort til Amelding")
-//                val ameldingResponse = SoapConfig.soapService().kontrollerMeldekort(meldekort)
-//                if (ameldingResponse.arsakskoder != null) defaultLog.info("Kontroll feilet i Amelding: "+jsonMapper.writeValueAsString(kontrollResponse))
-//
-//                if (ameldingResponse.status == "OK" && kontrollResponse.status == "OK") {
-//                    try {
-//                        innsendtMeldekortService.settInnInnsendtMeldekort(InnsendtMeldekort(ameldingResponse.meldekortId))
-//                    } catch (e: UnretriableDatabaseException) {
-//                        // Meldekort er sendt inn ok til baksystem, men det oppstår feil ved skriving til MIP-tabellen i databasen.
-//                        // Logger warning, og returnerer ok status til brukeren slik at den ikke forsøker å sende inn meldekortet på
-//                        // nytt (gir dubletter).
-//                        val errorMessage =
-//                            ErrorMessage("Meldekort med id ${meldekort.meldekortId} ble sendt inn, men klarte ikke å skrive til MIP-tabellen. ${e.message}")
-//                        defaultLog.warn(errorMessage.error, e)
-//                    }
-//                }
-//            }
-            call.respondText(jsonMapper.writeValueAsString(kontrollResponse), contentType = ContentType.Application.Json)
+            // Send kortet til Amelding (uansett om kontrollen gikk bra eller ikke)
+            defaultLog.info("Sender kort til Amelding")
+            val ameldingResponse = SoapConfig.soapService().kontrollerMeldekort(meldekort)
+            if (ameldingResponse.arsakskoder != null) defaultLog.info("Kontroll feilet i Amelding: "+jsonMapper.writeValueAsString(kontrollResponse))
+
+            if (ameldingResponse.status == "OK" && kontrollResponse.status == "OK") {
+                try {
+                    innsendtMeldekortService.settInnInnsendtMeldekort(InnsendtMeldekort(ameldingResponse.meldekortId))
+                } catch (e: UnretriableDatabaseException) {
+                    // Meldekort er sendt inn ok til baksystem, men det oppstår feil ved skriving til MIP-tabellen i databasen.
+                    // Logger warning, og returnerer ok status til brukeren slik at den ikke forsøker å sende inn meldekortet på
+                    // nytt (gir dubletter).
+                    val errorMessage =
+                        ErrorMessage("Meldekort med id ${meldekort.meldekortId} ble sendt inn, men klarte ikke å skrive til MIP-tabellen. ${e.message}")
+                    defaultLog.warn(errorMessage.error, e)
+                }
+            }
+            // Send responsen fra Amelding tilbake som respons
+            call.respondText(jsonMapper.writeValueAsString(ameldingResponse), contentType = ContentType.Application.Json)
+//            call.respondText(jsonMapper.writeValueAsString(kontrollResponse), contentType = ContentType.Application.Json)
         } catch (e: Exception) {
             val errorMessage =
                 ErrorMessage("Meldekort med id ${meldekort.meldekortId} ble ikke sendt inn. ${e.message}")
