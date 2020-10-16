@@ -24,8 +24,9 @@ data class Environment(
     val sakOgAktivitetUrl: String = getEnvVar("SAKOGAKTIVITET_URI", "https://dummyUrl.com"),
 
     // Meldekort-kontroll
-    // TODO: trenger URL for alle miljøer
-    val meldekortKontrollUrl: String = "https://meldekort-kontroll-q0.nais.preprod.local",
+    // TODO: Legge inn URL for meldekort-kontroll i prod i Vault, når URLen er kjent
+    // TODO: Eventuelt gjøre om dette slik at URLer hentes fra yaml-fil i stedet for Vault
+    val meldekortKontrollUrl: String = getEnvVar("KONTROLL_URI", "https://dummyUrl.com"),
     val meldekortKontrollClientid: String = "932822c2-3a7c-41d3-a900-d90f87f0ae22",
 
     // Azure AD
