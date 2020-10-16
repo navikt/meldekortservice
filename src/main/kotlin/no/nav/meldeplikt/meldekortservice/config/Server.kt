@@ -24,10 +24,7 @@ import no.nav.meldeplikt.meldekortservice.model.OrdsToken
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
 import no.nav.meldeplikt.meldekortservice.service.InnsendtMeldekortService
 import no.nav.meldeplikt.meldekortservice.service.KontrollService
-import no.nav.meldeplikt.meldekortservice.utils.SBL_ARBEID_PASSWORD
-import no.nav.meldeplikt.meldekortservice.utils.SBL_ARBEID_USERNAME
-import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
-import no.nav.meldeplikt.meldekortservice.utils.objectMapper
+import no.nav.meldeplikt.meldekortservice.utils.*
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Contact
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Information
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Swagger
@@ -79,7 +76,7 @@ fun Application.mainModule(env: Environment = Environment()) {
     setAppProperties(env)
     val innsendtMeldekortService = InnsendtMeldekortService(
         when (isCurrentlyRunningOnNais()) {
-            true -> OracleDatabase(env)
+            true -> OracleDatabase()
             false -> PostgreSqlDatabase(env)
         }
     )
@@ -116,10 +113,15 @@ fun Application.mainModule(env: Environment = Environment()) {
 private fun setAppProperties(environment: Environment) {
     val systemuser = hentVaultCredentials(environment.serviceUserKvPath)
     val srvSblArbeid = hentVaultCredentials(environment.srvSblArbeidPath)
+    val dbUserOracle = hentVaultCredentials(environment.dbUserOracleKvPath)
+    val dbConfOracle = hentVaultDbConfig(environment.dbConfOracleKvPath)
 
     setProperty(StsSecurityConstants.STS_URL_KEY, environment.securityTokenService, PUBLIC)
     setProperty(StsSecurityConstants.SYSTEMUSER_USERNAME, systemuser.username, PUBLIC)
     setProperty(StsSecurityConstants.SYSTEMUSER_PASSWORD, systemuser.password, SECRET)
     setProperty(SBL_ARBEID_USERNAME, srvSblArbeid.username, PUBLIC)
     setProperty(SBL_ARBEID_PASSWORD, srvSblArbeid.password, SECRET)
+    setProperty(DB_ORACLE_USERNAME, dbUserOracle.username, PUBLIC)
+    setProperty(DB_ORACLE_PASSWORD, dbUserOracle.password, SECRET)
+    setProperty(DB_ORACLE_CONF, dbConfOracle.jdbcUrl, PUBLIC)
 }
