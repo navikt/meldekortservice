@@ -3,9 +3,8 @@ package no.nav.meldeplikt.meldekortservice.config
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.ktor.client.request.get
 import kotlinx.coroutines.runBlocking
-import no.nav.meldeplikt.meldekortservice.service.KontrollService
 
-data class KontrollServiceConfiguration(
+data class AadServiceConfiguration(
     val azureAd: AzureAd = AzureAd()
 ) {
     data class AzureAd(

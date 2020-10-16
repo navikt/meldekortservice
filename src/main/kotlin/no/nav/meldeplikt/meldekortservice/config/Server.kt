@@ -70,6 +70,7 @@ val cache: Cache<String, OrdsToken> = CacheUtils.buildCache(CacheConfig.DEFAULT.
 
 const val SWAGGER_URL_V1 = "/meldekortservice/internal/apidocs/index.html?url=swagger.json"
 
+@io.ktor.locations.KtorExperimentalLocationsAPI
 fun Application.mainModule(env: Environment = Environment()) {
 
     DefaultExports.initialize()
@@ -81,7 +82,7 @@ fun Application.mainModule(env: Environment = Environment()) {
         }
     )
     val arenaOrdsService = ArenaOrdsService()
-    val kontrollService = KontrollService(KontrollServiceConfiguration())
+    val kontrollService = KontrollService()
 
     install(DefaultHeaders)
 
@@ -92,6 +93,7 @@ fun Application.mainModule(env: Environment = Environment()) {
     val conf = this.environment.config
     install(Authentication) {
         if (isCurrentlyRunningOnNais()) {
+
             tokenValidationSupport(config = conf)
         } else {
             provider { skipWhen { true } }

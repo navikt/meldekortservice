@@ -40,6 +40,7 @@ REST-controller for meldekort-api som tilbyr operasjoner for å hente:
 - Endre meldeform
 I tillegg til å sende inn/kontrollere meldekort.
  */
+@io.ktor.locations.KtorExperimentalLocationsAPI
 fun Routing.personApi(arenaOrdsService: ArenaOrdsService, innsendtMeldekortService: InnsendtMeldekortService, kontrollService: KontrollService) {
     getHistoriskeMeldekort(arenaOrdsService)
     getMeldekort(arenaOrdsService, innsendtMeldekortService)
@@ -55,9 +56,11 @@ private const val personGroup = "Person"
 
 @Group(personGroup)
 @Location("$PERSON_PATH/historiskemeldekort")
+@io.ktor.locations.KtorExperimentalLocationsAPI
 data class HistoriskeMeldekortInput(val antallMeldeperioder: Int)
 
 // Henter historiske meldekort
+@io.ktor.locations.KtorExperimentalLocationsAPI
 fun Routing.getHistoriskeMeldekort(arenaOrdsService: ArenaOrdsService) =
     get<HistoriskeMeldekortInput>(
         "Hent tidligerer/historiske meldekort".securityAndReponds(
@@ -77,9 +80,11 @@ fun Routing.getHistoriskeMeldekort(arenaOrdsService: ArenaOrdsService) =
 
 @Group(personGroup)
 @Location("$PERSON_PATH/meldekort")
+@io.ktor.locations.KtorExperimentalLocationsAPI
 class MeldekortInput
 
 // Henter meldekort
+@io.ktor.locations.KtorExperimentalLocationsAPI
 fun Routing.getMeldekort(arenaOrdsService: ArenaOrdsService, innsendtMeldekortService: InnsendtMeldekortService) =
     get<MeldekortInput>(
         "Hent meldekort".securityAndReponds(
@@ -104,6 +109,7 @@ fun Routing.getMeldekort(arenaOrdsService: ArenaOrdsService, innsendtMeldekortSe
     }
 
 // Innsending/kontroll av meldekort (Amelding)
+@io.ktor.locations.KtorExperimentalLocationsAPI
 fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortService, kontrollService: KontrollService) =
     post<MeldekortInput, Meldekortdetaljer>(
         "Kontroll/innsending av meldekort til Amelding".securityAndReponds(
@@ -150,9 +156,11 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
 
 @Group(personGroup)
 @Location("$PERSON_PATH/meldeform")
+@io.ktor.locations.KtorExperimentalLocationsAPI
 class MeldeformInput
 
 // Endre meldeform
+@io.ktor.locations.KtorExperimentalLocationsAPI
 fun Routing.endreMeldeform(arenaOrdsService: ArenaOrdsService) =
     post<MeldeformInput, Meldeform>(
         "Oppdater meldeform".securityAndReponds(

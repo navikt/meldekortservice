@@ -112,6 +112,7 @@ class Operation(
     }
 }
 
+@io.ktor.locations.KtorExperimentalLocationsAPI
 private fun setRequestBody(entityType: KClass<*>, locationType: KClass<*>, location: Location, metadata: Metadata, method: HttpMethod): Any? {
     if (method.value == "POST" || method.value == "PUT") {
         return mutableListOf<RequestBody>().apply {
@@ -132,6 +133,7 @@ private fun setRequestBody(entityType: KClass<*>, locationType: KClass<*>, locat
     }
 }
 
+@io.ktor.locations.KtorExperimentalLocationsAPI
 private fun setParameterList(entityType: KClass<*>, locationType: KClass<*>, location: Location, metadata: Metadata, method: HttpMethod): List<Parameter> {
     if (method.value == "GET" || method.value == "DELETE" || method.value == "HEAD") {
         return mutableListOf<Parameter>().apply {
@@ -179,6 +181,7 @@ private fun KClass<*>.bodyParameter() =
         `in` = ParameterInputType.body
     )
 
+@io.ktor.locations.KtorExperimentalLocationsAPI
 fun <T, R> KProperty1<T, R>.toRequestBody(
     path: String,
     inputType: ParameterInputType =

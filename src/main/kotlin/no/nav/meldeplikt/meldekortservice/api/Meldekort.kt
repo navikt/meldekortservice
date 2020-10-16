@@ -15,6 +15,7 @@ import no.nav.meldeplikt.meldekortservice.utils.swagger.*
 /**
 REST-controller for meldekort-api som tilbyr operasjoner for å hente meldekortdetaljer og korrigering for en NAV-bruker.
  */
+@io.ktor.locations.KtorExperimentalLocationsAPI
 fun Routing.meldekortApi(arenaOrdsService: ArenaOrdsService) {
     getMeldekortdetaljer(arenaOrdsService)
     getKorrigertMeldekort(arenaOrdsService)
@@ -24,9 +25,11 @@ private const val meldekortGroup = "Meldekort"
 
 @Group(meldekortGroup)
 @Location("$MELDEKORT_PATH")
+@io.ktor.locations.KtorExperimentalLocationsAPI
 data class MeldekortdetaljerInput(val meldekortId: Long)
 
 // Hent meldekortdetaljer
+@io.ktor.locations.KtorExperimentalLocationsAPI
 fun Routing.getMeldekortdetaljer(arenaOrdsService: ArenaOrdsService) =
     get<MeldekortdetaljerInput>(
         "Hent meldekortdetaljer".securityAndReponds(
@@ -50,9 +53,11 @@ fun Routing.getMeldekortdetaljer(arenaOrdsService: ArenaOrdsService) =
 
 @Group(meldekortGroup)
 @Location("$MELDEKORT_PATH/korrigering")
+@io.ktor.locations.KtorExperimentalLocationsAPI
 data class KorrigertMeldekortInput(val meldekortId: Long)
 
 // Henter meldekortid for nytt (korrigert) kort
+@io.ktor.locations.KtorExperimentalLocationsAPI
 fun Routing.getKorrigertMeldekort(arenaOrdsService: ArenaOrdsService) =
     get<KorrigertMeldekortInput>(
         "Hent korrigert meldekortid".securityAndReponds(
