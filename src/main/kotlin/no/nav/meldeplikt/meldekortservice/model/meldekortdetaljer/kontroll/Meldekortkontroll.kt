@@ -18,6 +18,7 @@ data class Meldekortkontroll constructor (
     var meldegruppe: String,
     var meldeperiode: MeldeperiodeInn,
     var fravaersdager: List<FravaerInn>,
-    var sporsmal: Sporsmal
+    var sporsmal: Sporsmal,
+    var begrunnelse: String?
 
 )

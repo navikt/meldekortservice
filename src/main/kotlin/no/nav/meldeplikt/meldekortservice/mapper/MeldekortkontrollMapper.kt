@@ -18,7 +18,8 @@ class MeldekortkontrollMapper {
             meldegruppe = trekkutMeldegruppe(meldekort),
             meldeperiode = trekkutMeldeperiode(meldekort),
             fravaersdager = trekkutFravaersdager(meldekort),
-            sporsmal = trekkutSporsmal(meldekort)
+            sporsmal = trekkutSporsmal(meldekort),
+            begrunnelse = meldekort.begrunnelse
         )
     }
 
