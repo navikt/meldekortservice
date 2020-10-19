@@ -28,7 +28,7 @@ class KontrollertTypeMapper {
 
     private fun trekkutArsakskoder(message: KontrollResponse): MeldekortKontrollertType.Arsakskoder {
         var uttrekk = MeldekortKontrollertType.Arsakskoder()
-        message.feil.forEach {
+        message.feilListe.forEach {
             var item = ArsakskodeType()
             item.kode = it.kode
             item.tekst = it.tekst
@@ -39,7 +39,7 @@ class KontrollertTypeMapper {
 
     private fun trekkutMeldekortDager(message: KontrollResponse): MeldekortKontrollertType.MeldekortDager {
         var uttrekk = MeldekortKontrollertType.MeldekortDager()
-        message.feil.forEach {
+        message.feilListe.forEach {
             var item = MeldekortDagType()
             item.dag = it.dag!!.toInt()
 //            item.meldegruppe = it.meldegruppe
