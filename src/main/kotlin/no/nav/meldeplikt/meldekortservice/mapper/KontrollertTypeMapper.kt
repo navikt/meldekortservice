@@ -41,7 +41,7 @@ class KontrollertTypeMapper {
         var uttrekk = MeldekortKontrollertType.MeldekortDager()
         message.feilListe.forEach {
             var item = MeldekortDagType()
-            item.dag = it.dag!!.toInt()
+            item.dag = it.dag!!
         }
         return uttrekk
     }
