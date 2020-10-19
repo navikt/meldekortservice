@@ -22,12 +22,12 @@ class KontrollService {
 
     suspend fun kontroller(meldekort: Meldekortkontroll): MeldekortKontrollertType {
 //        defaultLog.info("Header: "+hentAadToken().accessToken)
-        val tokenInfo = kontrollClient.get<Map<String, Object>> {
+        val tokenInfo = kontrollClient.get<String> {
             url("${env.meldekortKontrollUrl}$KONTROLL_TOKENINFO")
             contentType(ContentType.Application.Json)
             header("Authorization", aadService.hentAadToken())
         }
-        defaultLog.info("Tokeninfo: "+ jsonMapper.writeValueAsString(tokenInfo))
+        defaultLog.info("Tokeninfo: "+ tokenInfo)
         val message = kontrollClient.post<KontrollResponse> {
             url("${env.meldekortKontrollUrl}$KONTROLL_KONTROLL")
             contentType(ContentType.Application.Json)
