@@ -42,7 +42,6 @@ class KontrollertTypeMapper {
         message.feilListe.forEach {
             var item = MeldekortDagType()
             item.dag = it.dag!!.toInt()
-//            item.meldegruppe = it.meldegruppe
         }
         return uttrekk
     }
