@@ -40,6 +40,6 @@ fi
 # DB-config meldekortservice
 DB_CONFIG_MELDEKORTSERVICE_PATH=/secrets/dbconf/meldekortservicedbconf
 
-if [ -f DB_CONFIG_MELDEKORTSERVICE_PATH/jdbcUrl ]; then
-    export DB_CONFIG_MELDEKORTSERVICE_JDBCURL=$(cat DB_CONFIG_MELDEKORTSERVICE_PATH/jdbcUrl)
+if [ -f DB_CONFIG_MELDEKORTSERVICE_PATH/jdbc_url ]; then
+    export DB_CONFIG_MELDEKORTSERVICE_JDBCURL=$(cat DB_CONFIG_MELDEKORTSERVICE_PATH/jdbc_url)
 fi
