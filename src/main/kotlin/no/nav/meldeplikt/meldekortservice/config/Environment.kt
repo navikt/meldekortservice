@@ -3,8 +3,6 @@ package no.nav.meldeplikt.meldekortservice.config
 import java.net.URL
 
 data class Environment(
-//    val username: String = getEnvVar("FSS_SYSTEMUSER_USERNAME", "username"),
-//    val password: String = getEnvVar("FSS_SYSTEMUSER_PASSWORD", "password"),
     val ameldingUrl: URL = URL(getEnvVar("AMELDING_URI", "https://dummyUrl.com/path")),
     val ordsUrl: URL = URL(getEnvVar("ORDS_URI", "https://dummyUrl.com")),
     val ordsClientId: String = getEnvVar("CLIENT_ID", "cLiEnTiD"),
@@ -21,19 +19,19 @@ data class Environment(
 
     // Oracle
     val dbUserOracle: VaultCredentials = VaultCredentials(
-        getEnvVar("DB_USER_MELDEKORTSERVICE_USERNAME"),
-        getEnvVar("DB_USER_MELDEKORTSERVICE_PASSWORD")
+        getEnvVar("DB_USER_MELDEKORTSERVICE_USERNAME", "username"),
+        getEnvVar("DB_USER_MELDEKORTSERVICE_PASSWORD", "password")
     ),
-    val dbConfOracle: VaultDbConfig = VaultDbConfig(getEnvVar("DB_CONFIG_MELDEKORTSERVICE_JDBCURL")),
+    val dbConfOracle: VaultDbConfig = VaultDbConfig(getEnvVar("DB_CONFIG_MELDEKORTSERVICE_JDBCURL", "jdbcUrl")),
 
     // Serviceusers
     val srvMeldekortservice: VaultCredentials = VaultCredentials(
-        getEnvVar("SERVICEUSER_MELDEKORTSERVICE_USERNAME"),
-        getEnvVar("SERVICEUSER_MELDEKORTSERVICE_PASSWORD")
+        getEnvVar("SERVICEUSER_MELDEKORTSERVICE_USERNAME", "username"),
+        getEnvVar("SERVICEUSER_MELDEKORTSERVICE_PASSWORD", "password")
     ),
     val srvSblArbeid: VaultCredentials = VaultCredentials(
-        getEnvVar("SERVICEUSER_SBLARBEID_USERNAME"),
-        getEnvVar("SERVICEUSER_SBLARBEID_PASSWORD")
+        getEnvVar("SERVICEUSER_SBLARBEID_USERNAME", "username"),
+        getEnvVar("SERVICEUSER_SBLARBEID_PASSWORD", "password")
     )
 )
 
