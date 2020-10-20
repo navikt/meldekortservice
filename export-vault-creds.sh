@@ -5,6 +5,8 @@
 #
 
 # Serviceuser srvmeldekortservice
+SERVICEUSER_MELDEKORTSERVICE_PATH=/secrets/serviceuser/srvmeldekortservice
+
 if [ -f $SERVICEUSER_MELDEKORTSERVICE_PATH/username ]; then
     export SERVICEUSER_MELDEKORTSERVICE_USERNAME=$(cat $SERVICEUSER_MELDEKORTSERVICE_PATH/username)
 fi
