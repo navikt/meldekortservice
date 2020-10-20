@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #
 # Oppretter environmentvariabler for brukernavn/passord/config som lagres i Vault.
@@ -6,6 +6,12 @@
 
 # Serviceuser srvmeldekortservice
 SERVICEUSER_MELDEKORTSERVICE_PATH=/secrets/serviceuser/srvmeldekortservice
+if test -f SERVICEUSER_MELDEKORTSERVICE_PATH/username;
+then
+    echo setting env SERVICEUSER_MELDEKORTSERVICE_USERNAME
+    export SERVICEUSER_MELDEKORTSERVICE_USERNAME=$(cat SERVICEUSER_MELDEKORTSERVICE_PATH/username)
+fi
+echo $SERVICEUSER_MELDEKORTSERVICE_USERNAME
 
 if [ -f SERVICEUSER_MELDEKORTSERVICE_PATH/username ]; then
     echo "Setting SERVICEUSER_MELDEKORTSERVICE_USERNAME"
