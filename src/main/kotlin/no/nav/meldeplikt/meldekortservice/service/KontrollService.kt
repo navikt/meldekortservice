@@ -30,7 +30,7 @@ class KontrollService {
         val message = kontrollClient.post<KontrollResponse> {
             url("${env.meldekortKontrollUrl}$KONTROLL_KONTROLL")
             contentType(ContentType.Application.Json)
-            header("Authorization", "Bearer: "+aadService.hentAadToken())
+            header("Authorization", "Bearer "+aadService.hentAadToken())
             body = meldekort
         }
 //        defaultLog.info(message.toString())
