@@ -24,7 +24,7 @@ class KontrollService {
         val tokenInfo = kontrollClient.get<String> {
             url("${env.meldekortKontrollUrl}$KONTROLL_TOKENINFO")
             contentType(ContentType.Application.Json)
-            header("Authorization", "Bearer: "+aadService.hentAadToken())
+            header("Authorization", "Bearer "+aadService.hentAadToken())
         }
         defaultLog.info("Tokeninfo: "+ tokenInfo)
         val message = kontrollClient.post<KontrollResponse> {
