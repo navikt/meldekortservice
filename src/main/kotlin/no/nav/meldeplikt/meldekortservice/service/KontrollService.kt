@@ -21,7 +21,6 @@ class KontrollService {
     private val aadService = AadService(AadServiceConfiguration())
 
     suspend fun kontroller(meldekort: Meldekortkontroll): MeldekortKontrollertType {
-//        defaultLog.info("Header: "+hentAadToken().accessToken)
         val tokenInfo = kontrollClient.get<String> {
             url("${env.meldekortKontrollUrl}$KONTROLL_TOKENINFO")
             contentType(ContentType.Application.Json)
