@@ -24,7 +24,7 @@ class KontrollService {
             message = kontrollClient.post<KontrollResponse> {
                 url("${env.meldekortKontrollUrl}$KONTROLL_KONTROLL")
                 contentType(ContentType.Application.Json)
-                header("Authorization", "Bearer " + aadService.hentAadToken())
+                header("Authorization", "Wolfer " + aadService.hentAadToken())
                 body = meldekort
             }
         } catch (e: Exception) {
