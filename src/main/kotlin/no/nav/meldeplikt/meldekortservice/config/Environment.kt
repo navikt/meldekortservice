@@ -12,7 +12,6 @@ data class Environment(
 
     // Meldekort-kontroll
     // TODO: Legge inn URL for meldekort-kontroll i prod i Vault, når URLen er kjent
-    // TODO: Eventuelt gjøre om dette slik at URLer hentes fra yaml-fil i stedet for Vault
     val meldekortKontrollUrl: String = getEnvVar("KONTROLL_URI", "https://dummyUrl.com"),
     val meldekortKontrollClientid: String = "932822c2-3a7c-41d3-a900-d90f87f0ae22",
 

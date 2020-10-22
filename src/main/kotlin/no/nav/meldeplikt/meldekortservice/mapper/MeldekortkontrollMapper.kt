@@ -14,7 +14,7 @@ class MeldekortkontrollMapper {
         return Meldekortkontroll(
             meldekortId = meldekort.meldekortId,
             kortType = meldekort.kortType.name,
-            kortStatus = "SENDT", // TODO!
+            kortStatus = "SENDT", // TODO: Finn ut hvordan vi forholder oss til denne. Ligger ikke i request.
             meldegruppe = trekkutMeldegruppe(meldekort),
             meldeperiode = trekkutMeldeperiode(meldekort),
             fravaersdager = trekkutFravaersdager(meldekort),
@@ -24,7 +24,7 @@ class MeldekortkontrollMapper {
     }
 
     private fun trekkutMeldeperiode(meldekort: Meldekortdetaljer): MeldeperiodeInn {
-        val dagerFoer = 1L // TODO: Hent fra parameter
+        val dagerFoer = 1L // TODO: Hent fra parameter i database
         val fraD: LocalDate = ukeTilDato(meldekort.meldeperiode)
         return MeldeperiodeInn(
             fra = fraD,
@@ -68,13 +68,6 @@ class MeldekortkontrollMapper {
             signatur = meldekort.sporsmal?.signatur
         )
     }
-
-//    "MELDEGRUPPEKODE"             "MELDEGRUPPENAVN"             "NIVAA"                       "STATUS_VERDILISTE"
-//    "ARBS"                        "Ingen ytelser"               "0"                           "J"
-//    "FY"                          "Flere meldegrupper"          "0"                           "N"
-//    "INDIV"                       "Individstønad"               "1"                           "J"
-//    "ATTF"                        "Arbeidsavklaringspenger"     "2"                           "J"
-//    "DAGP"                        "Dagpenger"                   "3"                           "J"
 
     private fun trekkutMeldegruppe(meldekort: Meldekortdetaljer): String {
         var nivaa = 0;
