@@ -63,7 +63,7 @@ data class HistoriskeMeldekortInput(val antallMeldeperioder: Int)
 @io.ktor.locations.KtorExperimentalLocationsAPI
 fun Routing.getHistoriskeMeldekort(arenaOrdsService: ArenaOrdsService) =
     get<HistoriskeMeldekortInput>(
-        "Hent tidligerer/historiske meldekort".securityAndReponds(
+        "Hent tidligere/historiske meldekort".securityAndResponse(
             BearerTokenSecurity(),
             ok<Person>(),
             serviceUnavailable<ErrorMessage>(),
@@ -87,7 +87,7 @@ class MeldekortInput
 @io.ktor.locations.KtorExperimentalLocationsAPI
 fun Routing.getMeldekort(arenaOrdsService: ArenaOrdsService, innsendtMeldekortService: InnsendtMeldekortService) =
     get<MeldekortInput>(
-        "Hent meldekort".securityAndReponds(
+        "Hent meldekort".securityAndResponse(
             BearerTokenSecurity(),
             ok<Person>(),
             noContent<EmptyResponse>(),
@@ -112,7 +112,7 @@ fun Routing.getMeldekort(arenaOrdsService: ArenaOrdsService, innsendtMeldekortSe
 @io.ktor.locations.KtorExperimentalLocationsAPI
 fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortService, kontrollService: KontrollService) =
     post<MeldekortInput, Meldekortdetaljer>(
-        "Kontroll/innsending av meldekort til Amelding".securityAndReponds(
+        "Kontroll/innsending av meldekort til Amelding".securityAndResponse(
             BearerTokenSecurity(),
             ok<MeldekortKontrollertType>(),
             serviceUnavailable<ErrorMessage>(),
@@ -121,13 +121,13 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
     ) { meldekortInput: MeldekortInput, meldekort: Meldekortdetaljer ->
         try {
             // Send først kortet til kontroll i meldekort-kontroll
-            defaultLog.info("Sender til meldekort-kontroll: "+jsonMapper.writeValueAsString(meldekortkontrollMapper.mapMeldekortTilMeldekortkontroll(meldekort)))
+//            defaultLog.info("Sender til meldekort-kontroll: "+jsonMapper.writeValueAsString(meldekortkontrollMapper.mapMeldekortTilMeldekortkontroll(meldekort)))
             val kontrollResponse = kontrollService.kontroller(meldekort = meldekortkontrollMapper.mapMeldekortTilMeldekortkontroll(meldekort))
-            defaultLog.info("Svar fra meldekort-kontroll: "+jsonMapper.writeValueAsString(kontrollResponse))
+//            defaultLog.info("Svar fra meldekort-kontroll: "+jsonMapper.writeValueAsString(kontrollResponse))
             if (kontrollResponse.arsakskoder.arsakskode.size > 0) defaultLog.info("Kontroll feilet i meldekort-kontroll: "+jsonMapper.writeValueAsString(kontrollResponse))
 
             // Send kortet til Amelding (uansett om kontrollen gikk bra eller ikke)
-            defaultLog.info("Sender kort til Amelding: "+jsonMapper.writeValueAsString(meldekort))
+//            defaultLog.info("Sender kort til Amelding: "+jsonMapper.writeValueAsString(meldekort))
             val ameldingResponse = SoapConfig.soapService().kontrollerMeldekort(meldekort)
             if (ameldingResponse.arsakskoder != null) defaultLog.info("Kontroll feilet i Amelding: "+jsonMapper.writeValueAsString(kontrollResponse))
 
@@ -163,7 +163,7 @@ class MeldeformInput
 @io.ktor.locations.KtorExperimentalLocationsAPI
 fun Routing.endreMeldeform(arenaOrdsService: ArenaOrdsService) =
     post<MeldeformInput, Meldeform>(
-        "Oppdater meldeform".securityAndReponds(
+        "Oppdater meldeform".securityAndResponse(
             BearerTokenSecurity(),
             ok<Meldeperiode>(),
             serviceUnavailable<ErrorMessage>(),

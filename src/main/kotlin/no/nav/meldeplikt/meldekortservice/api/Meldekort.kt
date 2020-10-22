@@ -32,7 +32,7 @@ data class MeldekortdetaljerInput(val meldekortId: Long)
 @io.ktor.locations.KtorExperimentalLocationsAPI
 fun Routing.getMeldekortdetaljer(arenaOrdsService: ArenaOrdsService) =
     get<MeldekortdetaljerInput>(
-        "Hent meldekortdetaljer".securityAndReponds(
+        "Hent meldekortdetaljer".securityAndResponse(
             BearerTokenSecurity(),
             ok<Meldekortdetaljer>(),
             serviceUnavailable<ErrorMessage>(),
@@ -60,7 +60,7 @@ data class KorrigertMeldekortInput(val meldekortId: Long)
 @io.ktor.locations.KtorExperimentalLocationsAPI
 fun Routing.getKorrigertMeldekort(arenaOrdsService: ArenaOrdsService) =
     get<KorrigertMeldekortInput>(
-        "Hent korrigert meldekortid".securityAndReponds(
+        "Hent korrigert meldekortid".securityAndResponse(
             BearerTokenSecurity(),
             ok<String>(),
             serviceUnavailable<ErrorMessage>(),

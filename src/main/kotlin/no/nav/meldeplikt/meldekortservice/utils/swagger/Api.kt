@@ -78,7 +78,7 @@ fun <LOCATION : Any, BODY_TYPE : Any> Metadata.applyOperations(
 fun String.responds(vararg pairs: Pair<HttpStatusCode, KClass<*>>): Metadata =
         Metadata(responses = mapOf(*pairs), summary = this)
 
-fun String.securityAndReponds(security: Security, vararg pairs: Pair<HttpStatusCode, KClass<*>>): Metadata =
+fun String.securityAndResponse(security: Security, vararg pairs: Pair<HttpStatusCode, KClass<*>>): Metadata =
         Metadata(responses = mapOf(*pairs), summary = this, security = security)
 
 inline fun <reified T> ok(): Pair<HttpStatusCode, KClass<*>> = OK to T::class
