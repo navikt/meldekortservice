@@ -112,17 +112,12 @@ fun Application.mainModule(env: Environment = Environment()) {
 }
 
 private fun setAppProperties(environment: Environment) {
-    val systemuser = hentVaultCredentials(environment.serviceUserKvPath)
-    val srvSblArbeid = hentVaultCredentials(environment.srvSblArbeidPath)
-    val dbUserOracle = hentVaultCredentials(environment.dbUserOracleKvPath)
-    val dbConfOracle = hentVaultDbConfig(environment.dbConfOracleKvPath)
-
     setProperty(StsSecurityConstants.STS_URL_KEY, environment.securityTokenService, PUBLIC)
-    setProperty(StsSecurityConstants.SYSTEMUSER_USERNAME, systemuser.username, PUBLIC)
-    setProperty(StsSecurityConstants.SYSTEMUSER_PASSWORD, systemuser.password, SECRET)
-    setProperty(SBL_ARBEID_USERNAME, srvSblArbeid.username, PUBLIC)
-    setProperty(SBL_ARBEID_PASSWORD, srvSblArbeid.password, SECRET)
-    setProperty(DB_ORACLE_USERNAME, dbUserOracle.username, PUBLIC)
-    setProperty(DB_ORACLE_PASSWORD, dbUserOracle.password, SECRET)
-    setProperty(DB_ORACLE_CONF, dbConfOracle.jdbcUrl, PUBLIC)
+    setProperty(StsSecurityConstants.SYSTEMUSER_USERNAME, environment.srvMeldekortservice.username, PUBLIC)
+    setProperty(StsSecurityConstants.SYSTEMUSER_PASSWORD, environment.srvMeldekortservice.password, SECRET)
+    setProperty(SBL_ARBEID_USERNAME, environment.srvSblArbeid.username, PUBLIC)
+    setProperty(SBL_ARBEID_PASSWORD, environment.srvSblArbeid.password, SECRET)
+    setProperty(DB_ORACLE_USERNAME, environment.dbUserOracle.username, PUBLIC)
+    setProperty(DB_ORACLE_PASSWORD, environment.dbUserOracle.password, SECRET)
+    setProperty(DB_ORACLE_CONF, environment.dbConfOracle.jdbcUrl, PUBLIC)
 }
