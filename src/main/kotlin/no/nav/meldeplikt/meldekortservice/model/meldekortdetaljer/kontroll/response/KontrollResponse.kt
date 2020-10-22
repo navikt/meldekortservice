@@ -13,5 +13,5 @@ import java.time.LocalDate
 data class KontrollResponse constructor (
     var meldekortId: Long = 0,
     var status: String = "",
-    var feilListe: List<KontrollFeil>
+    var feilListe: List<KontrollFeil> = emptyList()
 )
