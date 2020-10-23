@@ -5,6 +5,7 @@ import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.Frava
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.Meldekortkontroll
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.MeldeperiodeInn
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.Sporsmal
+import no.nav.meldeplikt.meldekortservice.utils.defaultLog
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter.ISO_WEEK_DATE
 
@@ -70,11 +71,13 @@ class MeldekortkontrollMapper {
     }
 
     private fun trekkutMeldegruppe(meldekort: Meldekortdetaljer): String {
-        var nivaa = 0;
+        var nivaa = 0
         val meldegrupper: Array<String> = arrayOf("ARBS", "INDIV", "ATTF", "DAGP")
         meldekort.sporsmal?.meldekortDager?.forEach {
-            for (i in 1..3) {
-                if (it.meldegruppe == meldegrupper[i] && nivaa < i) nivaa = i
+            for (i in 0..3) {
+                if (it.meldegruppe.equals(meldegrupper[i]) && nivaa < i) {
+                    nivaa = i
+                }
             }
         }
         return meldegrupper[nivaa]
