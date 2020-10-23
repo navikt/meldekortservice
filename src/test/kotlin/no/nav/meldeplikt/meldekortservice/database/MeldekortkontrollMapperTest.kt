@@ -1,21 +1,14 @@
 package no.nav.meldeplikt.meldekortservice.database
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import no.nav.meldeplikt.meldekortservice.mapper.MeldekortkontrollMapper
 import no.nav.meldeplikt.meldekortservice.model.enum.KortType
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.MeldekortDag
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Sporsmal
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.FravaerInn
-import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.MeldeperiodeInn
-import no.nav.meldeplikt.meldekortservice.utils.LocalDateDeserializer
-import no.nav.meldeplikt.meldekortservice.utils.LocalDateSerializer
-import no.nav.meldeplikt.meldekortservice.utils.defaultLog
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import kotlin.test.assert
 
 class MeldekortkontrollMapperTest {
 

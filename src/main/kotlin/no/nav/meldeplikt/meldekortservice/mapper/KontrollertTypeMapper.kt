@@ -9,6 +9,7 @@ import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.Melde
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.MeldeperiodeInn
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.Sporsmal
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.response.KontrollResponse
+import no.nav.meldeplikt.meldekortservice.utils.defaultLog
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter.ISO_WEEK_DATE
 
@@ -42,6 +43,7 @@ class KontrollertTypeMapper {
         message.feilListe.forEach {
             var item = MeldekortDagType()
             item.dag = it.dag!!
+            uttrekk.meldekortDag.add(item)
         }
         return uttrekk
     }
