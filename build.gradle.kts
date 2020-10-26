@@ -66,6 +66,7 @@ buildscript {
 
 repositories {
     mavenCentral()
+    jcenter()
     maven("https://plugins.gradle.org/m2/")
 }
 
@@ -114,6 +115,7 @@ dependencies {
 
     testCompile("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testCompile(kotlin("test-junit5"))
+    testCompile("org.mockito:mockito-core:2.+")
     testImplementation("com.h2database:h2:$h2Version")
     testImplementation("org.amshove.kluent:kluent:$kluentVersion")
     testRuntime("org.junit.jupiter:junit-jupiter-engine:$junitVersion")

@@ -1,4 +1,4 @@
-package no.nav.meldeplikt.meldekortservice.database
+package no.nav.meldeplikt.meldekortservice.mapper
 
 import com.fasterxml.jackson.databind.json.JsonMapper
 import no.aetat.arena.mk_meldekort_kontrollert.ArsakskodeType

@@ -1,4 +1,4 @@
-package no.nav.meldeplikt.meldekortservice.database
+package no.nav.meldeplikt.meldekortservice.mapper
 
 import no.nav.meldeplikt.meldekortservice.mapper.MeldekortdetaljerMapper
 import no.nav.meldeplikt.meldekortservice.model.enum.KortType
