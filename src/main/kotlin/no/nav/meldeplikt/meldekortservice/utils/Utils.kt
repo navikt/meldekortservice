@@ -8,11 +8,10 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
-import io.ktor.application.ApplicationCall
-import io.ktor.application.call
-import io.ktor.http.HttpStatusCode
-import io.ktor.response.respond
-import io.ktor.util.pipeline.PipelineContext
+import io.ktor.application.*
+import io.ktor.http.*
+import io.ktor.response.*
+import io.ktor.util.pipeline.*
 import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 
 internal const val BASE_PATH = "/meldekortservice"
@@ -54,7 +53,7 @@ internal data class ErrorMessage(val error: String)
 
 internal class Error
 
-internal suspend fun PipelineContext<Unit, ApplicationCall>.respondOrError(block: suspend() -> Any) =
+internal suspend fun PipelineContext<Unit, ApplicationCall>.respondOrError(block: suspend () -> Any) =
     try {
         val res = block()
         call.respond(HttpStatusCode.OK, res)

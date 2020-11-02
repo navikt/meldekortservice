@@ -10,7 +10,8 @@ import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.mapper.KontrollertTypeMapper
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.Meldekortkontroll
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.response.KontrollResponse
-import no.nav.meldeplikt.meldekortservice.utils.*
+import no.nav.meldeplikt.meldekortservice.utils.KONTROLL_KONTROLL
+import no.nav.meldeplikt.meldekortservice.utils.objectMapper
 
 class KontrollService {
 
@@ -19,16 +20,11 @@ class KontrollService {
     private val aadService = AadService(AadServiceConfiguration())
 
     suspend fun kontroller(meldekort: Meldekortkontroll): MeldekortKontrollertType {
-        var message = KontrollResponse()
-        try {
-            message = kontrollClient.post<KontrollResponse> {
-                url("${env.meldekortKontrollUrl}$KONTROLL_KONTROLL")
-                contentType(ContentType.Application.Json)
-                header("Authorization", "Bearer " + aadService.hentAadToken())
-                body = meldekort
-            }
-        } catch (e: Exception) {
-            defaultLog.error("Kunne ikke sende meldekort til meldekort-kontroll: ", e)
+        var message = kontrollClient.post<KontrollResponse> {
+            url("${env.meldekortKontrollUrl}$KONTROLL_KONTROLL")
+            contentType(ContentType.Application.Json)
+            header("Authorization", "Bearer " + aadService.fetchAadToken())
+            body = meldekort
         }
         return responseMapper.mapKontrollResponseToKontrollertType(message)
     }

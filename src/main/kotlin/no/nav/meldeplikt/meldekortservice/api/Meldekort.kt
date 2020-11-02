@@ -1,21 +1,16 @@
 package no.nav.meldeplikt.meldekortservice.api
 
-import io.ktor.locations.Location
-import io.ktor.routing.Routing
+import io.ktor.locations.*
+import io.ktor.routing.*
 import no.nav.meldeplikt.meldekortservice.config.userIdent
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
 import no.nav.meldeplikt.meldekortservice.utils.*
-import no.nav.meldeplikt.meldekortservice.utils.Error
-import no.nav.meldeplikt.meldekortservice.utils.ErrorMessage
-import no.nav.meldeplikt.meldekortservice.utils.MELDEKORT_PATH
-import no.nav.meldeplikt.meldekortservice.utils.respondOrError
 import no.nav.meldeplikt.meldekortservice.utils.swagger.*
 
 /**
 REST-controller for meldekort-api som tilbyr operasjoner for å hente meldekortdetaljer og korrigering for en NAV-bruker.
  */
-@io.ktor.locations.KtorExperimentalLocationsAPI
 fun Routing.meldekortApi(arenaOrdsService: ArenaOrdsService) {
     getMeldekortdetaljer(arenaOrdsService)
     getKorrigertMeldekort(arenaOrdsService)
@@ -25,11 +20,11 @@ private const val meldekortGroup = "Meldekort"
 
 @Group(meldekortGroup)
 @Location("$MELDEKORT_PATH")
-@io.ktor.locations.KtorExperimentalLocationsAPI
+@KtorExperimentalLocationsAPI
 data class MeldekortdetaljerInput(val meldekortId: Long)
 
 // Hent meldekortdetaljer
-@io.ktor.locations.KtorExperimentalLocationsAPI
+@KtorExperimentalLocationsAPI
 fun Routing.getMeldekortdetaljer(arenaOrdsService: ArenaOrdsService) =
     get<MeldekortdetaljerInput>(
         "Hent meldekortdetaljer".securityAndResponse(
@@ -53,11 +48,11 @@ fun Routing.getMeldekortdetaljer(arenaOrdsService: ArenaOrdsService) =
 
 @Group(meldekortGroup)
 @Location("$MELDEKORT_PATH/korrigering")
-@io.ktor.locations.KtorExperimentalLocationsAPI
+@KtorExperimentalLocationsAPI
 data class KorrigertMeldekortInput(val meldekortId: Long)
 
 // Henter meldekortid for nytt (korrigert) kort
-@io.ktor.locations.KtorExperimentalLocationsAPI
+@KtorExperimentalLocationsAPI
 fun Routing.getKorrigertMeldekort(arenaOrdsService: ArenaOrdsService) =
     get<KorrigertMeldekortInput>(
         "Hent korrigert meldekortid".securityAndResponse(

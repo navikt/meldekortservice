@@ -2,36 +2,30 @@ package no.nav.meldeplikt.meldekortservice.api
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import io.ktor.application.call
-import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
-import io.ktor.locations.Location
-import io.ktor.response.respond
-import io.ktor.response.respondText
+import io.ktor.application.*
+import io.ktor.http.*
+import io.ktor.locations.*
+import io.ktor.response.*
 import io.ktor.routing.Routing
 import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
 import no.nav.meldeplikt.meldekortservice.config.SoapConfig
 import no.nav.meldeplikt.meldekortservice.config.userIdent
 import no.nav.meldeplikt.meldekortservice.mapper.MeldekortMapper
 import no.nav.meldeplikt.meldekortservice.mapper.MeldekortkontrollMapper
-import no.nav.meldeplikt.meldekortservice.model.response.EmptyResponse
 import no.nav.meldeplikt.meldekortservice.model.Meldeform
-import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.model.Meldeperiode
 import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
 import no.nav.meldeplikt.meldekortservice.model.database.feil.UnretriableDatabaseException
 import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
+import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
+import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.response.KontrollResponse
+import no.nav.meldeplikt.meldekortservice.model.response.EmptyResponse
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
 import no.nav.meldeplikt.meldekortservice.service.InnsendtMeldekortService
 import no.nav.meldeplikt.meldekortservice.service.KontrollService
 import no.nav.meldeplikt.meldekortservice.utils.*
-import no.nav.meldeplikt.meldekortservice.utils.Error
-import no.nav.meldeplikt.meldekortservice.utils.ErrorMessage
-import no.nav.meldeplikt.meldekortservice.utils.PERSON_PATH
-import no.nav.meldeplikt.meldekortservice.utils.respondOrError
 import no.nav.meldeplikt.meldekortservice.utils.swagger.*
-import no.nav.meldeplikt.meldekortservice.utils.swagger.Group
 
 /**
 REST-controller for meldekort-api som tilbyr operasjoner for å hente:
@@ -40,8 +34,12 @@ REST-controller for meldekort-api som tilbyr operasjoner for å hente:
 - Endre meldeform
 I tillegg til å sende inn/kontrollere meldekort.
  */
-@io.ktor.locations.KtorExperimentalLocationsAPI
-fun Routing.personApi(arenaOrdsService: ArenaOrdsService, innsendtMeldekortService: InnsendtMeldekortService, kontrollService: KontrollService) {
+@KtorExperimentalLocationsAPI
+fun Routing.personApi(
+    arenaOrdsService: ArenaOrdsService,
+    innsendtMeldekortService: InnsendtMeldekortService,
+    kontrollService: KontrollService
+) {
     getHistoriskeMeldekort(arenaOrdsService)
     getMeldekort(arenaOrdsService, innsendtMeldekortService)
     kontrollerMeldekort(innsendtMeldekortService, kontrollService)
@@ -56,11 +54,11 @@ private const val personGroup = "Person"
 
 @Group(personGroup)
 @Location("$PERSON_PATH/historiskemeldekort")
-@io.ktor.locations.KtorExperimentalLocationsAPI
+@KtorExperimentalLocationsAPI
 data class HistoriskeMeldekortInput(val antallMeldeperioder: Int)
 
 // Henter historiske meldekort
-@io.ktor.locations.KtorExperimentalLocationsAPI
+@KtorExperimentalLocationsAPI
 fun Routing.getHistoriskeMeldekort(arenaOrdsService: ArenaOrdsService) =
     get<HistoriskeMeldekortInput>(
         "Hent tidligere/historiske meldekort".securityAndResponse(
@@ -80,11 +78,11 @@ fun Routing.getHistoriskeMeldekort(arenaOrdsService: ArenaOrdsService) =
 
 @Group(personGroup)
 @Location("$PERSON_PATH/meldekort")
-@io.ktor.locations.KtorExperimentalLocationsAPI
+@KtorExperimentalLocationsAPI
 class MeldekortInput
 
 // Henter meldekort
-@io.ktor.locations.KtorExperimentalLocationsAPI
+@KtorExperimentalLocationsAPI
 fun Routing.getMeldekort(arenaOrdsService: ArenaOrdsService, innsendtMeldekortService: InnsendtMeldekortService) =
     get<MeldekortInput>(
         "Hent meldekort".securityAndResponse(
@@ -109,7 +107,7 @@ fun Routing.getMeldekort(arenaOrdsService: ArenaOrdsService, innsendtMeldekortSe
     }
 
 // Innsending/kontroll av meldekort (Amelding)
-@io.ktor.locations.KtorExperimentalLocationsAPI
+@KtorExperimentalLocationsAPI
 fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortService, kontrollService: KontrollService) =
     post<MeldekortInput, Meldekortdetaljer>(
         "Kontroll/innsending av meldekort til Amelding".securityAndResponse(
@@ -121,14 +119,29 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
     ) { meldekortInput: MeldekortInput, meldekort: Meldekortdetaljer ->
         try {
             // Send først kortet til kontroll i meldekort-kontroll. Foreløpig er dette kun for testformål og logging.
-            val kontrollResponse = kontrollService.kontroller(meldekort = meldekortkontrollMapper.mapMeldekortTilMeldekortkontroll(meldekort))
-            if (kontrollResponse.arsakskoder.arsakskode.size > 0) defaultLog.info("Kontroll feilet i meldekort-kontroll: "+jsonMapper.writeValueAsString(kontrollResponse))
+            val kontrollResponse = KontrollResponse()
+            try {
+                val kontrollResponse = kontrollService.kontroller(
+                    meldekort = meldekortkontrollMapper.mapMeldekortTilMeldekortkontroll(meldekort)
+                )
+                if (kontrollResponse.arsakskoder.arsakskode.size > 0) defaultLog.info(
+                    "Kontroll feilet i meldekort-kontroll: " + jsonMapper.writeValueAsString(
+                        kontrollResponse
+                    )
+                )
+            } catch (e: Exception) {
+                defaultLog.error("Kunne ikke sende meldekort til meldekort-kontroll: ", e)
+            }
 
-            // Send kortet til Amelding (uansett om kontrollen gikk bra eller ikke)
+            // Send kortet til Amelding (uansett om dkontrollen gikk bra eller ikke)
             val ameldingResponse = SoapConfig.soapService().kontrollerMeldekort(meldekort)
-            if (ameldingResponse.arsakskoder != null) defaultLog.info("Kontroll feilet i Amelding: "+jsonMapper.writeValueAsString(kontrollResponse))
+            if (ameldingResponse.arsakskoder != null) defaultLog.info(
+                "Kontroll feilet i Amelding: " + jsonMapper.writeValueAsString(
+                    kontrollResponse
+                )
+            )
 
-            if (ameldingResponse.status == "OK" && kontrollResponse.status == "OK") {
+            if (ameldingResponse.status == "OK") {
                 try {
                     innsendtMeldekortService.settInnInnsendtMeldekort(InnsendtMeldekort(ameldingResponse.meldekortId))
                 } catch (e: UnretriableDatabaseException) {
@@ -141,7 +154,10 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
                 }
             }
             // Send responsen fra Amelding tilbake som respons
-            call.respondText(jsonMapper.writeValueAsString(ameldingResponse), contentType = ContentType.Application.Json)
+            call.respondText(
+                jsonMapper.writeValueAsString(ameldingResponse),
+                contentType = ContentType.Application.Json
+            )
 //            call.respondText(jsonMapper.writeValueAsString(kontrollResponse), contentType = ContentType.Application.Json)
         } catch (e: Exception) {
             val errorMessage =
@@ -153,11 +169,11 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
 
 @Group(personGroup)
 @Location("$PERSON_PATH/meldeform")
-@io.ktor.locations.KtorExperimentalLocationsAPI
+@KtorExperimentalLocationsAPI
 class MeldeformInput
 
 // Endre meldeform
-@io.ktor.locations.KtorExperimentalLocationsAPI
+@KtorExperimentalLocationsAPI
 fun Routing.endreMeldeform(arenaOrdsService: ArenaOrdsService) =
     post<MeldeformInput, Meldeform>(
         "Oppdater meldeform".securityAndResponse(

@@ -3,15 +3,7 @@ package no.nav.meldeplikt.meldekortservice.mapper
 import no.aetat.arena.mk_meldekort_kontrollert.ArsakskodeType
 import no.aetat.arena.mk_meldekort_kontrollert.MeldekortDagType
 import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
-import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
-import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.FravaerInn
-import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.Meldekortkontroll
-import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.MeldeperiodeInn
-import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.Sporsmal
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.response.KontrollResponse
-import no.nav.meldeplikt.meldekortservice.utils.defaultLog
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter.ISO_WEEK_DATE
 
 class KontrollertTypeMapper {
 
@@ -20,7 +12,7 @@ class KontrollertTypeMapper {
         kontroll.meldekortId = message.meldekortId
         kontroll.arsakskoder = trekkutArsakskoder(message)
         kontroll.meldekortDager = trekkutMeldekortDager(message)
-        kontroll.status =  when (kontroll.arsakskoder.arsakskode.size) {
+        kontroll.status = when (kontroll.arsakskoder.arsakskode.size) {
             0 -> "OK"
             else -> "FEIL"
         }

@@ -1,7 +1,7 @@
 package no.nav.meldeplikt.meldekortservice.api
 
-import io.ktor.locations.Location
-import io.ktor.routing.Routing
+import io.ktor.locations.*
+import io.ktor.routing.*
 import no.nav.meldeplikt.meldekortservice.config.SoapConfig
 import no.nav.meldeplikt.meldekortservice.model.WeblogicPing
 import no.nav.meldeplikt.meldekortservice.utils.Error
@@ -10,18 +10,18 @@ import no.nav.meldeplikt.meldekortservice.utils.WEBLOGIC_PING_PATH
 import no.nav.meldeplikt.meldekortservice.utils.respondOrError
 import no.nav.meldeplikt.meldekortservice.utils.swagger.*
 
-@io.ktor.locations.KtorExperimentalLocationsAPI
+@KtorExperimentalLocationsAPI
 fun Routing.weblogicApi() {
     pingWeblogic()
 }
 
 @Group("Weblogic")
 @Location("$WEBLOGIC_PING_PATH")
-@io.ktor.locations.KtorExperimentalLocationsAPI
+@KtorExperimentalLocationsAPI
 class PingWeblogicInput
 
 // Endepunkt for ping av weblogic
-@io.ktor.locations.KtorExperimentalLocationsAPI
+@KtorExperimentalLocationsAPI
 fun Routing.pingWeblogic() =
     get<PingWeblogicInput>(
         "Ping av weblogic for å sjekke at Arena er oppe".responds(

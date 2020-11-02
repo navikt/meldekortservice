@@ -1,26 +1,13 @@
 package no.nav.meldeplikt.meldekortservice.mapper
 
-import com.fasterxml.jackson.databind.json.JsonMapper
-import no.aetat.arena.mk_meldekort_kontrollert.ArsakskodeType
 import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
-import no.nav.meldeplikt.meldekortservice.mapper.KontrollertTypeMapper
-import no.nav.meldeplikt.meldekortservice.mapper.MeldekortkontrollMapper
-import no.nav.meldeplikt.meldekortservice.model.enum.KortType
-import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.MeldekortDag
-import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
-import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Sporsmal
-import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.FravaerInn
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.response.KontrollFeil
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.response.KontrollResponse
-import no.nav.meldeplikt.meldekortservice.utils.defaultLog
 import org.junit.jupiter.api.Test
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import kotlin.test.assert
 
 class KontrollertTypeMapperTest {
 
-private val kontrollertTypeMapper = KontrollertTypeMapper()
+    private val kontrollertTypeMapper = KontrollertTypeMapper()
 
     @Test
     fun testMapKontrollResponseToKontrollertType() {

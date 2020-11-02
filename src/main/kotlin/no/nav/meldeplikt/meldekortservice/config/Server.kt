@@ -2,17 +2,15 @@ package no.nav.meldeplikt.meldekortservice.config
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.DeserializationFeature
-import io.ktor.application.Application
-import io.ktor.application.install
-import io.ktor.auth.Authentication
+import io.ktor.application.*
+import io.ktor.auth.*
 import io.ktor.client.*
 import io.ktor.client.engine.apache.*
 import io.ktor.client.features.json.*
-import io.ktor.features.ContentNegotiation
-import io.ktor.features.DefaultHeaders
-import io.ktor.jackson.jackson
-import io.ktor.locations.Locations
-import io.ktor.routing.Routing
+import io.ktor.features.*
+import io.ktor.jackson.*
+import io.ktor.locations.*
+import io.ktor.routing.*
 import io.prometheus.client.hotspot.DefaultExports
 import no.nav.cache.Cache
 import no.nav.cache.CacheConfig
@@ -64,6 +62,7 @@ internal val defaultHttpClient = HttpClient(Apache) {
 }
 
 private const val cacheAntallMinutter = 55
+
 // Årsaken til å multiplisere med 2 er at cache-implementasjonen dividerer timeout-verdien med 2...
 private const val cacheTimeout: Long = cacheAntallMinutter.toLong() * 60 * 1000 * 2
 val cache: Cache<String, OrdsToken> = CacheUtils.buildCache(CacheConfig.DEFAULT.withTimeToLiveMillis(cacheTimeout))

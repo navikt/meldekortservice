@@ -1,6 +1,5 @@
 package no.nav.meldeplikt.meldekortservice.mapper
 
-import no.nav.meldeplikt.meldekortservice.mapper.MeldekortdetaljerMapper
 import no.nav.meldeplikt.meldekortservice.model.enum.KortType
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.arena.Svar
@@ -10,10 +9,10 @@ import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.arena.verdi.St
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.arena.Meldekort as ArenaMeldekort
-import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.arena.Spm as ArenaSpm
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.arena.Hode as ArenaHode
+import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.arena.Meldekort as ArenaMeldekort
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.arena.MeldekortDag as ArenaMeldekortDag
+import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.arena.Spm as ArenaSpm
 
 class MeldekortdetaljerMapperTest {
 

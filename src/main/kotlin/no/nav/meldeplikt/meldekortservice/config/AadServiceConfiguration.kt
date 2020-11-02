@@ -1,7 +1,7 @@
 package no.nav.meldeplikt.meldekortservice.config
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import io.ktor.client.request.get
+import io.ktor.client.request.*
 import kotlinx.coroutines.runBlocking
 
 data class AadServiceConfiguration(

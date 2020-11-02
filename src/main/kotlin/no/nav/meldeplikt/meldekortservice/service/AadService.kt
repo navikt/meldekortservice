@@ -16,11 +16,12 @@ import org.apache.http.impl.conn.SystemDefaultRoutePlanner
 import java.net.ProxySelector
 import java.time.LocalDateTime
 
-class AadService (
+class AadService(
     private val config: AadServiceConfiguration
-){
+) {
     private val log = getLogger(KontrollService::class)
     private val env = Environment()
+    private val cacheSafetyMarginSeconds = 100
     private var aadToken: String = ""
     private var aadTokenExpires: LocalDateTime = LocalDateTime.now()
 
@@ -41,15 +42,17 @@ class AadService (
         }
     }
 
-    suspend fun hentAadToken(): String {
+    /**
+     * Returnerer forrige hentede token hvis det fortsatt er gyldig, ellers hentes nytt token
+     * som returneres.
+     */
+    suspend fun fetchAadToken(): String {
         if (aadTokenExpires.isBefore(LocalDateTime.now())) {
             if (isCurrentlyRunningOnNais()) {
                 log.info("Henter nytt token fra AAD")
                 val token = getAccessTokenForResource(meldekortKontrollResource)
                 aadToken = token.accessToken
-                aadTokenExpires = LocalDateTime.now().plusSeconds(token.expiresIn.toLong())
-//                log.info(aadToken)
-
+                aadTokenExpires = LocalDateTime.now().plusSeconds(token.expiresIn.toLong() - cacheSafetyMarginSeconds)
             } else {
                 log.info("Henter ikke token da appen kjører lokalt")
                 aadToken = "Lokalt"

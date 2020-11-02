@@ -58,7 +58,6 @@ object SoapConfig {
 
     fun sakOgAktivitet(): CXFClient<SakOgAktivitetV1> {
         val url = environment.sakOgAktivitetUrl
-//        log.info("URL for Oppfoelging_V1 er $url")
         return CXFClient(SakOgAktivitetV1::class.java)
             .withOutInterceptor(LoggingOutInterceptor())
             .address(url)
