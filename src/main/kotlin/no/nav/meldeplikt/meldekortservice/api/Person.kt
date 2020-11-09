@@ -12,10 +12,6 @@ import no.nav.meldeplikt.meldekortservice.config.SoapConfig
 import no.nav.meldeplikt.meldekortservice.config.userIdent
 import no.nav.meldeplikt.meldekortservice.mapper.MeldekortMapper
 import no.nav.meldeplikt.meldekortservice.mapper.MeldekortkontrollMapper
-import no.nav.meldeplikt.meldekortservice.model.Meldeform
-import no.nav.meldeplikt.meldekortservice.model.Meldeperiode
-import no.nav.meldeplikt.meldekortservice.model.response.EmptyResponse
-import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
 import no.nav.meldeplikt.meldekortservice.model.database.feil.UnretriableDatabaseException
 import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
