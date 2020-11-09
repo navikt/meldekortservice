@@ -32,7 +32,6 @@ internal const val ARENA_ORDS_HENT_HISTORISKE_MELDEKORT = "$ARENA_ORDS_API_V1/me
 internal const val ARENA_ORDS_MELDEPERIODER_PARAM = "&antMeldeperioder="
 internal const val ARENA_ORDS_HENT_MELDEKORTDETALJER = "$ARENA_ORDS_API_V1/meldekort/detaljer?meldekortId="
 internal const val ARENA_ORDS_KOPIER_MELDEKORT = "$ARENA_ORDS_API_V1/meldekort/kopi"
-internal const val ARENA_ORDS_ENDRE_MELDEFORM = "$ARENA_ORDS_API_V1/meldeform"
 
 internal const val SBL_ARBEID_USERNAME = "srvSBLArbeid.username"
 internal const val SBL_ARBEID_PASSWORD = "srvSBLArbeid.password"

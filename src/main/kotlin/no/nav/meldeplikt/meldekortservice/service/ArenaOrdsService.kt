@@ -74,16 +74,6 @@ class ArenaOrdsService {
         return mapFraXml(nyMeldekortId, KopierMeldekortResponse::class.java).meldekortId
     }
 
-    suspend fun endreMeldeform(fnr: String, meldeformNavn: String): Meldeperiode {
-        val meldeperiodeResponse = ordsClient.post<String>("${env.ordsUrl}$ARENA_ORDS_ENDRE_MELDEFORM") {
-            setupOrdsRequest()
-            headers.append("fnr", fnr)
-            headers.append("meldeform", meldeformNavn)
-        }
-
-        return mapFraXml(meldeperiodeResponse, Meldeperiode::class.java)
-    }
-
     private fun HttpRequestBuilder.setupOrdsRequest(meldekortId: Long? = null) {
         headers.append("Accept", "application/xml; charset=UTF-8")
         headers.append("Authorization", "Bearer ${hentToken().accessToken}")
