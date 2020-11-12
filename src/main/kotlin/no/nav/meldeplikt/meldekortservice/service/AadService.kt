@@ -69,15 +69,15 @@ class AadService(
 
     // Service-to-service access token request (client credentials grant)
     private suspend fun getAccessTokenForResource(resource: Resource): AccessToken {
-        log.info("Innhold til AAD: "
-                +Params.clientId+"="+env.oauthClientId+"&"
-                +Params.clientSecret+"="+env.oauthClientSecret+"&"
-                +Params.scope+"="+resource.formatScopes()+"&"
-                +Params.grantType+"="+GrantType.clientCredentials)
+//        log.info("Innhold til AAD: "
+//                +Params.clientId+"="+env.oauthClientId+"&"
+//                +Params.clientSecret+"="+env.oauthClientSecret+"&"
+//                +Params.scope+"="+resource.formatScopes()+"&"
+//                +Params.grantType+"="+GrantType.clientCredentials)
         return submitForm(Parameters.build {
             append(Params.clientId, env.oauthClientId)
             append(Params.clientSecret, env.oauthClientSecret)
-            append(Params.scope, resource.formatScopes())
+            append(Params.scope, env.oauthScope)
             append(Params.grantType, GrantType.clientCredentials)        })
     }
 

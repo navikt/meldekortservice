@@ -19,6 +19,7 @@ data class Environment(
     val oauthClientId: String = System.getenv("AZURE_CLIENT_ID"),
     val oauthJwk: String = System.getenv("AZURE_JWK"),
     val oauthClientSecret: String = System.getenv("AZURE_CLIENT_SECRET"),
+    val oauthScope: String = "https://graph.microsoft.com/.default",
     val oauthEndpoint: String = getEnvVar("KONTROLL_OAUTH_ENDPOINT"),
     val oauthTenant: String = getEnvVar("KONTROLL_OAUTH_TENANT_ID"),
 
