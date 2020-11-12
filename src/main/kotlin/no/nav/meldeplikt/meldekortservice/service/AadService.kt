@@ -47,6 +47,11 @@ class AadService(
      * som returneres.
      */
     suspend fun fetchAadToken(): String {
+        log.info("jwks: "+config.azureAd.openIdConfiguration.jwksUri)
+        log.info("token: "+config.azureAd.openIdConfiguration.tokenEndpoint)
+        log.info("issuer: "+config.azureAd.openIdConfiguration.issuer)
+        log.info("authEndpoint: "+config.azureAd.openIdConfiguration.authorizationEndpoint)
+
         if (aadTokenExpires.isBefore(LocalDateTime.now())) {
             if (isCurrentlyRunningOnNais()) {
                 log.info("Henter nytt token fra AAD")
