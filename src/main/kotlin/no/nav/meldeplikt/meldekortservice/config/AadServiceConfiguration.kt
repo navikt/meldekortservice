@@ -13,8 +13,8 @@ data class AadServiceConfiguration(
         val tenant: String = Environment().oauthTenant,
         val authorityEndpoint: String = Environment().oauthEndpoint.removeSuffix("/"),
         val openIdConfiguration: AzureAdOpenIdConfiguration = runBlocking {
-            defaultHttpClient.get<AzureAdOpenIdConfiguration>("https://navtestb2c.b2clogin.com/navtestb2c.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=B2C_1A_idporten_ver1")
-//            defaultHttpClient.get<AzureAdOpenIdConfiguration>("$authorityEndpoint/$tenant/v2.0/.well-known/openid-configuration")
+//            defaultHttpClient.get<AzureAdOpenIdConfiguration>("https://navtestb2c.b2clogin.com/navtestb2c.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=B2C_1A_idporten_ver1")
+            defaultHttpClient.get<AzureAdOpenIdConfiguration>("$authorityEndpoint/$tenant/v2.0/.well-known/openid-configuration")
         }
     )
 }
