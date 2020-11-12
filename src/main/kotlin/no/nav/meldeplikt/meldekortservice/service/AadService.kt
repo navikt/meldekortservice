@@ -47,16 +47,17 @@ class AadService(
      * som returneres.
      */
     suspend fun fetchAadToken(): String {
-        log.info("jwks: "+config.azureAd.openIdConfiguration.jwksUri)
-        log.info("token: "+config.azureAd.openIdConfiguration.tokenEndpoint)
-        log.info("issuer: "+config.azureAd.openIdConfiguration.issuer)
-        log.info("authEndpoint: "+config.azureAd.openIdConfiguration.authorizationEndpoint)
+        log.info("jwks: " + config.azureAd.openIdConfiguration.jwksUri)
+        log.info("token: " + config.azureAd.openIdConfiguration.tokenEndpoint)
+        log.info("issuer: " + config.azureAd.openIdConfiguration.issuer)
+        log.info("authEndpoint: " + config.azureAd.openIdConfiguration.authorizationEndpoint)
 
         if (aadTokenExpires.isBefore(LocalDateTime.now())) {
             if (isCurrentlyRunningOnNais()) {
                 log.info("Henter nytt token fra AAD")
                 val token = getAccessTokenForResource(meldekortKontrollResource)
                 aadToken = token.accessToken
+                log.info("Token mottatt: ")
                 aadTokenExpires = LocalDateTime.now().plusSeconds(token.expiresIn.toLong() - cacheSafetyMarginSeconds)
             } else {
                 log.info("Henter ikke token da appen kjører lokalt")
@@ -69,16 +70,19 @@ class AadService(
 
     // Service-to-service access token request (client credentials grant)
     private suspend fun getAccessTokenForResource(resource: Resource): AccessToken {
-//        log.info("Innhold til AAD: "
-//                +Params.clientId+"="+env.oauthClientId+"&"
-//                +Params.clientSecret+"="+env.oauthClientSecret+"&"
-//                +Params.scope+"="+resource.formatScopes()+"&"
-//                +Params.grantType+"="+GrantType.clientCredentials)
+        log.info(
+            "Innhold til AAD: "
+                    + Params.clientId + "=" + env.oauthClientId + "&"
+                    + Params.clientSecret + "=" + env.oauthClientSecret + "&"
+                    + Params.scope + "=" + "api://" + env.meldekortKontrollClientid + "/.default" + "&"
+                    + Params.grantType + "=" + GrantType.clientCredentials
+        )
         return submitForm(Parameters.build {
             append(Params.clientId, env.oauthClientId)
             append(Params.clientSecret, env.oauthClientSecret)
-            append(Params.scope, env.oauthScope)
-            append(Params.grantType, GrantType.clientCredentials)        })
+            append(Params.scope, "api://" + resource.clientId + "/.default")
+            append(Params.grantType, GrantType.clientCredentials)
+        })
     }
 
     private suspend inline fun submitForm(formParameters: Parameters): AccessToken {
