@@ -121,11 +121,13 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
                 val kontrollResponse = kontrollService.kontroller(
                     meldekort = meldekortkontrollMapper.mapMeldekortTilMeldekortkontroll(meldekort)
                 )
-                if (kontrollResponse.arsakskoder.arsakskode.size > 0) defaultLog.info(
-                    "Kontroll feilet i meldekort-kontroll: " + jsonMapper.writeValueAsString(
-                        kontrollResponse))
+                if (kontrollResponse.arsakskoder.arsakskode.size > 0) {
+                    defaultLog.info(
+                        "Kontroll feilet i meldekort-kontroll: " + jsonMapper.writeValueAsString(
+                            kontrollResponse))
                     defaultLog.info("Feilet meldekort i meldekortkontroll er: " + jsonMapper.writeValueAsString(
                             meldekort))
+                }
             } catch (e: Exception) {
                 defaultLog.error("Kunne ikke sende meldekort til meldekort-kontroll: ", e)
             }
