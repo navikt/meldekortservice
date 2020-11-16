@@ -45,6 +45,8 @@ plugins {
 
     id("org.flywaydb.flyway") version("5.2.4")
 
+    id("org.sonarqube") version "2.8"
+
     application
 }
 
@@ -138,6 +140,15 @@ configure<JavaPluginConvention> {
 
 application {
     mainClassName = "io.ktor.server.netty.EngineMain"
+}
+
+sonarqube {
+    properties {
+        property("sonar.projectKey", System.getenv("SONAR_PROJECT_KEY_MELDEKORTSERVICE"))
+        property("sonar.organization", "navit")
+        property("sonar.host.url", "https://sonarcloud.io")
+        property("sonar.login", System.getenv("SONAR_TOKEN_MELDEKORTSERVICE") )
+    }
 }
 
 tasks {
