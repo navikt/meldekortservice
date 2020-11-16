@@ -86,6 +86,12 @@ node {
             sh "gradle build"
         }
 
+        stage('SonarQube analysis') {
+          withSonarQubeEnv() {
+            sh './gradlew sonarqube'
+          }
+        }
+
         stage("Build & publish Docker image") {
             withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'nexusRepoUser', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
                 sh "echo ${PASSWORD} | docker login -u ${USERNAME} --password-stdin ${DOCKER_REPO}"
