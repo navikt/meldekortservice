@@ -17,6 +17,7 @@ import no.nav.meldeplikt.meldekortservice.model.database.feil.UnretriableDatabas
 import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
+import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.Meldekortkontroll
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.response.KontrollResponse
 import no.nav.meldeplikt.meldekortservice.model.response.EmptyResponse
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
@@ -122,20 +123,22 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
                 )
                 if (kontrollResponse.arsakskoder.arsakskode.size > 0) defaultLog.info(
                     "Kontroll feilet i meldekort-kontroll: " + jsonMapper.writeValueAsString(
-                        kontrollResponse
-                    )
-                )
+                        kontrollResponse))
+                    defaultLog.info("Feilet meldekort i meldekortkontroll er: " + jsonMapper.writeValueAsString(
+                            meldekort))
             } catch (e: Exception) {
                 defaultLog.error("Kunne ikke sende meldekort til meldekort-kontroll: ", e)
             }
 
             // Send kortet til Amelding (uansett om kontrollen gikk bra eller ikke)
             val ameldingResponse = SoapConfig.soapService().kontrollerMeldekort(meldekort)
-            if (ameldingResponse.arsakskoder != null) defaultLog.info(
-                "Kontroll feilet i Amelding: " + jsonMapper.writeValueAsString(
-                    ameldingResponse
-                )
-            )
+            if (ameldingResponse.arsakskoder != null) {
+                defaultLog.info(
+                    "Kontroll feilet i Amelding: " + jsonMapper.writeValueAsString(
+                        ameldingResponse))
+                defaultLog.info("Feilet meldekort i Amelding er: " + jsonMapper.writeValueAsString(
+                    maskerFnrIAmeldingMeldekort(meldekort)))
+            }
 
             if (ameldingResponse.status == "OK") {
                 try {
@@ -159,6 +162,14 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
             val errorMessage =
                 ErrorMessage("Meldekort med id ${meldekort.meldekortId} ble ikke sendt inn. ${e.message}")
             defaultLog.error(errorMessage.error, e)
+            defaultLog.info("Feilet meldekort i Amelding (exception) er: " + jsonMapper.writeValueAsString(
+                maskerFnrIAmeldingMeldekort(meldekort)))
             call.respond(status = HttpStatusCode.ServiceUnavailable, message = errorMessage)
         }
     }
+
+fun maskerFnrIAmeldingMeldekort(meldekort: Meldekortdetaljer): Meldekortdetaljer {
+    var maskertMeldekortdetaljer = meldekort
+    maskertMeldekortdetaljer.fodselsnr="XXX"
+    return maskertMeldekortdetaljer
+}
