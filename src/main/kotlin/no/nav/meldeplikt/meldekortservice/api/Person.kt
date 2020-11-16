@@ -133,7 +133,7 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
             val ameldingResponse = SoapConfig.soapService().kontrollerMeldekort(meldekort)
             if (ameldingResponse.arsakskoder != null) defaultLog.info(
                 "Kontroll feilet i Amelding: " + jsonMapper.writeValueAsString(
-                    kontrollResponse
+                    ameldingResponse
                 )
             )
 
