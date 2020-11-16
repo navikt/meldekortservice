@@ -12,7 +12,7 @@ import java.time.LocalDate
 data class Meldekortdetaljer @JvmOverloads constructor (
     val id: String? = "",
     val personId: Long = 0,
-    val fodselsnr: String = "",
+    var fodselsnr: String = "",
     val meldekortId: Long = 0,
     val meldeperiode: String = "",
     val arkivnokkel: String = "",
