@@ -5,5 +5,5 @@
 
     <groupId>no.nav.meldeplikt</groupId>
     <artifactId>meldekortservice</artifactId>
-    <version>1.3.12-SNAPSHOT</version>
+    <version>1.3.12</version>
 </project>
