@@ -14,9 +14,7 @@ import no.nav.meldeplikt.meldekortservice.config.SoapConfig
 import no.nav.meldeplikt.meldekortservice.config.userIdent
 import no.nav.meldeplikt.meldekortservice.mapper.MeldekortMapper
 import no.nav.meldeplikt.meldekortservice.model.response.EmptyResponse
-import no.nav.meldeplikt.meldekortservice.model.Meldeform
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
-import no.nav.meldeplikt.meldekortservice.model.Meldeperiode
 import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
 import no.nav.meldeplikt.meldekortservice.model.database.feil.UnretriableDatabaseException
 import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
@@ -35,14 +33,12 @@ import no.nav.meldeplikt.meldekortservice.utils.swagger.Group
 REST-controller for meldekort-api som tilbyr operasjoner for å hente:
 - Historiske meldekort
 - Meldekort
-- Endre meldeform
 I tillegg til å sende inn/kontrollere meldekort.
  */
 fun Routing.personApi(arenaOrdsService: ArenaOrdsService, innsendtMeldekortService: InnsendtMeldekortService) {
     getHistoriskeMeldekort(arenaOrdsService)
     getMeldekort(arenaOrdsService, innsendtMeldekortService)
     kontrollerMeldekort(innsendtMeldekortService)
-    endreMeldeform(arenaOrdsService)
 }
 
 private val xmlMapper = XmlMapper()
@@ -129,30 +125,6 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
         } catch (e: Exception) {
             val errorMessage =
                 ErrorMessage("Meldekort med id ${meldekort.meldekortId} ble ikke sendt inn. ${e.message}")
-            defaultLog.error(errorMessage.error, e)
-            call.respond(status = HttpStatusCode.ServiceUnavailable, message = errorMessage)
-        }
-    }
-
-@Group(personGroup)
-@Location("$PERSON_PATH/meldeform")
-class MeldeformInput
-
-// Endre meldeform
-fun Routing.endreMeldeform(arenaOrdsService: ArenaOrdsService) =
-    post<MeldeformInput, Meldeform>(
-        "Oppdater meldeform".securityAndReponds(
-            BearerTokenSecurity(),
-            ok<Meldeperiode>(),
-            serviceUnavailable<ErrorMessage>(),
-            unAuthorized<Error>()
-        )
-    ) { _, meldeform ->
-        try {
-            val meldeperiode = arenaOrdsService.endreMeldeform(userIdent, meldeform.meldeformNavn)
-            call.respond(meldeperiode)
-        } catch (e: Exception) {
-            val errorMessage = ErrorMessage("Kunne ikke endre meldeform til ${meldeform.meldeformNavn}. ${e.message}")
             defaultLog.error(errorMessage.error, e)
             call.respond(status = HttpStatusCode.ServiceUnavailable, message = errorMessage)
         }
