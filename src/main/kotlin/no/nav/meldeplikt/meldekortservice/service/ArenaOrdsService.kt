@@ -1,13 +1,9 @@
 package no.nav.meldeplikt.meldekortservice.service
 
-import io.ktor.client.HttpClient
-import io.ktor.client.call.call
-import io.ktor.client.call.receive
-import io.ktor.client.features.json.JacksonSerializer
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.get
-import io.ktor.client.request.post
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.features.json.*
+import io.ktor.client.request.*
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.config.cache
@@ -29,14 +25,14 @@ class ArenaOrdsService {
 
     private val env = Environment()
 
-    private val ordsClient: HttpClient = HttpClient() {
+    private val ordsClient: HttpClient = HttpClient {
         engine {
             response.apply {
                 charset(Charsets.UTF_8.displayName())
             }
         }
         install(JsonFeature) {
-            serializer = JacksonSerializer() { objectMapper }
+            serializer = JacksonSerializer { objectMapper }
         }
     }
 
@@ -52,35 +48,35 @@ class ArenaOrdsService {
     }
 
     suspend fun hentHistoriskeMeldekort(fnr: String, antallMeldeperioder: Int): Person {
-        val person =ordsClient.get<String>(
-                "${env.ordsUrl}$ARENA_ORDS_HENT_HISTORISKE_MELDEKORT$fnr" +
-                        "$ARENA_ORDS_MELDEPERIODER_PARAM$antallMeldeperioder"
-            ) {
-                setupOrdsRequest()
-            }
+        val person = ordsClient.get<String>(
+            "${env.ordsUrl}$ARENA_ORDS_HENT_HISTORISKE_MELDEKORT$fnr" +
+                    "$ARENA_ORDS_MELDEPERIODER_PARAM$antallMeldeperioder"
+        ) {
+            setupOrdsRequest()
+        }
 
         return mapFraXml(person, Person::class.java)
     }
 
     suspend fun hentMeldekortdetaljer(meldekortId: Long): Meldekortdetaljer {
         val detaljer = ordsClient.get<String>("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORTDETALJER$meldekortId") {
-                setupOrdsRequest()
-            }
+            setupOrdsRequest()
+        }
 
         return MeldekortdetaljerMapper.mapOrdsMeldekortTilMeldekortdetaljer(mapFraXml(detaljer, Meldekort::class.java))
     }
 
     suspend fun kopierMeldekort(meldekortId: Long): Long {
         val nyMeldekortId = ordsClient.post<String>("${env.ordsUrl}$ARENA_ORDS_KOPIER_MELDEKORT") {
-                setupOrdsRequest(meldekortId)
-            }
+            setupOrdsRequest(meldekortId)
+        }
 
         return mapFraXml(nyMeldekortId, KopierMeldekortResponse::class.java).meldekortId
     }
 
     private fun HttpRequestBuilder.setupOrdsRequest(meldekortId: Long? = null) {
         headers.append("Accept", "application/xml; charset=UTF-8")
-        headers.append("Authorization","Bearer ${hentToken().accessToken}")
+        headers.append("Authorization", "Bearer ${hentToken().accessToken}")
         if (meldekortId != null) {
             headers.append("meldekortId", meldekortId.toString())
         }

@@ -1,13 +1,16 @@
 package no.nav.meldeplikt.meldekortservice.config
 
-import io.ktor.application.Application
-import io.ktor.application.install
-import io.ktor.auth.Authentication
-import io.ktor.features.ContentNegotiation
-import io.ktor.features.DefaultHeaders
-import io.ktor.jackson.jackson
-import io.ktor.locations.Locations
-import io.ktor.routing.Routing
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.databind.DeserializationFeature
+import io.ktor.application.*
+import io.ktor.auth.*
+import io.ktor.client.*
+import io.ktor.client.engine.apache.*
+import io.ktor.client.features.json.*
+import io.ktor.features.*
+import io.ktor.jackson.*
+import io.ktor.locations.*
+import io.ktor.routing.*
 import io.prometheus.client.hotspot.DefaultExports
 import no.nav.cache.Cache
 import no.nav.cache.CacheConfig
@@ -18,6 +21,7 @@ import no.nav.meldeplikt.meldekortservice.database.PostgreSqlDatabase
 import no.nav.meldeplikt.meldekortservice.model.OrdsToken
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
 import no.nav.meldeplikt.meldekortservice.service.InnsendtMeldekortService
+import no.nav.meldeplikt.meldekortservice.service.KontrollService
 import no.nav.meldeplikt.meldekortservice.utils.*
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Contact
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Information
@@ -27,6 +31,8 @@ import no.nav.sbl.util.EnvironmentUtils.Type.PUBLIC
 import no.nav.sbl.util.EnvironmentUtils.Type.SECRET
 import no.nav.sbl.util.EnvironmentUtils.setProperty
 import no.nav.security.token.support.ktor.tokenValidationSupport
+import org.apache.http.impl.conn.SystemDefaultRoutePlanner
+import java.net.ProxySelector
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -43,7 +49,20 @@ val swagger = Swagger(
     )
 )
 
+internal val defaultHttpClient = HttpClient(Apache) {
+    install(JsonFeature) {
+        serializer = JacksonSerializer {
+            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            setSerializationInclusion(JsonInclude.Include.NON_NULL)
+        }
+    }
+    engine {
+        customizeClient { setRoutePlanner(SystemDefaultRoutePlanner(ProxySelector.getDefault())) }
+    }
+}
+
 private const val cacheAntallMinutter = 55
+
 // Årsaken til å multiplisere med 2 er at cache-implementasjonen dividerer timeout-verdien med 2...
 private const val cacheTimeout: Long = cacheAntallMinutter.toLong() * 60 * 1000 * 2
 val cache: Cache<String, OrdsToken> = CacheUtils.buildCache(CacheConfig.DEFAULT.withTimeToLiveMillis(cacheTimeout))
@@ -61,6 +80,7 @@ fun Application.mainModule(env: Environment = Environment()) {
         }
     )
     val arenaOrdsService = ArenaOrdsService()
+    val kontrollService = KontrollService()
 
     install(DefaultHeaders)
 
@@ -71,6 +91,7 @@ fun Application.mainModule(env: Environment = Environment()) {
     val conf = this.environment.config
     install(Authentication) {
         if (isCurrentlyRunningOnNais()) {
+
             tokenValidationSupport(config = conf)
         } else {
             provider { skipWhen { true } }
@@ -84,7 +105,7 @@ fun Application.mainModule(env: Environment = Environment()) {
         swaggerRoutes()
         weblogicApi()
         meldekortApi(arenaOrdsService)
-        personApi(arenaOrdsService, innsendtMeldekortService)
+        personApi(arenaOrdsService, innsendtMeldekortService, kontrollService)
     }
     Flyway.runFlywayMigrations(env)
 }

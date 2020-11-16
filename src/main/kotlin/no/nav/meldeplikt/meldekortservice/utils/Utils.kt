@@ -8,11 +8,10 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
-import io.ktor.application.ApplicationCall
-import io.ktor.application.call
-import io.ktor.http.HttpStatusCode
-import io.ktor.response.respond
-import io.ktor.util.pipeline.PipelineContext
+import io.ktor.application.*
+import io.ktor.http.*
+import io.ktor.response.*
+import io.ktor.util.pipeline.*
 import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 
 internal const val BASE_PATH = "/meldekortservice"
@@ -23,6 +22,8 @@ internal const val INTERNAL_PATH = "$BASE_PATH/internal"
 internal const val MELDEKORT_PATH = "$API_PATH/meldekort"
 internal const val PERSON_PATH = "$API_PATH/person"
 internal const val WEBLOGIC_PING_PATH = "$API_PATH/weblogic"
+
+internal const val KONTROLL_KONTROLL = "/api/kontroll"
 
 internal const val ARENA_ORDS_API_V1 = "/api/v1/meldeplikt"
 internal const val ARENA_ORDS_TOKEN_PATH = "/api/oauth/token"
@@ -51,7 +52,7 @@ internal data class ErrorMessage(val error: String)
 
 internal class Error
 
-internal suspend fun PipelineContext<Unit, ApplicationCall>.respondOrError(block: suspend() -> Any) =
+internal suspend fun PipelineContext<Unit, ApplicationCall>.respondOrError(block: suspend () -> Any) =
     try {
         val res = block()
         call.respond(HttpStatusCode.OK, res)
