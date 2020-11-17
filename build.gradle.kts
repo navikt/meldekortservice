@@ -144,13 +144,8 @@ application {
     mainClassName = "io.ktor.server.netty.EngineMain"
 }
 
-sonarqube {
-    properties {
-        property("sonar.projectKey", System.getenv("SONAR_PROJECT_KEY_MELDEKORTSERVICE"))
-        property("sonar.organization", "navit")
-        property("sonar.host.url", "https://sonarcloud.io")
-        property("sonar.login", System.getenv("SONAR_TOKEN_MELDEKORTSERVICE") )
-    }
+jacoco {
+    toolVersion = "0.8.4"
 }
 
 tasks {
@@ -189,4 +184,24 @@ tasks {
         main = application.mainClassName
         classpath = sourceSets["main"].runtimeClasspath
     }
+
+    sonarqube {
+        properties {
+            property("sonar.projectKey", System.getenv("SONAR_PROJECT_KEY_MELDEKORTSERVICE"))
+            property("sonar.organization", "navit")
+            property("sonar.host.url", "https://sonarcloud.io")
+            property("sonar.login", System.getenv("SONAR_TOKEN_MELDEKORTSERVICE") )
+            property("sonar.java.coveragePlugin", "jacoco")
+        }
+    }
+
+    jacocoTestReport {
+        reports {
+            xml.isEnabled = true
+        }
+    }
+}
+
+tasks.named("sonarqube") {
+    dependsOn("jacocoTestReport")
 }
