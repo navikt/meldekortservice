@@ -2,8 +2,10 @@
 
 package no.nav.meldeplikt.meldekortservice.utils.swagger
 
-import io.ktor.http.*
-import io.ktor.locations.*
+import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
+import io.ktor.locations.KtorExperimentalLocationsAPI
+import io.ktor.locations.Location
 import no.nav.meldeplikt.meldekortservice.config.swagger
 import no.nav.meldeplikt.meldekortservice.utils.defaultLog
 import java.time.Instant
@@ -24,6 +26,7 @@ import kotlin.reflect.full.memberProperties
  */
 
 typealias ModelName = String
+
 typealias PropertyName = String
 typealias Path = String
 typealias Definitions = MutableMap<ModelName, ModelData>
@@ -261,14 +264,16 @@ class ModelData(kClass: KClass<*>) {
             .toMap()
 }
 
+private const val DATE_TIME: String = "date-time"
+
 val propertyTypes = mapOf(
     Int::class to Property("integer", "int32"),
     Long::class to Property("integer", "int64"),
     String::class to Property("string"),
     Double::class to Property("number", "double"),
-    Instant::class to Property("string", "date-time"),
-    Date::class to Property("string", "date-time"),
-    LocalDateTime::class to Property("string", "date-time"),
+    Instant::class to Property("string", DATE_TIME),
+    Date::class to Property("string", DATE_TIME),
+    LocalDateTime::class to Property("string", DATE_TIME),
     LocalDate::class to Property("string", "date")
 ).mapKeys { it.key.qualifiedName }
 
@@ -310,11 +315,9 @@ open class Property(
 )
 
 fun addDefinition(kClass: KClass<*>) {
-    if (kClass != Unit::class) {
-        if (!swagger.components.schemas.containsKey(kClass.modelName())) {
-            defaultLog.info("Generating swagger spec for model ${kClass.modelName()}")
-            swagger.components.schemas[kClass.modelName()] = ModelData(kClass)
-        }
+    if ((kClass != Unit::class) && !swagger.components.schemas.containsKey(kClass.modelName())) {
+        defaultLog.info("Generating swagger spec for model ${kClass.modelName()}")
+        swagger.components.schemas[kClass.modelName()] = ModelData(kClass)
     }
 }
 
