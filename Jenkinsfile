@@ -27,9 +27,11 @@ node {
 
     // Jobbparametere (definert i Jenkins-jobb)
     def miljo = getParameter(params.Miljo, "")
+    def doSonarAnalysis = getParameter(params.SonarAnalyse, true)
     def isReleaseBuild = getParameter(params.ReleaseBygg, false)
 
     println("[INFO] Miljo: ${miljo}")
+    println("[INFO] SonarAnalyse: ${doSonarAnalysis}")
     println("[INFO] ReleaseBygg: ${isReleaseBuild}")
 
     validateJobParameters(miljo)
@@ -84,6 +86,14 @@ node {
         stage("Build application") {
             sh "mvn -f version.xml versions:set -DnewVersion=${releaseVersion} -DgenerateBackupPoms=false -B"
             sh "gradle build"
+        }
+
+        stage('Analyze with SonarQube') {
+            when(doSonarAnalysis) {
+              withSonarQubeEnv() {
+                sh './gradlew sonarqube'
+              }
+          }
         }
 
         stage("Build & publish Docker image") {
