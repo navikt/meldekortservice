@@ -25,6 +25,7 @@ import no.nav.meldeplikt.meldekortservice.service.InnsendtMeldekortService
 import no.nav.meldeplikt.meldekortservice.service.KontrollService
 import no.nav.meldeplikt.meldekortservice.utils.*
 import no.nav.meldeplikt.meldekortservice.utils.swagger.*
+import java.sql.SQLException
 
 /**
 REST-controller for meldekort-api som tilbyr operasjoner for å hente:
@@ -170,6 +171,7 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
                 contentType = ContentType.Application.Json
             )
 //            call.respondText(jsonMapper.writeValueAsString(kontrollResponse), contentType = ContentType.Application.Json)
+            throw SQLException("test")
         } catch (e: Exception) {
             val errorMessage =
                 ErrorMessage("Meldekort med id ${meldekort.meldekortId} ble ikke sendt inn. ${e.message}")
