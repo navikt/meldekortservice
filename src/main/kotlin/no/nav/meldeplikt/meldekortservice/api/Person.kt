@@ -2,10 +2,13 @@ package no.nav.meldeplikt.meldekortservice.api
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import io.ktor.application.*
-import io.ktor.http.*
-import io.ktor.locations.*
-import io.ktor.response.*
+import io.ktor.application.call
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.locations.KtorExperimentalLocationsAPI
+import io.ktor.locations.Location
+import io.ktor.response.respond
+import io.ktor.response.respondText
 import io.ktor.routing.Routing
 import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
 import no.nav.meldeplikt.meldekortservice.config.SoapConfig
@@ -17,7 +20,6 @@ import no.nav.meldeplikt.meldekortservice.model.database.feil.UnretriableDatabas
 import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
-import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.Meldekortkontroll
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.response.KontrollResponse
 import no.nav.meldeplikt.meldekortservice.model.response.EmptyResponse
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
@@ -25,7 +27,6 @@ import no.nav.meldeplikt.meldekortservice.service.InnsendtMeldekortService
 import no.nav.meldeplikt.meldekortservice.service.KontrollService
 import no.nav.meldeplikt.meldekortservice.utils.*
 import no.nav.meldeplikt.meldekortservice.utils.swagger.*
-import java.sql.SQLException
 
 /**
 REST-controller for meldekort-api som tilbyr operasjoner for å hente:
@@ -171,7 +172,6 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
                 contentType = ContentType.Application.Json
             )
 //            call.respondText(jsonMapper.writeValueAsString(kontrollResponse), contentType = ContentType.Application.Json)
-            throw SQLException("test")
         } catch (e: Exception) {
             val errorMessage =
                 ErrorMessage("Meldekort med id ${meldekort.meldekortId} ble ikke sendt inn. ${e.message}")
