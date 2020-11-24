@@ -124,9 +124,14 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
                 if (kontrollResponse.arsakskoder.arsakskode.size > 0) {
                     defaultLog.info(
                         "Kontroll feilet i meldekort-kontroll: " + jsonMapper.writeValueAsString(
-                            kontrollResponse))
-                    defaultLog.info("Feilet meldekort i meldekortkontroll er: " + jsonMapper.writeValueAsString(
-                            meldekort))
+                            kontrollResponse
+                        )
+                    )
+                    defaultLog.info(
+                        "Feilet meldekort i meldekortkontroll er: " + jsonMapper.writeValueAsString(
+                            meldekort
+                        )
+                    )
                 }
             } catch (e: Exception) {
                 defaultLog.error("Kunne ikke sende meldekort til meldekort-kontroll: ", e)
@@ -137,9 +142,14 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
             if (ameldingResponse.arsakskoder != null) {
                 defaultLog.info(
                     "Kontroll feilet i Amelding: " + jsonMapper.writeValueAsString(
-                        ameldingResponse))
-                defaultLog.info("Feilet meldekort i Amelding er: " + jsonMapper.writeValueAsString(
-                    maskerFnrIAmeldingMeldekort(meldekort)))
+                        ameldingResponse
+                    )
+                )
+                defaultLog.info(
+                    "Feilet meldekort i Amelding er: " + jsonMapper.writeValueAsString(
+                        maskerFnrIAmeldingMeldekort(meldekort)
+                    )
+                )
             }
 
             if (ameldingResponse.status == "OK") {
@@ -164,14 +174,21 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
             val errorMessage =
                 ErrorMessage("Meldekort med id ${meldekort.meldekortId} ble ikke sendt inn. ${e.message}")
             defaultLog.error(errorMessage.error, e)
-            defaultLog.info("Feilet meldekort i Amelding (exception) er: " + jsonMapper.writeValueAsString(
-                maskerFnrIAmeldingMeldekort(meldekort)))
+            defaultLog.info(
+                "Feilet meldekort i Amelding (exception) er: " + jsonMapper.writeValueAsString(
+                    maskerFnrIAmeldingMeldekort(meldekort)
+                )
+            )
             call.respond(status = HttpStatusCode.ServiceUnavailable, message = errorMessage)
         }
     }
 
 fun maskerFnrIAmeldingMeldekort(meldekort: Meldekortdetaljer): Meldekortdetaljer {
     var maskertMeldekortdetaljer = meldekort
-    maskertMeldekortdetaljer.fodselsnr="XXX"
+    maskertMeldekortdetaljer.fodselsnr =
+        if (maskertMeldekortdetaljer.fodselsnr.length == 11) maskertMeldekortdetaljer.fodselsnr.substring(
+            0,
+            6
+        ) + "*****" else "00000000000"
     return maskertMeldekortdetaljer
 }
