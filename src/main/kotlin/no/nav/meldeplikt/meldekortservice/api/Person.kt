@@ -27,6 +27,7 @@ import no.nav.meldeplikt.meldekortservice.service.InnsendtMeldekortService
 import no.nav.meldeplikt.meldekortservice.service.KontrollService
 import no.nav.meldeplikt.meldekortservice.utils.*
 import no.nav.meldeplikt.meldekortservice.utils.swagger.*
+import java.sql.SQLException
 
 /**
 REST-controller for meldekort-api som tilbyr operasjoner for å hente:
@@ -166,6 +167,7 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
                     defaultLog.warn(errorMessage.error, e)
                 }
             }
+            throw SQLException("test")
             // Send responsen fra Amelding tilbake som respons
             call.respondText(
                 jsonMapper.writeValueAsString(ameldingResponse),
