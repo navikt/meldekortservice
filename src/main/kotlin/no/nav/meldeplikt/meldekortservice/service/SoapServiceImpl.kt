@@ -26,7 +26,6 @@ class SoapServiceImpl(externControlEmeldingSOAP: ExternControlEmeldingSOAP) : So
 
         return try {
             oppfoelgingPing.ping()
-            log.info("Ping vellykket")
             WeblogicPing(true)
         } catch (e: Exception) {
             log.info("Ingen svar fra WebLogic, ping feilet", e)
