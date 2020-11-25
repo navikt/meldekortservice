@@ -167,6 +167,9 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
                     defaultLog.warn(errorMessage.error, e)
                 }
             }
+
+            // TEST
+            ameldingResponse.status = "FEIL"
             throw SQLException("test")
             // Send responsen fra Amelding tilbake som respons
             call.respondText(
