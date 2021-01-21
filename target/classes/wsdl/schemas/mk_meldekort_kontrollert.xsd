@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by Kjersti Torkildsen (Aetat Arbeidsdirektoratet) -->
+<!--$Header$ $Log$-->
+<schema targetNamespace="http://www.aetat.no/arena/mk_meldekort_kontrollert.xsd" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xdb="http://xmlns.oracle.com/xdb" xmlns:aol="http://www.aetat.no/arena/mk_meldekort_kontrollert.xsd" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<element name="MeldekortKontrollert" xdb:defaultTable="XIN_MK_MELDEKORT_KONTROLLERT">
+		<complexType>
+			<complexContent>
+				<extension base="aol:MeldekortKontrollertType">
+					<attribute name="Id" type="string"/>
+				</extension>
+			</complexContent>
+		</complexType>
+	</element>
+	<complexType name="ArsakskodeType">
+		<sequence>
+			<element name="Kode">
+				<simpleType>
+					<restriction base="string">
+						<maxLength value="5"/>
+					</restriction>
+				</simpleType>
+			</element>
+			<element name="Tekst">
+				<simpleType>
+					<restriction base="string">
+						<maxLength value="255"/>
+					</restriction>
+				</simpleType>
+			</element>
+		</sequence>
+	</complexType>
+	<complexType name="MeldekortDagType">
+		<sequence>
+			<element name="Dag">
+				<simpleType>
+					<restriction base="int">
+						<minInclusive value="1"/>
+						<maxInclusive value="14"/>
+					</restriction>
+				</simpleType>
+			</element>
+			<element name="Meldegruppe">
+				<simpleType>
+					<restriction base="string">
+						<maxLength value="5"/>
+					</restriction>
+				</simpleType>
+			</element>
+		</sequence>
+	</complexType>
+	<complexType name="MeldekortKontrollertType">
+		<sequence>
+			<element name="MeldekortId">
+				<simpleType>
+					<restriction base="long">
+						<totalDigits value="10"/>
+					</restriction>
+				</simpleType>
+			</element>
+			<element name="Status">
+				<simpleType>
+					<restriction base="string">
+						<maxLength value="5"/>
+					</restriction>
+				</simpleType>
+			</element>
+			<element name="Arsakskoder" nillable="true">
+				<complexType>
+					<sequence>
+						<element name="Arsakskode" type="aol:ArsakskodeType" minOccurs="0" maxOccurs="unbounded"/>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="MeldekortDager">
+				<complexType>
+					<sequence>
+						<element name="MeldekortDag" type="aol:MeldekortDagType" minOccurs="14" maxOccurs="14"/>
+					</sequence>
+				</complexType>
+			</element>
+		</sequence>
+	</complexType>
+</schema>
