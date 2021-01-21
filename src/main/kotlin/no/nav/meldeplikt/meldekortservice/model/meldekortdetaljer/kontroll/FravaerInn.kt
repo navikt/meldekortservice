@@ -10,6 +10,8 @@ data class FravaerInn constructor(
     @JsonSerialize(using = LocalDateSerializer::class)
     @JsonDeserialize(using = LocalDateDeserializer::class)
     val dag: LocalDate? = null,
-    val type: String? = null,
+    val harSyk: Boolean? = null,
+    val harKurs: Boolean? = null,
+    val harAnnet: Boolean? = null,
     val arbeidTimer: Double? = null
 )

@@ -35,19 +35,20 @@ class MeldekortkontrollMapper {
         )
     }
 
+    // Her utleder vi spørsmålene harAnnet, harKurs og harSyk fra avkrysningene. Dette burde være avkrysningene
+    // som blir gjort i frontenden, men de blir ikke sendt fra frontenden.
+    // Vi gjør dette fordi meldekortkontroll-api konsistenssjekker kryssene mot spørsmålene, noe som kan være
+    // aktuelt når meldekort kommer fra andre kilder enn vår frontend
     private fun trekkutFravaersdager(meldekort: Meldekortdetaljer): List<FravaerInn> {
         var fravaer = mutableListOf<FravaerInn>()
         val fraD: LocalDate = finnMeldeperiodeFraDato(meldekort.meldeperiode)
         for (mdag in meldekort.sporsmal?.meldekortDager!!) {
-            var mtype = "ARBEIDS_FRAVAER"
-            if (mdag.annetFravaer!!) mtype = "ANNET_FRAVAER"
-            if (mdag.kurs!!) mtype = "KURS_UTDANNING"
-            if (mdag.syk!!) mtype = "SYKDOM"
-
             fravaer.add(
                 FravaerInn(
                     dag = fraD.plusDays(mdag.dag.toLong()),
-                    type = mtype,
+                    harAnnet = mdag.annetFravaer == true,
+                    harKurs = mdag.kurs == true,
+                    harSyk = mdag.syk == true,
                     arbeidTimer = mdag.arbeidetTimerSum?.toDouble()
                 )
             )
