@@ -41,9 +41,9 @@ class MeldekortkontrollMapperTest {
         assert(meldekortkontroll.sporsmal.syk == sporsmal.syk)
         assert(meldekortkontroll.fravaersdager.size == meldekortDager.size)
         sammenlignMeldekortDag(meldekortkontroll.fravaersdager[0], meldekortDager[0], meldekortkontroll.meldeperiode.fra!!)
-        assert(meldekortkontroll.fravaersdager[0].type.equals("SYKDOM"))
+        assert(meldekortkontroll.fravaersdager[0].harSyk!!)
         sammenlignMeldekortDag(meldekortkontroll.fravaersdager[1], meldekortDager[1], meldekortkontroll.meldeperiode.fra!!)
-        assert(meldekortkontroll.fravaersdager[1].type.equals("ARBEIDS_FRAVAER"))
+        assert(meldekortkontroll.fravaersdager[1].arbeidTimer!! > 0)
         assert(meldekortkontroll.begrunnelse == meldekortdetaljer.begrunnelse)
     }
 
