@@ -32,6 +32,7 @@ class MeldekortkontrollMapperTest {
         assert(meldekortkontroll.meldeperiode.kortKanSendesFra == LocalDate.parse("2020-02-01", DateTimeFormatter.ISO_DATE))
         assert(meldekortkontroll.meldeperiode.periodeKode == meldekortdetaljer.meldeperiode)
         assert(meldekortkontroll.meldegruppe.equals("DAGP"))
+        assert(meldekortkontroll.personId.equals(meldekortdetaljer.personId))
         assert(meldekortkontroll.sporsmal.annetFravaer == sporsmal.annetFravaer)
         assert(meldekortkontroll.sporsmal.arbeidet == sporsmal.arbeidet)
         assert(meldekortkontroll.sporsmal.arbeidssoker == sporsmal.arbeidssoker)
