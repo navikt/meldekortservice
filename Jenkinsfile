@@ -11,7 +11,6 @@ import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
 //
 
 node {
-    def NAIS_DEPLOY_APIKEY = "${NAIS_DEPLOY_APIKEY}"
     def NAIS_CLI = "/usr/bin/deploy"
 
     def NAISERATOR_YAML_FILE = "naiserator.yaml"
@@ -108,13 +107,9 @@ node {
             sh "cat ${NAISERATOR_YAML_FILE}"
 
             // Deploy til NAIS
-            sh "${NAIS_CLI} \
-                --apikey=\"${NAIS_DEPLOY_APIKEY}\" \
-                --cluster=\"${cluster}\" \
-                --owner=\"navikt\" \
-                --repository=\"${application}\" \
-                --resource=\"\$(pwd)/${NAISERATOR_YAML_FILE}\" \
-                --wait=true"
+            withCredentials([string(credentialsId: 'deploy-api-key', variable: 'NAIS_DEPLOY_APIKEY')]) {
+                sh "${NAIS_CLI} --apikey=${NAIS_DEPLOY_APIKEY} --cluster=${cluster} --repository=${application} --resource=${NAISERATOR_YAML_FILE} --wait=true"
+             }
         }
 
         stage("Perform release") {
