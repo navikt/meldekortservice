@@ -11,15 +11,11 @@ import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
 //
 
 node {
-    def KUBECTL = "/usr/bin/kubectl"
-    def KUBECONFIG_FILE = "${KUBECONFIG}"
-    def DEFAULT_BUILD_USER = "Jenkins"
+    def NAIS_DEPLOY_APIKEY = "${NAIS_DEPLOY_APIKEY}"
+    def NAIS_CLI = "/usr/bin/deploy"
 
     def NAISERATOR_YAML_FILE = "naiserator.yaml"
     def DOCKER_REPO = "${DOCKER_REPO}"
-
-    // For oppdatering av deployet versjon i Vera
-    def VERA_UPDATE_URL = "${VERA_UPDATE_URL}"
 
     // For opplasting av Naiserator yaml-fil
     def NEXUS_REPO_URL = "${NEXUS_REPO_URL}"
@@ -109,23 +105,16 @@ node {
         stage("Deploy to NAIS") {
             prepareNaiseratorYaml(NAISERATOR_YAML_FILE, releaseVersion, cluster, namespace, domainName, slackAlertChannel, vaultKvEnv, vaultServiceuserEnv)
 
-            // set namespace to context
-            sh "${KUBECTL} config --kubeconfig=${KUBECONFIG_FILE} set-context ${cluster} --namespace=${namespace}"
-            sh "${KUBECTL} config --kubeconfig=${KUBECONFIG_FILE} use-context ${cluster}"
+            sh "cat ${NAISERATOR_YAML_FILE}"
 
-            sh "${KUBECTL} apply --kubeconfig=${KUBECONFIG_FILE} -f ${NAISERATOR_YAML_FILE}"
-
-            // Oppdater Vera
-            try {
-                // Brukeren som skal registreres som deployer i Vera.
-                def deployer = getBuildUser(DEFAULT_BUILD_USER)
-
-                println("[INFO] Oppdaterer Vera => application=${application}, environment=${namespace}, version=${releaseVersion}, deployedBy=${deployer}")
-
-                sh "curl -i -s --header \"Content-Type: application/json\" --request POST --data \'{\"environment\": \"${namespace}\",\"application\": \"${application}\",\"version\": \"${releaseVersion}\",\"deployedBy\": \"${deployer}\"}\' ${VERA_UPDATE_URL}"
-            } catch (e) {
-                println("[ERROR] Feil ved oppdatering av Vera. Exception: " + e)
-            }
+            // Deploy til NAIS
+            sh "${NAIS_CLI} \
+                --apikey=\"${NAIS_DEPLOY_APIKEY}\" \
+                --cluster=\"${cluster}\" \
+                --owner=\"navikt\" \
+                --repository=\"${application}\" \
+                --resource=\"\$(pwd)/${NAISERATOR_YAML_FILE}\" \
+                --wait=true"
         }
 
         stage("Perform release") {
@@ -178,23 +167,6 @@ node {
  */
 def getCurrentBranch(scmInfo) {
     return scmInfo.GIT_BRANCH.replaceAll(/.*\//, "")
-}
-
-/*
- * Returnerer brukernavnet som skal brukes for å registrere brukeren som utførte bygget. Dersom ikke brukeren er satt,
- * returneres defaultbrukeren i input.
- */
-def getBuildUser(defaultUser) {
-    def buildUser = defaultUser;
-
-    try {
-        wrap([$class: 'BuildUser']) {
-            buildUser = "${BUILD_USER} (${BUILD_USER_ID})"
-        }
-    } catch (e) {
-        // Dersom bygg er auto-trigget, er ikke BUILD_USER variablene satt => defaultUser benyttes
-    }
-    return buildUser
 }
 
 /*
