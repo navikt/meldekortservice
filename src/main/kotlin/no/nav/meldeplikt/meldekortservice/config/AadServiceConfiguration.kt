@@ -1,8 +1,16 @@
 package no.nav.meldeplikt.meldekortservice.config
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.DeserializationFeature
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.apache.Apache
+import io.ktor.client.features.json.JacksonSerializer
+import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.request.*
 import kotlinx.coroutines.runBlocking
+import org.apache.http.impl.conn.SystemDefaultRoutePlanner
+import java.net.ProxySelector
 
 data class AadServiceConfiguration(
     val azureAd: AzureAd = AzureAd()
@@ -16,6 +24,18 @@ data class AadServiceConfiguration(
             defaultHttpClient.get<AzureAdOpenIdConfiguration>("$authorityEndpoint/$tenant/v2.0/.well-known/openid-configuration")
         }
     )
+}
+
+internal val defaultHttpClient = HttpClient(Apache) {
+    install(JsonFeature) {
+        serializer = JacksonSerializer {
+            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            setSerializationInclusion(JsonInclude.Include.NON_NULL)
+        }
+    }
+    engine {
+        customizeClient { setRoutePlanner(SystemDefaultRoutePlanner(ProxySelector.getDefault())) }
+    }
 }
 
 // Lese fra env

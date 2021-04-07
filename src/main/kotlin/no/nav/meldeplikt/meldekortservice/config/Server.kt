@@ -2,6 +2,7 @@ package no.nav.meldeplikt.meldekortservice.config
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.DeserializationFeature
+import com.google.common.annotations.VisibleForTesting
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.client.*
@@ -49,17 +50,7 @@ val swagger = Swagger(
     )
 )
 
-internal val defaultHttpClient = HttpClient(Apache) {
-    install(JsonFeature) {
-        serializer = JacksonSerializer {
-            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            setSerializationInclusion(JsonInclude.Include.NON_NULL)
-        }
-    }
-    engine {
-        customizeClient { setRoutePlanner(SystemDefaultRoutePlanner(ProxySelector.getDefault())) }
-    }
-}
+
 
 private const val cacheAntallMinutter = 55
 
@@ -69,18 +60,23 @@ val cache: Cache<String, OrdsToken> = CacheUtils.buildCache(CacheConfig.DEFAULT.
 
 const val SWAGGER_URL_V1 = "/meldekortservice/internal/apidocs/index.html?url=swagger.json"
 
-fun Application.mainModule(env: Environment = Environment()) {
+fun Application.mainModule(
+        testing: Boolean = false,
+        env: Environment = Environment(),
+        innsendtMeldekortService: InnsendtMeldekortService = InnsendtMeldekortService(
+                when (isCurrentlyRunningOnNais()) {
+                    true -> OracleDatabase()
+                    false -> PostgreSqlDatabase(env)
+                }
+        ),
+        arenaOrdsService: ArenaOrdsService = ArenaOrdsService(),
+        kontrollService: KontrollService = KontrollService(),
+        flywayConfig: org.flywaydb.core.Flyway? = Flyway.configure(env).load()
+
+) {
 
     DefaultExports.initialize()
     setAppProperties(env)
-    val innsendtMeldekortService = InnsendtMeldekortService(
-        when (isCurrentlyRunningOnNais()) {
-            true -> OracleDatabase()
-            false -> PostgreSqlDatabase(env)
-        }
-    )
-    val arenaOrdsService = ArenaOrdsService()
-    val kontrollService = KontrollService()
 
     install(DefaultHeaders)
 
@@ -107,7 +103,10 @@ fun Application.mainModule(env: Environment = Environment()) {
         meldekortApi(arenaOrdsService)
         personApi(arenaOrdsService, innsendtMeldekortService, kontrollService)
     }
-    Flyway.runFlywayMigrations(env)
+
+    if (flywayConfig != null) {
+        flywayConfig.migrate()
+    }
 }
 
 private fun setAppProperties(environment: Environment) {

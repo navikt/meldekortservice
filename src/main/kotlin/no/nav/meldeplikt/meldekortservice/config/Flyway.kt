@@ -15,7 +15,7 @@ object Flyway {
         flyway.migrate()
     }
 
-    private fun configure(env: Environment): FluentConfiguration {
+    fun configure(env: Environment): FluentConfiguration {
         val configBuilder = Flyway.configure()
         val dataSource = createCorrectAdminDatasourceForEnvironment(env)
         configBuilder.dataSource(dataSource)
