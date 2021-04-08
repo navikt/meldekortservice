@@ -1,12 +1,10 @@
 package no.nav.meldeplikt.meldekortservice.api
 
-import com.nhaarman.mockitokotlin2.mock
 import io.ktor.config.MapApplicationConfig
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
-import io.ktor.server.testing.on
 import io.ktor.server.testing.withTestApplication
 import io.ktor.util.KtorExperimentalAPI
 import io.mockk.coEvery
@@ -14,19 +12,16 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import no.nav.meldeplikt.meldekortservice.config.Environment
-import no.nav.meldeplikt.meldekortservice.config.ServerMock
 import no.nav.meldeplikt.meldekortservice.config.mainModule
 import no.nav.meldeplikt.meldekortservice.model.enum.KortType
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
-import no.nav.security.mock.oauth2.*
-import no.nav.security.mock.oauth2.token.*
-import no.nav.sbl.util.EnvironmentUtils
+import no.nav.security.mock.oauth2.MockOAuth2Server
+import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback
 import org.amshove.kluent.shouldBe
 import org.flywaydb.core.Flyway
 import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 
@@ -43,8 +38,14 @@ class MeldekortKtTest{
 
     private fun issueToken(): String =
         mockOAuth2Server.issueToken(
-            issuerId = ISSUER_ID,
-            claims = mapOf("roles" to listOf("access_as_application"))
+            ISSUER_ID,
+            "myclient",
+            DefaultOAuth2TokenCallback(
+                audience = listOf(REQUIRED_AUDIENCE),
+                claims = mapOf(
+                    "sub" to "12345678910"
+                )
+            )
         ).serialize()
 
     companion object {
@@ -69,6 +70,7 @@ class MeldekortKtTest{
     @Test
     fun `Test hente meldekort`() {
         val id: Long = 1
+        val idInt: Int = 10
         val meldekortdetaljer = Meldekortdetaljer(id = "1",
             kortType = KortType.AAP)
 
@@ -101,12 +103,12 @@ class MeldekortKtTest{
             )
            )
         }) {
-            handleRequest(HttpMethod.Get, "/meldekortservice/api/meldekort/$id")
+            handleRequest(HttpMethod.Get, "/meldekortservice/api/historiskemeldekort/")
             {
                 addHeader(HttpHeaders.Authorization, "Bearer ${issueToken()}")
 
             }
-                .apply {
+               .apply {
                     response.status() shouldBe HttpStatusCode.OK
                 }
         }
