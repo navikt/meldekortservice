@@ -19,22 +19,20 @@ import no.nav.meldeplikt.meldekortservice.model.response.OrdsStringResponse
 import no.nav.meldeplikt.meldekortservice.utils.*
 import java.util.*
 
-class ArenaOrdsService {
-
-    private val log = getLogger(ArenaOrdsService::class)
-
-    private val env = Environment()
-
-    private val ordsClient: HttpClient = HttpClient {
-        engine {
-            response.apply {
-                charset(Charsets.UTF_8.displayName())
+class ArenaOrdsService(
+        private val ordsClient: HttpClient = HttpClient {
+            engine {
+                response.apply {
+                    charset(Charsets.UTF_8.displayName())
+                }
             }
-        }
-        install(JsonFeature) {
-            serializer = JacksonSerializer { objectMapper }
-        }
-    }
+            install(JsonFeature) {
+                serializer = JacksonSerializer { objectMapper }
+            }
+        },
+        private val env: Environment = Environment()
+) {
+    private val log = getLogger(ArenaOrdsService::class)
 
     suspend fun hentMeldekort(fnr: String): OrdsStringResponse {
         val meldekort = ordsClient.call("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORT$fnr") {

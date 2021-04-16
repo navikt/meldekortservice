@@ -11,6 +11,7 @@ import io.ktor.client.features.json.*
 import io.ktor.features.*
 import io.ktor.jackson.*
 import io.ktor.locations.*
+import io.ktor.request.path
 import io.ktor.routing.*
 import io.prometheus.client.hotspot.DefaultExports
 import no.nav.cache.Cache
@@ -102,6 +103,10 @@ fun Application.mainModule(
         weblogicApi()
         meldekortApi(arenaOrdsService)
         personApi(arenaOrdsService, innsendtMeldekortService, kontrollService)
+    }
+
+    install(CallLogging) {
+        filter { call -> call.request.path().startsWith("/api") }
     }
 
     if (flywayConfig != null) {

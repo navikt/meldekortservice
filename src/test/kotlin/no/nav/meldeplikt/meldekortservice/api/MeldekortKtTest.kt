@@ -34,6 +34,7 @@ class MeldekortKtTest{
         put("no.nav.security.jwt.issuers.0.accepted_audience", REQUIRED_AUDIENCE)
         put("no.nav.security.jwt.required_issuer_name", ISSUER_ID)
         put("ktor.environment", "local")
+        println(propertyOrNull("no.nav.security.jwt.issuers.0.issuer_name"))
     }
 
     private fun issueToken(): String =
