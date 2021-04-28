@@ -7,12 +7,15 @@ import no.nav.meldeplikt.meldekortservice.mapper.MeldekortTypeMapper
 import no.nav.meldeplikt.meldekortservice.model.WeblogicPing
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.utils.getLogger
+import no.nav.tjeneste.virksomhet.sakogaktivitet.v1.SakOgAktivitetV1
 
-class SoapServiceImpl(externControlEmeldingSOAP: ExternControlEmeldingSOAP) : SoapService {
+class SoapServiceImpl(
+        private val amelding: ExternControlEmeldingSOAP,
+        private val oppfoelgingPing: SakOgAktivitetV1? = SoapConfig.sakOgAktivitet().configureStsForSystemUser().build()
+) : SoapService {
 
     private val log = getLogger(SoapServiceImpl::class)
 
-    private val amelding = externControlEmeldingSOAP
 
     override fun kontrollerMeldekort(meldekortdetaljer: Meldekortdetaljer): MeldekortKontrollertType {
         val meldekort = MeldekortTypeMapper.mapMeldekortType(meldekortdetaljer)
@@ -20,12 +23,8 @@ class SoapServiceImpl(externControlEmeldingSOAP: ExternControlEmeldingSOAP) : So
     }
 
     override fun pingWeblogic(): WeblogicPing {
-        val oppfoelgingPing = SoapConfig.sakOgAktivitet()
-            .configureStsForSystemUser()
-            .build()
-
         return try {
-            oppfoelgingPing.ping()
+            oppfoelgingPing?.ping()
             WeblogicPing(true)
         } catch (e: Exception) {
             log.info("Ingen svar fra WebLogic, ping feilet", e)

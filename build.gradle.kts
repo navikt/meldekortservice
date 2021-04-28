@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 val prometheusVersion = "0.6.0"
 val ktorVersion = "1.2.4"
 val ktorTestVersion = "1.5.1"
+val kotestVersion = "4.4.1"
 val junitVersion = "5.4.1"
 val confluentVersion = "5.2.0"
 val logstashVersion = "5.2"
@@ -103,6 +104,7 @@ dependencies {
     implementation("io.ktor:ktor-locations:$ktorVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonVersion")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion")
     implementation("io.ktor:ktor-jackson:$ktorVersion")
     implementation("no.nav.common:cxf:$navCommonVersion")
@@ -122,13 +124,17 @@ dependencies {
     testCompile("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testCompile(kotlin("test-junit5"))
     testCompile("org.mockito:mockito-core:2.+")
-    testImplementation("io.ktor:ktor-server-test-host:${ktorTestVersion}")
+    testImplementation("io.ktor:ktor-server-test-host:${ktorVersion}")
+    testImplementation("io.ktor:ktor-client-mock:${ktorVersion}")
+    testImplementation("io.ktor:ktor-client-mock-jvm:${ktorVersion}")
+    testImplementation("io.kotest:kotest-assertions-core-jvm:${kotestVersion}")
+
+
     testImplementation("com.h2database:h2:$h2Version")
     testImplementation("org.amshove.kluent:kluent:$kluentVersion")
     testImplementation("io.mockk:mockk:1.10.6")
     testImplementation("no.nav.security:mock-oauth2-server:$mockOauthVersion")
     testRuntime("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
-    implementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
 
     implementation("org.webjars:swagger-ui:$swaggerVersion")
     implementation("javax.xml.ws:jaxws-api:$jaxwsApiVersion")

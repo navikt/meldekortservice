@@ -1,18 +1,16 @@
 package no.nav.meldeplikt.meldekortservice.config
 
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.google.common.annotations.VisibleForTesting
-import io.ktor.application.*
-import io.ktor.auth.*
-import io.ktor.client.*
-import io.ktor.client.engine.apache.*
-import io.ktor.client.features.json.*
-import io.ktor.features.*
-import io.ktor.jackson.*
-import io.ktor.locations.*
+import io.ktor.application.Application
+import io.ktor.application.install
+import io.ktor.auth.Authentication
+import io.ktor.features.CallLogging
+import io.ktor.features.ContentNegotiation
+import io.ktor.features.DefaultHeaders
+import io.ktor.jackson.jackson
+import io.ktor.locations.Locations
 import io.ktor.request.path
-import io.ktor.routing.*
+import io.ktor.routing.Routing
+import io.ktor.util.KtorExperimentalAPI
 import io.prometheus.client.hotspot.DefaultExports
 import no.nav.cache.Cache
 import no.nav.cache.CacheConfig
@@ -33,8 +31,6 @@ import no.nav.sbl.util.EnvironmentUtils.Type.PUBLIC
 import no.nav.sbl.util.EnvironmentUtils.Type.SECRET
 import no.nav.sbl.util.EnvironmentUtils.setProperty
 import no.nav.security.token.support.ktor.tokenValidationSupport
-import org.apache.http.impl.conn.SystemDefaultRoutePlanner
-import java.net.ProxySelector
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -61,8 +57,8 @@ val cache: Cache<String, OrdsToken> = CacheUtils.buildCache(CacheConfig.DEFAULT.
 
 const val SWAGGER_URL_V1 = "/meldekortservice/internal/apidocs/index.html?url=swagger.json"
 
+@KtorExperimentalAPI
 fun Application.mainModule(
-        testing: Boolean = false,
         env: Environment = Environment(),
         innsendtMeldekortService: InnsendtMeldekortService = InnsendtMeldekortService(
                 when (isCurrentlyRunningOnNais()) {

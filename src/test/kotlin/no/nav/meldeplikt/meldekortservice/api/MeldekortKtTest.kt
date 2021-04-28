@@ -1,5 +1,7 @@
 package no.nav.meldeplikt.meldekortservice.api
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.config.MapApplicationConfig
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
@@ -11,11 +13,13 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
-import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.config.mainModule
 import no.nav.meldeplikt.meldekortservice.model.enum.KortType
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
+import no.nav.meldeplikt.meldekortservice.service.InnsendtMeldekortService
+import no.nav.meldeplikt.meldekortservice.service.KontrollService
+import no.nav.meldeplikt.meldekortservice.utils.ErrorMessage
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import no.nav.security.mock.oauth2.MockOAuth2Server
 import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback
@@ -24,6 +28,8 @@ import org.flywaydb.core.Flyway
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
 @KtorExperimentalAPI
 class MeldekortKtTest{
@@ -34,7 +40,6 @@ class MeldekortKtTest{
         put("no.nav.security.jwt.issuers.0.accepted_audience", REQUIRED_AUDIENCE)
         put("no.nav.security.jwt.required_issuer_name", ISSUER_ID)
         put("ktor.environment", "local")
-        println(propertyOrNull("no.nav.security.jwt.issuers.0.issuer_name"))
     }
 
     private fun issueToken(): String =
@@ -44,7 +49,7 @@ class MeldekortKtTest{
             DefaultOAuth2TokenCallback(
                 audience = listOf(REQUIRED_AUDIENCE),
                 claims = mapOf(
-                    "sub" to "12345678910"
+                    "sub" to "11111111111"
                 )
             )
         ).serialize()
@@ -53,12 +58,17 @@ class MeldekortKtTest{
         private const val ISSUER_ID = "default"
         private const val REQUIRED_AUDIENCE = "default"
 
-        val mockOAuth2Server = MockOAuth2Server()
+        private val mockOAuth2Server = MockOAuth2Server()
+        private val flywayConfig = mockk<Flyway>()
+        private val arenaOrdsService = mockk<ArenaOrdsService>()
+        private val innsendtMeldekortService = mockk<InnsendtMeldekortService>()
+        private val kontrollService = mockk<KontrollService>()
 
         @BeforeAll
         @JvmStatic
         fun setup() {
             mockOAuth2Server.start(8091)
+            every { flywayConfig.migrate() } returns 0
         }
 
         @AfterAll
@@ -69,52 +79,177 @@ class MeldekortKtTest{
     }
 
     @Test
-    fun `Test hente meldekort`() {
+    fun `get meldekortdetaljer returns ok with valid JWT`() {
         val id: Long = 1
-        val idInt: Int = 10
         val meldekortdetaljer = Meldekortdetaljer(id = "1",
+            fodselsnr = "11111111111",
             kortType = KortType.AAP)
 
-        val arenaOrdsService = mockk<ArenaOrdsService>()
         coEvery { arenaOrdsService.hentMeldekortdetaljer(any()) } returns (meldekortdetaljer)
-
-        val flywayConfig = mockk<Flyway>()
-        every { flywayConfig.migrate() } returns 0
 
         mockkStatic(::isCurrentlyRunningOnNais)
         every { isCurrentlyRunningOnNais() } returns true
 
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
-           mainModule(arenaOrdsService  = arenaOrdsService,
-            kontrollService = mockk(),
-            innsendtMeldekortService = mockk(),
-            flywayConfig = flywayConfig,
-            env = Environment(
-            oauthClientId = "test",
-            oauthJwk = "test",
-            oauthClientSecret = "test",
-            oauthEndpoint = "test",
-            oauthTenant = "test",
-            dbHostPostgreSQL = "jdbc:h2:mem:testdb",
-            dbUrlPostgreSQL = "jdbc:h2:mem:testdb",
-            dbUserPostgreSQL = "sa",
-            dbPasswordPostgreSQL = ""
-
+            mainModule(arenaOrdsService  = arenaOrdsService,
+                kontrollService = mockk(),
+                innsendtMeldekortService = mockk(),
+                flywayConfig = flywayConfig
             )
-           )
         }) {
-            handleRequest(HttpMethod.Get, "/meldekortservice/api/historiskemeldekort/")
-            {
+            handleRequest(HttpMethod.Get, "/meldekortservice/api/meldekort?meldekortId=${id}") {
                 addHeader(HttpHeaders.Authorization, "Bearer ${issueToken()}")
-
+            }.apply {
+                val mapper = jacksonObjectMapper()
+                assertNotNull(response.content)
+                val responseObject = mapper.readValue<Meldekortdetaljer>(response.content!!)
+                response.status() shouldBe HttpStatusCode.OK
+                assertEquals(meldekortdetaljer.id, responseObject.id)
             }
-               .apply {
-                    response.status() shouldBe HttpStatusCode.OK
-                }
         }
-
-
     }
 
+    @Test
+    fun `get meldekortdetaljer returns Bad request with invalid fnr`() {
+        val id: Long = 1
+        val meldekortdetaljer = Meldekortdetaljer(id = "1",
+            fodselsnr = "12345678910",
+            kortType = KortType.AAP)
+
+        coEvery { arenaOrdsService.hentMeldekortdetaljer(any()) } returns (meldekortdetaljer)
+
+        mockkStatic(::isCurrentlyRunningOnNais)
+        every { isCurrentlyRunningOnNais() } returns true
+
+        withTestApplication({
+            (environment.config as MapApplicationConfig).setOidcConfig()
+            mainModule(arenaOrdsService  = arenaOrdsService,
+                kontrollService = mockk(),
+                innsendtMeldekortService = mockk(),
+                flywayConfig = flywayConfig
+            )
+        }) {
+            handleRequest(HttpMethod.Get, "/meldekortservice/api/meldekort?meldekortId=${id}") {
+                addHeader(HttpHeaders.Authorization, "Bearer ${issueToken()}")
+            }.apply {
+                val mapper = jacksonObjectMapper()
+                assertNotNull(response.content)
+                val responseObject = mapper.readValue<ErrorMessage>(response.content!!)
+                response.status() shouldBe HttpStatusCode.BadRequest
+                assertEquals("Personidentifikator matcher ikke. Bruker kan derfor ikke hente ut meldekortdetaljer.", responseObject.error)
+            }
+        }
+    }
+
+    @Test
+    fun `get meldekortdetaljer returns 401-Unauthorized with missing JWT`() {
+        val id: Long = 1
+        val meldekortdetaljer = Meldekortdetaljer(id = "1",
+            fodselsnr = "11111111111",
+            kortType = KortType.AAP)
+
+        coEvery { arenaOrdsService.hentMeldekortdetaljer(any()) } returns (meldekortdetaljer)
+
+        mockkStatic(::isCurrentlyRunningOnNais)
+        every { isCurrentlyRunningOnNais() } returns true
+
+        withTestApplication({
+            (environment.config as MapApplicationConfig).setOidcConfig()
+            mainModule(arenaOrdsService  = arenaOrdsService,
+                kontrollService = mockk(),
+                innsendtMeldekortService = mockk(),
+                flywayConfig = flywayConfig
+            )
+        }) {
+            handleRequest(HttpMethod.Get, "/meldekortservice/api/meldekort?meldekortId=${id}") {
+            }.apply {
+                response.status() shouldBe HttpStatusCode.Unauthorized
+            }
+        }
+    }
+
+    @Test
+    fun `get korrigert meldekortid returns 401-Unauthorized with invalid JWT`() {
+        val id: Long = 1
+        val nyId: Long = 123
+
+        coEvery { arenaOrdsService.kopierMeldekort(any()) } returns (nyId)
+
+        mockkStatic(::isCurrentlyRunningOnNais)
+        every { isCurrentlyRunningOnNais() } returns true
+
+        withTestApplication({
+            (environment.config as MapApplicationConfig).setOidcConfig()
+            mainModule(arenaOrdsService  = arenaOrdsService,
+                kontrollService = mockk(),
+                innsendtMeldekortService = mockk(),
+                flywayConfig = flywayConfig
+            )
+        }) {
+            handleRequest(HttpMethod.Get, "/meldekortservice/api/meldekort/korrigering?meldekortId=${id}") {
+                addHeader(HttpHeaders.Authorization, "Bearer Token AD")
+            }.apply {
+                response.status() shouldBe HttpStatusCode.Unauthorized
+            }
+        }
+    }
+
+    @Test
+    fun `get meldekortdetaljer returns 401-Unauthorized with invalid JWT`() {
+        val id: Long = 1
+        val meldekortdetaljer = Meldekortdetaljer(id = "1",
+            fodselsnr = "11111111111",
+            kortType = KortType.AAP)
+
+        coEvery { arenaOrdsService.hentMeldekortdetaljer(any()) } returns (meldekortdetaljer)
+
+        mockkStatic(::isCurrentlyRunningOnNais)
+        every { isCurrentlyRunningOnNais() } returns true
+
+        withTestApplication({
+            (environment.config as MapApplicationConfig).setOidcConfig()
+            mainModule(arenaOrdsService  = arenaOrdsService,
+                kontrollService = mockk(),
+                innsendtMeldekortService = mockk(),
+                flywayConfig = flywayConfig
+            )
+        }) {
+            handleRequest(HttpMethod.Get, "/meldekortservice/api/meldekort?meldekortId=${id}") {
+                addHeader(HttpHeaders.Authorization, "Bearer Token AD")
+            }.apply {
+                response.status() shouldBe HttpStatusCode.Unauthorized
+            }
+        }
+    }
+
+    @Test
+    fun `get korrigert meldekortid returns OK with valid JWT`() {
+        val id: Long = 1
+        val nyId: Long = 123
+
+        coEvery { arenaOrdsService.kopierMeldekort(any()) } returns (nyId)
+
+        mockkStatic(::isCurrentlyRunningOnNais)
+        every { isCurrentlyRunningOnNais() } returns true
+
+        withTestApplication({
+            (environment.config as MapApplicationConfig).setOidcConfig()
+            mainModule(arenaOrdsService  = arenaOrdsService,
+                kontrollService = mockk(),
+                innsendtMeldekortService = mockk(),
+                flywayConfig = flywayConfig
+            )
+        }) {
+            handleRequest(HttpMethod.Get, "/meldekortservice/api/meldekort/korrigering?meldekortId=${id}") {
+                addHeader(HttpHeaders.Authorization, "Bearer ${issueToken()}")
+            }.apply {
+                val mapper = jacksonObjectMapper()
+                assertNotNull(response.content)
+                val responseObject = mapper.readValue<Long>(response.content!!)
+                response.status() shouldBe HttpStatusCode.OK
+                assertEquals(nyId, responseObject)
+            }
+        }
+    }
 }

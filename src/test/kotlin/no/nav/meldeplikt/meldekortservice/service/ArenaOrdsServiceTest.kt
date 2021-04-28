@@ -1,12 +1,10 @@
 package no.nav.meldeplikt.meldekortservice.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldStartWith
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
@@ -14,29 +12,26 @@ import io.ktor.client.engine.mock.respond
 import io.ktor.client.engine.mock.respondError
 import io.ktor.client.engine.mock.respondOk
 import io.ktor.http.*
+import io.mockk.every
+import io.mockk.mockkStatic
 import kotlinx.coroutines.runBlocking
-import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.model.feil.OrdsException
-import no.nav.meldeplikt.meldekortservice.model.korriger.KopierMeldekortResponse
 import no.nav.meldeplikt.meldekortservice.model.response.OrdsStringResponse
+import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 class ArenaOrdsServiceTest{
-    val environment = Environment(
-            oauthClientId = "test",
-            oauthJwk = "test",
-            oauthClientSecret = "test",
-            oauthEndpoint = "test",
-            oauthTenant = "test",
-            dbHostPostgreSQL = "jdbc:h2:mem:testdb",
-            dbUrlPostgreSQL = "jdbc:h2:mem:testdb",
-            dbUserPostgreSQL = "sa",
-            dbPasswordPostgreSQL = ""
-    )
-    val mapper = jacksonObjectMapper()
-    val fnr = "1111111111"
+    private val mapper = jacksonObjectMapper()
+    private val fnr = "1111111111"
+
+    @BeforeAll
+    fun setup() {
+        mockkStatic(::isCurrentlyRunningOnNais)
+        every { isCurrentlyRunningOnNais() } returns false
+    }
 
     @Test
     fun `test hente meldekort returns OK status`() {
@@ -52,14 +47,11 @@ class ArenaOrdsServiceTest{
                 }
             }
         }
-        val arenaOrdsService = ArenaOrdsService(
-                client,
-                env = environment
-        )
+        val arenaOrdsService = ArenaOrdsService(client)
 
         runBlocking {
-            var actualResponse = arenaOrdsService.hentMeldekort(fnr)
-            var ordsResponse: OrdsStringResponse =  mapper.readValue(actualResponse.content)
+            val actualResponse = arenaOrdsService.hentMeldekort(fnr)
+            val ordsResponse: OrdsStringResponse =  mapper.readValue(actualResponse.content)
 
             assertEquals(HttpStatusCode.OK, actualResponse.status)
             assertEquals(response.content, ordsResponse.content)
@@ -79,10 +71,7 @@ class ArenaOrdsServiceTest{
                 }
             }
         }
-        val arenaOrdsService = ArenaOrdsService(
-                client,
-                env = environment
-        )
+        val arenaOrdsService = ArenaOrdsService(client)
         val exception = assertThrows<OrdsException>{
             runBlocking {
                 arenaOrdsService.hentMeldekort(fnr)
@@ -107,13 +96,10 @@ class ArenaOrdsServiceTest{
                 }
             }
         }
-        val arenaOrdsService = ArenaOrdsService(
-                client,
-                env = environment
-        )
+        val arenaOrdsService = ArenaOrdsService(client)
 
         runBlocking {
-            var actualResponse = arenaOrdsService.hentHistoriskeMeldekort("1234", 10)
+            val actualResponse = arenaOrdsService.hentHistoriskeMeldekort("1234", 10)
 
             assertEquals(1, actualResponse.personId)
         }
@@ -156,13 +142,10 @@ class ArenaOrdsServiceTest{
                 }
             }
         }
-        val arenaOrdsService = ArenaOrdsService(
-                client,
-                env = environment
-        )
+        val arenaOrdsService = ArenaOrdsService(client)
 
         runBlocking {
-            var actualResponse = arenaOrdsService.hentMeldekortdetaljer(1)
+            val actualResponse = arenaOrdsService.hentMeldekortdetaljer(1)
             assertEquals(1, actualResponse.meldekortId)
         }
     }
@@ -184,13 +167,10 @@ class ArenaOrdsServiceTest{
                 }
             }
         }
-        val arenaOrdsService = ArenaOrdsService(
-                client,
-                env = environment
-        )
+        val arenaOrdsService = ArenaOrdsService(client)
 
         runBlocking {
-            var actualResponse = arenaOrdsService.kopierMeldekort(123)
+            val actualResponse = arenaOrdsService.kopierMeldekort(123)
 
             assertEquals(123, actualResponse)
         }

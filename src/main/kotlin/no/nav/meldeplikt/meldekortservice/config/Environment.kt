@@ -18,11 +18,11 @@ data class Environment(
     val meldekortKontrollClientid: String = getEnvVar("KONTROLL_CLIENT_ID", "test"),
 
     // Azure AD
-    val oauthClientId: String = System.getenv("AZURE_CLIENT_ID"),
-    val oauthJwk: String = System.getenv("AZURE_JWK"),
-    val oauthClientSecret: String = System.getenv("AZURE_CLIENT_SECRET"),
-    val oauthEndpoint: String = getEnvVar("KONTROLL_OAUTH_ENDPOINT"),
-    val oauthTenant: String = getEnvVar("KONTROLL_OAUTH_TENANT_ID"),
+    val oauthClientId: String = getEnvVar("AZURE_CLIENT_ID", "test"),
+    val oauthJwk: String = getEnvVar("AZURE_JWK", "test"),
+    val oauthClientSecret: String = getEnvVar("AZURE_CLIENT_SECRET", "test"),
+    val oauthEndpoint: String = getEnvVar("KONTROLL_OAUTH_ENDPOINT", "test"),
+    val oauthTenant: String = getEnvVar("KONTROLL_OAUTH_TENANT_ID", "test"),
 
     // PostgreSQL
     val dbHostPostgreSQL: String = getEnvVar("DB_HOST", "localhost:5432"),
