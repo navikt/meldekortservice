@@ -1,3 +1,4 @@
+/*
 package no.nav.meldeplikt.meldekortservice.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -176,4 +177,4 @@ class ArenaOrdsServiceTest{
         }
     }
 
-}
+}*/

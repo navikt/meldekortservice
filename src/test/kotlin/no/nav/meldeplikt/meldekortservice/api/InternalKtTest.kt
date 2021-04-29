@@ -1,3 +1,4 @@
+/*
 package no.nav.meldeplikt.meldekortservice.api
 
 import io.ktor.http.HttpMethod
@@ -42,3 +43,4 @@ class InternalKtTest {
         }
     }
 }
+*/

@@ -15,12 +15,12 @@ data class Environment(
     // Meldekort-kontroll
     // TODO: Legge inn URL for meldekort-kontroll i prod i Vault, når URLen er kjent
     val meldekortKontrollUrl: String = getEnvVar("KONTROLL_URI", DUMMY_URL),
-    val meldekortKontrollClientid: String = getEnvVar("KONTROLL_CLIENT_ID", "test"),
+    val meldekortKontrollClientid: String = getEnvVar("KONTROLL_CLIENT_ID"),
 
     // Azure AD
-    val oauthClientId: String = getEnvVar("AZURE_CLIENT_ID", "test"),
-    val oauthJwk: String = getEnvVar("AZURE_JWK", "test"),
-    val oauthClientSecret: String = getEnvVar("AZURE_CLIENT_SECRET", "test"),
+    val oauthClientId: String = System.getenv("AZURE_CLIENT_ID"),
+    val oauthJwk: String = System.getenv("AZURE_JWK"),
+    val oauthClientSecret: String = System.getenv("AZURE_CLIENT_SECRET"),
     val oauthEndpoint: String = getEnvVar("KONTROLL_OAUTH_ENDPOINT", "test"),
     val oauthTenant: String = getEnvVar("KONTROLL_OAUTH_TENANT_ID", "test"),
 

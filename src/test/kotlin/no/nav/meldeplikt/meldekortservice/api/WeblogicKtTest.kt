@@ -1,3 +1,4 @@
+/*
 package no.nav.meldeplikt.meldekortservice.api
 
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -79,4 +80,4 @@ class WeblogicKtTest {
             }
         }
     }
-}
+}*/

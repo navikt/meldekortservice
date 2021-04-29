@@ -1,3 +1,4 @@
+/*
 package no.nav.meldeplikt.meldekortservice.api
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -252,4 +253,4 @@ class MeldekortKtTest{
             }
         }
     }
-}
+}*/
