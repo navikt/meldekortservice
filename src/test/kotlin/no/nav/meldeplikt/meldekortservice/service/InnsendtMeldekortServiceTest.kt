@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test
 import java.sql.SQLException
 
 class InnsendtMeldekortServiceTest {
-   /* private val database = H2Database()
+    private val database = H2Database()
     private val innsendtMeldekort1 = InnsendtMeldekort(1L)
 
     @AfterAll
@@ -45,5 +45,5 @@ class InnsendtMeldekortServiceTest {
                 innsendtMeldekortService.hentInnsendtMeldekort(2L)
             }
         } shouldThrow SQLException::class `with message` "Found no rows"
-    }*/
+    }
 }

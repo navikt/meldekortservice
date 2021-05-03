@@ -1,4 +1,3 @@
-/*
 package no.nav.meldeplikt.meldekortservice.api
 
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -317,4 +316,4 @@ class PersonKtTest {
             }
         }
     }
-}*/
+}
