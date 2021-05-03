@@ -1,10 +1,11 @@
-/*
 package no.nav.meldeplikt.meldekortservice.api
 
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.withTestApplication
+import io.ktor.util.KtorExperimentalAPI
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -14,6 +15,8 @@ import org.flywaydb.core.Flyway
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
+@KtorExperimentalAPI
+@KtorExperimentalLocationsAPI
 class InternalKtTest {
     @Test
     fun `test isready, isalive, og ping`() {
@@ -26,8 +29,8 @@ class InternalKtTest {
         withTestApplication({
             mainModule(arenaOrdsService  = mockk(),
                     kontrollService = mockk(),
-                    innsendtMeldekortService = mockk(),
-                    flywayConfig = flywayConfig
+                    mockInnsendtMeldekortService = mockk(),
+                    mockFlywayConfig = flywayConfig
             )
         }) {
             handleRequest(HttpMethod.Get, "/meldekortservice/internal/isReady") {}.apply {
@@ -43,4 +46,3 @@ class InternalKtTest {
         }
     }
 }
-*/

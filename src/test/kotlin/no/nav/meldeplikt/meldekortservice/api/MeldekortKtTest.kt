@@ -6,6 +6,7 @@ import io.ktor.config.MapApplicationConfig
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.withTestApplication
 import io.ktor.util.KtorExperimentalAPI
@@ -17,8 +18,6 @@ import no.nav.meldeplikt.meldekortservice.config.mainModule
 import no.nav.meldeplikt.meldekortservice.model.enum.KortType
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
-import no.nav.meldeplikt.meldekortservice.service.InnsendtMeldekortService
-import no.nav.meldeplikt.meldekortservice.service.KontrollService
 import no.nav.meldeplikt.meldekortservice.utils.ErrorMessage
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import no.nav.security.mock.oauth2.MockOAuth2Server
@@ -31,6 +30,7 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
+@KtorExperimentalLocationsAPI
 @KtorExperimentalAPI
 class MeldekortKtTest{
     private fun MapApplicationConfig.setOidcConfig() {
@@ -61,8 +61,6 @@ class MeldekortKtTest{
         private val mockOAuth2Server = MockOAuth2Server()
         private val flywayConfig = mockk<Flyway>()
         private val arenaOrdsService = mockk<ArenaOrdsService>()
-        private val innsendtMeldekortService = mockk<InnsendtMeldekortService>()
-        private val kontrollService = mockk<KontrollService>()
 
         @BeforeAll
         @JvmStatic
@@ -94,8 +92,8 @@ class MeldekortKtTest{
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(arenaOrdsService  = arenaOrdsService,
                 kontrollService = mockk(),
-                innsendtMeldekortService = mockk(),
-                flywayConfig = flywayConfig
+                mockInnsendtMeldekortService = mockk(),
+                mockFlywayConfig = flywayConfig
             )
         }) {
             handleRequest(HttpMethod.Get, "/meldekortservice/api/meldekort?meldekortId=${id}") {
@@ -126,8 +124,8 @@ class MeldekortKtTest{
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(arenaOrdsService  = arenaOrdsService,
                 kontrollService = mockk(),
-                innsendtMeldekortService = mockk(),
-                flywayConfig = flywayConfig
+                mockInnsendtMeldekortService = mockk(),
+                mockFlywayConfig = flywayConfig
             )
         }) {
             handleRequest(HttpMethod.Get, "/meldekortservice/api/meldekort?meldekortId=${id}") {
@@ -158,8 +156,8 @@ class MeldekortKtTest{
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(arenaOrdsService  = arenaOrdsService,
                 kontrollService = mockk(),
-                innsendtMeldekortService = mockk(),
-                flywayConfig = flywayConfig
+                mockInnsendtMeldekortService = mockk(),
+                mockFlywayConfig = flywayConfig
             )
         }) {
             handleRequest(HttpMethod.Get, "/meldekortservice/api/meldekort?meldekortId=${id}") {
@@ -183,8 +181,8 @@ class MeldekortKtTest{
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(arenaOrdsService  = arenaOrdsService,
                 kontrollService = mockk(),
-                innsendtMeldekortService = mockk(),
-                flywayConfig = flywayConfig
+                mockInnsendtMeldekortService = mockk(),
+                mockFlywayConfig = flywayConfig
             )
         }) {
             handleRequest(HttpMethod.Get, "/meldekortservice/api/meldekort/korrigering?meldekortId=${id}") {
@@ -211,8 +209,8 @@ class MeldekortKtTest{
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(arenaOrdsService  = arenaOrdsService,
                 kontrollService = mockk(),
-                innsendtMeldekortService = mockk(),
-                flywayConfig = flywayConfig
+                mockInnsendtMeldekortService = mockk(),
+                mockFlywayConfig = flywayConfig
             )
         }) {
             handleRequest(HttpMethod.Get, "/meldekortservice/api/meldekort?meldekortId=${id}") {
@@ -237,8 +235,8 @@ class MeldekortKtTest{
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(arenaOrdsService  = arenaOrdsService,
                 kontrollService = mockk(),
-                innsendtMeldekortService = mockk(),
-                flywayConfig = flywayConfig
+                mockInnsendtMeldekortService = mockk(),
+                mockFlywayConfig = flywayConfig
             )
         }) {
             handleRequest(HttpMethod.Get, "/meldekortservice/api/meldekort/korrigering?meldekortId=${id}") {

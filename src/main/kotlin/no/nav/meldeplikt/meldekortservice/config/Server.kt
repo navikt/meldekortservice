@@ -7,6 +7,7 @@ import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.DefaultHeaders
 import io.ktor.jackson.jackson
+import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Locations
 import io.ktor.request.path
 import io.ktor.routing.Routing
@@ -57,24 +58,20 @@ val cache: Cache<String, OrdsToken> = CacheUtils.buildCache(CacheConfig.DEFAULT.
 
 const val SWAGGER_URL_V1 = "/meldekortservice/internal/apidocs/index.html?url=swagger.json"
 
+@KtorExperimentalLocationsAPI
 @KtorExperimentalAPI
 fun Application.mainModule(
-        env: Environment = Environment(),
-        innsendtMeldekortService: InnsendtMeldekortService = InnsendtMeldekortService(
-                when (isCurrentlyRunningOnNais()) {
-                    true -> OracleDatabase()
-                    false -> PostgreSqlDatabase(env)
-                }
-        ),
-        arenaOrdsService: ArenaOrdsService = ArenaOrdsService(),
-        kontrollService: KontrollService = KontrollService(),
-        flywayConfig: org.flywaydb.core.Flyway? = Flyway.configure(env).load()
-
+    env: Environment = Environment(),
+    mockInnsendtMeldekortService: InnsendtMeldekortService? = null,
+    arenaOrdsService: ArenaOrdsService = ArenaOrdsService(),
+    kontrollService: KontrollService = KontrollService(),
+    mockFlywayConfig: org.flywaydb.core.Flyway? = null
 ) {
+    setAppProperties(env)
+    val innsendtMeldekortService: InnsendtMeldekortService = mockInnsendtMeldekortService ?: initializeInnsendtMeldekortServiceApi(env)
+    val flywayConfig: org.flywaydb.core.Flyway = mockFlywayConfig ?: initializeFlyway(env)
 
     DefaultExports.initialize()
-    setAppProperties(env)
-
     install(DefaultHeaders)
 
     install(ContentNegotiation) {
@@ -105,9 +102,7 @@ fun Application.mainModule(
         filter { call -> call.request.path().startsWith("/api") }
     }
 
-    if (flywayConfig != null) {
-        flywayConfig.migrate()
-    }
+    flywayConfig.migrate()
 }
 
 private fun setAppProperties(environment: Environment) {
@@ -120,3 +115,17 @@ private fun setAppProperties(environment: Environment) {
     setProperty(DB_ORACLE_PASSWORD, environment.dbUserOracle.password, SECRET)
     setProperty(DB_ORACLE_CONF, environment.dbConfOracle.jdbcUrl, PUBLIC)
 }
+
+private fun initializeInnsendtMeldekortServiceApi(env: Environment): InnsendtMeldekortService {
+    return InnsendtMeldekortService(
+    when (isCurrentlyRunningOnNais()) {
+        true -> OracleDatabase()
+        false -> PostgreSqlDatabase(env)
+    }
+    )
+}
+
+private fun initializeFlyway(env: Environment): org.flywaydb.core.Flyway {
+    return Flyway.configure(env).load()
+}
+

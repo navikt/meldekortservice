@@ -10,6 +10,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
@@ -45,6 +46,7 @@ import java.time.LocalDate
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
+@KtorExperimentalLocationsAPI
 @KtorExperimentalAPI
 class PersonKtTest {
     private fun MapApplicationConfig.setOidcConfig() {
@@ -102,8 +104,8 @@ class PersonKtTest {
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(arenaOrdsService  = arenaOrdsService,
                     kontrollService = mockk(),
-                    innsendtMeldekortService = mockk(),
-                    flywayConfig = flywayConfig
+                    mockInnsendtMeldekortService = mockk(),
+                    mockFlywayConfig = flywayConfig
             )
         }) {
             handleRequest(HttpMethod.Get, "/meldekortservice/api/person/historiskemeldekort?antallMeldeperioder=${period}") {
@@ -133,8 +135,8 @@ class PersonKtTest {
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(arenaOrdsService  = arenaOrdsService,
                     kontrollService = mockk(),
-                    innsendtMeldekortService = mockk(),
-                    flywayConfig = flywayConfig
+                    mockInnsendtMeldekortService = mockk(),
+                    mockFlywayConfig = flywayConfig
             )
         }) {
             handleRequest(HttpMethod.Get, "/meldekortservice/api/person/historiskemeldekort?antallMeldeperioder=${period}") {
@@ -186,8 +188,8 @@ class PersonKtTest {
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(arenaOrdsService  = arenaOrdsService,
                     kontrollService = mockk(),
-                    innsendtMeldekortService = innsendtMeldekortService,
-                    flywayConfig = flywayConfig
+                    mockInnsendtMeldekortService = innsendtMeldekortService,
+                    mockFlywayConfig = flywayConfig
             )
         }) {
             handleRequest(HttpMethod.Get, "/meldekortservice/api/person/meldekort") {
@@ -215,8 +217,8 @@ class PersonKtTest {
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(arenaOrdsService  = arenaOrdsService,
                     kontrollService = mockk(),
-                    innsendtMeldekortService = innsendtMeldekortService,
-                    flywayConfig = flywayConfig
+                    mockInnsendtMeldekortService = innsendtMeldekortService,
+                    mockFlywayConfig = flywayConfig
             )
         }) {
             handleRequest(HttpMethod.Get, "/meldekortservice/api/person/meldekort") {
@@ -257,8 +259,8 @@ class PersonKtTest {
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(arenaOrdsService  = arenaOrdsService,
                     kontrollService = kontrollService,
-                    innsendtMeldekortService = innsendtMeldekortService,
-                    flywayConfig = flywayConfig
+                    mockInnsendtMeldekortService = innsendtMeldekortService,
+                    mockFlywayConfig = flywayConfig
             )
         }) {
             handleRequest(HttpMethod.Post, "/meldekortservice/api/person/meldekort") {
@@ -303,8 +305,8 @@ class PersonKtTest {
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(arenaOrdsService  = arenaOrdsService,
                     kontrollService = kontrollService,
-                    innsendtMeldekortService = innsendtMeldekortService,
-                    flywayConfig = flywayConfig
+                    mockInnsendtMeldekortService = innsendtMeldekortService,
+                    mockFlywayConfig = flywayConfig
             )
         }) {
             handleRequest(HttpMethod.Post, "/meldekortservice/api/person/meldekort") {
