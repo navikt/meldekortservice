@@ -36,6 +36,7 @@ val kluentVersion = "1.52"
 val tokenValidationVersion = "1.1.5"
 val ojdbc8Version = "19.3.0.0"
 val mockOauthVersion = "0.3.1"
+val mockkVersion = "1.10.6"
 
 plugins {
 
@@ -132,7 +133,7 @@ dependencies {
 
     testImplementation("com.h2database:h2:$h2Version")
     testImplementation("org.amshove.kluent:kluent:$kluentVersion")
-    testImplementation("io.mockk:mockk:1.10.6")
+    testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("no.nav.security:mock-oauth2-server:$mockOauthVersion")
     testRuntime("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
 
