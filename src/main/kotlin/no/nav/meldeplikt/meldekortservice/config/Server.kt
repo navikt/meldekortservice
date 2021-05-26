@@ -1,16 +1,17 @@
 package no.nav.meldeplikt.meldekortservice.config
 
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.databind.DeserializationFeature
-import io.ktor.application.*
-import io.ktor.auth.*
-import io.ktor.client.*
-import io.ktor.client.engine.apache.*
-import io.ktor.client.features.json.*
-import io.ktor.features.*
-import io.ktor.jackson.*
-import io.ktor.locations.*
-import io.ktor.routing.*
+import io.ktor.application.Application
+import io.ktor.application.install
+import io.ktor.auth.Authentication
+import io.ktor.features.CallLogging
+import io.ktor.features.ContentNegotiation
+import io.ktor.features.DefaultHeaders
+import io.ktor.jackson.jackson
+import io.ktor.locations.KtorExperimentalLocationsAPI
+import io.ktor.locations.Locations
+import io.ktor.request.path
+import io.ktor.routing.Routing
+import io.ktor.util.KtorExperimentalAPI
 import io.prometheus.client.hotspot.DefaultExports
 import no.nav.cache.Cache
 import no.nav.cache.CacheConfig
@@ -31,8 +32,6 @@ import no.nav.sbl.util.EnvironmentUtils.Type.PUBLIC
 import no.nav.sbl.util.EnvironmentUtils.Type.SECRET
 import no.nav.sbl.util.EnvironmentUtils.setProperty
 import no.nav.security.token.support.ktor.tokenValidationSupport
-import org.apache.http.impl.conn.SystemDefaultRoutePlanner
-import java.net.ProxySelector
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -49,17 +48,7 @@ val swagger = Swagger(
     )
 )
 
-internal val defaultHttpClient = HttpClient(Apache) {
-    install(JsonFeature) {
-        serializer = JacksonSerializer {
-            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            setSerializationInclusion(JsonInclude.Include.NON_NULL)
-        }
-    }
-    engine {
-        customizeClient { setRoutePlanner(SystemDefaultRoutePlanner(ProxySelector.getDefault())) }
-    }
-}
+
 
 private const val cacheAntallMinutter = 55
 
@@ -69,19 +58,20 @@ val cache: Cache<String, OrdsToken> = CacheUtils.buildCache(CacheConfig.DEFAULT.
 
 const val SWAGGER_URL_V1 = "/meldekortservice/internal/apidocs/index.html?url=swagger.json"
 
-fun Application.mainModule(env: Environment = Environment()) {
+@KtorExperimentalLocationsAPI
+@KtorExperimentalAPI
+fun Application.mainModule(
+    env: Environment = Environment(),
+    mockInnsendtMeldekortService: InnsendtMeldekortService? = null,
+    arenaOrdsService: ArenaOrdsService = ArenaOrdsService(),
+    kontrollService: KontrollService = KontrollService(),
+    mockFlywayConfig: org.flywaydb.core.Flyway? = null
+) {
+    setAppProperties(env)
+    val innsendtMeldekortService: InnsendtMeldekortService = mockInnsendtMeldekortService ?: initializeInnsendtMeldekortServiceApi(env)
+    val flywayConfig: org.flywaydb.core.Flyway = mockFlywayConfig ?: initializeFlyway(env)
 
     DefaultExports.initialize()
-    setAppProperties(env)
-    val innsendtMeldekortService = InnsendtMeldekortService(
-        when (isCurrentlyRunningOnNais()) {
-            true -> OracleDatabase()
-            false -> PostgreSqlDatabase(env)
-        }
-    )
-    val arenaOrdsService = ArenaOrdsService()
-    val kontrollService = KontrollService()
-
     install(DefaultHeaders)
 
     install(ContentNegotiation) {
@@ -107,7 +97,12 @@ fun Application.mainModule(env: Environment = Environment()) {
         meldekortApi(arenaOrdsService)
         personApi(arenaOrdsService, innsendtMeldekortService, kontrollService)
     }
-    Flyway.runFlywayMigrations(env)
+
+    install(CallLogging) {
+        filter { call -> call.request.path().startsWith("/api") }
+    }
+
+    flywayConfig.migrate()
 }
 
 private fun setAppProperties(environment: Environment) {
@@ -120,3 +115,17 @@ private fun setAppProperties(environment: Environment) {
     setProperty(DB_ORACLE_PASSWORD, environment.dbUserOracle.password, SECRET)
     setProperty(DB_ORACLE_CONF, environment.dbConfOracle.jdbcUrl, PUBLIC)
 }
+
+private fun initializeInnsendtMeldekortServiceApi(env: Environment): InnsendtMeldekortService {
+    return InnsendtMeldekortService(
+    when (isCurrentlyRunningOnNais()) {
+        true -> OracleDatabase()
+        false -> PostgreSqlDatabase(env)
+    }
+    )
+}
+
+private fun initializeFlyway(env: Environment): org.flywaydb.core.Flyway {
+    return Flyway.configure(env).load()
+}
+

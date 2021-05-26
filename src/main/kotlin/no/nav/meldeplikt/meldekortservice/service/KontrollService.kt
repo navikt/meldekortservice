@@ -13,22 +13,10 @@ import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.respo
 import no.nav.meldeplikt.meldekortservice.utils.KONTROLL_KONTROLL
 import no.nav.meldeplikt.meldekortservice.utils.objectMapper
 
-class KontrollService {
-
-    private val env = Environment()
-    private val responseMapper = KontrollertTypeMapper()
-    private val aadService = AadService(AadServiceConfiguration())
-
-    suspend fun kontroller(meldekort: Meldekortkontroll): MeldekortKontrollertType {
-        var message = kontrollClient.post<KontrollResponse> {
-            url("${env.meldekortKontrollUrl}$KONTROLL_KONTROLL")
-            contentType(ContentType.Application.Json)
-            header("Authorization", "Bearer " + aadService.fetchAadToken())
-            body = meldekort
-        }
-        return responseMapper.mapKontrollResponseToKontrollertType(message)
-    }
-
+class KontrollService(
+    private val env: Environment = Environment(),
+    private val responseMapper: KontrollertTypeMapper = KontrollertTypeMapper(),
+    private val aadService: AadService = AadService(AadServiceConfiguration()),
     private val kontrollClient: HttpClient = HttpClient {
         engine {
             response.apply {
@@ -39,5 +27,14 @@ class KontrollService {
             serializer = JacksonSerializer { objectMapper }
         }
     }
-
+) {
+    suspend fun kontroller(meldekort: Meldekortkontroll): MeldekortKontrollertType {
+        var message = kontrollClient.post<KontrollResponse> {
+            url("${env.meldekortKontrollUrl}$KONTROLL_KONTROLL")
+            contentType(ContentType.Application.Json)
+            header("Authorization", "Bearer " + aadService.fetchAadToken())
+            body = meldekort
+        }
+        return responseMapper.mapKontrollResponseToKontrollertType(message)
+    }
 }
