@@ -27,6 +27,8 @@ class MeldekortkontrollMapperTest {
         var meldekortkontroll = meldekortkontrollMapper.mapMeldekortTilMeldekortkontroll(meldekortdetaljer)
 
         assert(meldekortkontroll.meldekortId.equals(meldekortdetaljer.meldekortId)) // id eller meldekortid???
+        assert(meldekortkontroll.fnr.equals(meldekortdetaljer.fodselsnr))
+        assert(meldekortkontroll.personId == meldekortdetaljer.personId)
         assert(meldekortkontroll.meldeperiode.fra == LocalDate.parse("2020-01-20", DateTimeFormatter.ISO_DATE))
         assert(meldekortkontroll.meldeperiode.til == LocalDate.parse("2020-02-02", DateTimeFormatter.ISO_DATE))
         assert(meldekortkontroll.meldeperiode.kortKanSendesFra == LocalDate.parse("2020-02-01", DateTimeFormatter.ISO_DATE))
