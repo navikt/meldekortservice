@@ -6,6 +6,7 @@ package no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll
 data class Meldekortkontroll constructor(
     var meldekortId: Long = 0,
     var personId: Long = 0,
+    var fnr: String,
     var kortType: String,
     var kortStatus: String?,
     var meldegruppe: String,
