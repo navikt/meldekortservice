@@ -65,11 +65,10 @@ spec:
       for: 2m
       description: >
             *{{ $labels.deployment }}* har utilgjengelige applikasjonsinstanser (podder) i *{{ $labels.namespace }}*.
-      action: >
+      action: |
             kjør `kubectl describe pod -l app={{ $labels.deployment }} -n {{ $labels.namespace }}` for å se events,
-            \nEvt. kjør først `kubectl get pods -l app={{ $labels.deployment }} -n {{ $labels.namespace }}` for en oversikt over poddene.
-            \nSjekk også Kibana for eventuelle feil som er logget;
-            query `application:{{ $labels.deployment }} AND namespace:{{ $labels.namespace }} AND (level:Error OR level:Warning)`.
+            Evt. kjør først `kubectl get pods -l app={{ $labels.deployment }} -n {{ $labels.namespace }}` for en oversikt over poddene.
+            Sjekk også Kibana for eventuelle feil som er logget: query `application:{{ $labels.deployment }} AND namespace:{{ $labels.namespace }} AND (level:Error OR level:Warning)`.
       severity: danger
 
     - alert: meldekortservice_feil er logget
@@ -77,8 +76,7 @@ spec:
       for: 3m
       description: >
             *{{ $labels.log_app }}* har logget feil med loggnivå Error i *{{ $labels.log_namespace }}*
-      action: >
-            Antall feil målt over siste 10 minutter er *{{ $value }}*.
-            \nSjekk Kibana for detaljer om feil som er logget;
-            query `application:{{ $labels.log_app }} AND namespace:{{ $labels.log_namespace }} AND (level:Error OR level:Warning)`.
+      action: |
+            antall feil målt over siste 10 minutter er *{{ $value }}*.
+            Sjekk Kibana for detaljer om feil som er logget: query `application:{{ $labels.log_app }} AND namespace:{{ $labels.log_namespace }} AND (level:Error OR level:Warning)`.
       severity: danger
