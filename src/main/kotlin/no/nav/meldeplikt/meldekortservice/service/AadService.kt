@@ -52,6 +52,7 @@ class AadService(
                 log.info("Henter nytt token fra AAD")
                 val token = getAccessTokenForResource(meldekortKontrollResource)
                 aadToken = token.accessToken
+                log.info(aadToken)
                 aadTokenExpires = LocalDateTime.now().plusSeconds(token.expiresIn.toLong() - cacheSafetyMarginSeconds)
             } else {
                 log.info("Henter ikke token da appen kjører lokalt")
