@@ -49,7 +49,8 @@ class MeldekortkontrollMapper {
 
             fravaer.add(
                 FravaerInn(
-                    dag = fraD.plusDays(mdag.dag.toLong()),
+                    // Vi har -1 her fordi datoene som kommer inn fra frontend er feil.
+                    dag = fraD.plusDays(mdag.dag.toLong()-1),
                     harAnnet = mdag.annetFravaer == true,
                     harKurs = mdag.kurs == true,
                     harSyk = mdag.syk == true,
