@@ -16,24 +16,24 @@ class MeldekortkontrollMapperTest {
     @Test
     fun testMeldekortkontrollMapper() {
         var meldekortDager = mutableListOf<MeldekortDag>()
-        meldekortDager.add(MeldekortDag(1, 0F, true, true, true, "DAGP"))
-        meldekortDager.add(MeldekortDag(2, 23.5F, false, false, false, "ATTF"))
-        meldekortDager.add(MeldekortDag(3, 0F, true, true, true, "ATTF"))
-        meldekortDager.add(MeldekortDag(4, 0F, true, true, true, "ATTF"))
+        meldekortDager.add(MeldekortDag(1, 0F, true, true, true))
+        meldekortDager.add(MeldekortDag(2, 23.5F, false, false, false))
+        meldekortDager.add(MeldekortDag(3, 0F, true, true, true))
+        meldekortDager.add(MeldekortDag(4, 0F, true, true, true))
         var sporsmal = Sporsmal(true, false, false, true, true, false, false, meldekortDager)
         var meldekortdetaljer = Meldekortdetaljer("123", 335, "99999123", 123456, "202004",
-            "nokkel", KortType.MASKINELT_OPPDATERT, LocalDate.now(), LocalDate.now().plusDays(1), sporsmal, "Begrunnelse")
+            "DAGP", "nokkel", KortType.MASKINELT_OPPDATERT, LocalDate.now(), LocalDate.now().plusDays(1), sporsmal, "Begrunnelse")
 
         var meldekortkontroll = meldekortkontrollMapper.mapMeldekortTilMeldekortkontroll(meldekortdetaljer)
 
-        assert(meldekortkontroll.meldekortId.equals(meldekortdetaljer.meldekortId)) // id eller meldekortid???
+        assert(meldekortkontroll.meldekortId.equals(meldekortdetaljer.meldekortId))
         assert(meldekortkontroll.fnr.equals(meldekortdetaljer.fodselsnr))
         assert(meldekortkontroll.personId == meldekortdetaljer.personId)
         assert(meldekortkontroll.meldeperiode.fra == LocalDate.parse("2020-01-20", DateTimeFormatter.ISO_DATE))
         assert(meldekortkontroll.meldeperiode.til == LocalDate.parse("2020-02-02", DateTimeFormatter.ISO_DATE))
         assert(meldekortkontroll.meldeperiode.kortKanSendesFra == LocalDate.parse("2020-02-01", DateTimeFormatter.ISO_DATE))
         assert(meldekortkontroll.meldeperiode.periodeKode == meldekortdetaljer.meldeperiode)
-        assert(meldekortkontroll.meldegruppe.equals("DAGP"))
+        assert(meldekortkontroll.meldegruppe.equals(meldekortdetaljer.meldegruppe))
         assert(meldekortkontroll.personId.equals(meldekortdetaljer.personId))
         assert(meldekortkontroll.sporsmal.annetFravaer == sporsmal.annetFravaer)
         assert(meldekortkontroll.sporsmal.arbeidet == sporsmal.arbeidet)

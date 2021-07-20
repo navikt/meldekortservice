@@ -23,6 +23,7 @@ class MeldekortdetaljerMapperTest {
             StringVerdi("99999123"),
             LongVerdi(1911L),
             "202009",
+            "DAGP",
             "NOK",
             KortType.ELEKTRONISK.code,
             LocalDate.parse("2020-01-20", DateTimeFormatter.ISO_DATE),
