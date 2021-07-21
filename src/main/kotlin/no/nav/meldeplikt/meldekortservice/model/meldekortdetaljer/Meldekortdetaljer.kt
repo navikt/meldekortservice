@@ -15,7 +15,7 @@ data class Meldekortdetaljer @JvmOverloads constructor (
     var fodselsnr: String = "",
     val meldekortId: Long = 0,
     val meldeperiode: String = "",
-    val meldegruppe: String = "",
+    val meldegruppe: String = "NULL",
     val arkivnokkel: String = "",
     val kortType: KortType,
     @JsonSerialize(using = LocalDateSerializer::class)
