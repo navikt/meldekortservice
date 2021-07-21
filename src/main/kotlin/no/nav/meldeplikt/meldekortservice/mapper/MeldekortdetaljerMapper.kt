@@ -17,7 +17,7 @@ object MeldekortdetaljerMapper {
             fodselsnr = meldekort.hode.fodselsnr.verdi,
             meldekortId = meldekort.hode.meldekortId.verdi,
             meldeperiode = meldekort.hode.meldeperiode,
-            meldegruppe = meldekort.hode.meldegruppe!!,
+            meldegruppe = meldekort.hode.meldegruppe ?: "",
             arkivnokkel = meldekort.hode.arkivnokkel,
             kortType = KortType.getByCode(meldekort.hode.kortType),
             meldeDato = meldekort.hode.meldeDato,
