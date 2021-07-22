@@ -77,18 +77,4 @@ class MeldekortkontrollMapper {
             signatur = meldekort.sporsmal?.signatur
         )
     }
-
-//    private fun trekkutMeldegruppe(meldekort: Meldekortdetaljer): String {
-//        var nivaa = 0
-//        val meldegrupper: Array<String> = arrayOf("ARBS", "INDIV", "ATTF", "DAGP")
-//        meldekort.sporsmal?.meldekortDager?.forEach {
-//            for (i in 0..3) {
-//                if (it.meldegruppe.equals(meldegrupper[i]) && nivaa < i) {
-//                    nivaa = i
-//                }
-//            }
-//        }
-//        return meldegrupper[nivaa]
-//    }
-
 }
