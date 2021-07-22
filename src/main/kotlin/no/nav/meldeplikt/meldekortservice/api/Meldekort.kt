@@ -35,7 +35,8 @@ fun Routing.getMeldekortdetaljer(arenaOrdsService: ArenaOrdsService) =
             unAuthorized<Error>())) {
             meldekortdetaljerInput -> respondOrError {
 
-            val meldekortdetaljer = arenaOrdsService.hentMeldekortdetaljer(meldekortdetaljerInput.meldekortId)
+            var meldekortdetaljer = arenaOrdsService.hentMeldekortdetaljer(meldekortdetaljerInput.meldekortId)
+            if (meldekortdetaljer.meldegruppe == null || meldekortdetaljer.meldegruppe.equals("")) meldekortdetaljer.meldegruppe =  "NULL"
             if (meldekortdetaljer.fodselsnr == userIdent) {
                 meldekortdetaljer
             } else {

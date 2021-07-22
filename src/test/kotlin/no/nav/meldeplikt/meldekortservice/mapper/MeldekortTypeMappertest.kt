@@ -15,10 +15,10 @@ class MeldekortTypeMappertest {
     @Test
     fun testMeldekortTypeMapper() {
         var meldekortDager = mutableListOf<MeldekortDag>()
-        meldekortDager.add(MeldekortDag(1, 0F, true, true, true, "DAGP"))
-        meldekortDager.add(MeldekortDag(2, 23.5F, false, false, false, "ATTF"))
-        meldekortDager.add(MeldekortDag(3, 0F, true, true, true, "ATTF"))
-        meldekortDager.add(MeldekortDag(4, 0F, true, true, true, "ATTF"))
+        meldekortDager.add(MeldekortDag(1, 0F, true, true, true))
+        meldekortDager.add(MeldekortDag(2, 23.5F, false, false, false))
+        meldekortDager.add(MeldekortDag(3, 0F, true, true, true))
+        meldekortDager.add(MeldekortDag(4, 0F, true, true, true))
 
         val sporsmal = Sporsmal(true, true, false, false, false, false, false, meldekortDager)
 
@@ -29,6 +29,7 @@ class MeldekortTypeMappertest {
             7655687,
             "202013",
             "Skelly",
+            "arkiv",
             KortType.ORDINAER,
             LocalDate.parse("2020-01-20", DateTimeFormatter.ISO_DATE),
             LocalDate.parse("2020-01-21", DateTimeFormatter.ISO_DATE),

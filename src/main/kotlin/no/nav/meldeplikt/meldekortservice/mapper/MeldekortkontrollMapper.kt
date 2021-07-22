@@ -16,9 +16,9 @@ class MeldekortkontrollMapper {
             personId = meldekort.personId,
             fnr = meldekort.fodselsnr,
             kilde = "MELDEKORT",
+            meldegruppe = meldekort.meldegruppe,
             kortType = meldekort.kortType.name,
             kortStatus = "SENDT", // TODO: Finn ut hvordan vi forholder oss til denne. Ligger ikke i request.
-            meldegruppe = trekkutMeldegruppe(meldekort),
             meldeperiode = trekkutMeldeperiode(meldekort),
             fravaersdager = trekkutFravaersdager(meldekort),
             sporsmal = trekkutSporsmal(meldekort),
@@ -49,7 +49,8 @@ class MeldekortkontrollMapper {
 
             fravaer.add(
                 FravaerInn(
-                    dag = fraD.plusDays(mdag.dag.toLong()),
+                    // Vi har -1 her fordi datoene som kommer inn fra frontend er feil.
+                    dag = fraD.plusDays(mdag.dag.toLong()-1),
                     harAnnet = mdag.annetFravaer == true,
                     harKurs = mdag.kurs == true,
                     harSyk = mdag.syk == true,
@@ -76,18 +77,4 @@ class MeldekortkontrollMapper {
             signatur = meldekort.sporsmal?.signatur
         )
     }
-
-    private fun trekkutMeldegruppe(meldekort: Meldekortdetaljer): String {
-        var nivaa = 0
-        val meldegrupper: Array<String> = arrayOf("ARBS", "INDIV", "ATTF", "DAGP")
-        meldekort.sporsmal?.meldekortDager?.forEach {
-            for (i in 0..3) {
-                if (it.meldegruppe.equals(meldegrupper[i]) && nivaa < i) {
-                    nivaa = i
-                }
-            }
-        }
-        return meldegrupper[nivaa]
-    }
-
 }

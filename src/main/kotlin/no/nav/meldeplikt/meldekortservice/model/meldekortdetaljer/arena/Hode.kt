@@ -20,6 +20,8 @@ data class Hode (
     val meldekortId: LongVerdi,
     @JacksonXmlProperty(localName = "Meldeperiode")
     val meldeperiode: String,
+    @JacksonXmlProperty(localName = "Meldegruppe")
+    val meldegruppe: String? ="",
     @JacksonXmlProperty(localName = "Arkivnokkel")
     val arkivnokkel: String,
     @JacksonXmlProperty(localName = "KortType")

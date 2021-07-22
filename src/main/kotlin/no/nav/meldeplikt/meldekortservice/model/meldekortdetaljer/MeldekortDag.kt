@@ -8,6 +8,5 @@ data class MeldekortDag @JvmOverloads constructor (
     val arbeidetTimerSum: Float? = null,
     val syk: Boolean? = null,
     val annetFravaer: Boolean? = null,
-    val kurs: Boolean? = null,
-    val meldegruppe: String? = null
+    val kurs: Boolean? = null
 )
