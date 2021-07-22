@@ -36,7 +36,7 @@ fun Routing.getMeldekortdetaljer(arenaOrdsService: ArenaOrdsService) =
             meldekortdetaljerInput -> respondOrError {
 
             var meldekortdetaljer = arenaOrdsService.hentMeldekortdetaljer(meldekortdetaljerInput.meldekortId)
-            meldekortdetaljer.meldegruppe = "NULL"
+            if (meldekortdetaljer.meldegruppe == null) meldekortdetaljer.meldegruppe =  "NULL"
             if (meldekortdetaljer.fodselsnr == userIdent) {
                 meldekortdetaljer
             } else {
