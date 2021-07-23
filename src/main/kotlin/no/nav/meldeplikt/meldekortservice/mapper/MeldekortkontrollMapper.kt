@@ -43,14 +43,14 @@ class MeldekortkontrollMapper {
     // Vi gjør dette fordi meldekortkontroll-api konsistenssjekker kryssene mot spørsmålene, noe som kan være
     // aktuelt når meldekort kommer fra andre kilder enn vår frontend
     private fun trekkutFravaersdager(meldekort: Meldekortdetaljer): List<FravaerInn> {
-        var fravaer = mutableListOf<FravaerInn>()
+        val fravaer = mutableListOf<FravaerInn>()
         val fraD: LocalDate = finnMeldeperiodeFraDato(meldekort.meldeperiode)
         for (mdag in meldekort.sporsmal?.meldekortDager!!) {
 
             fravaer.add(
                 FravaerInn(
                     // Vi har -1 her fordi datoene som kommer inn fra frontend er feil.
-                    dag = fraD.plusDays(mdag.dag.toLong()-1),
+                    dag = fraD.plusDays(mdag.dag.toLong() - 1),
                     harAnnet = mdag.annetFravaer == true,
                     harKurs = mdag.kurs == true,
                     harSyk = mdag.syk == true,

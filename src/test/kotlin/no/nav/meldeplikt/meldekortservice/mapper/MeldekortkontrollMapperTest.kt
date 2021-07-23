@@ -15,16 +15,28 @@ class MeldekortkontrollMapperTest {
 
     @Test
     fun testMeldekortkontrollMapper() {
-        var meldekortDager = mutableListOf<MeldekortDag>()
+        val meldekortDager = mutableListOf<MeldekortDag>()
         meldekortDager.add(MeldekortDag(1, 0F, true, true, true))
         meldekortDager.add(MeldekortDag(2, 23.5F, false, false, false))
         meldekortDager.add(MeldekortDag(3, 0F, true, true, true))
         meldekortDager.add(MeldekortDag(4, 0F, true, true, true))
-        var sporsmal = Sporsmal(true, false, false, true, true, false, false, meldekortDager)
-        var meldekortdetaljer = Meldekortdetaljer("123", 335, "99999123", 123456, "202004",
-            "DAGP", "nokkel", KortType.MASKINELT_OPPDATERT, LocalDate.now(), LocalDate.now().plusDays(1), sporsmal, "Begrunnelse")
+        val sporsmal = Sporsmal(true, false, false, true, true, false, false, meldekortDager)
+        val meldekortdetaljer = Meldekortdetaljer(
+            "123",
+            335,
+            "99999123",
+            123456,
+            "202004",
+            "DAGP",
+            "nokkel",
+            KortType.MASKINELT_OPPDATERT,
+            LocalDate.now(),
+            LocalDate.now().plusDays(1),
+            sporsmal,
+            "Begrunnelse"
+        )
 
-        var meldekortkontroll = meldekortkontrollMapper.mapMeldekortTilMeldekortkontroll(meldekortdetaljer)
+        val meldekortkontroll = meldekortkontrollMapper.mapMeldekortTilMeldekortkontroll(meldekortdetaljer)
 
         assert(meldekortkontroll.meldekortId.equals(meldekortdetaljer.meldekortId))
         assert(meldekortkontroll.fnr.equals(meldekortdetaljer.fodselsnr))
@@ -43,15 +55,23 @@ class MeldekortkontrollMapperTest {
         assert(meldekortkontroll.sporsmal.signatur == sporsmal.signatur)
         assert(meldekortkontroll.sporsmal.syk == sporsmal.syk)
         assert(meldekortkontroll.fravaersdager.size == meldekortDager.size)
-        sammenlignMeldekortDag(meldekortkontroll.fravaersdager[0], meldekortDager[0], meldekortkontroll.meldeperiode.fra!!)
+        sammenlignMeldekortDag(
+            meldekortkontroll.fravaersdager[0],
+            meldekortDager[0],
+            meldekortkontroll.meldeperiode.fra!!
+        )
         assert(meldekortkontroll.fravaersdager[0].harSyk!!)
-        sammenlignMeldekortDag(meldekortkontroll.fravaersdager[1], meldekortDager[1], meldekortkontroll.meldeperiode.fra!!)
+        sammenlignMeldekortDag(
+            meldekortkontroll.fravaersdager[1],
+            meldekortDager[1],
+            meldekortkontroll.meldeperiode.fra!!
+        )
         assert(meldekortkontroll.fravaersdager[1].arbeidTimer!! > 0)
         assert(meldekortkontroll.begrunnelse == meldekortdetaljer.begrunnelse)
     }
 
     private fun sammenlignMeldekortDag(fra: FravaerInn, til: MeldekortDag, foersteDag: LocalDate) {
         assert(fra.arbeidTimer == til.arbeidetTimerSum!!.toDouble())
-        assert(fra.dag == foersteDag.plusDays(til.dag.toLong()-1))
+        assert(fra.dag == foersteDag.plusDays(til.dag.toLong() - 1))
     }
 }
