@@ -19,7 +19,7 @@ fun Routing.meldekortApi(arenaOrdsService: ArenaOrdsService) {
 private const val meldekortGroup = "Meldekort"
 
 @Group(meldekortGroup)
-@Location("$MELDEKORT_PATH")
+@Location(MELDEKORT_PATH)
 @KtorExperimentalLocationsAPI
 data class MeldekortdetaljerInput(val meldekortId: Long)
 
@@ -35,8 +35,8 @@ fun Routing.getMeldekortdetaljer(arenaOrdsService: ArenaOrdsService) =
             unAuthorized<Error>())) {
             meldekortdetaljerInput -> respondOrError {
 
-            var meldekortdetaljer = arenaOrdsService.hentMeldekortdetaljer(meldekortdetaljerInput.meldekortId)
-            if (meldekortdetaljer.meldegruppe == null || meldekortdetaljer.meldegruppe.equals("")) meldekortdetaljer.meldegruppe =  "NULL"
+            val meldekortdetaljer = arenaOrdsService.hentMeldekortdetaljer(meldekortdetaljerInput.meldekortId)
+            if (meldekortdetaljer.meldegruppe.equals("")) meldekortdetaljer.meldegruppe =  "NULL"
             if (meldekortdetaljer.fodselsnr == userIdent) {
                 meldekortdetaljer
             } else {
