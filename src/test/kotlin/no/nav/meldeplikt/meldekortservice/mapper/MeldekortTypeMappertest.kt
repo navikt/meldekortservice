@@ -14,7 +14,7 @@ class MeldekortTypeMappertest {
 
     @Test
     fun testMeldekortTypeMapper() {
-        var meldekortDager = mutableListOf<MeldekortDag>()
+        val meldekortDager = mutableListOf<MeldekortDag>()
         meldekortDager.add(MeldekortDag(1, 0F, true, true, true))
         meldekortDager.add(MeldekortDag(2, 23.5F, false, false, false))
         meldekortDager.add(MeldekortDag(3, 0F, true, true, true))
@@ -56,15 +56,11 @@ class MeldekortTypeMappertest {
         assert(til.spm.syk.svarJa.isVerdi == fra.sporsmal?.syk)
         assert(til.spm.annetFravaer.svarJa.isVerdi == fra.sporsmal?.annetFravaer)
         assert(til.spm.kurs.svarJa.isVerdi == fra.sporsmal?.kurs)
-//        assert(til.spm.signatur.isVerdi==fra.sporsmal?.signatur)
-//        assert(til.spm.forskudd.isVerdi==fra.sporsmal?.forskudd)
 
         assert(til.spm.meldekortDager.meldekortDag[0].dag == meldekortDager[0].dag)
         assert(til.spm.meldekortDager.meldekortDag[1].arbeidetTimerSum.verdi == meldekortDager[1].arbeidetTimerSum)
         assert(til.spm.meldekortDager.meldekortDag[2].syk.isVerdi == meldekortDager[2].syk)
         assert(til.spm.meldekortDager.meldekortDag[3].annetFravaer.isVerdi == meldekortDager[3].annetFravaer)
         assert(til.spm.meldekortDager.meldekortDag[0].kurs.isVerdi == meldekortDager[0].kurs)
-//        assert(til.spm.meldekortDager.meldekortDag[1].meldegruppe==meldekortDager[1].meldegruppe)
-
     }
 }
