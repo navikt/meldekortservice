@@ -1,5 +1,11 @@
 package no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import no.nav.meldeplikt.meldekortservice.utils.LocalDateDeserializer
+import no.nav.meldeplikt.meldekortservice.utils.LocalDateSerializer
+import java.time.LocalDate
+
 /**
  * Denne typen er basert på det som brukes i frontend og i meldekort-kontroll
  */
@@ -11,9 +17,25 @@ data class Meldekortkontroll constructor(
     var kortType: String,
     var kortStatus: String?,
     var meldegruppe: String,
-    var meldeperiode: MeldeperiodeInn,
+    @JsonSerialize(using = LocalDateSerializer::class)
+    @JsonDeserialize(using = LocalDateDeserializer::class)
+    val periode_fra: LocalDate? = null,
+    @JsonSerialize(using = LocalDateSerializer::class)
+    @JsonDeserialize(using = LocalDateDeserializer::class)
+    val periode_til: LocalDate? = null,
+    @JsonSerialize(using = LocalDateSerializer::class)
+    @JsonDeserialize(using = LocalDateDeserializer::class)
+    val kortKanSendesFra: LocalDate? = null,
+    val kanKortSendes: Boolean? = null,
+    val periodeKode: String? = null,
     var fravaersdager: List<FravaerInn>,
-    var sporsmal: Sporsmal,
+    var arbeidssoker: Boolean? = null,
+    var arbeidet: Boolean? = null,
+    var syk: Boolean? = null,
+    var annetFravaer: Boolean? = null,
+    var kurs: Boolean? = null,
+    var forskudd: Boolean? = null,
+    var signatur: Boolean? = null,
     var begrunnelse: String?
 
 )
