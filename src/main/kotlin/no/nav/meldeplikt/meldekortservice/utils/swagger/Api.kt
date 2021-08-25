@@ -1,10 +1,8 @@
 package no.nav.meldeplikt.meldekortservice.utils.swagger
 
-import io.ktor.application.ApplicationCall
-import io.ktor.application.call
-import io.ktor.auth.authenticate
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
+import io.ktor.application.*
+import io.ktor.auth.*
+import io.ktor.http.*
 import io.ktor.http.HttpStatusCode.Companion.BadRequest
 import io.ktor.http.HttpStatusCode.Companion.InternalServerError
 import io.ktor.http.HttpStatusCode.Companion.NoContent
@@ -12,12 +10,22 @@ import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.http.HttpStatusCode.Companion.ServiceUnavailable
 import io.ktor.http.HttpStatusCode.Companion.Unauthorized
 import io.ktor.locations.*
-import io.ktor.request.receive
+import io.ktor.request.*
 import io.ktor.routing.Route
-import io.ktor.util.pipeline.PipelineContext
+import io.ktor.util.pipeline.*
 import no.nav.meldeplikt.meldekortservice.config.swagger
 import no.nav.meldeplikt.meldekortservice.utils.defaultLog
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
+import java.util.*
+import kotlin.collections.List
+import kotlin.collections.Map
+import kotlin.collections.emptyList
+import kotlin.collections.forEach
+import kotlin.collections.getOrPut
+import kotlin.collections.listOf
+import kotlin.collections.mapOf
+import kotlin.collections.mutableMapOf
+import kotlin.collections.set
 import kotlin.reflect.KClass
 
 /**
@@ -60,7 +68,7 @@ inline fun <reified LOCATION : Any, reified ENTITY_TYPE : Any> Metadata.apply(me
 }
 
 fun Metadata.applyResponseDefinitions() =
-        responses.values.forEach { addDefinition(it) }
+    responses.values.forEach { addDefinition(it) }
 
 @KtorExperimentalLocationsAPI
 fun <LOCATION : Any, BODY_TYPE : Any> Metadata.applyOperations(
@@ -71,15 +79,15 @@ fun <LOCATION : Any, BODY_TYPE : Any> Metadata.applyOperations(
     entityType: KClass<BODY_TYPE>
 ) {
     swagger.paths
-        .getOrPut(location.path) { mutableMapOf() }[method.value.toLowerCase()] =
+        .getOrPut(location.path) { mutableMapOf() }[method.value.lowercase(Locale.getDefault())] =
         Operation(this, location, group, locationType, entityType, method)
 }
 
 fun String.responds(vararg pairs: Pair<HttpStatusCode, KClass<*>>): Metadata =
-        Metadata(responses = mapOf(*pairs), summary = this)
+    Metadata(responses = mapOf(*pairs), summary = this)
 
 fun String.securityAndResponse(security: Security, vararg pairs: Pair<HttpStatusCode, KClass<*>>): Metadata =
-        Metadata(responses = mapOf(*pairs), summary = this, security = security)
+    Metadata(responses = mapOf(*pairs), summary = this, security = security)
 
 inline fun <reified T> ok(): Pair<HttpStatusCode, KClass<*>> = OK to T::class
 inline fun <reified T> noContent(): Pair<HttpStatusCode, KClass<*>> = NoContent to T::class
@@ -100,7 +108,7 @@ inline fun <reified LOCATION : Any, reified ENTITY : Any> Route.post(
     return when (metadata.security) {
         is NoSecurity -> post<LOCATION> { body(this, it, call.receive()) }
         is BearerTokenSecurity ->
-            if(isCurrentlyRunningOnNais())
+            if (isCurrentlyRunningOnNais())
                 authenticate { post<LOCATION> { body(this, it, call.receive()) } }
             else
                 post<LOCATION> { body(this, it, call.receive()) }
@@ -113,13 +121,13 @@ inline fun <reified LOCATION : Any, reified ENTITY : Any> Route.put(
     noinline body: suspend PipelineContext<Unit, ApplicationCall>.(LOCATION, ENTITY) -> Unit
 ): Route {
 
-    defaultLog.info( "Generating swagger spec for PUT ${LOCATION::class.java.getAnnotation(Location::class.java)}" )
+    defaultLog.info("Generating swagger spec for PUT ${LOCATION::class.java.getAnnotation(Location::class.java)}")
     metadata.apply<LOCATION, ENTITY>(HttpMethod.Put)
 
     return when (metadata.security) {
         is NoSecurity -> put<LOCATION> { body(this, it, call.receive()) }
         is BearerTokenSecurity ->
-            if(isCurrentlyRunningOnNais())
+            if (isCurrentlyRunningOnNais())
                 authenticate { put<LOCATION> { body(this, it, call.receive()) } }
             else
                 put<LOCATION> { body(this, it, call.receive()) }
@@ -132,13 +140,13 @@ inline fun <reified LOCATION : Any> Route.get(
     noinline body: suspend PipelineContext<Unit, ApplicationCall>.(LOCATION) -> Unit
 ): Route {
 
-    defaultLog.info( "Generating swagger spec for GET ${LOCATION::class.java.getAnnotation(Location::class.java)}" )
-        metadata.apply<LOCATION, Unit>(HttpMethod.Get)
+    defaultLog.info("Generating swagger spec for GET ${LOCATION::class.java.getAnnotation(Location::class.java)}")
+    metadata.apply<LOCATION, Unit>(HttpMethod.Get)
 
     return when (metadata.security) {
         is NoSecurity -> get<LOCATION> { body(this, it) }
         is BearerTokenSecurity ->
-            if(isCurrentlyRunningOnNais())
+            if (isCurrentlyRunningOnNais())
                 authenticate { get<LOCATION> { body(this, it) } }
             else
                 get<LOCATION> { body(this, it) }
@@ -151,13 +159,13 @@ inline fun <reified LOCATION : Any> Route.delete(
     noinline body: suspend PipelineContext<Unit, ApplicationCall>.(LOCATION) -> Unit
 ): Route {
 
-    defaultLog.info ( "Generating swagger spec for DELETE ${LOCATION::class.java.getAnnotation(Location::class.java)}" )
+    defaultLog.info("Generating swagger spec for DELETE ${LOCATION::class.java.getAnnotation(Location::class.java)}")
     metadata.apply<LOCATION, Unit>(HttpMethod.Delete)
 
     return when (metadata.security) {
         is NoSecurity -> delete<LOCATION> { body(this, it) }
         is BearerTokenSecurity ->
-            if(isCurrentlyRunningOnNais())
+            if (isCurrentlyRunningOnNais())
                 authenticate { delete<LOCATION> { body(this, it) } }
             else
                 delete<LOCATION> { body(this, it) }

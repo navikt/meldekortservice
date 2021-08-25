@@ -5,8 +5,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val prometheusVersion = "0.6.0"
-val ktorVersion = "1.2.4"
-val ktorTestVersion = "1.5.1"
+val ktorVersion = "1.6.2"
 val kotestVersion = "4.4.1"
 val junitVersion = "5.4.1"
 val confluentVersion = "5.2.0"
@@ -40,14 +39,16 @@ val mockkVersion = "1.10.6"
 
 plugins {
 
+    id("com.github.ManifestClasspath") version "0.1.0-RELEASE"
+
     id("no.nils.wsdl2java") version "0.10"
 
-    kotlin("jvm") version "1.3.50"
-    kotlin("plugin.allopen") version "1.3.41"
+    kotlin("jvm") version "1.5.21"
+    kotlin("plugin.allopen") version "1.5.21"
 
     id("com.github.johnrengelman.shadow") version "4.0.4"
 
-    id("org.flywaydb.flyway") version("5.2.4")
+    id("org.flywaydb.flyway") version ("5.2.4")
 
     id("org.sonarqube") version "2.8"
 
@@ -122,9 +123,9 @@ dependencies {
     implementation("no.nav.security:token-client-spring:$tokenValidationVersion")
     implementation("com.oracle.ojdbc:ojdbc8:$ojdbc8Version")
 
-    testCompile("org.junit.jupiter:junit-jupiter-api:$junitVersion")
-    testCompile(kotlin("test-junit5"))
-    testCompile("org.mockito:mockito-core:2.+")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+    testImplementation(kotlin("test-junit5"))
+    testImplementation("org.mockito:mockito-core:2.+")
     testImplementation("io.ktor:ktor-server-test-host:${ktorVersion}")
     testImplementation("io.ktor:ktor-client-mock:${ktorVersion}")
     testImplementation("io.ktor:ktor-client-mock-jvm:${ktorVersion}")
@@ -135,7 +136,7 @@ dependencies {
     testImplementation("org.amshove.kluent:kluent:$kluentVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("no.nav.security:mock-oauth2-server:$mockOauthVersion")
-    testRuntime("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
 
     implementation("org.webjars:swagger-ui:$swaggerVersion")
     implementation("javax.xml.ws:jaxws-api:$jaxwsApiVersion")
@@ -154,7 +155,7 @@ configure<JavaPluginConvention> {
 }
 
 application {
-    mainClassName = "io.ktor.server.netty.EngineMain"
+    mainClass.set("io.ktor.server.netty.EngineMain")
 }
 
 jacoco {
@@ -163,8 +164,8 @@ jacoco {
 
 tasks {
     withType<Jar> {
-        manifest.attributes["Main-Class"] = application.mainClassName
-        from(configurations.runtime.get().map { if (it.isDirectory) it else zipTree(it) })
+        manifest.attributes["Main-Class"] = application.mainClass
+        from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
     }
 
     withType<Test> {
@@ -183,7 +184,12 @@ tasks {
     withType<Wsdl2JavaTask> {
         wsdlDir = file("$projectDir/src/main/resources/wsdl")
         wsdlsToGenerate = listOf(
-            mutableListOf("-xjc", "-b", "$projectDir/src/main/resources/xjb/bindings.xml", "$projectDir/src/main/resources/wsdl/amelding_EksternKontrolEmeldingService.wsdl")
+            mutableListOf(
+                "-xjc",
+                "-b",
+                "$projectDir/src/main/resources/xjb/bindings.xml",
+                "$projectDir/src/main/resources/wsdl/amelding_EksternKontrolEmeldingService.wsdl"
+            )
         )
     }
 
@@ -194,7 +200,7 @@ tasks {
     }
 
     register("runServer", JavaExec::class) {
-        main = application.mainClassName
+        main = application.mainClass.get()
         classpath = sourceSets["main"].runtimeClasspath
     }
 
@@ -203,7 +209,7 @@ tasks {
             property("sonar.projectKey", System.getenv("SONAR_PROJECT_KEY_MELDEKORTSERVICE"))
             property("sonar.organization", "navit")
             property("sonar.host.url", "https://sonarcloud.io")
-            property("sonar.login", System.getenv("SONAR_TOKEN_MELDEKORTSERVICE") )
+            property("sonar.login", System.getenv("SONAR_TOKEN_MELDEKORTSERVICE"))
             property("sonar.java.coveragePlugin", "jacoco")
         }
     }

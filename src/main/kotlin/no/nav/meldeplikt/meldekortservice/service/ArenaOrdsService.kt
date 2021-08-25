@@ -4,12 +4,12 @@ import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.features.json.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import kotlinx.coroutines.runBlocking
+import no.nav.meldeplikt.meldekortservice.config.CACHE
 import no.nav.meldeplikt.meldekortservice.config.Environment
-import no.nav.meldeplikt.meldekortservice.config.cache
 import no.nav.meldeplikt.meldekortservice.mapper.MeldekortdetaljerMapper
-import no.nav.meldeplikt.meldekortservice.model.Meldeperiode
-import no.nav.meldeplikt.meldekortservice.model.OrdsToken
+import no.nav.meldeplikt.meldekortservice.model.AccessToken
 import no.nav.meldeplikt.meldekortservice.model.feil.OrdsException
 import no.nav.meldeplikt.meldekortservice.model.korriger.KopierMeldekortResponse
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
@@ -20,26 +20,21 @@ import no.nav.meldeplikt.meldekortservice.utils.*
 import java.util.*
 
 class ArenaOrdsService(
-        private val ordsClient: HttpClient = HttpClient {
-            engine {
-                response.apply {
-                    charset(Charsets.UTF_8.displayName())
-                }
-            }
-            install(JsonFeature) {
-                serializer = JacksonSerializer { objectMapper }
-            }
-        },
-        private val env: Environment = Environment()
+    private val ordsClient: HttpClient = HttpClient {
+        install(JsonFeature) {
+            serializer = JacksonSerializer { objectMapper }
+        }
+    },
+    private val env: Environment = Environment()
 ) {
     private val log = getLogger(ArenaOrdsService::class)
 
     suspend fun hentMeldekort(fnr: String): OrdsStringResponse {
-        val meldekort = ordsClient.call("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORT$fnr") {
+        val meldekort = ordsClient.request<HttpResponse>("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORT$fnr") {
             setupOrdsRequest()
         }
-        if (HTTP_STATUS_CODES_2XX.contains(meldekort.response.status.value)) {
-            return OrdsStringResponse(meldekort.response.status, meldekort.response.receive())
+        if (HTTP_STATUS_CODES_2XX.contains(meldekort.status.value)) {
+            return OrdsStringResponse(meldekort.status, meldekort.receive())
         } else {
             throw OrdsException("Kunne ikke hente meldekort fra Arena Ords.")
         }
@@ -80,13 +75,13 @@ class ArenaOrdsService(
         }
     }
 
-    private fun hentToken(): OrdsToken {
-        return cache.get("ordsToken", this::hentOrdsToken)
+    private fun hentToken(): AccessToken {
+        return CACHE.get("ordsToken", this::hentOrdsToken)
     }
 
-    private fun hentOrdsToken(): OrdsToken {
+    private fun hentOrdsToken(): AccessToken {
         log.info("Cache timet ut. Henter token")
-        var token = OrdsToken(null, null, null)
+        var token = AccessToken(null, null, null)
 
         if (isCurrentlyRunningOnNais()) {
             runBlocking {

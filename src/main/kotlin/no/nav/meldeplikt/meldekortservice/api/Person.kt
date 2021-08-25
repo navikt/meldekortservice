@@ -1,14 +1,10 @@
 package no.nav.meldeplikt.meldekortservice.api
 
-import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import io.ktor.application.call
-import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
-import io.ktor.locations.KtorExperimentalLocationsAPI
-import io.ktor.locations.Location
-import io.ktor.response.respond
-import io.ktor.response.respondText
+import io.ktor.application.*
+import io.ktor.http.*
+import io.ktor.locations.*
+import io.ktor.response.*
 import io.ktor.routing.Routing
 import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
 import no.nav.meldeplikt.meldekortservice.config.SoapConfig
@@ -17,16 +13,18 @@ import no.nav.meldeplikt.meldekortservice.mapper.MeldekortMapper
 import no.nav.meldeplikt.meldekortservice.mapper.MeldekortkontrollMapper
 import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
 import no.nav.meldeplikt.meldekortservice.model.database.feil.UnretriableDatabaseException
+import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Journalpost
 import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
-import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.response.KontrollResponse
 import no.nav.meldeplikt.meldekortservice.model.response.EmptyResponse
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
+import no.nav.meldeplikt.meldekortservice.service.DokarkivService
 import no.nav.meldeplikt.meldekortservice.service.InnsendtMeldekortService
 import no.nav.meldeplikt.meldekortservice.service.KontrollService
 import no.nav.meldeplikt.meldekortservice.utils.*
 import no.nav.meldeplikt.meldekortservice.utils.swagger.*
+import kotlin.Metadata
 
 /**
 REST-controller for meldekort-api som tilbyr operasjoner for å hente:
@@ -38,14 +36,15 @@ I tillegg til å sende inn/kontrollere meldekort.
 fun Routing.personApi(
     arenaOrdsService: ArenaOrdsService,
     innsendtMeldekortService: InnsendtMeldekortService,
-    kontrollService: KontrollService
+    kontrollService: KontrollService,
+    dokarkivService: DokarkivService
 ) {
     getHistoriskeMeldekort(arenaOrdsService)
     getMeldekort(arenaOrdsService, innsendtMeldekortService)
     kontrollerMeldekort(innsendtMeldekortService, kontrollService)
+    opprettJournalpost(dokarkivService)
 }
 
-private val xmlMapper = XmlMapper()
 val jsonMapper = jacksonObjectMapper()
 private val meldekortkontrollMapper = MeldekortkontrollMapper()
 
@@ -108,17 +107,16 @@ fun Routing.getMeldekort(arenaOrdsService: ArenaOrdsService, innsendtMeldekortSe
 // Innsending/kontroll av meldekort (Amelding)
 @KtorExperimentalLocationsAPI
 fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortService, kontrollService: KontrollService) =
-    post<MeldekortInput, Meldekortdetaljer>(
+    post(
         "Kontroll/innsending av meldekort til Amelding".securityAndResponse(
             BearerTokenSecurity(),
             ok<MeldekortKontrollertType>(),
             serviceUnavailable<ErrorMessage>(),
             unAuthorized<Error>()
         )
-    ) { meldekortInput: MeldekortInput, meldekort: Meldekortdetaljer ->
+    ) { _: MeldekortInput, meldekort: Meldekortdetaljer ->
         try {
             // Send først kortet til kontroll i meldekort-kontroll. Foreløpig er dette kun for testformål og logging.
-            val kontrollResponse = KontrollResponse()
             try {
                 val kontrollResponse = kontrollService.kontroller(
                     meldekort = meldekortkontrollMapper.mapMeldekortTilMeldekortkontroll(meldekort)
@@ -185,12 +183,48 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
         }
     }
 
+@Group(personGroup)
+@Location("$PERSON_PATH/opprettJournalpost")
+@KtorExperimentalLocationsAPI
+class JournalpostInput
+
+// Opprett journal post i dokarkiv
+@KtorExperimentalLocationsAPI
+fun Routing.opprettJournalpost(
+    dokarkivService: DokarkivService
+) =
+    post(
+        "Opprett journalpost i dokarkiv".securityAndResponse(
+            BearerTokenSecurity(),
+            ok<String>(),
+            serviceUnavailable<ErrorMessage>(),
+            unAuthorized<Error>()
+        )
+    ) { _: JournalpostInput, journalpost: Journalpost ->
+        try {
+            val journalpostResponse = dokarkivService.createJournalpost(journalpost)
+            defaultLog.info("JournalpostId = " + journalpostResponse.journalpostId)
+
+            // TODO: Save journalpostId to DB?
+
+            call.respond(status = HttpStatusCode.OK, message = "Journalpost opprettet")
+        } catch (e: Exception) {
+            val errorMessage =
+                ErrorMessage("Meldekort med id ${journalpost.eksternReferanseId} ble sendt inn, men klarte ikke å skrive til dokarkiv. ${e.message}")
+            defaultLog.warn(errorMessage.error, e)
+
+            // TODO: Save to DB?
+
+            call.respond(status = HttpStatusCode.ServiceUnavailable, message = errorMessage)
+        }
+    }
+
 fun maskerFnrIAmeldingMeldekort(meldekort: Meldekortdetaljer): Meldekortdetaljer {
-    var maskertMeldekortdetaljer = meldekort
-    maskertMeldekortdetaljer.fodselsnr =
-        if (maskertMeldekortdetaljer.fodselsnr.length == 11) maskertMeldekortdetaljer.fodselsnr.substring(
+    meldekort.fodselsnr =
+        if (meldekort.fodselsnr.length == 11) meldekort.fodselsnr.substring(
             0,
             6
         ) + "*****" else "00000000000"
-    return maskertMeldekortdetaljer
+
+    return meldekort
 }

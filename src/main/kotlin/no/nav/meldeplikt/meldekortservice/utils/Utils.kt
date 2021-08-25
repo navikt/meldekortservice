@@ -40,6 +40,8 @@ internal const val DB_ORACLE_USERNAME = "oracleDbUser.username"
 internal const val DB_ORACLE_PASSWORD = "oracleDbUser.password"
 internal const val DB_ORACLE_CONF = "oracleDbConf.jdbcUrl"
 
+internal const val STS_PATH = "rest/v1/sts/token"
+
 
 const val vaultUrl = "https://vault.adeo.no"
 const val vaultTokenPath = "/var/run/secrets/nais.io/vault/vault_token"

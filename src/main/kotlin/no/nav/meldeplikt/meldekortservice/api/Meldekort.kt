@@ -11,6 +11,7 @@ import no.nav.meldeplikt.meldekortservice.utils.swagger.*
 /**
 REST-controller for meldekort-api som tilbyr operasjoner for å hente meldekortdetaljer og korrigering for en NAV-bruker.
  */
+@KtorExperimentalLocationsAPI
 fun Routing.meldekortApi(arenaOrdsService: ArenaOrdsService) {
     getMeldekortdetaljer(arenaOrdsService)
     getKorrigertMeldekort(arenaOrdsService)
@@ -32,11 +33,13 @@ fun Routing.getMeldekortdetaljer(arenaOrdsService: ArenaOrdsService) =
             ok<Meldekortdetaljer>(),
             serviceUnavailable<ErrorMessage>(),
             badRequest<ErrorMessage>(),
-            unAuthorized<Error>())) {
-            meldekortdetaljerInput -> respondOrError {
+            unAuthorized<Error>()
+        )
+    ) { meldekortdetaljerInput ->
+        respondOrError {
 
             val meldekortdetaljer = arenaOrdsService.hentMeldekortdetaljer(meldekortdetaljerInput.meldekortId)
-            if (meldekortdetaljer.meldegruppe.equals("")) meldekortdetaljer.meldegruppe =  "NULL"
+            if (meldekortdetaljer.meldegruppe == "") meldekortdetaljer.meldegruppe = "NULL"
             if (meldekortdetaljer.fodselsnr == userIdent) {
                 meldekortdetaljer
             } else {
@@ -61,8 +64,10 @@ fun Routing.getKorrigertMeldekort(arenaOrdsService: ArenaOrdsService) =
             ok<String>(),
             serviceUnavailable<ErrorMessage>(),
             badRequest<ErrorMessage>(),
-            unAuthorized<Error>())) {
-            korrigertMeldekortInput -> respondOrError{
+            unAuthorized<Error>()
+        )
+    ) { korrigertMeldekortInput ->
+        respondOrError {
 
             arenaOrdsService.kopierMeldekort(korrigertMeldekortInput.meldekortId)
         }
