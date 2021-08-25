@@ -20,8 +20,8 @@ class MeldekortkontrollMapper {
             meldegruppe = meldekort.meldegruppe,
             kortType = meldekort.kortType.name,
             kortStatus = "SENDT", // TODO: Finn ut hvordan vi forholder oss til denne. Ligger ikke i request.
-            periode_fra = fraD,
-            periode_til = fraD.plusDays(13L),
+            periodeFra = fraD,
+            periodeTil = fraD.plusDays(13L),
             kortKanSendesFra = fraD.plusDays(13L - dagerFoer),
             kanKortSendes = LocalDate.now() >= (fraD.plusDays(13L - dagerFoer)),
             periodeKode = meldekort.meldeperiode,

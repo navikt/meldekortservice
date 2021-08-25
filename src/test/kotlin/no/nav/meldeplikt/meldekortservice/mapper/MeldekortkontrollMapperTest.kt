@@ -41,8 +41,8 @@ class MeldekortkontrollMapperTest {
         assert(meldekortkontroll.meldekortId.equals(meldekortdetaljer.meldekortId))
         assert(meldekortkontroll.fnr.equals(meldekortdetaljer.fodselsnr))
         assert(meldekortkontroll.personId == meldekortdetaljer.personId)
-        assert(meldekortkontroll.periode_fra == LocalDate.parse("2020-01-20", DateTimeFormatter.ISO_DATE))
-        assert(meldekortkontroll.periode_til == LocalDate.parse("2020-02-02", DateTimeFormatter.ISO_DATE))
+        assert(meldekortkontroll.periodeFra == LocalDate.parse("2020-01-20", DateTimeFormatter.ISO_DATE))
+        assert(meldekortkontroll.periodeTil == LocalDate.parse("2020-02-02", DateTimeFormatter.ISO_DATE))
         assert(meldekortkontroll.kortKanSendesFra == LocalDate.parse("2020-02-01", DateTimeFormatter.ISO_DATE))
         assert(meldekortkontroll.periodeKode == meldekortdetaljer.meldeperiode)
         assert(meldekortkontroll.meldegruppe.equals(meldekortdetaljer.meldegruppe))
@@ -58,13 +58,13 @@ class MeldekortkontrollMapperTest {
         sammenlignMeldekortDag(
             meldekortkontroll.fravaersdager[0],
             meldekortDager[0],
-            meldekortkontroll.meldeperiode.fra!!
+            meldekortkontroll.periodeFra!!
         )
         assert(meldekortkontroll.fravaersdager[0].harSyk!!)
         sammenlignMeldekortDag(
             meldekortkontroll.fravaersdager[1],
             meldekortDager[1],
-            meldekortkontroll.meldeperiode.fra!!
+            meldekortkontroll.periodeFra!!
         )
         assert(meldekortkontroll.fravaersdager[1].arbeidTimer!! > 0)
         assert(meldekortkontroll.begrunnelse == meldekortdetaljer.begrunnelse)
