@@ -4,38 +4,35 @@ import no.nils.wsdl2java.Wsdl2JavaTask
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val prometheusVersion = "0.6.0"
-val ktorVersion = "1.6.2"
-val kotestVersion = "4.4.1"
-val junitVersion = "5.4.1"
-val confluentVersion = "5.2.0"
-val logstashVersion = "5.2"
-val logbackVersion = "1.2.3"
-val vaultJdbcVersion = "1.3.1"
-val assertJVersion = "3.12.2"
-val jacksonVersion = "2.9.9"
-val jaxwsApiVersion = "2.3.1"
-val javaxAnnotationApiVersion = "1.3.2"
-val jaxbRuntimeVersion = "2.4.0-b180830.0438"
-val jaxbApiVersion = "2.4.0-b180830.0359"
-val javaxActivationVersion = "1.1.1"
-val jaxwsToolsVersion = "2.3.1"
-val javaxJaxwsApiVersion = "2.2.1"
-val navCommonVersion = "1.2019.05.08-08.52-482a48e1a056"
-val kotlinLoggerVersion = "1.5.4"
-val ktorSwagger = "0.4.0"
-val swaggerVersion = "3.23.8"
-val vaultVersion = "3.1.0"
-val tjenestespecVersion = "1.2019.08.16-13.46-35cbdfd492d4"
-val slf4jVersion = "1.7.26"
 val flywayVersion = "6.5.7"
-val postgresVersion = "42.2.5"
 val h2Version = "1.4.199"
+val jacksonVersion = "2.9.9"
+val javaxActivationVersion = "1.1.1"
+val javaxAnnotationApiVersion = "1.3.2"
+val javaxJaxwsApiVersion = "2.2.1"
+val jaxbApiVersion = "2.4.0-b180830.0359"
+val jaxbRuntimeVersion = "2.4.0-b180830.0438"
+val jaxwsApiVersion = "2.3.1"
+val jaxwsToolsVersion = "2.3.1"
+val junitVersion = "5.4.1"
 val kluentVersion = "1.52"
-val tokenValidationVersion = "1.1.5"
-val ojdbc8Version = "19.3.0.0"
+val kotestVersion = "4.4.1"
+val kotlinLoggerVersion = "1.5.4"
+val ktorVersion = "1.6.2"
+val logbackVersion = "1.2.3"
+val logstashVersion = "5.2"
 val mockOauthVersion = "0.3.1"
 val mockkVersion = "1.10.6"
+val navCommonVersion = "1.2019.05.08-08.52-482a48e1a056"
+val ojdbc8Version = "19.3.0.0"
+val postgresVersion = "42.2.5"
+val prometheusVersion = "0.6.0"
+val slf4jVersion = "1.7.26"
+val swaggerVersion = "3.23.8"
+val tjenestespecVersion = "1.2019.08.16-13.46-35cbdfd492d4"
+val tokenValidationVersion = "1.1.5"
+val vaultJdbcVersion = "1.3.1"
+val vaultVersion = "3.1.0"
 
 plugins {
 
@@ -62,12 +59,12 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.github.jengelman.gradle.plugins:shadow:4.0.4")
+        classpath("com.github.jengelman.gradle.plugins:shadow:6.1.0")
         classpath("org.junit.platform:junit-platform-gradle-plugin:1.2.0")
         classpath("javax.xml.bind:jaxb-api:2.4.0-b180830.0359")
         classpath("org.glassfish.jaxb:jaxb-runtime:2.4.0-b180830.0438")
         classpath("com.sun.activation:javax.activation:1.2.0")
-        classpath("com.sun.xml.ws:jaxws-tools:2.3.1") {
+        classpath("com.sun.xml.ws:jaxws-tools:2.3.5") {
             exclude(group = "com.sun.xml.ws", module = "policy")
         }
     }
@@ -126,10 +123,10 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testImplementation(kotlin("test-junit5"))
     testImplementation("org.mockito:mockito-core:2.+")
-    testImplementation("io.ktor:ktor-server-test-host:${ktorVersion}")
-    testImplementation("io.ktor:ktor-client-mock:${ktorVersion}")
-    testImplementation("io.ktor:ktor-client-mock-jvm:${ktorVersion}")
-    testImplementation("io.kotest:kotest-assertions-core-jvm:${kotestVersion}")
+    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
+    testImplementation("io.ktor:ktor-client-mock:$ktorVersion")
+    testImplementation("io.ktor:ktor-client-mock-jvm:$ktorVersion")
+    testImplementation("io.kotest:kotest-assertions-core-jvm:$kotestVersion")
 
 
     testImplementation("com.h2database:h2:$h2Version")
