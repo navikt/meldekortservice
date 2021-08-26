@@ -5,34 +5,25 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.ktor.config.MapApplicationConfig
-import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
-import io.ktor.locations.KtorExperimentalLocationsAPI
-import io.ktor.server.testing.handleRequest
-import io.ktor.server.testing.setBody
-import io.ktor.server.testing.withTestApplication
-import io.ktor.util.KtorExperimentalAPI
+import io.ktor.config.*
+import io.ktor.http.*
+import io.ktor.locations.*
+import io.ktor.server.testing.*
+import io.ktor.util.*
 import io.mockk.*
 import no.aetat.amelding.externcontrolemelding.webservices.ExternControlEmeldingSOAP
 import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
 import no.nav.meldeplikt.meldekortservice.config.SoapConfig
 import no.nav.meldeplikt.meldekortservice.config.mainModule
 import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
+import no.nav.meldeplikt.meldekortservice.model.dokarkiv.JournalpostResponse
 import no.nav.meldeplikt.meldekortservice.model.enum.KortType
-import no.nav.meldeplikt.meldekortservice.model.meldekort.FravaerType
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Meldekort
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
-import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.MeldekortDag
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Sporsmal
 import no.nav.meldeplikt.meldekortservice.model.response.OrdsStringResponse
-import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
-import no.nav.meldeplikt.meldekortservice.service.InnsendtMeldekortService
-import no.nav.meldeplikt.meldekortservice.service.KontrollService
-import no.nav.meldeplikt.meldekortservice.service.SoapServiceImpl
+import no.nav.meldeplikt.meldekortservice.service.*
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import no.nav.security.mock.oauth2.MockOAuth2Server
 import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback
@@ -63,17 +54,19 @@ class PersonKtTest {
             ISSUER_ID,
             "myclient",
             DefaultOAuth2TokenCallback(audience = listOf(REQUIRED_AUDIENCE), claims = mapOf("sub" to "11111111111"))
-            ).serialize()
+        ).serialize()
 
     companion object {
         private const val ISSUER_ID = "default"
         private const val REQUIRED_AUDIENCE = "default"
 
         private val mockOAuth2Server = MockOAuth2Server()
-        private val flywayConfig = mockk<Flyway>()
-        private val arenaOrdsService = mockk<ArenaOrdsService>()
+
         private val innsendtMeldekortService = mockk<InnsendtMeldekortService>()
+        private val arenaOrdsService = mockk<ArenaOrdsService>()
         private val kontrollService = mockk<KontrollService>()
+        private val dokarkivService = mockk<DokarkivService>()
+        private val flywayConfig = mockk<Flyway>()
 
         @BeforeAll
         @JvmStatic
@@ -93,7 +86,7 @@ class PersonKtTest {
     fun `get historiske meldekort returns ok with valid JWT`() {
         val period = 1
         val fnr = "11111111111"
-        val person = Person(1L, "Bob", "Kåre", "No", "Papp", listOf<Meldekort>(), 10, listOf<FravaerType>())
+        val person = Person(1L, "Bob", "Kåre", "No", "Papp", listOf(), 10, listOf())
 
         coEvery { arenaOrdsService.hentHistoriskeMeldekort(fnr, period) } returns (person)
 
@@ -102,13 +95,18 @@ class PersonKtTest {
 
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
-            mainModule(arenaOrdsService  = arenaOrdsService,
-                    kontrollService = mockk(),
-                    mockInnsendtMeldekortService = mockk(),
-                    mockFlywayConfig = flywayConfig
+            mainModule(
+                mockInnsendtMeldekortService = innsendtMeldekortService,
+                arenaOrdsService = arenaOrdsService,
+                kontrollService = kontrollService,
+                dokarkivService = dokarkivService,
+                mockFlywayConfig = flywayConfig
             )
         }) {
-            handleRequest(HttpMethod.Get, "/meldekortservice/api/person/historiskemeldekort?antallMeldeperioder=${period}") {
+            handleRequest(
+                HttpMethod.Get,
+                "/meldekortservice/api/person/historiskemeldekort?antallMeldeperioder=${period}"
+            ) {
                 addHeader(HttpHeaders.Authorization, "Bearer ${issueToken()}")
             }.apply {
                 val mapper = jacksonObjectMapper()
@@ -124,7 +122,7 @@ class PersonKtTest {
     fun `get historiske meldekort returns 401-Unauthorized with missing JWT`() {
         val period = 1
         val fnr = "11111111111"
-        val person = Person(1L, "Bob", "Kåre", "No", "Papp", listOf<Meldekort>(), 10, listOf<FravaerType>())
+        val person = Person(1L, "Bob", "Kåre", "No", "Papp", listOf(), 10, listOf())
 
         coEvery { arenaOrdsService.hentHistoriskeMeldekort(fnr, period) } returns (person)
 
@@ -133,13 +131,18 @@ class PersonKtTest {
 
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
-            mainModule(arenaOrdsService  = arenaOrdsService,
-                    kontrollService = mockk(),
-                    mockInnsendtMeldekortService = mockk(),
-                    mockFlywayConfig = flywayConfig
+            mainModule(
+                mockInnsendtMeldekortService = innsendtMeldekortService,
+                arenaOrdsService = arenaOrdsService,
+                kontrollService = kontrollService,
+                dokarkivService = dokarkivService,
+                mockFlywayConfig = flywayConfig
             )
         }) {
-            handleRequest(HttpMethod.Get, "/meldekortservice/api/person/historiskemeldekort?antallMeldeperioder=${period}") {
+            handleRequest(
+                HttpMethod.Get,
+                "/meldekortservice/api/person/historiskemeldekort?antallMeldeperioder=${period}"
+            ) {
             }.apply {
                 response.status() shouldBe HttpStatusCode.Unauthorized
             }
@@ -151,31 +154,41 @@ class PersonKtTest {
         val mapper = XmlMapper().registerModule(KotlinModule())
         val jsonMapper = jacksonObjectMapper()
         val meldekort1 = Meldekort(
-                1L,
-                KortType.MASKINELT_OPPDATERT.code,
-                "201920",
-                LocalDate.now(),
-                LocalDate.now().plusDays(14),
-                "DAGP",
-                "Ferdig",
-                false,
-                LocalDate.now().minusDays(1),
-                3F
+            1L,
+            KortType.MASKINELT_OPPDATERT.code,
+            "201920",
+            LocalDate.now(),
+            LocalDate.now().plusDays(14),
+            "DAGP",
+            "Ferdig",
+            false,
+            LocalDate.now().minusDays(1),
+            3F
         )
         val meldekort2 = Meldekort(
-                2L,
-                KortType.MASKINELT_OPPDATERT.code,
-                "201920",
-                LocalDate.now(),
-                LocalDate.now().plusDays(14),
-                "DAGP",
-                "Ferdig",
-                false,
-                LocalDate.now().minusDays(1),
-                3F
+            2L,
+            KortType.MASKINELT_OPPDATERT.code,
+            "201920",
+            LocalDate.now(),
+            LocalDate.now().plusDays(14),
+            "DAGP",
+            "Ferdig",
+            false,
+            LocalDate.now().minusDays(1),
+            3F
         )
-        val person = Person(1L, "Bob", "Kåre", "No", "Papp", listOf<Meldekort>(meldekort1, meldekort2), 10, listOf<FravaerType>())
-        val ordsStringResponse = OrdsStringResponse(status = HttpStatusCode.OK, content = mapper.writeValueAsString(person))
+        val person = Person(
+            1L,
+            "Bob",
+            "Kåre",
+            "No",
+            "Papp",
+            listOf(meldekort1, meldekort2),
+            10,
+            listOf()
+        )
+        val ordsStringResponse =
+            OrdsStringResponse(status = HttpStatusCode.OK, content = mapper.writeValueAsString(person))
 
         coEvery { arenaOrdsService.hentMeldekort(any()) } returns (ordsStringResponse)
         coEvery { innsendtMeldekortService.hentInnsendtMeldekort(1L) } returns (InnsendtMeldekort(meldekortId = 1L))
@@ -186,10 +199,12 @@ class PersonKtTest {
 
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
-            mainModule(arenaOrdsService  = arenaOrdsService,
-                    kontrollService = mockk(),
-                    mockInnsendtMeldekortService = innsendtMeldekortService,
-                    mockFlywayConfig = flywayConfig
+            mainModule(
+                mockInnsendtMeldekortService = innsendtMeldekortService,
+                arenaOrdsService = arenaOrdsService,
+                kontrollService = kontrollService,
+                dokarkivService = dokarkivService,
+                mockFlywayConfig = flywayConfig
             )
         }) {
             handleRequest(HttpMethod.Get, "/meldekortservice/api/person/meldekort") {
@@ -215,10 +230,12 @@ class PersonKtTest {
 
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
-            mainModule(arenaOrdsService  = arenaOrdsService,
-                    kontrollService = mockk(),
-                    mockInnsendtMeldekortService = innsendtMeldekortService,
-                    mockFlywayConfig = flywayConfig
+            mainModule(
+                mockInnsendtMeldekortService = innsendtMeldekortService,
+                arenaOrdsService = arenaOrdsService,
+                kontrollService = kontrollService,
+                dokarkivService = dokarkivService,
+                mockFlywayConfig = flywayConfig
             )
         }) {
             handleRequest(HttpMethod.Get, "/meldekortservice/api/person/meldekort") {
@@ -231,11 +248,12 @@ class PersonKtTest {
 
     @Test
     fun `Kontroll or innsending of meldekort returns OK`() {
-        val meldekortdetaljer = Meldekortdetaljer(id = "1",
-                fodselsnr = "11111111111",
-                kortType = KortType.AAP,
-                meldeperiode = "20200105",
-                sporsmal = Sporsmal(meldekortDager = listOf())
+        val meldekortdetaljer = Meldekortdetaljer(
+            id = "1",
+            fodselsnr = "11111111111",
+            kortType = KortType.AAP,
+            meldeperiode = "20200105",
+            sporsmal = Sporsmal(meldekortDager = listOf())
         )
         val jsonMapper = jacksonObjectMapper()
         val meldekortKontrollertType = MeldekortKontrollertType()
@@ -257,10 +275,12 @@ class PersonKtTest {
 
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
-            mainModule(arenaOrdsService  = arenaOrdsService,
-                    kontrollService = kontrollService,
-                    mockInnsendtMeldekortService = innsendtMeldekortService,
-                    mockFlywayConfig = flywayConfig
+            mainModule(
+                mockInnsendtMeldekortService = innsendtMeldekortService,
+                arenaOrdsService = arenaOrdsService,
+                kontrollService = kontrollService,
+                dokarkivService = dokarkivService,
+                mockFlywayConfig = flywayConfig
             )
         }) {
             handleRequest(HttpMethod.Post, "/meldekortservice/api/person/meldekort") {
@@ -278,11 +298,12 @@ class PersonKtTest {
 
     @Test
     fun `Kontroll of meldekort returns ServiceUnavailable`() {
-        val meldekortdetaljer = Meldekortdetaljer(id = "1",
-                fodselsnr = "11111111111",
-                kortType = KortType.AAP,
-                meldeperiode = "20200105",
-                sporsmal = Sporsmal(meldekortDager = listOf<MeldekortDag>())
+        val meldekortdetaljer = Meldekortdetaljer(
+            id = "1",
+            fodselsnr = "11111111111",
+            kortType = KortType.AAP,
+            meldeperiode = "20200105",
+            sporsmal = Sporsmal(meldekortDager = listOf())
         )
         val meldekortKontrollertType = MeldekortKontrollertType()
         meldekortKontrollertType.meldekortId = 1L
@@ -303,10 +324,12 @@ class PersonKtTest {
 
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
-            mainModule(arenaOrdsService  = arenaOrdsService,
-                    kontrollService = kontrollService,
-                    mockInnsendtMeldekortService = innsendtMeldekortService,
-                    mockFlywayConfig = flywayConfig
+            mainModule(
+                mockInnsendtMeldekortService = innsendtMeldekortService,
+                arenaOrdsService = arenaOrdsService,
+                kontrollService = kontrollService,
+                dokarkivService = dokarkivService,
+                mockFlywayConfig = flywayConfig
             )
         }) {
             handleRequest(HttpMethod.Post, "/meldekortservice/api/person/meldekort") {
@@ -318,4 +341,65 @@ class PersonKtTest {
             }
         }
     }
+
+    @Test
+    fun `OpprettJournalpost returnerer OK hvis DokarkivService er ok`() {
+        val journalpostResponse = JournalpostResponse(
+            journalpostId = "NEW_JOURNALPOST_ID",
+            melding = "MELDING FRA DOKARKIV",
+            journalpostFerdigstilt = true
+        )
+
+        coEvery { dokarkivService.createJournalpost(any()) } returns journalpostResponse
+
+        withTestApplication({
+            (environment.config as MapApplicationConfig).setOidcConfig()
+            mainModule(
+                mockInnsendtMeldekortService = innsendtMeldekortService,
+                arenaOrdsService = arenaOrdsService,
+                kontrollService = kontrollService,
+                dokarkivService = dokarkivService,
+                mockFlywayConfig = flywayConfig
+            )
+        }) {
+            handleRequest(HttpMethod.Post, "/meldekortservice/api/person/opprettJournalpost") {
+                addHeader(HttpHeaders.Authorization, "Bearer ${issueToken()}")
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                setBody(this::class.java.getResource("/journalpost.json")!!.readText())
+            }.apply {
+                response.status() shouldBe HttpStatusCode.OK
+            }
+        }
+
+        // TODO: Check that journalpostId has been saved into the DB?
+    }
+
+    @Test
+    fun `OpprettJournalpost returnerer ServiceUnavailable hvis DokarkivService ikke er ok`() {
+        // Oppretter ikke mock for dokarkivService
+        // Dvs. dokarkivService skal feile
+
+        withTestApplication({
+            (environment.config as MapApplicationConfig).setOidcConfig()
+            mainModule(
+                mockInnsendtMeldekortService = innsendtMeldekortService,
+                arenaOrdsService = arenaOrdsService,
+                kontrollService = kontrollService,
+                dokarkivService = dokarkivService,
+                mockFlywayConfig = flywayConfig
+            )
+        }) {
+            handleRequest(HttpMethod.Post, "/meldekortservice/api/person/opprettJournalpost") {
+                addHeader(HttpHeaders.Authorization, "Bearer ${issueToken()}")
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                setBody(this::class.java.getResource("/journalpost.json")!!.readText())
+            }.apply {
+                response.status() shouldBe HttpStatusCode.ServiceUnavailable
+            }
+        }
+
+        // TODO: Check that journalpost has been saved into the DB?
+    }
+
+
 }

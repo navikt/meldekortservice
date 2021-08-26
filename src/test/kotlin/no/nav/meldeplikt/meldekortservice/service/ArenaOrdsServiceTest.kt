@@ -39,7 +39,7 @@ class ArenaOrdsServiceTest{
         val client = HttpClient(MockEngine) {
             engine {
                 addHandler { request ->
-                    if (request.url.encodedPath.contains("/api/v1/meldeplikt/meldekort") && request.url.host.contains("dummyUrl.com")) {
+                    if (request.url.encodedPath.contains("/api/v1/meldeplikt/meldekort") && request.url.host.contains("dummyurl.nav.no")) {
                         respond(ObjectMapper().writeValueAsString(response), headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()))
                     } else {
                         respondError(HttpStatusCode.BadRequest)
@@ -63,7 +63,7 @@ class ArenaOrdsServiceTest{
         val client = HttpClient(MockEngine) {
             engine {
                 addHandler { request ->
-                    if (request.url.encodedPath.contains("/api/v1/meldeplikt/meldekort/12345678") && request.url.host.contains("dummyUrl.com")) {
+                    if (request.url.encodedPath.contains("/api/v1/meldeplikt/meldekort/12345678") && request.url.host.contains("dummyurl.nav.no")) {
                         respond("", headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()))
                     } else {
                         respondError(HttpStatusCode.BadRequest)
@@ -89,7 +89,7 @@ class ArenaOrdsServiceTest{
                     request.method shouldBe HttpMethod.Get
                     request.headers["Authorization"] shouldNotBe null
                     request.headers["Authorization"] shouldStartWith "Bearer token"
-                    request.url.toString() shouldBe "https://dummyUrl.com/api/v1/meldeplikt/meldekort/historiske?fnr=1234&antMeldeperioder=10"
+                    request.url.toString() shouldBe "https://dummyurl.nav.no/api/v1/meldeplikt/meldekort/historiske?fnr=1234&antMeldeperioder=10"
                     respond(
                            xmlString
                     )
@@ -135,7 +135,7 @@ class ArenaOrdsServiceTest{
                     request.method shouldBe HttpMethod.Get
                     request.headers["Authorization"] shouldNotBe null
                     request.headers["Authorization"] shouldStartWith "Bearer token"
-                    request.url.toString() shouldBe "https://dummyUrl.com/api/v1/meldeplikt/meldekort/detaljer?meldekortId=1"
+                    request.url.toString() shouldBe "https://dummyurl.nav.no/api/v1/meldeplikt/meldekort/detaljer?meldekortId=1"
                     respond(
                         xmlString
                     )
@@ -160,7 +160,7 @@ class ArenaOrdsServiceTest{
                     request.headers["Authorization"] shouldNotBe null
                     request.headers["Authorization"] shouldStartWith "Bearer token"
                     request.headers["meldekortId"] shouldBe "123"
-                    request.url.toString() shouldBe "https://dummyUrl.com/api/v1/meldeplikt/meldekort/kopi"
+                    request.url.toString() shouldBe "https://dummyurl.nav.no/api/v1/meldeplikt/meldekort/kopi"
                     respondOk(
                            xmlString
                     )

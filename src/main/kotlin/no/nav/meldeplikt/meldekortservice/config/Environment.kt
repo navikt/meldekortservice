@@ -2,7 +2,7 @@ package no.nav.meldeplikt.meldekortservice.config
 
 import java.net.URL
 
-private const val DUMMY_URL: String = "https://dummyUrl.com"
+private const val DUMMY_URL: String = "https://dummyurl.nav.no"
 
 data class Environment(
     val ameldingUrl: URL = URL(getEnvVar("AMELDING_URI", "$DUMMY_URL/path")),
@@ -46,7 +46,9 @@ data class Environment(
     val srvSblArbeid: VaultCredentials = VaultCredentials(
         getEnvVar("SERVICEUSER_SBLARBEID_USERNAME", "username"),
         getEnvVar("SERVICEUSER_SBLARBEID_PASSWORD", "password")
-    )
+    ),
+
+    val dokarkivUrl: String = getEnvVar("DOKARKIV_URL", "https://dokarkivtest.nav.no/")
 )
 
 fun getEnvVar(varName: String, defaultValue: String? = null): String {

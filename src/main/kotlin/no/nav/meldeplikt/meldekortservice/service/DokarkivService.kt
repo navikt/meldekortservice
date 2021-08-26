@@ -26,7 +26,7 @@ class DokarkivService(
     private val log = getLogger(DokarkivService::class)
 
     suspend fun createJournalpost(journalpost: Journalpost): JournalpostResponse {
-        val response = httpClient.post<String>("${env.ordsUrl}$ARENA_ORDS_KOPIER_MELDEKORT") {
+        val response = httpClient.post<String>("${env.dokarkivUrl}$JOARK_JOURNALPOST_PATH") {
             headers.append(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON)
             headers.append(HttpHeaders.AUTHORIZATION, "Bearer ${hentToken().accessToken}")
             body = jacksonObjectMapper().writeValueAsString(journalpost)

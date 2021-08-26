@@ -188,7 +188,7 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
 @KtorExperimentalLocationsAPI
 class JournalpostInput
 
-// Opprett journal post i dokarkiv
+// Opprett journalpost i dokarkiv
 @KtorExperimentalLocationsAPI
 fun Routing.opprettJournalpost(
     dokarkivService: DokarkivService
@@ -209,8 +209,9 @@ fun Routing.opprettJournalpost(
 
             call.respond(status = HttpStatusCode.OK, message = "Journalpost opprettet")
         } catch (e: Exception) {
-            val errorMessage =
-                ErrorMessage("Meldekort med id ${journalpost.eksternReferanseId} ble sendt inn, men klarte ikke å skrive til dokarkiv. ${e.message}")
+            val errorMessage = ErrorMessage(
+                "Kan ikke opprette journalpost i dokarkiv for meldekort med id ${journalpost.eksternReferanseId}. ${e.message}"
+            )
             defaultLog.warn(errorMessage.error, e)
 
             // TODO: Save to DB?

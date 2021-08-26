@@ -30,14 +30,18 @@ class ArenaOrdsService(
     private val log = getLogger(ArenaOrdsService::class)
 
     suspend fun hentMeldekort(fnr: String): OrdsStringResponse {
-        val meldekort = ordsClient.request<HttpResponse>("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORT$fnr") {
-            setupOrdsRequest()
+        val execResult: Result<HttpResponse> = runCatching {
+            ordsClient.request("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORT$fnr") {
+                setupOrdsRequest()
+            }
         }
-        if (HTTP_STATUS_CODES_2XX.contains(meldekort.status.value)) {
-            return OrdsStringResponse(meldekort.status, meldekort.receive())
-        } else {
+
+        val meldekort = execResult.getOrNull()
+        if (execResult.isFailure || !HTTP_STATUS_CODES_2XX.contains(meldekort!!.status.value)) {
             throw OrdsException("Kunne ikke hente meldekort fra Arena Ords.")
         }
+
+        return OrdsStringResponse(meldekort.status, meldekort.receive())
     }
 
     suspend fun hentHistoriskeMeldekort(fnr: String, antallMeldeperioder: Int): Person {
