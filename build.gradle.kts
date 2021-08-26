@@ -43,9 +43,9 @@ plugins {
     kotlin("jvm") version "1.5.21"
     kotlin("plugin.allopen") version "1.5.21"
 
-    id("com.github.johnrengelman.shadow") version "4.0.4"
+    id("com.github.johnrengelman.shadow") version "6.1.0"
 
-    id("org.flywaydb.flyway") version ("5.2.4")
+    id("org.flywaydb.flyway") version ("6.5.7")
 
     id("org.sonarqube") version "2.8"
 
