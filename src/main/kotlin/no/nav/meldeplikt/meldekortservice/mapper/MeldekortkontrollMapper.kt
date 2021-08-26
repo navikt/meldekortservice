@@ -3,14 +3,15 @@ package no.nav.meldeplikt.meldekortservice.mapper
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.FravaerInn
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.Meldekortkontroll
-import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.MeldeperiodeInn
-import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.Sporsmal
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter.ISO_WEEK_DATE
 
 class MeldekortkontrollMapper {
 
     fun mapMeldekortTilMeldekortkontroll(meldekort: Meldekortdetaljer): Meldekortkontroll {
+        val dagerFoer = 1L // TODO: Hent fra parameter i database
+        val fraD: LocalDate = finnMeldeperiodeFraDato(meldekort.meldeperiode)
+
         return Meldekortkontroll(
             meldekortId = meldekort.meldekortId,
             personId = meldekort.personId,
@@ -19,22 +20,20 @@ class MeldekortkontrollMapper {
             meldegruppe = meldekort.meldegruppe,
             kortType = meldekort.kortType.name,
             kortStatus = "SENDT", // TODO: Finn ut hvordan vi forholder oss til denne. Ligger ikke i request.
-            meldeperiode = trekkutMeldeperiode(meldekort),
-            fravaersdager = trekkutFravaersdager(meldekort),
-            sporsmal = trekkutSporsmal(meldekort),
-            begrunnelse = meldekort.begrunnelse
-        )
-    }
-
-    private fun trekkutMeldeperiode(meldekort: Meldekortdetaljer): MeldeperiodeInn {
-        val dagerFoer = 1L // TODO: Hent fra parameter i database
-        val fraD: LocalDate = finnMeldeperiodeFraDato(meldekort.meldeperiode)
-        return MeldeperiodeInn(
-            fra = fraD,
-            til = fraD.plusDays(13L),
+            periodeFra = fraD,
+            periodeTil = fraD.plusDays(13L),
             kortKanSendesFra = fraD.plusDays(13L - dagerFoer),
             kanKortSendes = LocalDate.now() >= (fraD.plusDays(13L - dagerFoer)),
-            periodeKode = meldekort.meldeperiode
+            periodeKode = meldekort.meldeperiode,
+            fravaersdager = trekkutFravaersdager(meldekort),
+            arbeidssoker = meldekort.sporsmal?.arbeidssoker,
+            arbeidet = meldekort.sporsmal?.arbeidet,
+            syk = meldekort.sporsmal?.syk,
+            annetFravaer = meldekort.sporsmal?.annetFravaer,
+            kurs = meldekort.sporsmal?.kurs,
+            forskudd = meldekort.sporsmal?.forskudd,
+            signatur = meldekort.sporsmal?.signatur,
+            begrunnelse = meldekort.begrunnelse
         )
     }
 
@@ -66,15 +65,4 @@ class MeldekortkontrollMapper {
         return LocalDate.parse(meldeperiode.substring(0, 4) + "-W" + meldeperiode.substring(4, 6) + "-1", ISO_WEEK_DATE)
     }
 
-    private fun trekkutSporsmal(meldekort: Meldekortdetaljer): Sporsmal {
-        return Sporsmal(
-            arbeidssoker = meldekort.sporsmal?.arbeidssoker,
-            arbeidet = meldekort.sporsmal?.arbeidet,
-            syk = meldekort.sporsmal?.syk,
-            annetFravaer = meldekort.sporsmal?.annetFravaer,
-            kurs = meldekort.sporsmal?.kurs,
-            forskudd = meldekort.sporsmal?.forskudd,
-            signatur = meldekort.sporsmal?.signatur
-        )
-    }
 }

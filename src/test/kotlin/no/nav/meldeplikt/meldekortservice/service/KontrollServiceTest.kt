@@ -13,8 +13,6 @@ import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.FravaerInn
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.Meldekortkontroll
-import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.MeldeperiodeInn
-import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.Sporsmal
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.response.KontrollResponse
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
