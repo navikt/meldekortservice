@@ -72,6 +72,8 @@ class PersonKtTest {
         @BeforeAll
         @JvmStatic
         fun setup() {
+            mockkStatic(::isCurrentlyRunningOnNais)
+            every { isCurrentlyRunningOnNais() } returns true
             mockOAuth2Server.start(8091)
             every { flywayConfig.migrate() } returns 0
         }
@@ -98,9 +100,6 @@ class PersonKtTest {
         val person = Person(1L, "Bob", "Kåre", "No", "Papp", listOf(), 10, listOf())
 
         coEvery { arenaOrdsService.hentHistoriskeMeldekort(fnr, period) } returns (person)
-
-        mockkStatic(::isCurrentlyRunningOnNais)
-        every { isCurrentlyRunningOnNais() } returns true
 
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
@@ -134,9 +133,6 @@ class PersonKtTest {
         val person = Person(1L, "Bob", "Kåre", "No", "Papp", listOf(), 10, listOf())
 
         coEvery { arenaOrdsService.hentHistoriskeMeldekort(fnr, period) } returns (person)
-
-        mockkStatic(::isCurrentlyRunningOnNais)
-        every { isCurrentlyRunningOnNais() } returns true
 
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
@@ -203,9 +199,6 @@ class PersonKtTest {
         coEvery { innsendtMeldekortService.hentInnsendtMeldekort(1L) } returns (InnsendtMeldekort(meldekortId = 1L))
         coEvery { innsendtMeldekortService.hentInnsendtMeldekort(2L) } throws SQLException("Found no rows")
 
-        mockkStatic(::isCurrentlyRunningOnNais)
-        every { isCurrentlyRunningOnNais() } returns true
-
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(
@@ -233,9 +226,6 @@ class PersonKtTest {
         val ordsStringResponse = OrdsStringResponse(status = HttpStatusCode.BadRequest, content = "")
 
         coEvery { arenaOrdsService.hentMeldekort(any()) } returns (ordsStringResponse)
-
-        mockkStatic(::isCurrentlyRunningOnNais)
-        every { isCurrentlyRunningOnNais() } returns true
 
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
@@ -279,8 +269,6 @@ class PersonKtTest {
 
         coEvery { innsendtMeldekortService.settInnInnsendtMeldekort(any()) } just Runs
         coEvery { kontrollService.kontroller(any()) } returns meldekortKontrollertType
-        mockkStatic(::isCurrentlyRunningOnNais)
-        every { isCurrentlyRunningOnNais() } returns true
 
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
@@ -328,8 +316,6 @@ class PersonKtTest {
 
         coEvery { innsendtMeldekortService.settInnInnsendtMeldekort(any()) } just Runs
         coEvery { kontrollService.kontroller(any()) } returns meldekortKontrollertType
-        mockkStatic(::isCurrentlyRunningOnNais)
-        every { isCurrentlyRunningOnNais() } returns true
 
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
