@@ -79,8 +79,13 @@ node {
         }
 
         stage("Build application") {
-            sh "mvn -f version.xml versions:set -DnewVersion=${releaseVersion} -DgenerateBackupPoms=false -B"
-            sh "gradle build"
+            environment {
+                JAVA_HOME = "/usr/java/jdk-11.0.2"
+            }
+            steps {
+                sh "mvn -f version.xml versions:set -DnewVersion=${releaseVersion} -DgenerateBackupPoms=false -B"
+                sh "gradle build"
+            }
         }
 
         stage('Analyze with SonarQube') {
