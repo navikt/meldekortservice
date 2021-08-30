@@ -29,6 +29,7 @@ import no.nav.security.mock.oauth2.MockOAuth2Server
 import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback
 import org.amshove.kluent.shouldBe
 import org.flywaydb.core.Flyway
+import org.junit.Before
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -62,11 +63,11 @@ class PersonKtTest {
 
         private val mockOAuth2Server = MockOAuth2Server()
 
-        private val innsendtMeldekortService = mockk<InnsendtMeldekortService>()
-        private val arenaOrdsService = mockk<ArenaOrdsService>()
-        private val kontrollService = mockk<KontrollService>()
-        private val dokarkivService = mockk<DokarkivService>()
-        private val flywayConfig = mockk<Flyway>()
+        private var innsendtMeldekortService = mockk<InnsendtMeldekortService>()
+        private var arenaOrdsService = mockk<ArenaOrdsService>()
+        private var kontrollService = mockk<KontrollService>()
+        private var dokarkivService = mockk<DokarkivService>()
+        private var flywayConfig = mockk<Flyway>()
 
         @BeforeAll
         @JvmStatic
@@ -80,6 +81,14 @@ class PersonKtTest {
         fun cleanup() {
             mockOAuth2Server.shutdown()
         }
+    }
+
+    @Before
+    fun reset() {
+        innsendtMeldekortService = mockk()
+        arenaOrdsService = mockk()
+        kontrollService = mockk()
+        dokarkivService = mockk()
     }
 
     @Test
