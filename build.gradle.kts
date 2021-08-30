@@ -58,7 +58,6 @@ plugins {
 
 buildscript {
     repositories {
-        mavenLocal()
         mavenCentral()
     }
     dependencies {
@@ -74,7 +73,6 @@ buildscript {
 }
 
 repositories {
-    mavenLocal()
     mavenCentral()
     jcenter()
     maven("https://plugins.gradle.org/m2/")
@@ -151,8 +149,8 @@ dependencies {
 }
 
 configure<JavaPluginConvention> {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 application {
@@ -179,7 +177,7 @@ tasks {
 
     withType<KotlinCompile> {
         dependsOn("wsdl2java")
-        kotlinOptions.jvmTarget = "1.8"
+        kotlinOptions.jvmTarget = "11"
     }
 
     withType<Wsdl2JavaTask> {
