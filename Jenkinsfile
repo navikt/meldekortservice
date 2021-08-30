@@ -11,6 +11,8 @@ import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
 //
 
 node {
+    env.JAVA_HOME="${tool 'JDK 11.0.2'}"
+
     def NAIS_CLI = "/usr/bin/deploy"
 
     def NAISERATOR_YAML_FILE = "naiserator.yaml"
@@ -79,13 +81,8 @@ node {
         }
 
         stage("Build application") {
-            environment {
-                JAVA_HOME = "/usr/java/jdk-11.0.2"
-            }
-            steps {
-                sh "mvn -f version.xml versions:set -DnewVersion=${releaseVersion} -DgenerateBackupPoms=false -B"
-                sh "gradle build"
-            }
+            sh "mvn -f version.xml versions:set -DnewVersion=${releaseVersion} -DgenerateBackupPoms=false -B"
+            sh "gradle build"
         }
 
         stage('Analyze with SonarQube') {
