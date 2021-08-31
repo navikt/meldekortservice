@@ -72,10 +72,11 @@ class PersonKtTest {
         @BeforeAll
         @JvmStatic
         fun setup() {
+            mockOAuth2Server.start()
+            every { flywayConfig.migrate() } returns 0
+
             mockkStatic(::isCurrentlyRunningOnNais)
             every { isCurrentlyRunningOnNais() } returns true
-            mockOAuth2Server.start(8091)
-            every { flywayConfig.migrate() } returns 0
         }
 
         @AfterAll
@@ -83,14 +84,6 @@ class PersonKtTest {
         fun cleanup() {
             mockOAuth2Server.shutdown()
         }
-    }
-
-    @Before
-    fun reset() {
-        innsendtMeldekortService = mockk()
-        arenaOrdsService = mockk()
-        kontrollService = mockk()
-        dokarkivService = mockk()
     }
 
     @Test
@@ -192,8 +185,7 @@ class PersonKtTest {
             10,
             listOf()
         )
-        val ordsStringResponse =
-            OrdsStringResponse(status = HttpStatusCode.OK, content = mapper.writeValueAsString(person))
+        val ordsStringResponse = OrdsStringResponse(status = HttpStatusCode.OK, content = mapper.writeValueAsString(person))
 
         coEvery { arenaOrdsService.hentMeldekort(any()) } returns (ordsStringResponse)
         coEvery { innsendtMeldekortService.hentInnsendtMeldekort(1L) } returns (InnsendtMeldekort(meldekortId = 1L))
