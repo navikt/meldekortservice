@@ -55,7 +55,7 @@ class MeldekortKtTest {
         ).serialize()
 
     companion object {
-        private const val ISSUER_ID = "default"
+        private const val ISSUER_ID = "default/v2.0"
         private const val REQUIRED_AUDIENCE = "default"
 
         private val mockOAuth2Server = MockOAuth2Server()

@@ -29,7 +29,6 @@ import no.nav.security.mock.oauth2.MockOAuth2Server
 import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback
 import org.amshove.kluent.shouldBe
 import org.flywaydb.core.Flyway
-import org.junit.Before
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -58,7 +57,7 @@ class PersonKtTest {
         ).serialize()
 
     companion object {
-        private const val ISSUER_ID = "default"
+        private const val ISSUER_ID = "default/v2.0"
         private const val REQUIRED_AUDIENCE = "default"
 
         private val mockOAuth2Server = MockOAuth2Server()
