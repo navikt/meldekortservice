@@ -43,7 +43,7 @@ class PersonKtTest {
     private fun MapApplicationConfig.setOidcConfig() {
         put("no.nav.security.jwt.issuers.size", "1")
         put("no.nav.security.jwt.issuers.0.issuer_name", ISSUER_ID)
-        put("no.nav.security.jwt.issuers.0.discoveryurl", mockOAuth2Server.wellKnownUrl(ISSUER_ID).toString())
+        put("no.nav.security.jwt.issuers.0.discoveryurl", mockOAuth2Server.wellKnownUrl("$ISSUER_ID/v2.0").toString())
         put("no.nav.security.jwt.issuers.0.accepted_audience", REQUIRED_AUDIENCE)
         put("no.nav.security.jwt.required_issuer_name", ISSUER_ID)
         put("ktor.environment", "local")
@@ -57,7 +57,7 @@ class PersonKtTest {
         ).serialize()
 
     companion object {
-        private const val ISSUER_ID = "default/v2.0"
+        private const val ISSUER_ID = "default"
         private const val REQUIRED_AUDIENCE = "default"
 
         private val mockOAuth2Server = MockOAuth2Server()
