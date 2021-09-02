@@ -82,7 +82,7 @@ node {
 
         stage("Build application") {
             sh "mvn -f version.xml versions:set -DnewVersion=${releaseVersion} -DgenerateBackupPoms=false -B"
-            sh "gradle build --debug"
+            sh "gradle build"
         }
 
         stage('Analyze with SonarQube') {

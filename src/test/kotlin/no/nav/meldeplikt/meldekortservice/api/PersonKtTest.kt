@@ -34,9 +34,11 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import java.sql.SQLException
 import java.time.LocalDate
+import kotlin.test.Ignore
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
+@Ignore
 @KtorExperimentalLocationsAPI
 @KtorExperimentalAPI
 class PersonKtTest {
