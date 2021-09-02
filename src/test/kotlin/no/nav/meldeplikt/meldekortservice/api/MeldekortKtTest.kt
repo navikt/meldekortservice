@@ -71,6 +71,7 @@ class MeldekortKtTest {
         @JvmStatic
         fun setup() {
             mockOAuth2Server.start()
+            Thread.sleep(3000)
             every { flywayConfig.migrate() } returns 0
 
             mockkStatic(::isCurrentlyRunningOnNais)
