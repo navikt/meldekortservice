@@ -24,6 +24,7 @@ import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetal
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Sporsmal
 import no.nav.meldeplikt.meldekortservice.model.response.OrdsStringResponse
 import no.nav.meldeplikt.meldekortservice.service.*
+import no.nav.meldeplikt.meldekortservice.utils.getLogger
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import no.nav.security.mock.oauth2.MockOAuth2Server
 import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback
@@ -42,7 +43,10 @@ import kotlin.test.assertNotNull
 @KtorExperimentalLocationsAPI
 @KtorExperimentalAPI
 class PersonKtTest {
+    private val log = getLogger(PersonKtTest::class)
+
     private fun MapApplicationConfig.setOidcConfig() {
+        log.info("############ wellKnownUrl = " + mockOAuth2Server.wellKnownUrl(ISSUER_ID).toString() + " ############")
         put("no.nav.security.jwt.issuers.size", "1")
         put("no.nav.security.jwt.issuers.0.issuer_name", ISSUER_ID)
         put("no.nav.security.jwt.issuers.0.discoveryurl", mockOAuth2Server.wellKnownUrl(ISSUER_ID).toString())

@@ -35,6 +35,7 @@ import kotlin.test.assertNotNull
 @KtorExperimentalAPI
 class MeldekortKtTest {
     private fun MapApplicationConfig.setOidcConfig() {
+        lo
         put("no.nav.security.jwt.issuers.size", "1")
         put("no.nav.security.jwt.issuers.0.issuer_name", ISSUER_ID)
         put("no.nav.security.jwt.issuers.0.discoveryurl", mockOAuth2Server.wellKnownUrl(ISSUER_ID).toString())
@@ -71,7 +72,6 @@ class MeldekortKtTest {
         @JvmStatic
         fun setup() {
             mockOAuth2Server.start()
-            Thread.sleep(3000)
             every { flywayConfig.migrate() } returns 0
 
             mockkStatic(::isCurrentlyRunningOnNais)
