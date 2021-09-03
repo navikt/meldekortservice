@@ -72,7 +72,7 @@ class MeldekortKtTest {
         @BeforeAll
         @JvmStatic
         fun setup() {
-            mockOAuth2Server.start(8080)
+            mockOAuth2Server.start(8090)
             every { flywayConfig.migrate() } returns 0
 
             mockkStatic(::isCurrentlyRunningOnNais)
