@@ -28,6 +28,7 @@ import org.flywaydb.core.Flyway
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import java.net.InetAddress
 import kotlin.test.Ignore
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -72,7 +73,7 @@ class MeldekortKtTest {
         @BeforeAll
         @JvmStatic
         fun setup() {
-            mockOAuth2Server.start()
+            mockOAuth2Server.start(InetAddress.getByName("localhost"), 8090)
             every { flywayConfig.migrate() } returns 0
 
             mockkStatic(::isCurrentlyRunningOnNais)
