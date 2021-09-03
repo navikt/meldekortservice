@@ -4,6 +4,7 @@ import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.features.json.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.config.CACHE
 import no.nav.meldeplikt.meldekortservice.config.Environment
@@ -29,14 +30,18 @@ class ArenaOrdsService(
     private val log = getLogger(ArenaOrdsService::class)
 
     suspend fun hentMeldekort(fnr: String): OrdsStringResponse {
-        val meldekort = ordsClient.call("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORT$fnr") {
-            setupOrdsRequest()
+        val execResult: Result<HttpResponse> = runCatching {
+            ordsClient.request("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORT$fnr") {
+                setupOrdsRequest()
+            }
         }
-        if (HTTP_STATUS_CODES_2XX.contains(meldekort.response.status.value)) {
-            return OrdsStringResponse(meldekort.response.status, meldekort.response.receive())
-        } else {
+
+        val meldekort = execResult.getOrNull()
+        if (execResult.isFailure || !HTTP_STATUS_CODES_2XX.contains(meldekort!!.status.value)) {
             throw OrdsException("Kunne ikke hente meldekort fra Arena Ords.")
         }
+
+        return OrdsStringResponse(meldekort.status, meldekort.receive())
     }
 
     suspend fun hentHistoriskeMeldekort(fnr: String, antallMeldeperioder: Int): Person {
