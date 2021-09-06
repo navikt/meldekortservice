@@ -39,12 +39,12 @@ import kotlin.test.Ignore
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
+// Ignored because works locally, but fails in Jenkins
 @Ignore
 @KtorExperimentalLocationsAPI
 @KtorExperimentalAPI
 class PersonKtTest {
     private fun MapApplicationConfig.setOidcConfig() {
-        defaultLog.warn("##### wellKnownUrl = " + mockOAuth2Server.wellKnownUrl(ISSUER_ID).toString() + " #####")
         put("no.nav.security.jwt.issuers.size", "1")
         put("no.nav.security.jwt.issuers.0.issuer_name", ISSUER_ID)
         put("no.nav.security.jwt.issuers.0.discoveryurl", mockOAuth2Server.wellKnownUrl(ISSUER_ID).toString())
