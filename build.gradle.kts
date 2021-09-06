@@ -51,7 +51,7 @@ plugins {
 
     id("org.sonarqube") version "2.8"
 
-    id("jacoco")
+    jacoco
 
     application
 }
@@ -158,7 +158,7 @@ application {
 }
 
 jacoco {
-    toolVersion = "0.8.4"
+    toolVersion = "0.8.7"
 }
 
 tasks {
