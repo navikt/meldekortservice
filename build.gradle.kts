@@ -89,7 +89,6 @@ dependencies {
         exclude(group = "com.sun.xml.ws", module = "policy")
     }
 
-    implementation(kotlin("stdlib-jdk8"))
     implementation("no.nav:vault-jdbc:$vaultJdbcVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("ch.qos.logback:logback-core:$logbackVersion")
