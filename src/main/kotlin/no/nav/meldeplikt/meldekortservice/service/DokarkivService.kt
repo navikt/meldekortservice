@@ -4,6 +4,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.client.*
 import io.ktor.client.features.json.*
 import io.ktor.client.request.*
+import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.config.CACHE
 import no.nav.meldeplikt.meldekortservice.config.Environment
@@ -12,8 +13,6 @@ import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Journalpost
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.JournalpostResponse
 import no.nav.meldeplikt.meldekortservice.utils.*
 import java.util.*
-import javax.ws.rs.core.HttpHeaders
-import javax.ws.rs.core.MediaType
 
 class DokarkivService(
     private val httpClient: HttpClient = HttpClient {
@@ -27,8 +26,8 @@ class DokarkivService(
 
     suspend fun createJournalpost(journalpost: Journalpost): JournalpostResponse {
         val response = httpClient.post<String>("${env.dokarkivUrl}$JOARK_JOURNALPOST_PATH") {
-            headers.append(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON)
-            headers.append(HttpHeaders.AUTHORIZATION, "Bearer ${hentToken().accessToken}")
+            contentType(ContentType.Application.Json)
+            header("Authorization", "Bearer " + hentToken().accessToken)
             body = jacksonObjectMapper().writeValueAsString(journalpost)
         }
 
@@ -59,6 +58,6 @@ class DokarkivService(
 
     private fun HttpRequestBuilder.setupTokenRequest() {
         val base = "${env.srvMeldekortservice.username}:${env.srvMeldekortservice.password}"
-        headers.append("Authorization", "Basic ${Base64.getEncoder().encodeToString(base.toByteArray())}")
+        header("Authorization", "Basic ${Base64.getEncoder().encodeToString(base.toByteArray())}")
     }
 }
