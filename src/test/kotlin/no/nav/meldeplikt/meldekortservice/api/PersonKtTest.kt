@@ -16,6 +16,7 @@ import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
 import no.nav.meldeplikt.meldekortservice.config.SoapConfig
 import no.nav.meldeplikt.meldekortservice.config.mainModule
 import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
+import no.nav.meldeplikt.meldekortservice.model.dokarkiv.DokumentInfo
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.JournalpostResponse
 import no.nav.meldeplikt.meldekortservice.model.enum.KortType
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Meldekort
@@ -335,8 +336,12 @@ class PersonKtTest {
     fun `OpprettJournalpost returnerer OK hvis DokarkivService er ok`() {
         val journalpostResponse = JournalpostResponse(
             journalpostId = "NEW_JOURNALPOST_ID",
+            journalstatus = "M",
             melding = "MELDING FRA DOKARKIV",
-            journalpostFerdigstilt = true
+            journalpostferdigstilt = true,
+            dokumenter = listOf(
+                DokumentInfo("123456")
+            )
         )
 
         coEvery { dokarkivService.createJournalpost(any()) } returns journalpostResponse
