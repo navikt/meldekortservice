@@ -1,6 +1,5 @@
 package no.nav.meldeplikt.meldekortservice.service
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.client.*
 import io.ktor.client.features.json.*
 import io.ktor.client.request.*
@@ -25,13 +24,11 @@ class DokarkivService(
     private val log = getLogger(DokarkivService::class)
 
     suspend fun createJournalpost(journalpost: Journalpost): JournalpostResponse {
-        val response = httpClient.post<String>("${env.dokarkivUrl}$JOARK_JOURNALPOST_PATH") {
+        return httpClient.post("${env.dokarkivUrl}$JOARK_JOURNALPOST_PATH") {
             contentType(ContentType.Application.Json)
             header("Authorization", "Bearer " + hentToken().accessToken)
             body = journalpost
         }
-
-        return jacksonObjectMapper().readValue(response, JournalpostResponse::class.java)
     }
 
     private fun hentToken(): AccessToken {
