@@ -28,7 +28,7 @@ class DokarkivService(
         val response = httpClient.post<String>("${env.dokarkivUrl}$JOARK_JOURNALPOST_PATH") {
             contentType(ContentType.Application.Json)
             header("Authorization", "Bearer " + hentToken().accessToken)
-            body = jacksonObjectMapper().writeValueAsBytes(journalpost)
+            body = journalpost
         }
 
         return jacksonObjectMapper().readValue(response, JournalpostResponse::class.java)
