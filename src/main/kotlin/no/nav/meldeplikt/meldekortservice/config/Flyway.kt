@@ -20,6 +20,16 @@ object Flyway {
         val dataSource = createCorrectAdminDatasourceForEnvironment(env)
         configBuilder.dataSource(dataSource)
 
+        val commonMigrationFiles = "filesystem:src/main/resources/db/migration/common"
+        val oracleMigrationFiles = "filesystem:src/main/resources/db/migration/oracle"
+        val postgreSqlMigrationFiles = "filesystem:src/main/resources/db/migration/postgresql"
+
+        if (isCurrentlyRunningOnNais()) {
+            configBuilder.locations(commonMigrationFiles, oracleMigrationFiles)
+        } else {
+            configBuilder.locations(commonMigrationFiles, postgreSqlMigrationFiles)
+        }
+
         return configBuilder
     }
 
