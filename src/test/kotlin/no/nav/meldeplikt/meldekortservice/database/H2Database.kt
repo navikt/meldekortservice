@@ -1,7 +1,8 @@
 package no.nav.meldeplikt.meldekortservice.database
 
 import com.zaxxer.hikari.HikariDataSource
-import org.flywaydb.core.Flyway
+import no.nav.meldeplikt.meldekortservice.config.Environment
+import no.nav.meldeplikt.meldekortservice.config.Flyway
 
 class H2Database : Database {
 
@@ -26,7 +27,7 @@ class H2Database : Database {
     }
 
     private fun flyway() {
-        Flyway.configure()
+        Flyway.configure(Environment())
             .dataSource(dataSource)
             .load()
             .migrate()
