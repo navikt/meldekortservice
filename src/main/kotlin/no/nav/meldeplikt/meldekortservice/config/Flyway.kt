@@ -16,8 +16,13 @@ object Flyway {
     }
 
     fun configure(env: Environment): FluentConfiguration {
-        val configBuilder = Flyway.configure()
         val dataSource = createCorrectAdminDatasourceForEnvironment(env)
+
+        return configure(dataSource)
+    }
+
+    fun configure(dataSource: DataSource): FluentConfiguration {
+        val configBuilder = Flyway.configure()
         configBuilder.dataSource(dataSource)
 
         val commonMigrationFiles = "filesystem:src/main/resources/db/migration/common"
