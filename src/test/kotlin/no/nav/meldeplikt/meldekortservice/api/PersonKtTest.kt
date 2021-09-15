@@ -41,9 +41,9 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 // Ignored because works locally, but fails in Jenkins
-@Ignore
 @KtorExperimentalLocationsAPI
 @KtorExperimentalAPI
+@Ignore
 class PersonKtTest {
     private fun MapApplicationConfig.setOidcConfig() {
         put("no.nav.security.jwt.issuers.size", "1")
