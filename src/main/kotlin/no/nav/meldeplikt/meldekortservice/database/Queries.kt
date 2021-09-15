@@ -3,14 +3,12 @@ package no.nav.meldeplikt.meldekortservice.database
 import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Journalpost
-import java.io.StringReader
 import java.nio.ByteBuffer
 import java.nio.CharBuffer
 import java.nio.charset.StandardCharsets
 import java.sql.Connection
 import java.sql.ResultSet
 import java.util.*
-import javax.sql.rowset.serial.SerialBlob
 import javax.sql.rowset.serial.SerialClob
 
 

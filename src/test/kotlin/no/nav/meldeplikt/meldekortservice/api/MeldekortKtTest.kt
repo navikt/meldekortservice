@@ -1,6 +1,5 @@
 package no.nav.meldeplikt.meldekortservice.api
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.config.*
 import io.ktor.http.*
@@ -19,6 +18,7 @@ import no.nav.meldeplikt.meldekortservice.service.DokarkivService
 import no.nav.meldeplikt.meldekortservice.service.InnsendtMeldekortService
 import no.nav.meldeplikt.meldekortservice.service.KontrollService
 import no.nav.meldeplikt.meldekortservice.utils.ErrorMessage
+import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import no.nav.security.mock.oauth2.MockOAuth2Server
 import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback
@@ -27,12 +27,11 @@ import org.flywaydb.core.Flyway
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import kotlin.test.Ignore
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 // Ignored because works locally, but fails in Jenkins
-@Ignore
+
 @KtorExperimentalLocationsAPI
 @KtorExperimentalAPI
 class MeldekortKtTest {
@@ -110,9 +109,8 @@ class MeldekortKtTest {
             handleRequest(HttpMethod.Get, "/meldekortservice/api/meldekort?meldekortId=${id}") {
                 addHeader(HttpHeaders.Authorization, "Bearer ${issueToken()}")
             }.apply {
-                val mapper = jacksonObjectMapper()
                 assertNotNull(response.content)
-                val responseObject = mapper.readValue<Meldekortdetaljer>(response.content!!)
+                val responseObject = defaultObjectMapper.readValue<Meldekortdetaljer>(response.content!!)
                 response.status() shouldBe HttpStatusCode.OK
                 assertEquals(meldekortdetaljer.id, responseObject.id)
             }
@@ -143,9 +141,8 @@ class MeldekortKtTest {
             handleRequest(HttpMethod.Get, "/meldekortservice/api/meldekort?meldekortId=${id}") {
                 addHeader(HttpHeaders.Authorization, "Bearer ${issueToken()}")
             }.apply {
-                val mapper = jacksonObjectMapper()
                 assertNotNull(response.content)
-                val responseObject = mapper.readValue<ErrorMessage>(response.content!!)
+                val responseObject = defaultObjectMapper.readValue<ErrorMessage>(response.content!!)
                 response.status() shouldBe HttpStatusCode.BadRequest
                 assertEquals(
                     "Personidentifikator matcher ikke. Bruker kan derfor ikke hente ut meldekortdetaljer.",
@@ -257,9 +254,8 @@ class MeldekortKtTest {
             handleRequest(HttpMethod.Get, "/meldekortservice/api/meldekort/korrigering?meldekortId=${id}") {
                 addHeader(HttpHeaders.Authorization, "Bearer ${issueToken()}")
             }.apply {
-                val mapper = jacksonObjectMapper()
                 assertNotNull(response.content)
-                val responseObject = mapper.readValue<Long>(response.content!!)
+                val responseObject = defaultObjectMapper.readValue<Long>(response.content!!)
                 response.status() shouldBe HttpStatusCode.OK
                 assertEquals(nyId, responseObject)
             }

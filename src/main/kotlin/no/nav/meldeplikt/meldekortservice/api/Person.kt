@@ -1,6 +1,5 @@
 package no.nav.meldeplikt.meldekortservice.api
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.locations.*
@@ -41,11 +40,10 @@ fun Routing.personApi(
 ) {
     getHistoriskeMeldekort(arenaOrdsService)
     getMeldekort(arenaOrdsService, innsendtMeldekortService)
-    kontrollerMeldekort(innsendtMeldekortService, kontrollService)
-    opprettJournalpost(dokarkivService)
+    kontrollerMeldekort(kontrollService, innsendtMeldekortService)
+    opprettJournalpost(dokarkivService, innsendtMeldekortService)
 }
 
-val jsonMapper = jacksonObjectMapper()
 private val meldekortkontrollMapper = MeldekortkontrollMapper()
 
 private const val personGroup = "Person"
@@ -106,7 +104,7 @@ fun Routing.getMeldekort(arenaOrdsService: ArenaOrdsService, innsendtMeldekortSe
 
 // Innsending/kontroll av meldekort (Amelding)
 @KtorExperimentalLocationsAPI
-fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortService, kontrollService: KontrollService) =
+fun Routing.kontrollerMeldekort(kontrollService: KontrollService, innsendtMeldekortService: InnsendtMeldekortService) =
     post(
         "Kontroll/innsending av meldekort til Amelding".securityAndResponse(
             BearerTokenSecurity(),
@@ -123,12 +121,12 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
                 )
                 if (kontrollResponse.arsakskoder.arsakskode.size > 0) {
                     defaultLog.info(
-                        "Kontroll feilet i meldekort-kontroll: " + jsonMapper.writeValueAsString(
+                        "Kontroll feilet i meldekort-kontroll: " + defaultObjectMapper.writeValueAsString(
                             kontrollResponse
                         )
                     )
                     defaultLog.info(
-                        "Feilet meldekort i meldekortkontroll er: " + jsonMapper.writeValueAsString(
+                        "Feilet meldekort i meldekortkontroll er: " + defaultObjectMapper.writeValueAsString(
                             meldekort
                         )
                     )
@@ -141,12 +139,12 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
             val ameldingResponse = SoapConfig.soapService().kontrollerMeldekort(meldekort)
             if (ameldingResponse.arsakskoder != null) {
                 defaultLog.info(
-                    "Kontroll feilet i Amelding: " + jsonMapper.writeValueAsString(
+                    "Kontroll feilet i Amelding: " + defaultObjectMapper.writeValueAsString(
                         ameldingResponse
                     )
                 )
                 defaultLog.info(
-                    "Feilet meldekort i Amelding er: " + jsonMapper.writeValueAsString(
+                    "Feilet meldekort i Amelding er: " + defaultObjectMapper.writeValueAsString(
                         maskerFnrIAmeldingMeldekort(meldekort)
                     )
                 )
@@ -166,7 +164,7 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
             }
             // Send responsen fra Amelding tilbake som respons
             call.respondText(
-                jsonMapper.writeValueAsString(ameldingResponse),
+                defaultObjectMapper.writeValueAsString(ameldingResponse),
                 contentType = ContentType.Application.Json
             )
 //            call.respondText(jsonMapper.writeValueAsString(kontrollResponse), contentType = ContentType.Application.Json)
@@ -175,7 +173,7 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
                 ErrorMessage("Meldekort med id ${meldekort.meldekortId} ble ikke sendt inn. ${e.message}")
             defaultLog.error(errorMessage.error, e)
             defaultLog.info(
-                "Feilet meldekort i Amelding (exception) er: " + jsonMapper.writeValueAsString(
+                "Feilet meldekort i Amelding (exception) er: " + defaultObjectMapper.writeValueAsString(
                     maskerFnrIAmeldingMeldekort(meldekort)
                 )
             )
@@ -191,7 +189,8 @@ class JournalpostInput
 // Opprett journalpost i dokarkiv
 @KtorExperimentalLocationsAPI
 fun Routing.opprettJournalpost(
-    dokarkivService: DokarkivService
+    dokarkivService: DokarkivService,
+    innsendtMeldekortService: InnsendtMeldekortService
 ) =
     post(
         "Opprett journalpost i dokarkiv".securityAndResponse(
@@ -205,16 +204,19 @@ fun Routing.opprettJournalpost(
             val journalpostResponse = dokarkivService.createJournalpost(journalpost)
             defaultLog.info("JournalpostId = " + journalpostResponse.journalpostId)
 
-            // TODO: Save journalpostId to DB?
+            innsendtMeldekortService.lagreJournalpostMeldekortPar(
+                journalpostResponse.journalpostId,
+                journalpost.eksternReferanseId!!.toLong() // Vi vet at det er meldekortId i dette feltet
+            )
 
             call.respond(status = HttpStatusCode.OK, message = "Journalpost opprettet")
         } catch (e: Exception) {
             val errorMessage = ErrorMessage(
-                "Kan ikke opprette journalpost i dokarkiv for meldekort med id ${journalpost.eksternReferanseId}. ${e.message}"
+                "Kan ikke opprette journalpost i dokarkiv for meldekort med id ${journalpost.eksternReferanseId}"
             )
             defaultLog.warn(errorMessage.error, e)
 
-            // TODO: Save to DB?
+            innsendtMeldekortService.lagreJournalpost(journalpost)
 
             call.respond(status = HttpStatusCode.ServiceUnavailable, message = errorMessage)
         }

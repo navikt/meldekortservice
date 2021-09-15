@@ -1,8 +1,6 @@
 package no.nav.meldeplikt.meldekortservice.api
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.dataformat.xml.XmlMapper
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.config.*
@@ -17,6 +15,7 @@ import no.nav.meldeplikt.meldekortservice.config.SoapConfig
 import no.nav.meldeplikt.meldekortservice.config.mainModule
 import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.DokumentInfo
+import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Journalpost
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.JournalpostResponse
 import no.nav.meldeplikt.meldekortservice.model.enum.KortType
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Meldekort
@@ -25,6 +24,8 @@ import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetal
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Sporsmal
 import no.nav.meldeplikt.meldekortservice.model.response.OrdsStringResponse
 import no.nav.meldeplikt.meldekortservice.service.*
+import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
+import no.nav.meldeplikt.meldekortservice.utils.defaultXmlMapper
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import no.nav.security.mock.oauth2.MockOAuth2Server
 import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback
@@ -35,12 +36,11 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import java.sql.SQLException
 import java.time.LocalDate
-import kotlin.test.Ignore
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 // Ignored because works locally, but fails in Jenkins
-@Ignore
+
 @KtorExperimentalLocationsAPI
 @KtorExperimentalAPI
 class PersonKtTest {
@@ -113,9 +113,8 @@ class PersonKtTest {
             ) {
                 addHeader(HttpHeaders.Authorization, "Bearer ${issueToken()}")
             }.apply {
-                val mapper = jacksonObjectMapper()
                 assertNotNull(response.content)
-                val responseObject = mapper.readValue<Person>(response.content!!)
+                val responseObject = defaultObjectMapper.readValue<Person>(response.content!!)
                 response.status() shouldBe HttpStatusCode.OK
                 assertEquals(person.personId, responseObject.personId)
             }
@@ -152,8 +151,6 @@ class PersonKtTest {
 
     @Test
     fun `get person meldekort returns ok with valid JWT`() {
-        val mapper = XmlMapper().registerModule(KotlinModule())
-        val jsonMapper = jacksonObjectMapper()
         val meldekort1 = Meldekort(
             1L,
             KortType.MASKINELT_OPPDATERT.code,
@@ -188,7 +185,7 @@ class PersonKtTest {
             10,
             listOf()
         )
-        val ordsStringResponse = OrdsStringResponse(status = HttpStatusCode.OK, content = mapper.writeValueAsString(person))
+        val ordsStringResponse = OrdsStringResponse(status = HttpStatusCode.OK, content = defaultXmlMapper.writeValueAsString(person))
 
         coEvery { arenaOrdsService.hentMeldekort(any()) } returns (ordsStringResponse)
         coEvery { innsendtMeldekortService.hentInnsendtMeldekort(1L) } returns (InnsendtMeldekort(meldekortId = 1L))
@@ -208,7 +205,7 @@ class PersonKtTest {
                 addHeader(HttpHeaders.Authorization, "Bearer ${issueToken()}")
             }.apply {
                 assertNotNull(response.content)
-                val responseObject = jsonMapper.readValue<Person>(response.content!!)
+                val responseObject = defaultObjectMapper.readValue<Person>(response.content!!)
                 response.status() shouldBe HttpStatusCode.OK
                 assertEquals(person.personId, responseObject.personId)
                 assertEquals(1, responseObject.meldekortListe?.size)
@@ -249,7 +246,7 @@ class PersonKtTest {
             meldeperiode = "20200105",
             sporsmal = Sporsmal(meldekortDager = listOf())
         )
-        val jsonMapper = jacksonObjectMapper()
+
         val meldekortKontrollertType = MeldekortKontrollertType()
         meldekortKontrollertType.meldekortId = 1L
         meldekortKontrollertType.status = "OK"
@@ -281,7 +278,7 @@ class PersonKtTest {
                 setBody(ObjectMapper().writeValueAsString(meldekortdetaljer))
             }.apply {
                 assertNotNull(response.content)
-                val responseObject = jsonMapper.readValue<MeldekortKontrollertType>(response.content!!)
+                val responseObject = defaultObjectMapper.readValue<MeldekortKontrollertType>(response.content!!)
                 response.status() shouldBe HttpStatusCode.OK
                 assertEquals(meldekortKontrollertType.meldekortId, responseObject.meldekortId)
             }
@@ -334,17 +331,20 @@ class PersonKtTest {
 
     @Test
     fun `OpprettJournalpost returnerer OK hvis DokarkivService er ok`() {
+        val journalpostId = 123456780L
+
         val journalpostResponse = JournalpostResponse(
-            journalpostId = "NEW_JOURNALPOST_ID",
+            journalpostId = journalpostId,
             journalstatus = "M",
             melding = "MELDING FRA DOKARKIV",
             journalpostferdigstilt = true,
             dokumenter = listOf(
-                DokumentInfo("123456")
+                DokumentInfo(123456781)
             )
         )
 
         coEvery { dokarkivService.createJournalpost(any()) } returns journalpostResponse
+        every { innsendtMeldekortService.lagreJournalpostMeldekortPar(any(), any()) } just Runs
 
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
@@ -365,13 +365,16 @@ class PersonKtTest {
             }
         }
 
-        // TODO: Check that journalpostId has been saved into the DB?
+        // MeldekortId kommer fra eksternReferanseId i journalpost.json
+        verify { innsendtMeldekortService.lagreJournalpostMeldekortPar(journalpostId, 1011121315) }
     }
 
     @Test
     fun `OpprettJournalpost returnerer ServiceUnavailable hvis DokarkivService ikke er ok`() {
-        // Oppretter ikke mock for dokarkivService
-        // Dvs. dokarkivService skal feile
+        val journalpost = this::class.java.getResource("/journalpost.json")
+
+        coEvery { dokarkivService.createJournalpost(any()) } throws Exception()
+        every { innsendtMeldekortService.lagreJournalpost(any()) } just Runs
 
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
@@ -386,13 +389,20 @@ class PersonKtTest {
             handleRequest(HttpMethod.Post, "/meldekortservice/api/person/opprettJournalpost") {
                 addHeader(HttpHeaders.Authorization, "Bearer ${issueToken()}")
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                setBody(this::class.java.getResource("/journalpost.json")!!.readText())
+                setBody(journalpost!!.readText())
             }.apply {
                 response.status() shouldBe HttpStatusCode.ServiceUnavailable
             }
         }
 
-        // TODO: Check that journalpost has been saved into the DB?
+        verify {
+            innsendtMeldekortService.lagreJournalpost(
+                jacksonObjectMapper().readValue(
+                    journalpost,
+                    Journalpost::class.java
+                )
+            )
+        }
     }
 
 
