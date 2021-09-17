@@ -35,7 +35,7 @@ class DokarkivService(
     }
 
     private fun hentAccessToken(): AccessToken {
-        getLogger(this::class).info("Cache timet ut. Henter token")
+        defaultLog.info("Cache timet ut. Henter token")
         var token = AccessToken(null, null, null)
 
         if (isCurrentlyRunningOnNais()) {
@@ -45,7 +45,7 @@ class DokarkivService(
                 }
             }
         } else {
-            getLogger(this::class).info("Henter ikke token da appen kjører lokalt")
+            defaultLog.info("Henter ikke token da appen kjører lokalt")
             token = token.copy(accessToken = "token")
         }
 

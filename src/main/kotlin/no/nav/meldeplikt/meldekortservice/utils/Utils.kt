@@ -64,7 +64,7 @@ internal suspend fun PipelineContext<Unit, ApplicationCall>.respondOrError(block
         if (e is NoContentException) {
             call.respond(HttpStatusCode.NoContent)
         } else {
-            getLogger(this::class).error("Feil i meldekortservice", e)
+            defaultLog.error("Feil i meldekortservice", e)
             val eMsg = when (e) {
                 is java.util.concurrent.TimeoutException -> "Arena ikke tilgjengelig"
                 else -> if (e.localizedMessage != null) e.localizedMessage else "exception occurred"

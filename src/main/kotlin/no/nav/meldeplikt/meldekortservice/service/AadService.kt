@@ -10,7 +10,7 @@ import io.ktor.http.*
 import no.nav.meldeplikt.meldekortservice.config.AadServiceConfiguration
 import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.model.AccessToken
-import no.nav.meldeplikt.meldekortservice.utils.getLogger
+import no.nav.meldeplikt.meldekortservice.utils.defaultLog
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import org.apache.http.impl.conn.SystemDefaultRoutePlanner
 import java.net.ProxySelector
@@ -48,12 +48,12 @@ class AadService(
     suspend fun fetchAadToken(): String {
         if (aadTokenExpires.isBefore(LocalDateTime.now())) {
             if (isCurrentlyRunningOnNais()) {
-                getLogger(this::class).info("Henter nytt token fra AAD")
+                defaultLog.info("Henter nytt token fra AAD")
                 val token = getAccessTokenForResource(meldekortKontrollResource)
                 aadToken = token.accessToken!!
                 aadTokenExpires = LocalDateTime.now().plusSeconds((token.expiresIn?.toLong() ?: 0) - cacheSafetyMarginSeconds)
             } else {
-                getLogger(this::class).info("Henter ikke token da appen kjører lokalt")
+                defaultLog.info("Henter ikke token da appen kjører lokalt")
                 aadToken = "Lokalt"
                 aadTokenExpires = LocalDateTime.now().plusYears(1L)
             }

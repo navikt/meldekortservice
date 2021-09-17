@@ -4,7 +4,7 @@ import com.auth0.jwt.JWT
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.util.pipeline.*
-import no.nav.meldeplikt.meldekortservice.utils.getLogger
+import no.nav.meldeplikt.meldekortservice.utils.defaultLog
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import org.slf4j.Logger
 
@@ -26,7 +26,7 @@ val PipelineContext<Unit, ApplicationCall>.userIdent get() = if (isCurrentlyRunn
 private fun verifyThatATokenWasFound(authToken: String?) {
     if (authToken == null) {
         val melding = "Token ble ikke funnet. Dette skal ikke kunne skje."
-        getLogger(Logger.ROOT_LOGGER_NAME).error(melding)
+        defaultLog.error(melding)
         throw Exception(melding)
     }
 }
@@ -38,7 +38,7 @@ private fun verifyThatIdentIsConsistent(authTokenHeader: String?, authTokenCooki
 
         if (headerIdent != cookieIdent) {
             val melding = "Ident i header er ulik ident i cookie. Dette skal ikke kunne skje."
-            getLogger(Logger.ROOT_LOGGER_NAME).error(melding)
+            defaultLog.error(melding)
             throw Exception(melding)
         }
     }

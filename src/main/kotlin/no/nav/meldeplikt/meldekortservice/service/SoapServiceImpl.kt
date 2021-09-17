@@ -6,7 +6,7 @@ import no.nav.meldeplikt.meldekortservice.config.SoapConfig
 import no.nav.meldeplikt.meldekortservice.mapper.MeldekortTypeMapper
 import no.nav.meldeplikt.meldekortservice.model.WeblogicPing
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
-import no.nav.meldeplikt.meldekortservice.utils.getLogger
+import no.nav.meldeplikt.meldekortservice.utils.defaultLog
 import no.nav.tjeneste.virksomhet.sakogaktivitet.v1.SakOgAktivitetV1
 
 class SoapServiceImpl(
@@ -24,7 +24,7 @@ class SoapServiceImpl(
             oppfoelgingPing?.ping()
             WeblogicPing(true)
         } catch (e: Exception) {
-            getLogger(this::class).info("Ingen svar fra WebLogic, ping feilet", e)
+            defaultLog.info("Ingen svar fra WebLogic, ping feilet", e)
             WeblogicPing(false)
         }
     }
