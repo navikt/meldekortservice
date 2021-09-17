@@ -42,10 +42,10 @@ internal const val DB_ORACLE_USERNAME = "oracleDbUser.username"
 internal const val DB_ORACLE_PASSWORD = "oracleDbUser.password"
 internal const val DB_ORACLE_CONF = "oracleDbConf.jdbcUrl"
 
-internal const val STS_PATH = "rest/v1/sts/token"
+internal const val STS_PATH = "/rest/v1/sts/token"
 
-internal const val JOARK_PATH = "rest/journalpostapi/v1"
-internal const val JOARK_JOURNALPOST_PATH = "$JOARK_PATH/journalpost"
+internal const val JOURNALPOSTAPI_PATH = "/rest/journalpostapi/v1"
+internal const val JOURNALPOST_PATH = "$JOURNALPOSTAPI_PATH/journalpost"
 
 const val vaultUrl = "https://vault.adeo.no"
 const val vaultTokenPath = "/var/run/secrets/nais.io/vault/vault_token"

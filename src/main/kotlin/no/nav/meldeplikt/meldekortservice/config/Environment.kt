@@ -9,7 +9,6 @@ data class Environment(
     val ordsUrl: URL = URL(getEnvVar("ORDS_URI", DUMMY_URL)),
     val ordsClientId: String = getEnvVar("CLIENT_ID", "cLiEnTiD"),
     val ordsClientSecret: String = getEnvVar("CLIENT_SECRET", "cLiEnTsEcReT"),
-    val securityTokenService: String = getEnvVar("SECURITYTOKENSERVICE", DUMMY_URL),
     val sakOgAktivitetUrl: String = getEnvVar("SAKOGAKTIVITET_URI", DUMMY_URL),
 
     // Meldekort-kontroll
@@ -48,12 +47,22 @@ data class Environment(
         getEnvVar("SERVICEUSER_SBLARBEID_PASSWORD", "password")
     ),
 
-    val dokarkivUrl: String = getEnvVar("DOKARKIV_URL", "https://dokarkivtest.nav.no/")
+    val stsUrl: String = removeTrailingSlash(getEnvVar("SECURITYTOKENSERVICE", "https://ststest.nav.no/")),
+
+    val dokarkivUrl: String = removeTrailingSlash(getEnvVar("DOKARKIV_URL", "https://dokarkivtest.nav.no/"))
 )
 
 fun getEnvVar(varName: String, defaultValue: String? = null): String {
     return System.getenv(varName) ?: defaultValue
     ?: throw IllegalArgumentException("Variabelen $varName kan ikke være tom")
+}
+
+fun removeTrailingSlash(s: String): String {
+    if (s.endsWith("/")) {
+        return s.substring(0, s.length - 1);
+    } else {
+        return s
+    }
 }
 
 data class VaultCredentials(
