@@ -25,9 +25,9 @@ object Flyway {
         val configBuilder = Flyway.configure()
         configBuilder.dataSource(dataSource)
 
-        val commonMigrationFiles = "filesystem:src/main/resources/db/migration/common"
-        val oracleMigrationFiles = "filesystem:src/main/resources/db/migration/oracle"
-        val postgreSqlMigrationFiles = "filesystem:src/main/resources/db/migration/postgresql"
+        val commonMigrationFiles = "classpath:db/migration/common"
+        val oracleMigrationFiles = "classpath:db/migration/oracle"
+        val postgreSqlMigrationFiles = "classpath:db/migration/postgresql"
 
         if (isCurrentlyRunningOnNais()) {
             configBuilder.locations(commonMigrationFiles, oracleMigrationFiles)
