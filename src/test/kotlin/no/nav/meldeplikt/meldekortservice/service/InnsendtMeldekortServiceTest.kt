@@ -2,7 +2,6 @@ package no.nav.meldeplikt.meldekortservice.service
 
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.database.H2Database
-import no.nav.meldeplikt.meldekortservice.database.slettAlleInnsendteMeldekort
 import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
 import org.amshove.kluent.`with message`
 import org.amshove.kluent.invoking
