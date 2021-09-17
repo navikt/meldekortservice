@@ -14,9 +14,6 @@ class SoapServiceImpl(
         private val oppfoelgingPing: SakOgAktivitetV1? = SoapConfig.sakOgAktivitet().configureStsForSystemUser().build()
 ) : SoapService {
 
-    private val log = getLogger(SoapServiceImpl::class)
-
-
     override fun kontrollerMeldekort(meldekortdetaljer: Meldekortdetaljer): MeldekortKontrollertType {
         val meldekort = MeldekortTypeMapper.mapMeldekortType(meldekortdetaljer)
         return amelding.kontrollerEmeldingMeldekort(meldekort)
@@ -27,7 +24,7 @@ class SoapServiceImpl(
             oppfoelgingPing?.ping()
             WeblogicPing(true)
         } catch (e: Exception) {
-            log.info("Ingen svar fra WebLogic, ping feilet", e)
+            getLogger(this::class).info("Ingen svar fra WebLogic, ping feilet", e)
             WeblogicPing(false)
         }
     }

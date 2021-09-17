@@ -7,7 +7,8 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Location
 import no.nav.meldeplikt.meldekortservice.config.swagger
-import no.nav.meldeplikt.meldekortservice.utils.defaultLog
+import no.nav.meldeplikt.meldekortservice.utils.getLogger
+import org.slf4j.Logger
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -316,7 +317,7 @@ open class Property(
 
 fun addDefinition(kClass: KClass<*>) {
     if ((kClass != Unit::class) && !swagger.components.schemas.containsKey(kClass.modelName())) {
-        defaultLog.info("Generating swagger spec for model ${kClass.modelName()}")
+        getLogger(Logger.ROOT_LOGGER_NAME).info("Generating swagger spec for model ${kClass.modelName()}")
         swagger.components.schemas[kClass.modelName()] = ModelData(kClass)
     }
 }

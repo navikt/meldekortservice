@@ -21,7 +21,6 @@ class DokarkivService(
     },
     private val env: Environment = Environment()
 ) {
-    private val log = getLogger(DokarkivService::class)
 
     suspend fun createJournalpost(journalpost: Journalpost): JournalpostResponse {
         return httpClient.post("${env.dokarkivUrl}$JOURNALPOST_PATH?forsoekFerdigstill=true") {
@@ -36,7 +35,7 @@ class DokarkivService(
     }
 
     private fun hentAccessToken(): AccessToken {
-        log.info("Cache timet ut. Henter token")
+        getLogger(this::class).info("Cache timet ut. Henter token")
         var token = AccessToken(null, null, null)
 
         if (isCurrentlyRunningOnNais()) {
@@ -46,7 +45,7 @@ class DokarkivService(
                 }
             }
         } else {
-            log.info("Henter ikke token da appen kjører lokalt")
+            getLogger(this::class).info("Henter ikke token da appen kjører lokalt")
             token = token.copy(accessToken = "token")
         }
 

@@ -14,7 +14,7 @@ import io.ktor.request.*
 import io.ktor.routing.Route
 import io.ktor.util.pipeline.*
 import no.nav.meldeplikt.meldekortservice.config.swagger
-import no.nav.meldeplikt.meldekortservice.utils.defaultLog
+import no.nav.meldeplikt.meldekortservice.utils.getLogger
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import java.util.*
 import kotlin.collections.List
@@ -102,7 +102,7 @@ inline fun <reified LOCATION : Any, reified ENTITY : Any> Route.post(
     noinline body: suspend PipelineContext<Unit, ApplicationCall>.(LOCATION, ENTITY) -> Unit
 ): Route {
 
-    defaultLog.info("Generating swagger spec for POST ${LOCATION::class.java.getAnnotation(Location::class.java)}")
+    getLogger(this::class).info("Generating swagger spec for POST ${LOCATION::class.java.getAnnotation(Location::class.java)}")
     metadata.apply<LOCATION, ENTITY>(HttpMethod.Post)
 
     return when (metadata.security) {
@@ -121,7 +121,7 @@ inline fun <reified LOCATION : Any, reified ENTITY : Any> Route.put(
     noinline body: suspend PipelineContext<Unit, ApplicationCall>.(LOCATION, ENTITY) -> Unit
 ): Route {
 
-    defaultLog.info("Generating swagger spec for PUT ${LOCATION::class.java.getAnnotation(Location::class.java)}")
+    getLogger(this::class).info("Generating swagger spec for PUT ${LOCATION::class.java.getAnnotation(Location::class.java)}")
     metadata.apply<LOCATION, ENTITY>(HttpMethod.Put)
 
     return when (metadata.security) {
@@ -140,7 +140,7 @@ inline fun <reified LOCATION : Any> Route.get(
     noinline body: suspend PipelineContext<Unit, ApplicationCall>.(LOCATION) -> Unit
 ): Route {
 
-    defaultLog.info("Generating swagger spec for GET ${LOCATION::class.java.getAnnotation(Location::class.java)}")
+    getLogger(this::class).info("Generating swagger spec for GET ${LOCATION::class.java.getAnnotation(Location::class.java)}")
     metadata.apply<LOCATION, Unit>(HttpMethod.Get)
 
     return when (metadata.security) {
@@ -159,7 +159,7 @@ inline fun <reified LOCATION : Any> Route.delete(
     noinline body: suspend PipelineContext<Unit, ApplicationCall>.(LOCATION) -> Unit
 ): Route {
 
-    defaultLog.info("Generating swagger spec for DELETE ${LOCATION::class.java.getAnnotation(Location::class.java)}")
+    getLogger(this::class).info("Generating swagger spec for DELETE ${LOCATION::class.java.getAnnotation(Location::class.java)}")
     metadata.apply<LOCATION, Unit>(HttpMethod.Delete)
 
     return when (metadata.security) {

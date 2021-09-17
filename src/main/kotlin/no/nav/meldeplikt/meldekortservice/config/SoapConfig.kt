@@ -6,7 +6,6 @@ import no.nav.meldeplikt.meldekortservice.service.SoapServiceImpl
 import no.nav.meldeplikt.meldekortservice.service.SoapServiceMock
 import no.nav.meldeplikt.meldekortservice.utils.SBL_ARBEID_PASSWORD
 import no.nav.meldeplikt.meldekortservice.utils.SBL_ARBEID_USERNAME
-import no.nav.meldeplikt.meldekortservice.utils.getLogger
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import no.nav.sbl.dialogarena.common.cxf.CXFClient
 import no.nav.tjeneste.virksomhet.sakogaktivitet.v1.SakOgAktivitetV1
@@ -17,8 +16,6 @@ import org.apache.wss4j.dom.handler.WSHandlerConstants
 import javax.security.auth.callback.CallbackHandler
 
 object SoapConfig {
-
-    private val log = getLogger(SoapConfig::class)
 
     private val environment = Environment()
 

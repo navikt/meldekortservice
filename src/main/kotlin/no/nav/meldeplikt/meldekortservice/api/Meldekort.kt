@@ -44,7 +44,7 @@ fun Routing.getMeldekortdetaljer(arenaOrdsService: ArenaOrdsService) =
                 meldekortdetaljer
             } else {
                 val msg = "Personidentifikator matcher ikke. Bruker kan derfor ikke hente ut meldekortdetaljer."
-                defaultLog.warn(msg)
+                getLogger(this::class).warn(msg)
                 throw SecurityException(msg)
             }
         }

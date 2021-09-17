@@ -19,7 +19,6 @@ import java.time.LocalDateTime
 class AadService(
     private val config: AadServiceConfiguration
 ) {
-    private val log = getLogger(KontrollService::class)
     private val env = Environment()
     private val cacheSafetyMarginSeconds = 100
     private var aadToken: String = ""
@@ -49,12 +48,12 @@ class AadService(
     suspend fun fetchAadToken(): String {
         if (aadTokenExpires.isBefore(LocalDateTime.now())) {
             if (isCurrentlyRunningOnNais()) {
-                log.info("Henter nytt token fra AAD")
+                getLogger(this::class).info("Henter nytt token fra AAD")
                 val token = getAccessTokenForResource(meldekortKontrollResource)
                 aadToken = token.accessToken!!
                 aadTokenExpires = LocalDateTime.now().plusSeconds((token.expiresIn?.toLong() ?: 0) - cacheSafetyMarginSeconds)
             } else {
-                log.info("Henter ikke token da appen kjører lokalt")
+                getLogger(this::class).info("Henter ikke token da appen kjører lokalt")
                 aadToken = "Lokalt"
                 aadTokenExpires = LocalDateTime.now().plusYears(1L)
             }

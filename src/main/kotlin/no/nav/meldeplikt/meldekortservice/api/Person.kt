@@ -120,30 +120,30 @@ fun Routing.kontrollerMeldekort(kontrollService: KontrollService, innsendtMeldek
                     meldekort = meldekortkontrollMapper.mapMeldekortTilMeldekortkontroll(meldekort)
                 )
                 if (kontrollResponse.arsakskoder.arsakskode.size > 0) {
-                    defaultLog.info(
+                    getLogger(this::class).info(
                         "Kontroll feilet i meldekort-kontroll: " + defaultObjectMapper.writeValueAsString(
                             kontrollResponse
                         )
                     )
-                    defaultLog.info(
+                    getLogger(this::class).info(
                         "Feilet meldekort i meldekortkontroll er: " + defaultObjectMapper.writeValueAsString(
                             meldekort
                         )
                     )
                 }
             } catch (e: Exception) {
-                defaultLog.error("Kunne ikke sende meldekort til meldekort-kontroll: ", e)
+                getLogger(this::class).error("Kunne ikke sende meldekort til meldekort-kontroll: ", e)
             }
 
             // Send kortet til Amelding (uansett om kontrollen gikk bra eller ikke)
             val ameldingResponse = SoapConfig.soapService().kontrollerMeldekort(meldekort)
             if (ameldingResponse.arsakskoder != null) {
-                defaultLog.info(
+                getLogger(this::class).info(
                     "Kontroll feilet i Amelding: " + defaultObjectMapper.writeValueAsString(
                         ameldingResponse
                     )
                 )
-                defaultLog.info(
+                getLogger(this::class).info(
                     "Feilet meldekort i Amelding er: " + defaultObjectMapper.writeValueAsString(
                         maskerFnrIAmeldingMeldekort(meldekort)
                     )
@@ -159,7 +159,7 @@ fun Routing.kontrollerMeldekort(kontrollService: KontrollService, innsendtMeldek
                     // nytt (gir dubletter).
                     val errorMessage =
                         ErrorMessage("Meldekort med id ${meldekort.meldekortId} ble sendt inn, men klarte ikke å skrive til MIP-tabellen. ${e.message}")
-                    defaultLog.warn(errorMessage.error, e)
+                    getLogger(this::class).warn(errorMessage.error, e)
                 }
             }
             // Send responsen fra Amelding tilbake som respons
@@ -171,8 +171,8 @@ fun Routing.kontrollerMeldekort(kontrollService: KontrollService, innsendtMeldek
         } catch (e: Exception) {
             val errorMessage =
                 ErrorMessage("Meldekort med id ${meldekort.meldekortId} ble ikke sendt inn. ${e.message}")
-            defaultLog.error(errorMessage.error, e)
-            defaultLog.info(
+            getLogger(this::class).error(errorMessage.error, e)
+            getLogger(this::class).info(
                 "Feilet meldekort i Amelding (exception) er: " + defaultObjectMapper.writeValueAsString(
                     maskerFnrIAmeldingMeldekort(meldekort)
                 )
@@ -202,7 +202,7 @@ fun Routing.opprettJournalpost(
     ) { _: JournalpostInput, journalpost: Journalpost ->
         try {
             val journalpostResponse = dokarkivService.createJournalpost(journalpost)
-            defaultLog.info("JournalpostId = " + journalpostResponse.journalpostId)
+            getLogger(this::class).info("JournalpostId = " + journalpostResponse.journalpostId)
 
             innsendtMeldekortService.lagreJournalpostMeldekortPar(
                 journalpostResponse.journalpostId,
@@ -214,7 +214,7 @@ fun Routing.opprettJournalpost(
             val errorMessage = ErrorMessage(
                 "Kan ikke opprette journalpost i dokarkiv for meldekort med id ${journalpost.eksternReferanseId}"
             )
-            defaultLog.warn(errorMessage.error, e)
+            getLogger(this::class).warn(errorMessage.error, e)
 
             innsendtMeldekortService.lagreJournalpost(journalpost)
 

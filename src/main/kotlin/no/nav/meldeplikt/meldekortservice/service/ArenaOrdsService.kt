@@ -27,7 +27,6 @@ class ArenaOrdsService(
     },
     private val env: Environment = Environment()
 ) {
-    private val log = getLogger(ArenaOrdsService::class)
 
     suspend fun hentMeldekort(fnr: String): OrdsStringResponse {
         val execResult: Result<HttpResponse> = runCatching {
@@ -84,7 +83,7 @@ class ArenaOrdsService(
     }
 
     private fun hentOrdsToken(): AccessToken {
-        log.info("Cache timet ut. Henter token")
+        getLogger(this::class).info("Cache timet ut. Henter token")
         var token = AccessToken(null, null, null)
 
         if (isCurrentlyRunningOnNais()) {
@@ -94,7 +93,7 @@ class ArenaOrdsService(
                 }
             }
         } else {
-            log.info("Henter ikke token da appen kjører lokalt")
+            getLogger(this::class).info("Henter ikke token da appen kjører lokalt")
             token = token.copy(accessToken = "token")
         }
 
