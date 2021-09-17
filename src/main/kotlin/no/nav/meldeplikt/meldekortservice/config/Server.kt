@@ -104,7 +104,7 @@ fun Application.mainModule(
 }
 
 private fun setAppProperties(environment: Environment) {
-    setProperty(StsSecurityConstants.STS_URL_KEY, environment.securityTokenService, PUBLIC)
+    setProperty(StsSecurityConstants.STS_URL_KEY, environment.stsUrl, PUBLIC)
     setProperty(StsSecurityConstants.SYSTEMUSER_USERNAME, environment.srvMeldekortservice.username, PUBLIC)
     setProperty(StsSecurityConstants.SYSTEMUSER_PASSWORD, environment.srvMeldekortservice.password, SECRET)
     setProperty(SBL_ARBEID_USERNAME, environment.srvSblArbeid.username, PUBLIC)

@@ -16,4 +16,8 @@ class H2Database : Database {
     init {
         Flyway.configure(dataSource).load().migrate()
     }
+
+    fun closeConnection() {
+        dataSource.close()
+    }
 }

@@ -24,7 +24,7 @@ class DokarkivService(
     private val log = getLogger(DokarkivService::class)
 
     suspend fun createJournalpost(journalpost: Journalpost): JournalpostResponse {
-        return httpClient.post("${env.dokarkivUrl}$JOARK_JOURNALPOST_PATH") {
+        return httpClient.post("${env.dokarkivUrl}$JOURNALPOST_PATH?forsoekFerdigstill=true") {
             contentType(ContentType.Application.Json)
             header("Authorization", "Bearer " + hentToken().accessToken)
             body = journalpost
@@ -41,7 +41,7 @@ class DokarkivService(
 
         if (isCurrentlyRunningOnNais()) {
             runBlocking {
-                token = httpClient.post("${env.securityTokenService}$STS_PATH?grant_type=client_credentials&scope=openid") {
+                token = httpClient.post("${env.stsUrl}$STS_PATH?grant_type=client_credentials&scope=openid") {
                     setupTokenRequest()
                 }
             }

@@ -28,9 +28,7 @@ class DatabaseTest {
     @AfterAll
     fun tearDown() {
         runBlocking {
-            database.dbQuery {
-                slettAlleInnsendteMeldekort()
-            }
+            database.closeConnection()
         }
     }
 
