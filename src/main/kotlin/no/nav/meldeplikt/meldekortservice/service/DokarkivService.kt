@@ -40,7 +40,7 @@ class DokarkivService(
 
         if (isCurrentlyRunningOnNais()) {
             runBlocking {
-                token = httpClient.post("${env.stsUrl}$STS_PATH?grant_type=client_credentials&scope=openid") {
+                token = httpClient.post("${env.stsNaisUrl}$STS_PATH?grant_type=client_credentials&scope=openid") {
                     setupTokenRequest()
                 }
             }

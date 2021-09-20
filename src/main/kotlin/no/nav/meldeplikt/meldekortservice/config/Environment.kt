@@ -47,7 +47,10 @@ data class Environment(
         getEnvVar("SERVICEUSER_SBLARBEID_PASSWORD", "password")
     ),
 
+    // Brukes av SoapService
     val stsUrl: String = removeTrailingSlash(getEnvVar("SECURITYTOKENSERVICE", "https://ststest.nav.no/")),
+    // Brukes av DokarkiveService
+    val stsNaisUrl: String = removeTrailingSlash(getEnvVar("SECURITYTOKENSERVICE_NAIS", "https://ststest.nav.no/")),
 
     val dokarkivUrl: String = removeTrailingSlash(getEnvVar("DOKARKIV_URL", "https://dokarkivtest.nav.no/"))
 )

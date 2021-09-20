@@ -65,7 +65,7 @@ class DokarkivServiceTest {
                             )
                         } else if (
                             request.method == HttpMethod.Post
-                            && request.url.protocol.name + "://" + request.url.host == env.stsUrl
+                            && request.url.protocol.name + "://" + request.url.host == env.stsNaisUrl
                             && request.url.encodedPath == STS_PATH
                             && request.url.parameters.contains("grant_type", "client_credentials")
                             && request.url.parameters.contains("scope", "openid")
