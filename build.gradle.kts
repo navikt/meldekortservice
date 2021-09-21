@@ -23,13 +23,13 @@ val logbackVersion = "1.2.5"
 val logstashVersion = "5.3"
 val mockOauthVersion = "0.3.4"
 val mockkVersion = "1.12.0"
-val navCommonVersion = "1.2019.05.08-08.52-482a48e1a056"
+val navCommonVersion = "1.2021.07.07_10.18-72bd65c546f6"
 val ojdbc8Version = "19.3.0.0"
 val postgresVersion = "42.2.23"
 val prometheusVersion = "0.11.0"
 val slf4jVersion = "1.7.32"
 val swaggerVersion = "3.23.8"
-val tjenestespecVersion = "1.2019.08.16-13.46-35cbdfd492d4"
+val tjenestespecVersion = "2567.324e61f"
 val tokenValidationVersion = "1.1.5"
 val vaultJdbcVersion = "1.3.1"
 val vaultVersion = "3.1.0"
@@ -76,6 +76,7 @@ repositories {
     mavenCentral()
     jcenter()
     maven("https://plugins.gradle.org/m2/")
+    maven("https://jitpack.io")
 }
 
 
@@ -115,7 +116,7 @@ dependencies {
     implementation("no.nav.common:types:$navCommonVersion")
     implementation("io.github.microutils:kotlin-logging:$kotlinLoggerVersion")
     implementation("com.bettercloud:vault-java-driver:$vaultVersion")
-    implementation("no.nav.tjenestespesifikasjoner:arena-sakOgAktivitet_v1:$tjenestespecVersion")
+    implementation("com.github.navikt.tjenestespesifikasjoner:arena-sakogaktivitet_v1:$tjenestespecVersion")
     implementation("org.flywaydb:flyway-core:$flywayVersion")
     implementation("org.postgresql:postgresql:$postgresVersion")
     implementation("no.nav.security:token-validation-ktor:$tokenValidationVersion")
