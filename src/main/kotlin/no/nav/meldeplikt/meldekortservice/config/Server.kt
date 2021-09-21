@@ -112,6 +112,7 @@ private fun setAppProperties(environment: Environment) {
     setProperty(DB_ORACLE_USERNAME, environment.dbUserOracle.username, PUBLIC)
     setProperty(DB_ORACLE_PASSWORD, environment.dbUserOracle.password, SECRET)
     setProperty(DB_ORACLE_CONF, environment.dbConfOracle.jdbcUrl, PUBLIC)
+    setProperty("SERVICE_CALLS_HOME", "logs", PUBLIC)
 }
 
 private fun initializeInnsendtMeldekortServiceApi(env: Environment): InnsendtMeldekortService {
