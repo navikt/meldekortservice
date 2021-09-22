@@ -29,7 +29,7 @@ val postgresVersion = "42.2.23"
 val prometheusVersion = "0.11.0"
 val slf4jVersion = "1.7.32"
 val swaggerVersion = "3.23.8"
-val tjenestespecVersion = "2567.324e61f"
+val tjenestespecVersion = "1.2019.08.16-13.46-35cbdfd492d4"
 val tokenValidationVersion = "1.1.5"
 val vaultJdbcVersion = "1.3.1"
 val vaultVersion = "3.1.0"
@@ -76,7 +76,6 @@ repositories {
     mavenCentral()
     jcenter()
     maven("https://plugins.gradle.org/m2/")
-    maven("https://jitpack.io")
 }
 
 
@@ -116,7 +115,7 @@ dependencies {
     implementation("no.nav.common:types:$navCommonVersion")
     implementation("io.github.microutils:kotlin-logging:$kotlinLoggerVersion")
     implementation("com.bettercloud:vault-java-driver:$vaultVersion")
-    implementation("com.github.navikt.tjenestespesifikasjoner:arena-sakogaktivitet_v1:$tjenestespecVersion")
+    implementation("no.nav.tjenestespesifikasjoner:arena-sakOgAktivitet_v1:$tjenestespecVersion")
     implementation("org.flywaydb:flyway-core:$flywayVersion")
     implementation("org.postgresql:postgresql:$postgresVersion")
     implementation("no.nav.security:token-validation-ktor:$tokenValidationVersion")
