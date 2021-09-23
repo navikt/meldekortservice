@@ -366,7 +366,7 @@ class PersonKtTest {
             }
         }
 
-        // MeldekortId kommer fra eksternReferanseId i journalpost.json
+        // MeldekortId kommer fra tilleggsopplysninger i journalpost.json
         verify { innsendtMeldekortService.lagreJournalpostMeldekortPar(journalpostId, 1011121315) }
     }
 

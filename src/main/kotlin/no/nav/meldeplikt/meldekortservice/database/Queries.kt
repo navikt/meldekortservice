@@ -40,7 +40,7 @@ fun Connection.lagreJournalpostMeldekortPar(journalpostId: Long, meldekortId: Lo
 fun Connection.lagreJournalpost(journalpost: Journalpost): Int =
     prepareStatement("""INSERT INTO JOURNALPOST (id, journalpost, created, retries) VALUES (?, ?, ?, ?)""")
         .use {
-            it.setString(1, UUID.randomUUID().toString())
+            it.setString(1, journalpost.eksternReferanseId) // Vi vet at det er UUID der
             it.setClob(2, SerialClob(bytesToChars(ObjectMapper().writeValueAsBytes(journalpost))))
             it.setLong(3, System.currentTimeMillis() / 1000)
             it.setLong(4, 0)

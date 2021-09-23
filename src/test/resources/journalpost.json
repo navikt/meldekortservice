@@ -13,9 +13,13 @@
   "tittel": "Meldekort for perioden Uke 3 - 4 (14.01.2019 - 27.01.2019)",
   "kanal": "NAV_NO",
   "journalfoerendeEnhet": "9999",
-  "eksternReferanseId": "1011121315",
+  "eksternReferanseId": "123e4567-e89b-12d3-a456-426655440000",
   "datoMottatt": "2021-07-08",
   "tilleggsopplysninger": [
+    {
+      "nokkel": "meldekortId",
+      "verdi": "1011121315"
+    },
     {
       "nokkel": "kortKanSendesFra",
       "verdi": "26.01.2019"

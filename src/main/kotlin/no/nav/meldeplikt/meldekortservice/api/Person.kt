@@ -13,6 +13,7 @@ import no.nav.meldeplikt.meldekortservice.mapper.MeldekortkontrollMapper
 import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
 import no.nav.meldeplikt.meldekortservice.model.database.feil.UnretriableDatabaseException
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Journalpost
+import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Tilleggsopplysning
 import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
@@ -200,19 +201,22 @@ fun Routing.opprettJournalpost(
             unAuthorized<Error>()
         )
     ) { _: JournalpostInput, journalpost: Journalpost ->
+        val meldekortId = journalpost.tilleggsopplysninger!!.first { it.nokkel == "meldekortId" }.verdi
+
         try {
+
             val journalpostResponse = dokarkivService.createJournalpost(journalpost)
             defaultLog.info("JournalpostId = " + journalpostResponse.journalpostId)
 
             innsendtMeldekortService.lagreJournalpostMeldekortPar(
                 journalpostResponse.journalpostId,
-                journalpost.eksternReferanseId!!.toLong() // Vi vet at det er meldekortId i dette feltet
+                meldekortId.toLong()
             )
 
             call.respond(status = HttpStatusCode.OK, message = "Journalpost opprettet")
         } catch (e: Exception) {
             val errorMessage = ErrorMessage(
-                "Kan ikke opprette journalpost i dokarkiv for meldekort med id ${journalpost.eksternReferanseId}"
+                "Kan ikke opprette journalpost i dokarkiv for meldekort med id ${meldekortId}"
             )
             defaultLog.warn(errorMessage.error, e)
 
