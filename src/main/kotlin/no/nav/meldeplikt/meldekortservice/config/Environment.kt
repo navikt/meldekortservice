@@ -48,7 +48,7 @@ data class Environment(
     ),
 
     // Brukes av SoapService
-    val stsUrl: String = removeTrailingSlash(getEnvVar("SECURITYTOKENSERVICE", "https://ststest.nav.no/")),
+    val stsUrl: String = getEnvVar("SECURITYTOKENSERVICE", "https://ststest.nav.no/"), // URL må ha / på slutten
     // Brukes av DokarkiveService
     val stsNaisUrl: String = removeTrailingSlash(getEnvVar("SECURITYTOKENSERVICE_NAIS", "https://ststest.nav.no/")),
 
