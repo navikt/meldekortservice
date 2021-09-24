@@ -13,12 +13,13 @@ import no.nav.cache.Cache
 import no.nav.cache.CacheConfig
 import no.nav.cache.CacheUtils
 import no.nav.meldeplikt.meldekortservice.api.*
+import no.nav.meldeplikt.meldekortservice.coroutine.SendJournalposterPaaNytt
 import no.nav.meldeplikt.meldekortservice.database.OracleDatabase
 import no.nav.meldeplikt.meldekortservice.database.PostgreSqlDatabase
 import no.nav.meldeplikt.meldekortservice.model.AccessToken
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
+import no.nav.meldeplikt.meldekortservice.service.DBService
 import no.nav.meldeplikt.meldekortservice.service.DokarkivService
-import no.nav.meldeplikt.meldekortservice.service.InnsendtMeldekortService
 import no.nav.meldeplikt.meldekortservice.service.KontrollService
 import no.nav.meldeplikt.meldekortservice.utils.*
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Contact
@@ -58,15 +59,14 @@ const val SWAGGER_URL_V1 = "/meldekortservice/internal/apidocs/index.html?url=sw
 @KtorExperimentalAPI
 fun Application.mainModule(
     env: Environment = Environment(),
-    mockInnsendtMeldekortService: InnsendtMeldekortService? = null,
+    mockDBService: DBService? = null,
     arenaOrdsService: ArenaOrdsService = ArenaOrdsService(),
     kontrollService: KontrollService = KontrollService(),
     dokarkivService: DokarkivService = DokarkivService(),
     mockFlywayConfig: org.flywaydb.core.Flyway? = null
 ) {
     setAppProperties(env)
-    val innsendtMeldekortService: InnsendtMeldekortService =
-        mockInnsendtMeldekortService ?: initializeInnsendtMeldekortServiceApi(env)
+    val dbService: DBService = mockDBService ?: initializeInnsendtMeldekortServiceApi(env)
     val flywayConfig: org.flywaydb.core.Flyway = mockFlywayConfig ?: initializeFlyway(env)
 
     DefaultExports.initialize()
@@ -93,7 +93,7 @@ fun Application.mainModule(
         swaggerRoutes()
         weblogicApi()
         meldekortApi(arenaOrdsService)
-        personApi(arenaOrdsService, innsendtMeldekortService, kontrollService, dokarkivService)
+        personApi(arenaOrdsService, dbService, kontrollService, dokarkivService)
     }
 
     install(CallLogging) {
@@ -101,6 +101,8 @@ fun Application.mainModule(
     }
 
     flywayConfig.migrate()
+
+    SendJournalposterPaaNytt(dbService, dokarkivService, env.dokarkivResendInterval, 0).start()
 }
 
 private fun setAppProperties(environment: Environment) {
@@ -114,8 +116,8 @@ private fun setAppProperties(environment: Environment) {
     setProperty(DB_ORACLE_CONF, environment.dbConfOracle.jdbcUrl, PUBLIC)
 }
 
-private fun initializeInnsendtMeldekortServiceApi(env: Environment): InnsendtMeldekortService {
-    return InnsendtMeldekortService(
+private fun initializeInnsendtMeldekortServiceApi(env: Environment): DBService {
+    return DBService(
         when (isCurrentlyRunningOnNais()) {
             true -> OracleDatabase()
             false -> PostgreSqlDatabase(env)

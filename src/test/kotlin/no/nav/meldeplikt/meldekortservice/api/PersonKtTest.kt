@@ -67,7 +67,7 @@ class PersonKtTest {
 
         private val mockOAuth2Server = MockOAuth2Server()
 
-        private var innsendtMeldekortService = mockk<InnsendtMeldekortService>()
+        private var dbService = mockk<DBService>()
         private var arenaOrdsService = mockk<ArenaOrdsService>()
         private var kontrollService = mockk<KontrollService>()
         private var dokarkivService = mockk<DokarkivService>()
@@ -101,7 +101,7 @@ class PersonKtTest {
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(
-                mockInnsendtMeldekortService = innsendtMeldekortService,
+                mockDBService = dbService,
                 arenaOrdsService = arenaOrdsService,
                 kontrollService = kontrollService,
                 dokarkivService = dokarkivService,
@@ -133,7 +133,7 @@ class PersonKtTest {
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(
-                mockInnsendtMeldekortService = innsendtMeldekortService,
+                mockDBService = dbService,
                 arenaOrdsService = arenaOrdsService,
                 kontrollService = kontrollService,
                 dokarkivService = dokarkivService,
@@ -189,13 +189,13 @@ class PersonKtTest {
         val ordsStringResponse = OrdsStringResponse(status = HttpStatusCode.OK, content = defaultXmlMapper.writeValueAsString(person))
 
         coEvery { arenaOrdsService.hentMeldekort(any()) } returns (ordsStringResponse)
-        coEvery { innsendtMeldekortService.hentInnsendtMeldekort(1L) } returns (InnsendtMeldekort(meldekortId = 1L))
-        coEvery { innsendtMeldekortService.hentInnsendtMeldekort(2L) } throws SQLException("Found no rows")
+        coEvery { dbService.hentInnsendtMeldekort(1L) } returns (InnsendtMeldekort(meldekortId = 1L))
+        coEvery { dbService.hentInnsendtMeldekort(2L) } throws SQLException("Found no rows")
 
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(
-                mockInnsendtMeldekortService = innsendtMeldekortService,
+                mockDBService = dbService,
                 arenaOrdsService = arenaOrdsService,
                 kontrollService = kontrollService,
                 dokarkivService = dokarkivService,
@@ -223,7 +223,7 @@ class PersonKtTest {
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(
-                mockInnsendtMeldekortService = innsendtMeldekortService,
+                mockDBService = dbService,
                 arenaOrdsService = arenaOrdsService,
                 kontrollService = kontrollService,
                 dokarkivService = dokarkivService,
@@ -260,13 +260,13 @@ class PersonKtTest {
         every { SoapConfig.soapService() } returns SoapServiceImpl(externControlEmeldingSOAP, mockk())
         every { externControlEmeldingSOAP.kontrollerEmeldingMeldekort(any()) } returns meldekortKontrollertType
 
-        coEvery { innsendtMeldekortService.settInnInnsendtMeldekort(any()) } just Runs
+        coEvery { dbService.settInnInnsendtMeldekort(any()) } just Runs
         coEvery { kontrollService.kontroller(any()) } returns meldekortKontrollertType
 
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(
-                mockInnsendtMeldekortService = innsendtMeldekortService,
+                mockDBService = dbService,
                 arenaOrdsService = arenaOrdsService,
                 kontrollService = kontrollService,
                 dokarkivService = dokarkivService,
@@ -307,13 +307,13 @@ class PersonKtTest {
         every { SoapConfig.soapService() } returns SoapServiceImpl(externControlEmeldingSOAP, mockk())
         every { externControlEmeldingSOAP.kontrollerEmeldingMeldekort(any()) } throws RuntimeException("Error i arena")
 
-        coEvery { innsendtMeldekortService.settInnInnsendtMeldekort(any()) } just Runs
+        coEvery { dbService.settInnInnsendtMeldekort(any()) } just Runs
         coEvery { kontrollService.kontroller(any()) } returns meldekortKontrollertType
 
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(
-                mockInnsendtMeldekortService = innsendtMeldekortService,
+                mockDBService = dbService,
                 arenaOrdsService = arenaOrdsService,
                 kontrollService = kontrollService,
                 dokarkivService = dokarkivService,
@@ -345,12 +345,12 @@ class PersonKtTest {
         )
 
         coEvery { dokarkivService.createJournalpost(any()) } returns journalpostResponse
-        every { innsendtMeldekortService.lagreJournalpostMeldekortPar(any(), any()) } just Runs
+        every { dbService.lagreJournalpostMeldekortPar(any(), any()) } just Runs
 
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(
-                mockInnsendtMeldekortService = innsendtMeldekortService,
+                mockDBService = dbService,
                 arenaOrdsService = arenaOrdsService,
                 kontrollService = kontrollService,
                 dokarkivService = dokarkivService,
@@ -367,7 +367,7 @@ class PersonKtTest {
         }
 
         // MeldekortId kommer fra tilleggsopplysninger i journalpost.json
-        verify { innsendtMeldekortService.lagreJournalpostMeldekortPar(journalpostId, 1011121315) }
+        verify { dbService.lagreJournalpostMeldekortPar(journalpostId, 1011121315) }
     }
 
     @Test
@@ -375,12 +375,12 @@ class PersonKtTest {
         val journalpost = this::class.java.getResource("/journalpost.json")
 
         coEvery { dokarkivService.createJournalpost(any()) } throws Exception()
-        every { innsendtMeldekortService.lagreJournalpost(any()) } just Runs
+        every { dbService.lagreJournalpost(any()) } just Runs
 
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(
-                mockInnsendtMeldekortService = innsendtMeldekortService,
+                mockDBService = dbService,
                 arenaOrdsService = arenaOrdsService,
                 kontrollService = kontrollService,
                 dokarkivService = dokarkivService,
@@ -397,7 +397,7 @@ class PersonKtTest {
         }
 
         verify {
-            innsendtMeldekortService.lagreJournalpost(
+            dbService.lagreJournalpost(
                 jacksonObjectMapper().readValue(
                     journalpost,
                     Journalpost::class.java

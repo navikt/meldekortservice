@@ -14,8 +14,8 @@ import no.nav.meldeplikt.meldekortservice.config.mainModule
 import no.nav.meldeplikt.meldekortservice.model.enum.KortType
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
+import no.nav.meldeplikt.meldekortservice.service.DBService
 import no.nav.meldeplikt.meldekortservice.service.DokarkivService
-import no.nav.meldeplikt.meldekortservice.service.InnsendtMeldekortService
 import no.nav.meldeplikt.meldekortservice.service.KontrollService
 import no.nav.meldeplikt.meldekortservice.utils.ErrorMessage
 import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
@@ -63,7 +63,7 @@ class MeldekortKtTest {
 
         private val mockOAuth2Server = MockOAuth2Server()
 
-        private var innsendtMeldekortService = mockk<InnsendtMeldekortService>()
+        private var dbService = mockk<DBService>()
         private var arenaOrdsService = mockk<ArenaOrdsService>()
         private var kontrollService = mockk<KontrollService>()
         private var dokarkivService = mockk<DokarkivService>()
@@ -100,7 +100,7 @@ class MeldekortKtTest {
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(
-                mockInnsendtMeldekortService = innsendtMeldekortService,
+                mockDBService = dbService,
                 arenaOrdsService = arenaOrdsService,
                 kontrollService = kontrollService,
                 dokarkivService = dokarkivService,
@@ -132,7 +132,7 @@ class MeldekortKtTest {
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(
-                mockInnsendtMeldekortService = innsendtMeldekortService,
+                mockDBService = dbService,
                 arenaOrdsService = arenaOrdsService,
                 kontrollService = kontrollService,
                 dokarkivService = dokarkivService,
@@ -167,7 +167,7 @@ class MeldekortKtTest {
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(
-                mockInnsendtMeldekortService = innsendtMeldekortService,
+                mockDBService = dbService,
                 arenaOrdsService = arenaOrdsService,
                 kontrollService = kontrollService,
                 dokarkivService = dokarkivService,
@@ -191,7 +191,7 @@ class MeldekortKtTest {
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(
-                mockInnsendtMeldekortService = innsendtMeldekortService,
+                mockDBService = dbService,
                 arenaOrdsService = arenaOrdsService,
                 kontrollService = kontrollService,
                 dokarkivService = dokarkivService,
@@ -220,7 +220,7 @@ class MeldekortKtTest {
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(
-                mockInnsendtMeldekortService = innsendtMeldekortService,
+                mockDBService = dbService,
                 arenaOrdsService = arenaOrdsService,
                 kontrollService = kontrollService,
                 dokarkivService = dokarkivService,
@@ -245,7 +245,7 @@ class MeldekortKtTest {
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(
-                mockInnsendtMeldekortService = innsendtMeldekortService,
+                mockDBService = dbService,
                 arenaOrdsService = arenaOrdsService,
                 kontrollService = kontrollService,
                 dokarkivService = dokarkivService,

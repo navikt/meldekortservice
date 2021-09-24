@@ -1,12 +1,15 @@
 package no.nav.meldeplikt.meldekortservice.database
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Journalpost
+import java.io.Reader
 import java.nio.ByteBuffer
 import java.nio.CharBuffer
 import java.nio.charset.StandardCharsets
 import java.sql.Connection
+import java.sql.DatabaseMetaData
 import java.sql.ResultSet
 import java.util.*
 import javax.sql.rowset.serial.SerialClob
@@ -47,6 +50,50 @@ fun Connection.lagreJournalpost(journalpost: Journalpost): Int =
             it.executeUpdate()
         }
 
+fun Connection.hentJournalpostData(): List<Triple<String, Journalpost, Int>> {
+    val list = mutableListOf<Triple<String, Journalpost, Int>>()
+
+    val metaData: DatabaseMetaData = this.metaData
+    val productName = metaData.databaseProductName
+
+    // Oracle and H2 by default
+    var query = """SELECT id, journalpost, retries FROM JOURNALPOST"""
+    if (productName == "PostgreSQL") {
+        query = """SELECT id, convert_from(lo_get(journalpost::oid), 'UTF8') as journalpost, retries FROM JOURNALPOST"""
+    }
+
+    this.prepareStatement(query)
+        .use { preparedStatement ->
+            preparedStatement.executeQuery()
+                .use { resultSet ->
+                    while (resultSet.next()) {
+                        val journalpost = jacksonObjectMapper().readValue(
+                            clobToString(resultSet.getCharacterStream("journalpost")),
+                            Journalpost::class.java
+                        )
+                        list.add(Triple(resultSet.getString("id"), journalpost, resultSet.getInt("retries")))
+                    }
+                }
+        }
+
+    return list
+}
+
+fun Connection.sletteJournalpostData(id: String) =
+    prepareStatement("""DELETE FROM JOURNALPOST WHERE id = ?""")
+        .use {
+            it.setString(1, id)
+            it.executeUpdate()
+        }
+
+fun Connection.oppdaterJournalpost(id: String, retries: Int) =
+    prepareStatement("""UPDATE JOURNALPOST SET retries = ? WHERE id = ?""")
+        .use {
+            it.setInt(1, retries)
+            it.setString(2, id)
+            it.executeUpdate()
+        }
+
 fun ResultSet.tilInnsendtMeldekort(): InnsendtMeldekort {
     return InnsendtMeldekort(
         meldekortId = getLong("meldekortId")
@@ -58,4 +105,15 @@ fun ResultSet.tilInnsendtMeldekort(): InnsendtMeldekort {
 private fun bytesToChars(bytes: ByteArray?): CharArray {
     val charBuffer: CharBuffer = StandardCharsets.UTF_8.decode(ByteBuffer.wrap(bytes))
     return Arrays.copyOf(charBuffer.array(), charBuffer.limit())
+}
+
+// Generic solution for Oracle Clob and PostgreSQL Text
+private fun clobToString(reader: Reader): String {
+    val buffer = StringBuffer()
+    var ch: Int
+    while (reader.read().also { ch = it } != -1) {
+        buffer.append(ch.toChar())
+    }
+
+    return buffer.toString()
 }

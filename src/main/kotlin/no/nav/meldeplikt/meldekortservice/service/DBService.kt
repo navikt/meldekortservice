@@ -5,7 +5,7 @@ import no.nav.meldeplikt.meldekortservice.database.*
 import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Journalpost
 
-class InnsendtMeldekortService(private val database: Database) {
+class DBService(private val database: Database) {
 
     suspend fun settInnInnsendtMeldekort(innsendtMeldekort: InnsendtMeldekort) {
         database.translateExternalExceptionsToInternalOnes {
@@ -37,6 +37,33 @@ class InnsendtMeldekortService(private val database: Database) {
             runBlocking {
                 database.dbQuery {
                     lagreJournalpost(journalpost)
+                }
+            }
+        }
+    }
+
+    fun hentJournalpostData(): List<Triple<String, Journalpost, Int>> =
+        runBlocking {
+            database.dbQuery {
+                hentJournalpostData()
+            }
+        }
+
+    fun sletteJournalpostData(id: String) {
+        database.translateExternalExceptionsToInternalOnes {
+            runBlocking {
+                database.dbQuery {
+                    sletteJournalpostData(id)
+                }
+            }
+        }
+    }
+
+    fun oppdaterJournalpost(id: String, retries: Int) {
+        database.translateExternalExceptionsToInternalOnes {
+            runBlocking {
+                database.dbQuery {
+                    oppdaterJournalpost(id, retries)
                 }
             }
         }

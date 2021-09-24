@@ -18,10 +18,7 @@ import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.model.response.EmptyResponse
-import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
-import no.nav.meldeplikt.meldekortservice.service.DokarkivService
-import no.nav.meldeplikt.meldekortservice.service.InnsendtMeldekortService
-import no.nav.meldeplikt.meldekortservice.service.KontrollService
+import no.nav.meldeplikt.meldekortservice.service.*
 import no.nav.meldeplikt.meldekortservice.utils.*
 import no.nav.meldeplikt.meldekortservice.utils.swagger.*
 import kotlin.Metadata
@@ -35,14 +32,14 @@ I tillegg til å sende inn/kontrollere meldekort.
 @KtorExperimentalLocationsAPI
 fun Routing.personApi(
     arenaOrdsService: ArenaOrdsService,
-    innsendtMeldekortService: InnsendtMeldekortService,
+    dbService: DBService,
     kontrollService: KontrollService,
     dokarkivService: DokarkivService
 ) {
     getHistoriskeMeldekort(arenaOrdsService)
-    getMeldekort(arenaOrdsService, innsendtMeldekortService)
-    kontrollerMeldekort(kontrollService, innsendtMeldekortService)
-    opprettJournalpost(dokarkivService, innsendtMeldekortService)
+    getMeldekort(arenaOrdsService, dbService)
+    kontrollerMeldekort(kontrollService, dbService)
+    opprettJournalpost(dokarkivService, dbService)
 }
 
 private val meldekortkontrollMapper = MeldekortkontrollMapper()
@@ -80,7 +77,7 @@ class MeldekortInput
 
 // Henter meldekort
 @KtorExperimentalLocationsAPI
-fun Routing.getMeldekort(arenaOrdsService: ArenaOrdsService, innsendtMeldekortService: InnsendtMeldekortService) =
+fun Routing.getMeldekort(arenaOrdsService: ArenaOrdsService, dbService: DBService) =
     get<MeldekortInput>(
         "Hent meldekort".securityAndResponse(
             BearerTokenSecurity(),
@@ -95,7 +92,7 @@ fun Routing.getMeldekort(arenaOrdsService: ArenaOrdsService, innsendtMeldekortSe
             if (response.status == HttpStatusCode.OK) {
                 MeldekortMapper.filtrerMeldekortliste(
                     mapFraXml(response.content, Person::class.java),
-                    innsendtMeldekortService
+                    dbService
                 )
             } else {
                 throw NoContentException()
@@ -105,7 +102,7 @@ fun Routing.getMeldekort(arenaOrdsService: ArenaOrdsService, innsendtMeldekortSe
 
 // Innsending/kontroll av meldekort (Amelding)
 @KtorExperimentalLocationsAPI
-fun Routing.kontrollerMeldekort(kontrollService: KontrollService, innsendtMeldekortService: InnsendtMeldekortService) =
+fun Routing.kontrollerMeldekort(kontrollService: KontrollService, dbService: DBService) =
     post(
         "Kontroll/innsending av meldekort til Amelding".securityAndResponse(
             BearerTokenSecurity(),
@@ -153,7 +150,7 @@ fun Routing.kontrollerMeldekort(kontrollService: KontrollService, innsendtMeldek
 
             if (ameldingResponse.status == "OK") {
                 try {
-                    innsendtMeldekortService.settInnInnsendtMeldekort(InnsendtMeldekort(ameldingResponse.meldekortId))
+                    dbService.settInnInnsendtMeldekort(InnsendtMeldekort(ameldingResponse.meldekortId))
                 } catch (e: UnretriableDatabaseException) {
                     // Meldekort er sendt inn ok til baksystem, men det oppstår feil ved skriving til MIP-tabellen i databasen.
                     // Logger warning, og returnerer ok status til brukeren slik at den ikke forsøker å sende inn meldekortet på
@@ -191,7 +188,7 @@ class JournalpostInput
 @KtorExperimentalLocationsAPI
 fun Routing.opprettJournalpost(
     dokarkivService: DokarkivService,
-    innsendtMeldekortService: InnsendtMeldekortService
+    dbService: DBService
 ) =
     post(
         "Opprett journalpost i dokarkiv".securityAndResponse(
@@ -204,11 +201,10 @@ fun Routing.opprettJournalpost(
         val meldekortId = journalpost.tilleggsopplysninger!!.first { it.nokkel == "meldekortId" }.verdi
 
         try {
-
             val journalpostResponse = dokarkivService.createJournalpost(journalpost)
             defaultLog.info("JournalpostId = " + journalpostResponse.journalpostId)
 
-            innsendtMeldekortService.lagreJournalpostMeldekortPar(
+            dbService.lagreJournalpostMeldekortPar(
                 journalpostResponse.journalpostId,
                 meldekortId.toLong()
             )
@@ -216,11 +212,11 @@ fun Routing.opprettJournalpost(
             call.respond(status = HttpStatusCode.OK, message = "Journalpost opprettet")
         } catch (e: Exception) {
             val errorMessage = ErrorMessage(
-                "Kan ikke opprette journalpost i dokarkiv for meldekort med id ${meldekortId}"
+                "Kan ikke opprette journalpost i dokarkiv for meldekort med id $meldekortId"
             )
             defaultLog.warn(errorMessage.error, e)
 
-            innsendtMeldekortService.lagreJournalpost(journalpost)
+            dbService.lagreJournalpost(journalpost)
 
             call.respond(status = HttpStatusCode.ServiceUnavailable, message = errorMessage)
         }

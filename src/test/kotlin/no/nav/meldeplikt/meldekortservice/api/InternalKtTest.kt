@@ -1,11 +1,9 @@
 package no.nav.meldeplikt.meldekortservice.api
 
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
-import io.ktor.locations.KtorExperimentalLocationsAPI
-import io.ktor.server.testing.handleRequest
-import io.ktor.server.testing.withTestApplication
-import io.ktor.util.KtorExperimentalAPI
+import io.ktor.http.*
+import io.ktor.locations.*
+import io.ktor.server.testing.*
+import io.ktor.util.*
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -27,10 +25,11 @@ class InternalKtTest {
         every { flywayConfig.migrate() } returns 0
 
         withTestApplication({
-            mainModule(arenaOrdsService  = mockk(),
-                    kontrollService = mockk(),
-                    mockInnsendtMeldekortService = mockk(),
-                    mockFlywayConfig = flywayConfig
+            mainModule(
+                arenaOrdsService = mockk(),
+                kontrollService = mockk(),
+                mockDBService = mockk(),
+                mockFlywayConfig = flywayConfig
             )
         }) {
             handleRequest(HttpMethod.Get, "/meldekortservice/internal/isReady") {}.apply {

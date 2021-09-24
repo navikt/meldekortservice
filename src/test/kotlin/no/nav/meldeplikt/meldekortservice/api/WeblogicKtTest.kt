@@ -40,7 +40,7 @@ class WeblogicKtTest {
             mainModule(
                 arenaOrdsService = mockk(),
                 kontrollService = mockk(),
-                mockInnsendtMeldekortService = mockk(),
+                mockDBService = mockk(),
                 mockFlywayConfig = flywayConfig
             )
         }) {
@@ -69,7 +69,7 @@ class WeblogicKtTest {
             mainModule(
                 arenaOrdsService = mockk(),
                 kontrollService = mockk(),
-                mockInnsendtMeldekortService = mockk(),
+                mockDBService = mockk(),
                 mockFlywayConfig = flywayConfig
             )
         }) {

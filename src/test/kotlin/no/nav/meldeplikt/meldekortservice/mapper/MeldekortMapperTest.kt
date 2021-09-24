@@ -4,7 +4,7 @@ import no.nav.meldeplikt.meldekortservice.model.enum.KortType
 import no.nav.meldeplikt.meldekortservice.model.meldekort.FravaerType
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Meldekort
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
-import no.nav.meldeplikt.meldekortservice.service.InnsendtMeldekortService
+import no.nav.meldeplikt.meldekortservice.service.DBService
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
@@ -15,7 +15,7 @@ class MeldekortMapperTest {
 
     @Test
     fun testMeldekortMapper() {
-        val mockMeldekortService = mock(InnsendtMeldekortService::class.java)
+        val mockMeldekortService = mock(DBService::class.java)
         `when`(mockMeldekortService.hentInnsendtMeldekort(2L)).thenAnswer { throw SQLException("Found no rows") }
         val meldekort1 = Meldekort(
             1L,
