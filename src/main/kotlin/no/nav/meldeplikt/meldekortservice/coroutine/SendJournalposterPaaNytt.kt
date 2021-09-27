@@ -40,6 +40,8 @@ class SendJournalposterPaaNytt(
                 try {
                     val journalpost = triple.second
 
+                    // Check that journalpost with eksternalreferenceId doesn't exists
+
                     // Send
                     val journalpostResponse = dokarkivService.createJournalpost(triple.second)
 

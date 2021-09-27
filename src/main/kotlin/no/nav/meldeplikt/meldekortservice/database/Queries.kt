@@ -14,6 +14,7 @@ import java.sql.Connection
 import java.sql.DatabaseMetaData
 import java.sql.ResultSet
 import java.util.*
+import javax.sql.rowset.serial.SerialClob
 
 
 fun Connection.hentInnsendtMeldekort(meldekortId: Long): InnsendtMeldekort =
@@ -45,12 +46,21 @@ fun Connection.lagreJournalpostData(journalpostId: Long, dokumentInfoId: Long, m
 fun Connection.lagreJournalpostMidlertidig(journalpost: Journalpost): Int =
     prepareStatement("""INSERT INTO MIDLERTIDIG_LAGREDE_JOURNALPOSTER (id, journalpost, created, retries) VALUES (?, ?, ?, ?)""")
         .use {
-            val clob: Clob = this.createClob()
+            val journalpostBytes = bytesToChars(ObjectMapper().writeValueAsBytes(journalpost))
 
-            val out: Writer = clob.setCharacterStream(1L)
-            out.write(bytesToChars(ObjectMapper().writeValueAsBytes(journalpost)))
-            out.flush()
-            out.close()
+            val metaData: DatabaseMetaData = this.metaData
+            val productName = metaData.databaseProductName
+
+            val clob: Clob
+            if (productName == "PostgreSQL") {
+                clob = SerialClob(journalpostBytes) // this doesn't work with Oracle
+            } else {
+                clob = this.createClob() // this doesn't work with PostgreSQL
+                val out: Writer = clob.setCharacterStream(1L)
+                out.write(journalpostBytes)
+                out.flush()
+                out.close()
+            }
 
             it.setString(1, journalpost.eksternReferanseId) // Vi vet at det er UUID der
             it.setClob(2, clob)

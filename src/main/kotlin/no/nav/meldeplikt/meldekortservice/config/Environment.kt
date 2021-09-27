@@ -53,7 +53,7 @@ data class Environment(
     val stsNaisUrl: String = removeTrailingSlash(getEnvVar("SECURITYTOKENSERVICE_NAIS", "https://ststest.nav.no/")),
 
     val dokarkivUrl: String = removeTrailingSlash(getEnvVar("DOKARKIV_URL", "https://dokarkivtest.nav.no/")),
-    val dokarkivResendInterval: Long = getEnvVar("DOKARKIV_RESEND_INTERVAL", "10000").toLong()
+    val dokarkivResendInterval: Long = getEnvVar("DOKARKIV_RESEND_INTERVAL", "30000").toLong()
 )
 
 fun getEnvVar(varName: String, defaultValue: String? = null): String {
