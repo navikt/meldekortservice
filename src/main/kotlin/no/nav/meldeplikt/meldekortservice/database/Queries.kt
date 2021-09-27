@@ -36,8 +36,9 @@ fun Connection.lagreJournalpostData(journalpostId: Long, dokumentInfoId: Long, m
     prepareStatement("""INSERT INTO OPPRETTEDE_JOURNALPOSTER (journalpostId, dokumentInfoId, meldekortId, created) VALUES (?, ?, ?, ?)""")
         .use {
             it.setLong(1, journalpostId)
-            it.setLong(2, meldekortId)
-            it.setLong(3, System.currentTimeMillis() / 1000)
+            it.setLong(2, journalpostId)
+            it.setLong(3, meldekortId)
+            it.setLong(4, System.currentTimeMillis() / 1000)
             it.executeUpdate()
         }
 
