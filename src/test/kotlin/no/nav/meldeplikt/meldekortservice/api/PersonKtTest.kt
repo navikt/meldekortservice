@@ -186,7 +186,8 @@ class PersonKtTest {
             10,
             listOf()
         )
-        val ordsStringResponse = OrdsStringResponse(status = HttpStatusCode.OK, content = defaultXmlMapper.writeValueAsString(person))
+        val ordsStringResponse =
+            OrdsStringResponse(status = HttpStatusCode.OK, content = defaultXmlMapper.writeValueAsString(person))
 
         coEvery { arenaOrdsService.hentMeldekort(any()) } returns (ordsStringResponse)
         coEvery { dbService.hentInnsendtMeldekort(1L) } returns (InnsendtMeldekort(meldekortId = 1L))
@@ -333,6 +334,7 @@ class PersonKtTest {
     @Test
     fun `OpprettJournalpost returnerer OK hvis DokarkivService er ok`() {
         val journalpostId = 123456780L
+        val dokumentInfoId = 123456781L
 
         val journalpostResponse = JournalpostResponse(
             journalpostId = journalpostId,
@@ -340,12 +342,12 @@ class PersonKtTest {
             melding = "MELDING FRA DOKARKIV",
             journalpostferdigstilt = true,
             dokumenter = listOf(
-                DokumentInfo(123456781)
+                DokumentInfo(dokumentInfoId)
             )
         )
 
         coEvery { dokarkivService.createJournalpost(any()) } returns journalpostResponse
-        every { dbService.lagreJournalpostMeldekortPar(any(), any()) } just Runs
+        every { dbService.lagreJournalpostData(any(), any(), any()) } just Runs
 
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
@@ -367,7 +369,7 @@ class PersonKtTest {
         }
 
         // MeldekortId kommer fra tilleggsopplysninger i journalpost.json
-        verify { dbService.lagreJournalpostMeldekortPar(journalpostId, 1011121315) }
+        verify { dbService.lagreJournalpostData(journalpostId, dokumentInfoId, 1011121315) }
     }
 
     @Test
@@ -375,7 +377,7 @@ class PersonKtTest {
         val journalpost = this::class.java.getResource("/journalpost.json")
 
         coEvery { dokarkivService.createJournalpost(any()) } throws Exception()
-        every { dbService.lagreJournalpost(any()) } just Runs
+        every { dbService.lagreJournalpostMidlertidig(any()) } just Runs
 
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
@@ -397,7 +399,7 @@ class PersonKtTest {
         }
 
         verify {
-            dbService.lagreJournalpost(
+            dbService.lagreJournalpostMidlertidig(
                 jacksonObjectMapper().readValue(
                     journalpost,
                     Journalpost::class.java

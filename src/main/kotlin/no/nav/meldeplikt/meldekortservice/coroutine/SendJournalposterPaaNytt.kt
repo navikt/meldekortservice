@@ -44,8 +44,9 @@ class SendJournalposterPaaNytt(
                     val journalpostResponse = dokarkivService.createJournalpost(triple.second)
 
                     // Lagre journalpostId-meldekortId
-                    dbService.lagreJournalpostMeldekortPar(
+                    dbService.lagreJournalpostData(
                         journalpostResponse.journalpostId,
+                        journalpostResponse.dokumenter[0].dokumentInfoId,
                         journalpost.tilleggsopplysninger!!.first { it.nokkel == "meldekortId" }.verdi.toLong()
                     )
 

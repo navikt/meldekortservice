@@ -204,8 +204,9 @@ fun Routing.opprettJournalpost(
             val journalpostResponse = dokarkivService.createJournalpost(journalpost)
             defaultLog.info("JournalpostId = " + journalpostResponse.journalpostId)
 
-            dbService.lagreJournalpostMeldekortPar(
+            dbService.lagreJournalpostData(
                 journalpostResponse.journalpostId,
+                journalpostResponse.dokumenter[0].dokumentInfoId,
                 meldekortId.toLong()
             )
 
@@ -216,7 +217,7 @@ fun Routing.opprettJournalpost(
             )
             defaultLog.warn(errorMessage.error, e)
 
-            dbService.lagreJournalpost(journalpost)
+            dbService.lagreJournalpostMidlertidig(journalpost)
 
             call.respond(status = HttpStatusCode.ServiceUnavailable, message = errorMessage)
         }

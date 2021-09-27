@@ -60,8 +60,8 @@ class DBServiceTest {
 
         runBlocking {
             // Lagre
-            dbService.lagreJournalpost(journalpost1)
-            dbService.lagreJournalpost(journalpost2)
+            dbService.lagreJournalpostMidlertidig(journalpost1)
+            dbService.lagreJournalpostMidlertidig(journalpost2)
 
             // Hente
             var journalpostData = dbService.hentJournalpostData()

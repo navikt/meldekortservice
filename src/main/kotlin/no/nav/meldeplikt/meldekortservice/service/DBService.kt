@@ -22,21 +22,21 @@ class DBService(private val database: Database) {
             database.dbQuery { hentInnsendtMeldekort(meldekortId) }
         }
 
-    fun lagreJournalpostMeldekortPar(journalpostId: Long, meldekortId: Long) {
+    fun lagreJournalpostData(journalpostId: Long, dokumentInfoId: Long, meldekortId: Long) {
         database.translateExternalExceptionsToInternalOnes {
             runBlocking {
                 database.dbQuery {
-                    lagreJournalpostMeldekortPar(journalpostId, meldekortId)
+                    lagreJournalpostData(journalpostId, dokumentInfoId, meldekortId)
                 }
             }
         }
     }
 
-    fun lagreJournalpost(journalpost: Journalpost) {
+    fun lagreJournalpostMidlertidig(journalpost: Journalpost) {
         database.translateExternalExceptionsToInternalOnes {
             runBlocking {
                 database.dbQuery {
-                    lagreJournalpost(journalpost)
+                    lagreJournalpostMidlertidig(journalpost)
                 }
             }
         }

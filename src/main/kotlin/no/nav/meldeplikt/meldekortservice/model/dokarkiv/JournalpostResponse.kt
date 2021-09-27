@@ -6,13 +6,13 @@ import com.fasterxml.jackson.annotation.JsonInclude
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class JournalpostResponse(
     val journalpostId: Long, // Dokumentasjon sier at dette feltet er String. Men det ser ut at vi får numerisk ID her
-    val journalstatus: String? = null,
+    val journalstatus: String,
     val melding: String? = null,
-    val journalpostferdigstilt: Boolean? = null,
-    val dokumenter: List<DokumentInfo>? = null
+    val journalpostferdigstilt: Boolean,
+    val dokumenter: List<DokumentInfo>
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class DokumentInfo(
-    val dokumentInfoId: Long? = null, // Dokumentasjon sier at dette feltet er String. Men det ser ut at vi får numerisk ID her
+    val dokumentInfoId: Long, // Dokumentasjon sier at dette feltet er String. Men det ser ut at vi får numerisk ID her
 )

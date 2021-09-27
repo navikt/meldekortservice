@@ -31,8 +31,8 @@ fun Connection.opprettInnsendtMeldekort(innsendtMeldekort: InnsendtMeldekort): I
             it.executeUpdate()
         }
 
-fun Connection.lagreJournalpostMeldekortPar(journalpostId: Long, meldekortId: Long): Int =
-    prepareStatement("""INSERT INTO JOURNALPOST_MELDEKORT (journalpostId, meldekortId, created) VALUES (?, ?, ?)""")
+fun Connection.lagreJournalpostData(journalpostId: Long, dokumentInfoId: Long, meldekortId: Long): Int =
+    prepareStatement("""INSERT INTO OPPRETTEDE_JOURNALPOSTER (journalpostId, dokumentInfoId, meldekortId, created) VALUES (?, ?, ?, ?)""")
         .use {
             it.setLong(1, journalpostId)
             it.setLong(2, meldekortId)
@@ -40,8 +40,8 @@ fun Connection.lagreJournalpostMeldekortPar(journalpostId: Long, meldekortId: Lo
             it.executeUpdate()
         }
 
-fun Connection.lagreJournalpost(journalpost: Journalpost): Int =
-    prepareStatement("""INSERT INTO JOURNALPOST (id, journalpost, created, retries) VALUES (?, ?, ?, ?)""")
+fun Connection.lagreJournalpostMidlertidig(journalpost: Journalpost): Int =
+    prepareStatement("""INSERT INTO MIDLERTIDIG_LAGREDE_JOURNALPOSTER (id, journalpost, created, retries) VALUES (?, ?, ?, ?)""")
         .use {
             it.setString(1, journalpost.eksternReferanseId) // Vi vet at det er UUID der
             it.setClob(2, SerialClob(bytesToChars(ObjectMapper().writeValueAsBytes(journalpost))))
@@ -57,9 +57,9 @@ fun Connection.hentJournalpostData(): List<Triple<String, Journalpost, Int>> {
     val productName = metaData.databaseProductName
 
     // Oracle and H2 by default
-    var query = """SELECT id, journalpost, retries FROM JOURNALPOST"""
+    var query = """SELECT id, journalpost, retries FROM MIDLERTIDIG_LAGREDE_JOURNALPOSTER"""
     if (productName == "PostgreSQL") {
-        query = """SELECT id, convert_from(lo_get(journalpost::oid), 'UTF8') as journalpost, retries FROM JOURNALPOST"""
+        query = """SELECT id, convert_from(lo_get(journalpost::oid), 'UTF8') as journalpost, retries FROM MIDLERTIDIG_LAGREDE_JOURNALPOSTER"""
     }
 
     this.prepareStatement(query)
@@ -80,14 +80,14 @@ fun Connection.hentJournalpostData(): List<Triple<String, Journalpost, Int>> {
 }
 
 fun Connection.sletteJournalpostData(id: String) =
-    prepareStatement("""DELETE FROM JOURNALPOST WHERE id = ?""")
+    prepareStatement("""DELETE FROM MIDLERTIDIG_LAGREDE_JOURNALPOSTER WHERE id = ?""")
         .use {
             it.setString(1, id)
             it.executeUpdate()
         }
 
 fun Connection.oppdaterJournalpost(id: String, retries: Int) =
-    prepareStatement("""UPDATE JOURNALPOST SET retries = ? WHERE id = ?""")
+    prepareStatement("""UPDATE MIDLERTIDIG_LAGREDE_JOURNALPOSTER SET retries = ? WHERE id = ?""")
         .use {
             it.setInt(1, retries)
             it.setString(2, id)
