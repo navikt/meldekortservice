@@ -69,7 +69,7 @@ fun Connection.lagreJournalpostMidlertidig(journalpost: Journalpost): Int =
             it.executeUpdate()
         }
 
-fun Connection.hentJournalpostData(): List<Triple<String, Journalpost, Int>> {
+fun Connection.hentMidlertidigLagredeJournalposter(): List<Triple<String, Journalpost, Int>> {
     val list = mutableListOf<Triple<String, Journalpost, Int>>()
 
     val metaData: DatabaseMetaData = this.metaData
@@ -98,14 +98,14 @@ fun Connection.hentJournalpostData(): List<Triple<String, Journalpost, Int>> {
     return list
 }
 
-fun Connection.sletteJournalpostData(id: String) =
+fun Connection.sletteMidlertidigLagretJournalpost(id: String) =
     prepareStatement("""DELETE FROM MIDLERTIDIG_LAGREDE_JOURNALPOSTER WHERE id = ?""")
         .use {
             it.setString(1, id)
             it.executeUpdate()
         }
 
-fun Connection.oppdaterJournalpost(id: String, retries: Int) =
+fun Connection.oppdaterMidlertidigLagretJournalpost(id: String, retries: Int) =
     prepareStatement("""UPDATE MIDLERTIDIG_LAGREDE_JOURNALPOSTER SET retries = ? WHERE id = ?""")
         .use {
             it.setInt(1, retries)

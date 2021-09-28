@@ -42,28 +42,28 @@ class DBService(private val database: Database) {
         }
     }
 
-    fun hentJournalpostData(): List<Triple<String, Journalpost, Int>> =
+    fun hentMidlertidigLagredeJournalposter(): List<Triple<String, Journalpost, Int>> =
         runBlocking {
             database.dbQuery {
-                hentJournalpostData()
+                hentMidlertidigLagredeJournalposter()
             }
         }
 
-    fun sletteJournalpostData(id: String) {
+    fun sletteMidlertidigLagretJournalpost(id: String) {
         database.translateExternalExceptionsToInternalOnes {
             runBlocking {
                 database.dbQuery {
-                    sletteJournalpostData(id)
+                    sletteMidlertidigLagretJournalpost(id)
                 }
             }
         }
     }
 
-    fun oppdaterJournalpost(id: String, retries: Int) {
+    fun oppdaterMidlertidigLagretJournalpost(id: String, retries: Int) {
         database.translateExternalExceptionsToInternalOnes {
             runBlocking {
                 database.dbQuery {
-                    oppdaterJournalpost(id, retries)
+                    oppdaterMidlertidigLagretJournalpost(id, retries)
                 }
             }
         }

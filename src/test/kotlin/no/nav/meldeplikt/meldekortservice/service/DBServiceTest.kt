@@ -3,6 +3,7 @@ package no.nav.meldeplikt.meldekortservice.service
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.database.H2Database
+import no.nav.meldeplikt.meldekortservice.database.hentJournalpostData
 import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Journalpost
 import org.amshove.kluent.`with message`
@@ -19,14 +20,12 @@ class DBServiceTest {
 
     @AfterAll
     fun tearDown() {
-        runBlocking {
-            database.closeConnection()
-        }
+        database.closeConnection()
     }
 
     @Test
     fun `test settInn og hent av meldekort `() {
-        val dbService = DBService(database = database)
+        val dbService = DBService(database)
 
         runBlocking {
             dbService.settInnInnsendtMeldekort(innsendtMeldekort1)
@@ -37,7 +36,7 @@ class DBServiceTest {
 
     @Test
     fun `test hent av meldekort throws Exception `() {
-        val dbService = DBService(database = database)
+        val dbService = DBService(database)
 
         invoking {
             runBlocking {
@@ -47,8 +46,8 @@ class DBServiceTest {
     }
 
     @Test
-    fun `test lagre, hente, slette og oppdater journalpost data`() {
-        val dbService = DBService(database = database)
+    fun `test lagre, hente, slette og oppdater midlertidig lagrede journalposter`() {
+        val dbService = DBService(database)
 
         val journalpostJson = this::class.java.getResource("/journalpost.json")!!.readText()
         val journalpost = jacksonObjectMapper().readValue(
@@ -64,22 +63,39 @@ class DBServiceTest {
             dbService.lagreJournalpostMidlertidig(journalpost2)
 
             // Hente
-            var journalpostData = dbService.hentJournalpostData()
+            var journalpostData = dbService.hentMidlertidigLagredeJournalposter()
             assertEquals(2, journalpostData.size)
             assertEquals(1, journalpostData.filter { it.first == "1" }.size)
             assertEquals(1, journalpostData.filter { it.first == "2" }.size)
 
             // Slette
-            dbService.sletteJournalpostData("1")
+            dbService.sletteMidlertidigLagretJournalpost("1")
 
             // Oppdater
-            dbService.oppdaterJournalpost("2", 5)
+            dbService.oppdaterMidlertidigLagretJournalpost("2", 5)
 
             // Hente
-            journalpostData = dbService.hentJournalpostData()
+            journalpostData = dbService.hentMidlertidigLagredeJournalposter()
             assertEquals(1, journalpostData.size)
             val data = journalpostData.first { it.first == "2" }
             assertEquals(5, data.third)
+        }
+    }
+
+    @Test
+    fun `test lagre journalpost data`() {
+        val dbService = DBService(database)
+
+        runBlocking {
+            val result = database.dbQuery { hentJournalpostData() }
+            assertEquals(0, result.size)
+        }
+
+        dbService.lagreJournalpostData(123L, 223L, 323L)
+
+        runBlocking {
+            val result = database.dbQuery { hentJournalpostData() }
+            assertEquals(1, result.size)
         }
     }
 }

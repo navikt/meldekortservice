@@ -34,13 +34,16 @@ class SendJournalposterPaaNytt(
         while (isActive) {
             // Lese data fra DB
             // Triple: data id, journalpost, retries
-            val journalpostData: List<Triple<String, Journalpost, Int>> = dbService.hentJournalpostData()
+            val journalpostData: List<Triple<String, Journalpost, Int>> = dbService.hentMidlertidigLagredeJournalposter()
 
             journalpostData.forEach { triple ->
                 try {
                     val journalpost = triple.second
 
-                    // Check that journalpost with eksternalreferenceId doesn't exists
+                    // TODO: Check that journalpost with eksternalreferenceId doesn't exists
+                    // It is possible that we have had an error somewhere here, i.e. when saving info that a journalpost has been created
+                    // So we need to check that such journalpost doesn't exists before trying to send data again
+                    // We must use saf REST API
 
                     // Send
                     val journalpostResponse = dokarkivService.createJournalpost(triple.second)
@@ -53,16 +56,15 @@ class SendJournalposterPaaNytt(
                     )
 
                     // Slette journalpost data
-                    dbService.sletteJournalpostData(triple.first)
+                    dbService.sletteMidlertidigLagretJournalpost(triple.first)
                 } catch (e: Exception) {
                     // Kan ikke opprette journalpost igjen. Oppdater teller
-                    dbService.oppdaterJournalpost(triple.first, triple.third + 1)
+                    dbService.oppdaterMidlertidigLagretJournalpost(triple.first, triple.third + 1)
                     defaultLog.warn("Kan ikke opprette journalpost igjen. Data ID = ${triple.first}, retries = ${triple.third}")
                 }
             }
 
             delay(interval)
         }
-        println("coroutine done")
     }
 }

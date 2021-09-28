@@ -21,3 +21,15 @@ fun Connection.hentAlleInnsendteMeldekort(): List<InnsendtMeldekort> =
                 tilInnsendtMeldekort()
             }
         }
+
+fun Connection.hentJournalpostData(): List<Triple<Long, Long, Long>> =
+    prepareStatement("""SELECT journalpostId, dokumentInfoId, meldekortId FROM OPPRETTEDE_JOURNALPOSTER""")
+        .use {
+            it.executeQuery().list {
+                Triple(
+                    this.getLong("journalpostId"),
+                    this.getLong("dokumentInfoId"),
+                    this.getLong("meldekortId")
+                )
+            }
+        }

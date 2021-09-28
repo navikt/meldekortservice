@@ -27,9 +27,7 @@ class DatabaseTest {
 
     @AfterAll
     fun tearDown() {
-        runBlocking {
-            database.closeConnection()
-        }
+        database.closeConnection()
     }
 
     @Test
