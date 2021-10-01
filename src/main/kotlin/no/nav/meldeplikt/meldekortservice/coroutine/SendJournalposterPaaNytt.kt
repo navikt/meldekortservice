@@ -40,10 +40,13 @@ class SendJournalposterPaaNytt(
                 try {
                     val journalpost = triple.second
 
-                    // TODO: Check that journalpost with eksternalreferenceId doesn't exists
-                    // It is possible that we have had an error somewhere here, i.e. when saving info that a journalpost has been created
-                    // So we need to check that such journalpost doesn't exists before trying to send data again
-                    // We must use saf REST API
+                    // Det er mulig at vi får feil et sted her, dvs. f.eks. når vi lagrer informasjon om at en journalpost har blitt opprettet
+                    // (noe med DB eller connection timeout før vi får JournalpostRepspose tilbake)
+                    // Da prøver på nytt. Men journalposten eksisterer allerede, vi bare vet ikke om dette
+                    // Hva skjer hvis vi prøver å opprette journalpost som allerede eksisterer? No stress.
+                    // Hvis journalpost med denne eksternReferanseId allerede eksisterer, returnerer createJournalpost 409 Conflict
+                    // Men! Sammen men 409 Conflict returneres vanlig JournalpostReponse
+                    // Dvs. vi kan lagre journalpostId og dokumentInfoId og slette midlertidig lagret journalpost fra DB
 
                     // Send
                     val journalpostResponse = dokarkivService.createJournalpost(triple.second)
@@ -55,7 +58,7 @@ class SendJournalposterPaaNytt(
                         journalpost.tilleggsopplysninger!!.first { it.nokkel == "meldekortId" }.verdi.toLong()
                     )
 
-                    // Slette journalpost data
+                    // Slette midlertidig lagret journalpost
                     dbService.sletteMidlertidigLagretJournalpost(triple.first)
                 } catch (e: Exception) {
                     // Kan ikke opprette journalpost igjen. Oppdater teller

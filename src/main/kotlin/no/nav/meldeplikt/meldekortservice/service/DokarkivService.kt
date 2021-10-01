@@ -18,6 +18,7 @@ class DokarkivService(
         install(JsonFeature) {
             serializer = JacksonSerializer { objectMapper }
         }
+        expectSuccess = false
     },
     private val env: Environment = Environment()
 ) {

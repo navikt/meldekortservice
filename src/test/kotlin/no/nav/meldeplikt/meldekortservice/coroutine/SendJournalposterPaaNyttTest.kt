@@ -1,6 +1,7 @@
 package no.nav.meldeplikt.meldekortservice.coroutine
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import io.ktor.client.statement.*
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking

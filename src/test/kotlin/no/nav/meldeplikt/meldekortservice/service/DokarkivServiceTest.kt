@@ -1,6 +1,5 @@
 package no.nav.meldeplikt.meldekortservice.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.ktor.client.*
 import io.ktor.client.engine.mock.*
 import io.ktor.client.features.json.*
@@ -24,7 +23,18 @@ import kotlin.test.assertEquals
 class DokarkivServiceTest {
 
     @Test
-    fun `skal sende data til dokarkiv`() {
+    fun `skal sende data til dokarkiv og faa response tilbake`() {
+        test(HttpStatusCode.OK)
+    }
+
+    @Test
+    fun `skal sende data til dokarkiv og faa response tilbake selv om 409 Conflict`() {
+        // createJournalpost skal returnere 409 når journalpost med denne eksternReferanseId allerede eksisterer
+        // Men samtidig må createJournalpost returnere vanlig JournalpostReponse
+        test(HttpStatusCode.Conflict)
+    }
+
+    private fun test(status: HttpStatusCode) {
         runBlocking {
             mockkStatic(::isCurrentlyRunningOnNais)
             every { isCurrentlyRunningOnNais() } returns true
@@ -50,6 +60,7 @@ class DokarkivServiceTest {
                 install(JsonFeature) {
                     serializer = JacksonSerializer { defaultObjectMapper }
                 }
+                expectSuccess = false
                 engine {
                     addHandler { request ->
                         if (
@@ -61,6 +72,7 @@ class DokarkivServiceTest {
                         ) {
                             respond(
                                 defaultObjectMapper.writeValueAsString(journalpostResponse),
+                                status = status,
                                 headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                             )
                         } else if (
@@ -91,6 +103,7 @@ class DokarkivServiceTest {
             )
 
             assertEquals(journalpostResponse.journalpostId, response.journalpostId)
+            assertEquals(journalpostResponse.dokumenter[0].dokumentInfoId, response.dokumenter[0].dokumentInfoId)
         }
     }
 }
