@@ -12,7 +12,7 @@ import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
 
 node {
     // Sett JAVA_HOME til å peke på en JAVA 11 JDK
-    env.JAVA_HOME = "${tool 'JDK 11.0.2'}"
+    env.JAVA_HOME = "${tool 'JDK 11.0.9'}"
     println("[INFO] JAVA_HOME: ${JAVA_HOME}")
 
     def NAIS_YAML_FILE = ".nais/nais.yaml"
