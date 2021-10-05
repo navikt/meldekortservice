@@ -1,0 +1,11 @@
+dashEnv: ""
+dbEnv: ""
+releaseVersion: ##RELEASE_VERSION##
+slackAlertChannel: team-meldeplikt-alerts
+vaultKvEnv: prod
+vaultServiceuserEnv: prod
+ingresses:
+  - "https://meldekortservice.intern.nav.no"
+  - "https://app.adeo.no/meldekortservice"
+
+

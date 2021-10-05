@@ -4,49 +4,45 @@ import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
 
 //
 // Forventer følgende build-parametere:
-// - Miljo: Hvilken miljø (namespace) på NAIS som applikasjonen skal deployes til.
-// - ReleaseBygg (true/false): Bygg en release av applikasjonen med versjon x.y.z som satt i pom.
+// - Miljo: Hvilket miljø på NAIS som applikasjonen skal deployes til.
+// - ReleaseBygg (true/false): Bygg en release av applikasjonen med versjon x.y.z som satt i pom. 
 //
 // NB! Denne pipelinen støtter ikke prod.
 //
 
 node {
-    def NAIS_CLI = "/usr/bin/deploy"
+    // Sett JAVA_HOME til å peke på en JAVA 11 JDK
+    env.JAVA_HOME = "${tool 'JDK 11.0.2'}"
+    println("[INFO] JAVA_HOME: ${JAVA_HOME}")
 
-    def NAISERATOR_YAML_FILE = "naiserator.yaml"
-    def DOCKER_REPO = "${DOCKER_REPO}"
+    def NAIS_YAML_FILE = ".nais/nais.yaml"
+    def DOCKER_REPO = "repo.adeo.no:5443"
 
-    // For opplasting av Naiserator yaml-fil
-    def NEXUS_REPO_URL = "${NEXUS_REPO_URL}"
-    def NEXUS_REPO_ID = "${NEXUS_REPO_ID}"
+    // For opplasting av Nais-artifakt (nais.yaml + vars-filer)
+    def NEXUS_REPO_URL = "http://maven.adeo.no/nexus/service/local/artifact/maven/content"
+    def NEXUS_REPO_ID = "m2internal"
 
     // Jobbparametere (definert i Jenkins-jobb)
-    def miljo = getParameter(params.Miljo, "")
-    def doSonarAnalysis = getParameter(params.SonarAnalyse, true)
+    def environ = getParameter(params.Miljo, "")
     def isReleaseBuild = getParameter(params.ReleaseBygg, false)
 
-    println("[INFO] Miljo: ${miljo}")
-    println("[INFO] SonarAnalyse: ${doSonarAnalysis}")
+    println("[INFO] Miljo: ${environ}")
     println("[INFO] ReleaseBygg: ${isReleaseBuild}")
 
-    validateJobParameters(miljo)
+    validateJobParameters(environ)
 
-    // Variabler som brukes under streameditering av naiserator.yaml. (Støtter som nevnt ikke prod.)
+    def varsFile = ".nais/vars-" + environ + ".yaml"
     def cluster = "dev-fss"
-    def namespace = miljo
-    def domainName = "preprod.local"
-    def slackAlertChannel = '#team-meldeplikt-alerts-dev'
-    def vaultKvEnv = "preprod"
-    def vaultServiceuserEnv = "dev"
 
     def buildTimestamp = new Date().format("YYYYMMddHHmmss")
 
     // git related vars
     def branchName
 
+    // pom related vars
     def pom, groupId, application, pomVersion, releaseVersion
 
-    println("[INFO] namespace: ${namespace}")
+    println("[INFO] varsFile: ${varsFile}")
 
     try {
         stage("Checkout") {
@@ -63,7 +59,7 @@ node {
             sh "git pull origin ${branchName}"
 
             // NB! Bruker en mini-pom for versjonering
-            pom = readMavenPom file: 'version.xml'
+            pom = readMavenPom file: 'maven.xml'
             groupId = "${pom.groupId}"
             application = "${pom.artifactId}"
             pomVersion = "${pom.version}"
@@ -79,7 +75,7 @@ node {
         }
 
         stage("Build application") {
-            sh "mvn -f version.xml versions:set -DnewVersion=${releaseVersion} -DgenerateBackupPoms=false -B"
+            sh "mvn -f maven.xml versions:set -DnewVersion=${releaseVersion} -DgenerateBackupPoms=false -B"
             sh "gradle build"
         }
 
@@ -102,22 +98,24 @@ node {
         }
 
         stage("Deploy to NAIS") {
-            prepareNaiseratorYaml(NAISERATOR_YAML_FILE, releaseVersion, cluster, namespace, domainName, slackAlertChannel, vaultKvEnv, vaultServiceuserEnv)
+            prepareVarsFile(varsFile, releaseVersion)
 
-            sh "cat ${NAISERATOR_YAML_FILE}"
+            sh "cat ${varsFile}"
 
-            // Deploy til NAIS
             withCredentials([string(credentialsId: 'deploy-api-key', variable: 'NAIS_DEPLOY_APIKEY')]) {
-                sh "${NAIS_CLI} --apikey=${NAIS_DEPLOY_APIKEY} --cluster=${cluster} --repository=${application} --resource=${NAISERATOR_YAML_FILE} --wait=true"
-             }
+                sh "deploy --apikey=${NAIS_DEPLOY_APIKEY} --cluster=${cluster} --repository=${application} --resource=${NAIS_YAML_FILE} --vars=${varsFile} --print-payload --wait=false --var=\"image=meldeplikt/${application}:${releaseVersion}\""
+            }
         }
 
         stage("Perform release") {
             when (isReleaseBuild) {
                 println("[INFO] Oppretter release: ${releaseVersion}")
 
+                // Bygg NAIS-artifakt
+                sh "mvn clean package -f maven.xml"
+
                 // Rull tilbake streamediteringen av yaml-filen i forrige steg før oppdatert pom sjekkes inn.
-                sh "git checkout -- ${NAISERATOR_YAML_FILE}"
+                sh "git checkout -- ${varsFile}"
 
                 sh "git commit -am \"Oppdatert til releaseversjon ${releaseVersion} (fra Jenkins pipeline)\""
                 sh "git push origin ${branchName}"
@@ -127,12 +125,12 @@ node {
 
                 println("[INFO] Opprettet og pushet Git-tag: ${application}-${releaseVersion}")
 
-                // Last opp Naiserator yaml-filen til Nexus.
+                // Last opp NAIS-artifakten til Nexus.
                 withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'nexusUser', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
-                    sh "curl -s -F r=${NEXUS_REPO_ID} -F hasPom=false -F e=yaml -F g=${groupId} -F a=${application} -F v=${releaseVersion} -F p=yaml -F file=@${NAISERATOR_YAML_FILE} -u ${USERNAME}:${PASSWORD} ${NEXUS_REPO_URL}"
-                }
+                    sh "curl -s -F r=${NEXUS_REPO_ID} -F hasPom=false -F e=zip -F g=${groupId} -F a=${application} -F v=${releaseVersion} -F p=zip -F file=@target/${application}-nais.zip -u ${USERNAME}:${PASSWORD} ${NEXUS_REPO_URL}"
 
-                println("[INFO] Lastet opp '${NAISERATOR_YAML_FILE}' til Nexus")
+                    println("[INFO] Lastet opp '${application}-nais.zip' til Nexus")
+                }
 
                 def nextVersion = getNextSnapshotVersion(releaseVersion)
 
@@ -196,30 +194,16 @@ def getParameter(paramValue, defaultValue) {
     return (paramValue != null) ? paramValue : defaultValue
 }
 
-def prepareNaiseratorYaml(naiseratorFile, version, cluster, namespace, domainName, slackAlertChannel, vaultKvEnv, vaultServiceuserEnv) {
-    replaceInFile('##RELEASE_VERSION##', version, naiseratorFile)
-    replaceInFile('##CLUSTER##', cluster, naiseratorFile)
-    replaceInFile('##NAMESPACE##', namespace, naiseratorFile)
-    replaceInFile('##DOMAIN_NAME##', domainName, naiseratorFile)
-    replaceInFile('##SLACK_ALERT_CHANNEL##', slackAlertChannel, naiseratorFile)
-    replaceInFile('##VAULT_KV_ENV##', vaultKvEnv, naiseratorFile)
-    replaceInFile('##VAULT_SERVICEUSER_ENV##', vaultServiceuserEnv, naiseratorFile)
-
-    if (namespace == "default") {
-        replaceInFile('##URL_NAMESPACE##', '', naiseratorFile)
-        replaceInFile('##DB_NAMESPACE##', '', naiseratorFile)
-    } else {
-        replaceInFile('##URL_NAMESPACE##', "-${namespace}" as String, naiseratorFile)
-        replaceInFile('##DB_NAMESPACE##', "_${namespace}" as String, naiseratorFile)
-    }
+def prepareVarsFile(varsFile, version) {
+    replaceInFile('##RELEASE_VERSION##', version, varsFile)
 }
 
 def replaceInFile(oldString, newString, file) {
     sh "sed -i -e 's/${oldString}/${newString}/g' ${file}"
 }
 
-def validateJobParameters(miljo) {
-    if (!miljo?.trim() || miljo.startsWith('--')) {
+def validateJobParameters(environ) {
+    if (!environ?.trim() || environ.startsWith('--')) {
         throw new IllegalArgumentException("Jobbparameteren 'Miljo' mangler verdi")
     }
 }
