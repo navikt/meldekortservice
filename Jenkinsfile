@@ -11,6 +11,8 @@ import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
 //
 
 node {
+    env.JAVA_HOME="${tool 'JDK 11.0.2'}"
+
     def NAIS_CLI = "/usr/bin/deploy"
 
     def NAISERATOR_YAML_FILE = "naiserator.yaml"
