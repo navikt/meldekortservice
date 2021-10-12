@@ -18,18 +18,13 @@ class KontrollService(
     private val responseMapper: KontrollertTypeMapper = KontrollertTypeMapper(),
     private val aadService: AadService = AadService(AadServiceConfiguration()),
     private val kontrollClient: HttpClient = HttpClient {
-        engine {
-            response.apply {
-                charset(Charsets.UTF_8.displayName())
-            }
-        }
         install(JsonFeature) {
             serializer = JacksonSerializer { objectMapper }
         }
     }
 ) {
     suspend fun kontroller(meldekort: Meldekortkontroll): MeldekortKontrollertType {
-        var message = kontrollClient.post<KontrollResponse> {
+        val message = kontrollClient.post<KontrollResponse> {
             url("${env.meldekortKontrollUrl}$KONTROLL_KONTROLL")
             contentType(ContentType.Application.Json)
             header("Authorization", "Bearer " + aadService.fetchAadToken())

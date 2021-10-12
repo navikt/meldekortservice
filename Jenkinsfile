@@ -11,6 +11,8 @@ import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
 //
 
 node {
+    env.JAVA_HOME="${tool 'JDK 11.0.2'}"
+
     def NAIS_YAML_FILE = ".nais/nais.yaml"
     def DOCKER_REPO = "repo.adeo.no:5443"
 
