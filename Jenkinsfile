@@ -22,9 +22,11 @@ node {
 
     // Jobbparametere (definert i Jenkins-jobb)
     def environ = getParameter(params.Miljo, "")
+    def doSonarAnalysis = getParameter(params.SonarAnalyse, true)
     def isReleaseBuild = getParameter(params.ReleaseBygg, false)
 
     println("[INFO] Miljo: ${environ}")
+    println("[INFO] SonarAnalyse: ${doSonarAnalysis}")
     println("[INFO] ReleaseBygg: ${isReleaseBuild}")
 
     validateJobParameters(environ)
