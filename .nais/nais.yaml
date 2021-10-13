@@ -1,12 +1,12 @@
 apiVersion: nais.io/v1alpha1
 kind: Application
 metadata:
-  name: meldekortservice
+  name: meldekortservice{{ dashEnv }}
   namespace: meldekort
   labels:
     team: meldekort
-  annotations:
-    nais.io/read-only-file-system: "false"
+#  annotations:
+#    nais.io/read-only-file-system: "false"
 spec:
   image: repo.adeo.no:5443/meldeplikt/meldekortservice:{{ releaseVersion }}
   port: 8090
