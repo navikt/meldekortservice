@@ -6,6 +6,5 @@ vaultKvEnv: prod
 vaultServiceuserEnv: prod
 ingresses:
   - "https://meldekortservice.intern.nav.no"
+  - "https://meldekortservice.nais.adeo.no"
   - "https://app.adeo.no/meldekortservice"
-
-
