@@ -7,3 +7,4 @@ vaultServiceuserEnv: dev
 ingresses:
   - "https://meldekortservice-q0.dev.intern.nav.no"
   - "https://app-q0.adeo.no/meldekortservice"
+  - "https://meldekortservice-q0.nais.preprod.local/"
