@@ -9,7 +9,7 @@ spec:
   image: repo.adeo.no:5443/meldeplikt/meldekortservice:{{ releaseVersion }}
   port: 8090
   secureLogs:
-    enabled: true
+    enabled: false
   ingresses:
   {{#each ingresses as |url|}}
      - {{url}}
