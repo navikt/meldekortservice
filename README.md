@@ -18,5 +18,6 @@ Spørsmål knyttet til koden eller prosjektet kan rettes mot https://github.com/
 Interne henvendelser kan sendes via Slack i kanalen #meldekort.
 
 ## Dokumentasjon
-Dokumentasjon finnes i [Confluence](https://confluence.adeo.no/display/TMP/Meldekort-api).
-Swagger er tilgjengelig på `meldekortservice/internal/apidocs`.
+Dokumentasjon finnes i [Confluence](https://confluence.adeo.no/display/TMP/Meldekort-api).  
+Swagger er tilgjengelig på `meldekortservice/internal/apidocs`.  
+Om Meldekort journalføring: https://confluence.adeo.no/x/uY6wGQ
