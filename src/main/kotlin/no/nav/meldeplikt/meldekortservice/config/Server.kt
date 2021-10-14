@@ -102,7 +102,9 @@ fun Application.mainModule(
 
     flywayConfig.migrate()
 
-    SendJournalposterPaaNytt(dbService, dokarkivService, env.dokarkivResendInterval, 0).start()
+    if (env.dokarkivResendInterval > 0L) {
+        SendJournalposterPaaNytt(dbService, dokarkivService, env.dokarkivResendInterval, 0).start()
+    }
 }
 
 private fun setAppProperties(environment: Environment) {
