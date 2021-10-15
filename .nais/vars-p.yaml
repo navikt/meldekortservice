@@ -1,5 +1,6 @@
 dashEnv: ""
 dbEnv: ""
+cluster: prod-fss
 releaseVersion: ##RELEASE_VERSION##
 slackAlertChannel: team-meldeplikt-alerts
 vaultKvEnv: prod
