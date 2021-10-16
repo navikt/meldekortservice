@@ -33,7 +33,8 @@ spec:
         mountPath: /secrets/serviceuser/srvsblarbeid
       - kvPath: kv/{{ vaultKvEnv }}/fss/meldekortservice{{ dashEnv }}/meldekort
         mountPath: /var/run/secrets/nais.io/vault
-      - kvPath: /azuread/data/{{ vaultServiceuserEnv }}/creds/meldekortservice
+#      - kvPath: /azuread/data/{{ vaultServiceuserEnv }}/creds/meldekortservice
+      - kvPath: /azuread/data/{{ vaultServiceuserEnv }}/creds/dev-fss.meldekort.meldekortservice-q1
         mountPath: /var/run/secrets/nais.io/azuread
   replicas:
     min: 2
