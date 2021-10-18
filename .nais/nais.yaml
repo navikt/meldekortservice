@@ -33,9 +33,9 @@ spec:
         mountPath: /secrets/serviceuser/srvsblarbeid
       - kvPath: kv/{{ vaultKvEnv }}/fss/meldekortservice{{ dashEnv }}/meldekort
         mountPath: /var/run/secrets/nais.io/vault
-      - kvPath: /azuread/data/{{ vaultServiceuserEnv }}/creds/meldekortservice
+#      - kvPath: /azuread/data/{{ vaultServiceuserEnv }}/creds/meldekortservice
 #      - kvPath: /azuread/data/dev/creds/dev-fss:meldekort:meldekortservice-q1
-        mountPath: /var/run/secrets/nais.io/azuread
+#        mountPath: /var/run/secrets/nais.io/azuread
   replicas:
     min: 2
     max: 6
@@ -50,6 +50,9 @@ spec:
       memory: 1024Mi
   envFrom:
     - configmap: loginservice-idporten
+  azure:
+    application:
+      enabled: true
 ---
 apiVersion: nais.io/v1
 kind: Alert
