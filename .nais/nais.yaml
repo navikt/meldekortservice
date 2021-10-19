@@ -49,9 +49,6 @@ spec:
       memory: 1024Mi
   envFrom:
     - configmap: loginservice-idporten
-  azure:
-    application:
-      enabled: true
 ---
 apiVersion: nais.io/v1
 kind: Alert
