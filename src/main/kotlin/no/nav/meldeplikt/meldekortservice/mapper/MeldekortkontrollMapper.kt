@@ -16,7 +16,7 @@ class MeldekortkontrollMapper {
             meldekortId = meldekort.meldekortId,
             personId = meldekort.personId,
             fnr = meldekort.fodselsnr,
-            kilde = "MELDEKORT",
+            kilde = "MELDEPLIKT",
             meldegruppe = meldekort.meldegruppe,
             kortType = meldekort.kortType.name,
             kortStatus = "SENDT", // TODO: Finn ut hvordan vi forholder oss til denne. Ligger ikke i request.
