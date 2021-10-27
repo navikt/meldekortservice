@@ -1,0 +1,83 @@
+apiVersion: nais.io/v1alpha1
+kind: Application
+metadata:
+  name: meldekortservice{{ dashEnv }}
+  namespace: meldekort
+  labels:
+    team: meldekort
+spec:
+  image: repo.adeo.no:5443/meldeplikt/meldekortservice:{{ releaseVersion }}
+  port: 8090
+  secureLogs:
+    enabled: true
+  ingresses:
+  {{#each ingresses as |url|}}
+     - {{url}}
+  {{/each}}
+  liveness:
+    path: /meldekortservice/internal/isAlive
+    initialDelay: 10
+  readiness:
+    path: /meldekortservice/internal/isReady
+    initialDelay: 10
+  vault:
+    enabled: true
+    paths:
+      - kvPath: oracle/data/{{ vaultServiceuserEnv }}/creds/meldekortservice{{ dbEnv }}-user
+        mountPath: /secrets/dbuser/meldekortservicedbuser
+      - kvPath: oracle/data/{{ vaultServiceuserEnv }}/config/meldekortservice{{ dbEnv }}
+        mountPath: /secrets/dbconf/meldekortservicedbconf
+      - kvPath: serviceuser/data/{{ vaultServiceuserEnv }}/srvmeldekortservice
+        mountPath: /secrets/serviceuser/srvmeldekortservice
+      - kvPath: serviceuser/data/{{ vaultServiceuserEnv }}/srvsblarbeid
+        mountPath: /secrets/serviceuser/srvsblarbeid
+      - kvPath: kv/{{ vaultKvEnv }}/fss/meldekortservice{{ dashEnv }}/meldekort
+        mountPath: /var/run/secrets/nais.io/vault
+      - kvPath: /azuread/data/{{ vaultServiceuserEnv }}/creds/meldekortservice
+        mountPath: /var/run/secrets/nais.io/azuread
+  replicas:
+    min: 2
+    max: 6
+    cpuThresholdPercentage: 10
+  webproxy: true
+  resources:
+    limits:
+      cpu: '1'
+      memory: 1500Mi
+    requests:
+      cpu: 500m
+      memory: 1024Mi
+  envFrom:
+    - configmap: loginservice-idporten
+---
+apiVersion: nais.io/v1
+kind: Alert
+metadata:
+  name: meldekortservice
+  namespace: meldekort
+  labels:
+    team: meldekort
+spec:
+  receivers:
+    slack:
+      channel: '#{{ slackAlertChannel }}'
+  alerts:
+    - alert: meldekortservice_applikasjonsinstanser nede
+      expr: kube_deployment_status_replicas_unavailable{deployment=~"meldekortservice.*"} > 0
+      for: 2m
+      description: >
+            *\{{ $labels.deployment }}* har utilgjengelige applikasjonsinstanser (podder)
+      action: |
+            Kjør `kubectl describe pod -l app=\{{ $labels.deployment }} -n \{{ $labels.namespace }}` for å se events,
+            evt. kjør først `kubectl get pods -l app=\{{ $labels.deployment }} -n \{{ $labels.namespace }}` for en oversikt over poddene.
+            Sjekk også Kibana for eventuelle feil som er logget; query `application:\{{ $labels.deployment }} AND (level:Error OR level:Warning)`.
+      severity: danger
+    - alert: meldekortservice_feil er logget
+      expr: sum(increase(logd_messages_total{log_app=~"meldekortservice.*",log_level="Error"}[10m])) by (log_app, log_namespace) > 0
+      for: 3m
+      description: >
+            *\{{ $labels.log_app }}* har logget feil med loggnivå Error
+      action: |
+            Antall feil målt over siste 10 minutter er *\{{ $value }}*.
+            Sjekk Kibana for detaljer om feil som er logget: query `application:\{{ $labels.log_app }} AND (level:Error OR level:Warning)`.
+      severity: danger
