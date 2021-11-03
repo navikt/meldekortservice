@@ -219,7 +219,9 @@ fun Routing.opprettJournalpost(
 
             dbService.lagreJournalpostMidlertidig(journalpost)
 
-            call.respond(status = HttpStatusCode.ServiceUnavailable, message = errorMessage)
+            // Vi sender OK tilbake for å gi mulighet å gå videre go vise kvittering
+            // Meldekort har jo blitt sendt, mens journalpost kan opprettes senere
+            call.respond(status = HttpStatusCode.OK, message = errorMessage)
         }
     }
 

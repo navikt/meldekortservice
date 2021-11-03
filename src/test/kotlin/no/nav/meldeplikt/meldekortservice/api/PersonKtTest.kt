@@ -30,6 +30,7 @@ import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import no.nav.security.mock.oauth2.MockOAuth2Server
 import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback
 import org.amshove.kluent.shouldBe
+import org.amshove.kluent.shouldBeEqualTo
 import org.flywaydb.core.Flyway
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
@@ -378,6 +379,7 @@ class PersonKtTest {
 
         coEvery { dokarkivService.createJournalpost(any()) } throws Exception()
         every { dbService.lagreJournalpostMidlertidig(any()) } just Runs
+        every { dbService.hentMidlertidigLagredeJournalposter() } returns emptyList()
 
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
@@ -394,7 +396,8 @@ class PersonKtTest {
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                 setBody(journalpost!!.readText())
             }.apply {
-                response.status() shouldBe HttpStatusCode.ServiceUnavailable
+                response.status() shouldBe HttpStatusCode.OK
+                response.content shouldBeEqualTo "{\"error\":\"Kan ikke opprette journalpost i dokarkiv for meldekort med id 1011121315\"}"
             }
         }
 
