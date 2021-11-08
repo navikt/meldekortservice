@@ -20,4 +20,4 @@ Interne henvendelser kan sendes via Slack i kanalen #meldekort.
 ## Dokumentasjon
 Dokumentasjon finnes i [Confluence](https://confluence.adeo.no/display/TMP/Meldekort-api).  
 Swagger er tilgjengelig på `meldekortservice/internal/apidocs`.  
-Om Meldekort journalføring: https://confluence.adeo.no/x/uY6wGQ
+Om Meldekort journalføring: https://confluence.adeo.no/pages/viewpage.action?pageId=431009242
