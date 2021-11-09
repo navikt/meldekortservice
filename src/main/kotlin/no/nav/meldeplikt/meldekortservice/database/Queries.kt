@@ -13,8 +13,6 @@ import java.sql.Clob
 import java.sql.Connection
 import java.sql.DatabaseMetaData
 import java.sql.ResultSet
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.sql.rowset.serial.SerialClob
 
