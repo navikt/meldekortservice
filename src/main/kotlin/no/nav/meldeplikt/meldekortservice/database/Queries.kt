@@ -20,7 +20,7 @@ import javax.sql.rowset.serial.SerialClob
 
 
 fun Connection.hentInnsendtMeldekort(meldekortId: Long): InnsendtMeldekort =
-    prepareStatement("""SELECT * FROM INNSENDT_MELDEKORT WHERE meldekortId = ?""")
+    prepareStatement("""SELECT * FROM innsendt_meldekort WHERE meldekortId = ?""")
         .use {
             it.setLong(1, meldekortId)
             it.executeQuery().singleResult {
@@ -29,24 +29,23 @@ fun Connection.hentInnsendtMeldekort(meldekortId: Long): InnsendtMeldekort =
         }
 
 fun Connection.opprettInnsendtMeldekort(innsendtMeldekort: InnsendtMeldekort): Int =
-    prepareStatement("""INSERT INTO INNSENDT_MELDEKORT (meldekortId) VALUES (?)""")
+    prepareStatement("""INSERT INTO innsendt_meldekort (meldekortId) VALUES (?)""")
         .use {
             it.setLong(1, innsendtMeldekort.meldekortId)
             it.executeUpdate()
         }
 
 fun Connection.lagreJournalpostData(journalpostId: Long, dokumentInfoId: Long, meldekortId: Long): Int =
-    prepareStatement("""INSERT INTO OPPRETTEDE_JOURNALPOSTER (journalpostId, dokumentInfoId, meldekortId, created) VALUES (?, ?, ?, ?)""")
+    prepareStatement("""INSERT INTO opprettede_journalposter (journalpostId, dokumentInfoId, meldekortId) VALUES (?, ?, ?)""")
         .use {
             it.setLong(1, journalpostId)
             it.setLong(2, dokumentInfoId)
             it.setLong(3, meldekortId)
-            it.setString(4, LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
             it.executeUpdate()
         }
 
 fun Connection.lagreJournalpostMidlertidig(journalpost: Journalpost): Int =
-    prepareStatement("""INSERT INTO MIDLERTIDIG_LAGREDE_JOURNALPOSTER (id, journalpost, created, retries) VALUES (?, ?, ?, ?)""")
+    prepareStatement("""INSERT INTO midlertidig_lagrede_journalposter (id, journalpost, retries) VALUES (?, ?, ?)""")
         .use {
             val journalpostBytes = bytesToChars(ObjectMapper().writeValueAsBytes(journalpost))
 
@@ -66,8 +65,7 @@ fun Connection.lagreJournalpostMidlertidig(journalpost: Journalpost): Int =
 
             it.setString(1, journalpost.eksternReferanseId) // Vi vet at det er UUID der
             it.setClob(2, clob)
-            it.setString(3, LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
-            it.setLong(4, 0)
+            it.setLong(3, 0)
             it.executeUpdate()
         }
 
@@ -78,9 +76,9 @@ fun Connection.hentMidlertidigLagredeJournalposter(): List<Triple<String, Journa
     val productName = metaData.databaseProductName
 
     // Oracle and H2 by default
-    var query = """SELECT id, journalpost, retries FROM MIDLERTIDIG_LAGREDE_JOURNALPOSTER"""
+    var query = """SELECT id, journalpost, retries FROM midlertidig_lagrede_journalposter"""
     if (productName == "PostgreSQL") {
-        query = """SELECT id, convert_from(lo_get(journalpost::oid), 'UTF8') as journalpost, retries FROM MIDLERTIDIG_LAGREDE_JOURNALPOSTER"""
+        query = """SELECT id, convert_from(lo_get(journalpost::oid), 'UTF8') as journalpost, retries FROM midlertidig_lagrede_journalposter"""
     }
 
     this.prepareStatement(query)
@@ -101,14 +99,14 @@ fun Connection.hentMidlertidigLagredeJournalposter(): List<Triple<String, Journa
 }
 
 fun Connection.sletteMidlertidigLagretJournalpost(id: String) =
-    prepareStatement("""DELETE FROM MIDLERTIDIG_LAGREDE_JOURNALPOSTER WHERE id = ?""")
+    prepareStatement("""DELETE FROM midlertidig_lagrede_journalposter WHERE id = ?""")
         .use {
             it.setString(1, id)
             it.executeUpdate()
         }
 
 fun Connection.oppdaterMidlertidigLagretJournalpost(id: String, retries: Int) =
-    prepareStatement("""UPDATE MIDLERTIDIG_LAGREDE_JOURNALPOSTER SET retries = ? WHERE id = ?""")
+    prepareStatement("""UPDATE midlertidig_lagrede_journalposter SET retries = ? WHERE id = ?""")
         .use {
             it.setInt(1, retries)
             it.setString(2, id)

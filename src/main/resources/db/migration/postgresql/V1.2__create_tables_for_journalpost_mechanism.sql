@@ -1,4 +1,4 @@
-CREATE TABLE OPPRETTEDE_JOURNALPOSTER
+CREATE TABLE opprettede_journalposter
 (
     journalpostId  numeric primary key,
     dokumentInfoId numeric                                                              not null,
@@ -6,7 +6,7 @@ CREATE TABLE OPPRETTEDE_JOURNALPOSTER
     created        char(19) default to_char(current_timestamp, 'YYYY-MM-DD HH24:MI:SS') not null
 );
 
-CREATE TABLE MIDLERTIDIG_LAGREDE_JOURNALPOSTER
+CREATE TABLE midlertidig_lagrede_journalposter
 (
     id          char(36) primary key,
     journalpost text                                                                 not null,
