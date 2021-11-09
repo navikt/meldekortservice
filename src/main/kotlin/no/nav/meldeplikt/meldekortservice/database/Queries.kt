@@ -13,6 +13,8 @@ import java.sql.Clob
 import java.sql.Connection
 import java.sql.DatabaseMetaData
 import java.sql.ResultSet
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.sql.rowset.serial.SerialClob
 
@@ -39,7 +41,7 @@ fun Connection.lagreJournalpostData(journalpostId: Long, dokumentInfoId: Long, m
             it.setLong(1, journalpostId)
             it.setLong(2, dokumentInfoId)
             it.setLong(3, meldekortId)
-            it.setLong(4, System.currentTimeMillis() / 1000)
+            it.setString(4, LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
             it.executeUpdate()
         }
 
@@ -64,7 +66,7 @@ fun Connection.lagreJournalpostMidlertidig(journalpost: Journalpost): Int =
 
             it.setString(1, journalpost.eksternReferanseId) // Vi vet at det er UUID der
             it.setClob(2, clob)
-            it.setLong(3, System.currentTimeMillis() / 1000)
+            it.setString(3, LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
             it.setLong(4, 0)
             it.executeUpdate()
         }
