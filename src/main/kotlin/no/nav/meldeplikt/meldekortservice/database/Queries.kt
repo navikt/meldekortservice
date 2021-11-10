@@ -73,12 +73,23 @@ fun Connection.hentMidlertidigLagredeJournalposter(): List<Triple<String, Journa
     val metaData: DatabaseMetaData = this.metaData
     val productName = metaData.databaseProductName
 
+    // Select records that are not used by another process or are "stuck", i.e. processing started more than 1 hour before
     // Oracle and H2 by default
-    var query = """SELECT id, journalpost, retries FROM midlertidig_lagrede_journalposter"""
+    var query = """SELECT id, journalpost, retries 
+        |FROM midlertidig_lagrede_journalposter 
+        |WHERE process_started IS NULL OR process_started < current_timestamp - interval '1' hour 
+        |FOR UPDATE"""
+        .trimMargin()
     if (productName == "PostgreSQL") {
-        query = """SELECT id, convert_from(lo_get(journalpost::oid), 'UTF8') as journalpost, retries FROM midlertidig_lagrede_journalposter"""
+        query = """SELECT id, convert_from(lo_get(journalpost::oid), 'UTF8') as journalpost, retries 
+            |FROM midlertidig_lagrede_journalposter 
+            |WHERE process_started IS NULL OR process_started < current_timestamp - interval '1 hour' 
+            |FOR UPDATE"""
+            .trimMargin()
     }
 
+    // Mark as busy
+    // Return
     this.prepareStatement(query)
         .use { preparedStatement ->
             preparedStatement.executeQuery()
@@ -88,6 +99,18 @@ fun Connection.hentMidlertidigLagredeJournalposter(): List<Triple<String, Journa
                             clobToString(resultSet.getCharacterStream("journalpost")),
                             Journalpost::class.java
                         )
+
+                        prepareStatement(
+                            """UPDATE midlertidig_lagrede_journalposter 
+                            |SET process_started = current_timestamp 
+                            |WHERE id = ?"""
+                                .trimMargin()
+                        )
+                            .use {
+                                it.setString(1, resultSet.getString("id"))
+                                it.executeUpdate()
+                            }
+
                         list.add(Triple(resultSet.getString("id"), journalpost, resultSet.getInt("retries")))
                     }
                 }
@@ -104,7 +127,12 @@ fun Connection.sletteMidlertidigLagretJournalpost(id: String) =
         }
 
 fun Connection.oppdaterMidlertidigLagretJournalpost(id: String, retries: Int) =
-    prepareStatement("""UPDATE midlertidig_lagrede_journalposter SET retries = ? WHERE id = ?""")
+    prepareStatement(
+        """UPDATE midlertidig_lagrede_journalposter 
+        |SET retries = ?, process_started = NULL 
+        |WHERE id = ?"""
+            .trimMargin()
+    )
         .use {
             it.setInt(1, retries)
             it.setString(2, id)

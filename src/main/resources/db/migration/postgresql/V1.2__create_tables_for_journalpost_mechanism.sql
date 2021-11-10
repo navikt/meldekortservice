@@ -10,8 +10,9 @@ CREATE INDEX opprettede_journalposter_meldekortid_index ON opprettede_journalpos
 
 CREATE TABLE midlertidig_lagrede_journalposter
 (
-    id          char(36) primary key,
-    journalpost text                                not null,
-    created     timestamp default current_timestamp not null,
-    retries     numeric   default 0                 not null
+    id              char(36) primary key,
+    journalpost     text                                not null,
+    created         timestamp default current_timestamp not null,
+    retries         numeric   default 0                 not null,
+    process_started timestamp
 );

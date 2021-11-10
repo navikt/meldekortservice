@@ -1,11 +1,11 @@
 package no.nav.meldeplikt.meldekortservice.coroutine
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import io.ktor.client.statement.*
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.database.H2Database
+import no.nav.meldeplikt.meldekortservice.database.hentAlleMidlertidigLagredeJournalposter
 import no.nav.meldeplikt.meldekortservice.database.hentJournalpostData
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.DokumentInfo
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Journalpost
@@ -55,16 +55,20 @@ class SendJournalposterPaaNyttTest {
         coEvery { dokarkivService.createJournalpost(any()) } returns journalpostResponse
 
         // Sjekk at det ikke finnes midlertidig lagrede journalposter
-        var journalpostData: List<Triple<String, Journalpost, Int>> = dbService.hentMidlertidigLagredeJournalposter()
-        assertEquals(0, journalpostData.size)
+        runBlocking {
+            val journalpostData = database.dbQuery { hentAlleMidlertidigLagredeJournalposter() }
+            assertEquals(0, journalpostData.size)
+        }
 
         // Lagre journalpost
         dbService.lagreJournalpostMidlertidig(journalpost)
 
         // Sjekk at det finnes 1 midlertidig lagret journalpost med 0 i retries
-        journalpostData = dbService.hentMidlertidigLagredeJournalposter()
-        assertEquals(1, journalpostData.size)
-        assertEquals(0, journalpostData[0].third) // Retries
+        runBlocking {
+            val journalpostData = database.dbQuery { hentAlleMidlertidigLagredeJournalposter() }
+            assertEquals(1, journalpostData.size)
+            assertEquals(0, journalpostData[0].second) // Retries
+        }
 
         // Sjekk at det ikke finnes journalpost data
         runBlocking {
@@ -79,8 +83,10 @@ class SendJournalposterPaaNyttTest {
         sendJournalposterPaaNytt.stop()
 
         // Sjekk at det ikke finnes midlertidig lagrede journalposter
-        journalpostData = dbService.hentMidlertidigLagredeJournalposter()
-        assertEquals(0, journalpostData.size)
+        runBlocking {
+            val journalpostData = database.dbQuery { hentAlleMidlertidigLagredeJournalposter() }
+            assertEquals(0, journalpostData.size)
+        }
 
         // Sjekk at det finnes journalpost data
         runBlocking {
@@ -98,16 +104,20 @@ class SendJournalposterPaaNyttTest {
         coEvery { dokarkivService.createJournalpost(any()) } throws Exception()
 
         // Sjekk at det ikke finnes midlertidig lagrede journalposter
-        var journalpostData: List<Triple<String, Journalpost, Int>> = dbService.hentMidlertidigLagredeJournalposter()
-        assertEquals(0, journalpostData.size)
+        runBlocking {
+            val journalpostData = database.dbQuery { hentAlleMidlertidigLagredeJournalposter() }
+            assertEquals(0, journalpostData.size)
+        }
 
         // Lagre journalpost
         dbService.lagreJournalpostMidlertidig(journalpost)
 
         // Sjekk at det finnes 1 midlertidig lagret journalpost med 0 i retries
-        journalpostData = dbService.hentMidlertidigLagredeJournalposter()
-        assertEquals(1, journalpostData.size)
-        assertEquals(0, journalpostData[0].third) // Retries
+        runBlocking {
+            val journalpostData = database.dbQuery { hentAlleMidlertidigLagredeJournalposter() }
+            assertEquals(1, journalpostData.size)
+            assertEquals(0, journalpostData[0].second) // Retries
+        }
 
         // Prøv å sende på nytt (får feil)
         val sendJournalposterPaaNytt = SendJournalposterPaaNytt(dbService, dokarkivService, 10_000L, 0)
@@ -116,8 +126,10 @@ class SendJournalposterPaaNyttTest {
         sendJournalposterPaaNytt.stop()
 
         // Sjekk at det finnes 1 midlertidig lagret journalpost med 1 i retries
-        journalpostData = dbService.hentMidlertidigLagredeJournalposter()
-        assertEquals(1, journalpostData.size)
-        assertEquals(1, journalpostData[0].third) // Retries
+        runBlocking {
+            val journalpostData = database.dbQuery { hentAlleMidlertidigLagredeJournalposter() }
+            assertEquals(1, journalpostData.size)
+            assertEquals(1, journalpostData[0].second) // Retries
+        }
     }
 }
