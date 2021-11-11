@@ -13,6 +13,5 @@ CREATE TABLE midlertidig_lagrede_journalposter
     id              char(36) primary key,
     journalpost     text                                not null,
     created         timestamp default current_timestamp not null,
-    retries         numeric   default 0                 not null,
-    process_started timestamp
+    retries         numeric   default 0                 not null
 );

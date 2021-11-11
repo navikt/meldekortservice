@@ -32,7 +32,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 // Ignored because works locally, but fails in Jenkins
-@Ignore
+
 @KtorExperimentalLocationsAPI
 @KtorExperimentalAPI
 class MeldekortKtTest {

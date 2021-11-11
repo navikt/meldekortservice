@@ -13,6 +13,7 @@ import no.aetat.amelding.externcontrolemelding.webservices.ExternControlEmelding
 import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
 import no.nav.meldeplikt.meldekortservice.config.SoapConfig
 import no.nav.meldeplikt.meldekortservice.config.mainModule
+import no.nav.meldeplikt.meldekortservice.database.hentMidlertidigLagredeJournalposter
 import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.DokumentInfo
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Journalpost
@@ -42,7 +43,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 // Ignored because works locally, but fails in Jenkins
-@Ignore
+
 @KtorExperimentalLocationsAPI
 @KtorExperimentalAPI
 class PersonKtTest {
@@ -379,7 +380,7 @@ class PersonKtTest {
 
         coEvery { dokarkivService.createJournalpost(any()) } throws Exception()
         every { dbService.lagreJournalpostMidlertidig(any()) } just Runs
-        every { dbService.hentMidlertidigLagredeJournalposter() } returns emptyList()
+        every { dbService.getConnection().hentMidlertidigLagredeJournalposter() } returns emptyList()
 
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()

@@ -4,6 +4,7 @@ import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.database.*
 import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Journalpost
+import java.sql.Connection
 
 class DBService(private val database: Database) {
 
@@ -42,30 +43,7 @@ class DBService(private val database: Database) {
         }
     }
 
-    fun hentMidlertidigLagredeJournalposter(): List<Triple<String, Journalpost, Int>> =
-        runBlocking {
-            database.dbQuery {
-                hentMidlertidigLagredeJournalposter()
-            }
-        }
-
-    fun sletteMidlertidigLagretJournalpost(id: String) {
-        database.translateExternalExceptionsToInternalOnes {
-            runBlocking {
-                database.dbQuery {
-                    sletteMidlertidigLagretJournalpost(id)
-                }
-            }
-        }
-    }
-
-    fun oppdaterMidlertidigLagretJournalpost(id: String, retries: Int) {
-        database.translateExternalExceptionsToInternalOnes {
-            runBlocking {
-                database.dbQuery {
-                    oppdaterMidlertidigLagretJournalpost(id, retries)
-                }
-            }
-        }
+    fun getConnection(): Connection {
+        return database.dataSource.connection
     }
 }
