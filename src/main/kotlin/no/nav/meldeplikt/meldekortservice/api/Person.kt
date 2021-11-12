@@ -135,7 +135,7 @@ fun Routing.kontrollerMeldekort(kontrollService: KontrollService, dbService: DBS
 
             // Send kortet til Amelding (uansett om kontrollen gikk bra eller ikke)
             val ameldingResponse = SoapConfig.soapService().kontrollerMeldekort(meldekort)
-            if (ameldingResponse.arsakskoder != null) {
+            if (ameldingResponse.arsakskoder?.arsakskode?.isNotEmpty() == true) {
                 defaultLog.info(
                     "Kontroll feilet i Amelding: " + defaultObjectMapper.writeValueAsString(
                         ameldingResponse
