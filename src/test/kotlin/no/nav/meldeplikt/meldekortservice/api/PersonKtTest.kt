@@ -48,7 +48,7 @@ class PersonKtTest {
     private fun MapApplicationConfig.setOidcConfig() {
         put("no.nav.security.jwt.issuers.size", "1")
         put("no.nav.security.jwt.issuers.0.issuer_name", ISSUER_ID)
-        put("no.nav.security.jwt.issuers.0.discoveryurl", mockOAuth2Server.wellKnownUrl(ISSUER_ID).toString())
+        put("no.nav.security.jwt.issuers.0.discoveryurl", "http://localhost:8091/default/.well-known/openid-configuration") // mockOAuth2Server.wellKnownUrl(ISSUER_ID).toString())
         put("no.nav.security.jwt.issuers.0.accepted_audience", REQUIRED_AUDIENCE)
         put("no.nav.security.jwt.required_issuer_name", ISSUER_ID)
         put("ktor.environment", "local")
