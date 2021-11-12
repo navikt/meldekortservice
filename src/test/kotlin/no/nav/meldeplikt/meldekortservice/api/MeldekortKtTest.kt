@@ -27,12 +27,10 @@ import org.flywaydb.core.Flyway
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import kotlin.test.Ignore
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 // Ignored because works locally, but fails in Jenkins
-@Ignore
 @KtorExperimentalLocationsAPI
 @KtorExperimentalAPI
 class MeldekortKtTest {
@@ -72,7 +70,7 @@ class MeldekortKtTest {
         @BeforeAll
         @JvmStatic
         fun setup() {
-            mockOAuth2Server.start()
+            mockOAuth2Server.start(8091)
             every { flywayConfig.migrate() } returns 0
 
             mockkStatic(::isCurrentlyRunningOnNais)
