@@ -9,44 +9,14 @@ spec:
   azure:
     application:
       enabled: true
-
-      # optional, enum of {trygdeetaten.no, nav.no}
-      # defaults to trygdeetaten.no in dev-* clusters, nav.no in production
-      #      tenant: nav.no
-
-      # optional, generated defaults shown
-      #      replyURLs:
-      #        - "https://my-app.dev.nav.no/oauth2/callback"
-
-      # optional
       claims:
         extra:
-          #          - "NAVident"
           - "azp_name"
-        groups:
-          - id: "57b411c7-c876-47db-a4a5-e33cddecdacf"
+#        groups:
+#          - id: "57b411c7-c876-47db-a4a5-e33cddecdacf"
 
-      # optional; if omitted:
-      # - false if claims.groups is defined
-      # - true otherwise
-      allowAllUsers: false
-
-      # optional, defaults shown
       singlePageApplication: false
 
-  #    # optional, only relevant if your application should receive requests from consumers
-  #    accessPolicy:
-  #      inbound:
-  #        rules:
-  #          - application: app-a
-  #            namespace: othernamespace
-  #            cluster: dev-fss
-  #            permissions:
-  #              roles:
-  #                - "custom-role"
-  #              scopes:
-  #                - "custom-scope"
-  #          - application: app-b
   image: repo.adeo.no:5443/meldeplikt/meldekortservice:{{ releaseVersion }}
   port: 8090
   secureLogs:
