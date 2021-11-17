@@ -12,9 +12,6 @@ spec:
       claims:
         extra:
           - "azp_name"
-#        groups:
-#          - id: "57b411c7-c876-47db-a4a5-e33cddecdacf"
-
       singlePageApplication: false
 
   image: repo.adeo.no:5443/meldeplikt/meldekortservice:{{ releaseVersion }}
