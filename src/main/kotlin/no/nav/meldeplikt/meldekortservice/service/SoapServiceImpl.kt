@@ -21,10 +21,10 @@ class SoapServiceImpl(
 
     override fun kontrollerMeldekort(meldekortdetaljer: Meldekortdetaljer): MeldekortKontrollertType {
         val meldekort = MeldekortTypeMapper.mapMeldekortType(meldekortdetaljer)
+        meldekort.hode.kommentar = "Kommentar her"
         defaultLog.info(
             "Mappet meldekort er: " + jsonMapper.writeValueAsString(meldekort)
         )
-        meldekort.hode.kommentar = "Kommentar her"
         return amelding.kontrollerEmeldingMeldekort(meldekort)
     }
 
