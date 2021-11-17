@@ -24,6 +24,7 @@ class SoapServiceImpl(
         defaultLog.info(
             "Mappet meldekort er: " + jsonMapper.writeValueAsString(meldekort)
         )
+        meldekort.hode.kommentar = "Kommentar her"
         return amelding.kontrollerEmeldingMeldekort(meldekort)
     }
 
