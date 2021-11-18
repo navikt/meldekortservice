@@ -12,7 +12,6 @@ spec:
       claims:
         extra:
           - "azp_name"
-      singlePageApplication: false
 
   image: repo.adeo.no:5443/meldeplikt/meldekortservice:{{ releaseVersion }}
   port: 8090
