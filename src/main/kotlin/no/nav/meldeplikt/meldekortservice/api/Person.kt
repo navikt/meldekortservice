@@ -140,13 +140,8 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
             }
 
             // Send kortet til Amelding (uansett om kontrollen gikk bra eller ikke)
-            defaultLog.info(
-                "Innkommet meldekort fra meldekort-api er: " + jsonMapper.writeValueAsString(
-                    (meldekort)
-                )
-            )
             val ameldingResponse = SoapConfig.soapService().kontrollerMeldekort(meldekort)
-            if (1==1 || ameldingResponse.arsakskoder != null) {
+            if (ameldingResponse.arsakskoder != null) {
                 defaultLog.info(
                     "Kontroll feilet i Amelding: " + jsonMapper.writeValueAsString(
                         ameldingResponse
