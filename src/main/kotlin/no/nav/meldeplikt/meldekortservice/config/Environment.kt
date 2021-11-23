@@ -18,9 +18,9 @@ data class Environment(
     val meldekortKontrollClientid: String = getEnvVar("KONTROLL_CLIENT_ID", "test"),
 
     // Azure AD
-    val oauthClientId: String = getEnvVar("AZURE_CLIENT_ID", "test"),
-    val oauthJwk: String = getEnvVar("AZURE_JWK", "test"),
-    val oauthClientSecret: String = getEnvVar("AZURE_CLIENT_SECRET", "test"),
+    val oauthClientId: String = getEnvVar("AZURE_APP_CLIENT_ID", "test"),
+    val oauthJwk: String = getEnvVar("AZURE_APP_JWK", "test"),
+    val oauthClientSecret: String = getEnvVar("AZURE_APP_CLIENT_SECRET", "test"),
     val oauthEndpoint: String = getEnvVar("KONTROLL_OAUTH_ENDPOINT", "test"),
     val oauthTenant: String = getEnvVar("KONTROLL_OAUTH_TENANT_ID", "test"),
 

@@ -17,7 +17,7 @@ class KontrollertTypeMapperTest {
         feilListe.add(feil1)
         feilListe.add(feil2)
 
-        var fra = KontrollResponse(87576, "ignore me", feilListe)
+        var fra = KontrollResponse(87576, "ignore me", "OK", feilListe)
         var til: MeldekortKontrollertType = kontrollertTypeMapper.mapKontrollResponseToKontrollertType(fra)
 
         assert(til.arsakskoder.arsakskode.size == fra.feilListe.size)
