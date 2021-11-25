@@ -136,7 +136,7 @@ fun Routing.kontrollerMeldekort(innsendtMeldekortService: InnsendtMeldekortServi
                     )
                 }
             } catch (e: Exception) {
-                defaultLog.error("Kunne ikke sende meldekort til meldekort-kontroll: ", e)
+                defaultLog.error("Kunne ikke sende meldekort "+ meldekort.meldekortId +" til meldekort-kontroll: ", e)
             }
 
             // Send kortet til Amelding (uansett om kontrollen gikk bra eller ikke)
