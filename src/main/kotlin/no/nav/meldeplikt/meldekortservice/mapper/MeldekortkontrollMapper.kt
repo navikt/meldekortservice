@@ -24,6 +24,7 @@ class MeldekortkontrollMapper {
             periodeTil = fraD.plusDays(13L),
             kortKanSendesFra = fraD.plusDays(13L - dagerFoer),
             kanKortSendes = LocalDate.now() >= (fraD.plusDays(13L - dagerFoer)),
+            meldedato = meldekort.meldeDato,
             periodeKode = meldekort.meldeperiode,
             fravaersdager = trekkutFravaersdager(meldekort),
             arbeidssoker = meldekort.sporsmal?.arbeidssoker,

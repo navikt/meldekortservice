@@ -30,7 +30,7 @@ class MeldekortkontrollMapperTest {
             "DAGP",
             "nokkel",
             KortType.MASKINELT_OPPDATERT,
-            LocalDate.now(),
+            LocalDate.now().minusDays(1),
             LocalDate.now().plusDays(1),
             sporsmal,
             "Begrunnelse"
@@ -44,6 +44,7 @@ class MeldekortkontrollMapperTest {
         assert(meldekortkontroll.periodeFra == LocalDate.parse("2020-01-20", DateTimeFormatter.ISO_DATE))
         assert(meldekortkontroll.periodeTil == LocalDate.parse("2020-02-02", DateTimeFormatter.ISO_DATE))
         assert(meldekortkontroll.kortKanSendesFra == LocalDate.parse("2020-02-01", DateTimeFormatter.ISO_DATE))
+        assert(meldekortkontroll.meldedato == LocalDate.now().minusDays(1))
         assert(meldekortkontroll.periodeKode == meldekortdetaljer.meldeperiode)
         assert(meldekortkontroll.meldegruppe.equals(meldekortdetaljer.meldegruppe))
         assert(meldekortkontroll.personId.equals(meldekortdetaljer.personId))
