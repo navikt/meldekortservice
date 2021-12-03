@@ -11,6 +11,7 @@ import io.ktor.util.*
 import io.mockk.*
 import no.aetat.amelding.externcontrolemelding.webservices.ExternControlEmeldingSOAP
 import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
+import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.config.SoapConfig
 import no.nav.meldeplikt.meldekortservice.config.mainModule
 import no.nav.meldeplikt.meldekortservice.database.hentMidlertidigLagredeJournalposter
@@ -38,13 +39,12 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import java.sql.SQLException
 import java.time.LocalDate
-import kotlin.test.Ignore
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 
 // Ignored because works locally, but fails in Jenkins
-@Ignore
+
 @KtorExperimentalLocationsAPI
 @KtorExperimentalAPI
 class PersonKtTest {
@@ -70,6 +70,8 @@ class PersonKtTest {
 
         private val mockOAuth2Server = MockOAuth2Server()
 
+        private val env = Environment(dokarkivResendInterval = 0L)
+
         private var dbService = mockk<DBService>()
         private var arenaOrdsService = mockk<ArenaOrdsService>()
         private var kontrollService = mockk<KontrollService>()
@@ -79,7 +81,7 @@ class PersonKtTest {
         @BeforeAll
         @JvmStatic
         fun setup() {
-            mockOAuth2Server.start()
+            mockOAuth2Server.start(8091)
             every { flywayConfig.migrate() } returns 0
 
             mockkStatic(::isCurrentlyRunningOnNais)
@@ -104,6 +106,7 @@ class PersonKtTest {
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(
+                env = env,
                 mockDBService = dbService,
                 arenaOrdsService = arenaOrdsService,
                 kontrollService = kontrollService,
@@ -136,6 +139,7 @@ class PersonKtTest {
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(
+                env = env,
                 mockDBService = dbService,
                 arenaOrdsService = arenaOrdsService,
                 kontrollService = kontrollService,
@@ -199,6 +203,7 @@ class PersonKtTest {
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(
+                env = env,
                 mockDBService = dbService,
                 arenaOrdsService = arenaOrdsService,
                 kontrollService = kontrollService,
@@ -227,6 +232,7 @@ class PersonKtTest {
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(
+                env = env,
                 mockDBService = dbService,
                 arenaOrdsService = arenaOrdsService,
                 kontrollService = kontrollService,
@@ -270,6 +276,7 @@ class PersonKtTest {
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(
+                env = env,
                 mockDBService = dbService,
                 arenaOrdsService = arenaOrdsService,
                 kontrollService = kontrollService,
@@ -317,6 +324,7 @@ class PersonKtTest {
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(
+                env = env,
                 mockDBService = dbService,
                 arenaOrdsService = arenaOrdsService,
                 kontrollService = kontrollService,
@@ -355,6 +363,7 @@ class PersonKtTest {
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(
+                env = env,
                 mockDBService = dbService,
                 arenaOrdsService = arenaOrdsService,
                 kontrollService = kontrollService,
@@ -386,6 +395,7 @@ class PersonKtTest {
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(
+                env = env,
                 mockDBService = dbService,
                 arenaOrdsService = arenaOrdsService,
                 kontrollService = kontrollService,

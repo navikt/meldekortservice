@@ -10,6 +10,7 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.config.mainModule
 import no.nav.meldeplikt.meldekortservice.model.enum.KortType
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
@@ -27,12 +28,11 @@ import org.flywaydb.core.Flyway
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import kotlin.test.Ignore
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 // Ignored because works locally, but fails in Jenkins
-@Ignore
+
 @KtorExperimentalLocationsAPI
 @KtorExperimentalAPI
 class MeldekortKtTest {
@@ -63,6 +63,8 @@ class MeldekortKtTest {
 
         private val mockOAuth2Server = MockOAuth2Server()
 
+        private val env = Environment(dokarkivResendInterval = 0L)
+
         private var dbService = mockk<DBService>()
         private var arenaOrdsService = mockk<ArenaOrdsService>()
         private var kontrollService = mockk<KontrollService>()
@@ -72,7 +74,7 @@ class MeldekortKtTest {
         @BeforeAll
         @JvmStatic
         fun setup() {
-            mockOAuth2Server.start()
+            mockOAuth2Server.start(8091)
             every { flywayConfig.migrate() } returns 0
 
             mockkStatic(::isCurrentlyRunningOnNais)
@@ -100,6 +102,7 @@ class MeldekortKtTest {
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(
+                env = env,
                 mockDBService = dbService,
                 arenaOrdsService = arenaOrdsService,
                 kontrollService = kontrollService,
@@ -132,6 +135,7 @@ class MeldekortKtTest {
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(
+                env = env,
                 mockDBService = dbService,
                 arenaOrdsService = arenaOrdsService,
                 kontrollService = kontrollService,
@@ -167,6 +171,7 @@ class MeldekortKtTest {
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(
+                env = env,
                 mockDBService = dbService,
                 arenaOrdsService = arenaOrdsService,
                 kontrollService = kontrollService,
@@ -191,6 +196,7 @@ class MeldekortKtTest {
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(
+                env = env,
                 mockDBService = dbService,
                 arenaOrdsService = arenaOrdsService,
                 kontrollService = kontrollService,
@@ -220,6 +226,7 @@ class MeldekortKtTest {
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(
+                env = env,
                 mockDBService = dbService,
                 arenaOrdsService = arenaOrdsService,
                 kontrollService = kontrollService,
@@ -245,6 +252,7 @@ class MeldekortKtTest {
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
             mainModule(
+                env = env,
                 mockDBService = dbService,
                 arenaOrdsService = arenaOrdsService,
                 kontrollService = kontrollService,
