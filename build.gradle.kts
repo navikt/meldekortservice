@@ -29,7 +29,7 @@ val postgresVersion = "42.2.23"
 val prometheusVersion = "0.11.0"
 val slf4jVersion = "1.7.32"
 val swaggerVersion = "3.23.8"
-val tjenestespecVersion = "1.2019.09.25-00.21-49b69f0625e0"
+val tjenestespecVersion = "1.2019.08.16-13.46-35cbdfd492d4"
 val tokenValidationVersion = "1.1.5"
 val vaultJdbcVersion = "1.3.1"
 val vaultVersion = "3.1.0"
@@ -76,7 +76,6 @@ repositories {
     mavenCentral()
     jcenter()
     maven("https://plugins.gradle.org/m2/")
-    maven("https://jitpack.io")
 }
 
 
