@@ -59,6 +59,7 @@ plugins {
 buildscript {
     repositories {
         mavenCentral()
+        maven("https://jitpack.io")
     }
     dependencies {
         classpath("com.github.jengelman.gradle.plugins:shadow:6.1.0")
