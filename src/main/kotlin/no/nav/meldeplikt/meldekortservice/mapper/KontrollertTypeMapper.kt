@@ -7,6 +7,7 @@ import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.respo
 
 class KontrollertTypeMapper {
 
+    // Vi ignorerer kontrollstatus her
     fun mapKontrollResponseToKontrollertType(message: KontrollResponse): MeldekortKontrollertType {
         var kontroll = MeldekortKontrollertType()
         kontroll.meldekortId = message.meldekortId

@@ -27,6 +27,9 @@ data class Meldekortkontroll constructor(
     @JsonDeserialize(using = LocalDateDeserializer::class)
     val kortKanSendesFra: LocalDate? = null,
     val kanKortSendes: Boolean? = null,
+    @JsonSerialize(using = LocalDateSerializer::class)
+    @JsonDeserialize(using = LocalDateDeserializer::class)
+    val meldedato: LocalDate? = null,
     val periodeKode: String? = null,
     var fravaersdager: List<FravaerInn>,
     var arbeidssoker: Boolean? = null,
