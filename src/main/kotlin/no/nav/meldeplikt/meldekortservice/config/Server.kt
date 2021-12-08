@@ -1,27 +1,25 @@
 package no.nav.meldeplikt.meldekortservice.config
 
-import io.ktor.application.Application
-import io.ktor.application.install
-import io.ktor.auth.Authentication
-import io.ktor.features.CallLogging
-import io.ktor.features.ContentNegotiation
-import io.ktor.features.DefaultHeaders
-import io.ktor.jackson.jackson
-import io.ktor.locations.KtorExperimentalLocationsAPI
-import io.ktor.locations.Locations
-import io.ktor.request.path
-import io.ktor.routing.Routing
+import io.ktor.application.*
+import io.ktor.auth.*
+import io.ktor.features.*
+import io.ktor.jackson.*
+import io.ktor.locations.*
+import io.ktor.request.*
+import io.ktor.routing.*
 import io.ktor.util.KtorExperimentalAPI
 import io.prometheus.client.hotspot.DefaultExports
 import no.nav.cache.Cache
 import no.nav.cache.CacheConfig
 import no.nav.cache.CacheUtils
 import no.nav.meldeplikt.meldekortservice.api.*
+import no.nav.meldeplikt.meldekortservice.coroutine.SendJournalposterPaaNytt
 import no.nav.meldeplikt.meldekortservice.database.OracleDatabase
 import no.nav.meldeplikt.meldekortservice.database.PostgreSqlDatabase
-import no.nav.meldeplikt.meldekortservice.model.OrdsToken
+import no.nav.meldeplikt.meldekortservice.model.AccessToken
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
-import no.nav.meldeplikt.meldekortservice.service.InnsendtMeldekortService
+import no.nav.meldeplikt.meldekortservice.service.DBService
+import no.nav.meldeplikt.meldekortservice.service.DokarkivService
 import no.nav.meldeplikt.meldekortservice.service.KontrollService
 import no.nav.meldeplikt.meldekortservice.utils.*
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Contact
@@ -49,12 +47,11 @@ val swagger = Swagger(
 )
 
 
-
 private const val cacheAntallMinutter = 55
 
 // Årsaken til å multiplisere med 2 er at cache-implementasjonen dividerer timeout-verdien med 2...
 private const val cacheTimeout: Long = cacheAntallMinutter.toLong() * 60 * 1000 * 2
-val cache: Cache<String, OrdsToken> = CacheUtils.buildCache(CacheConfig.DEFAULT.withTimeToLiveMillis(cacheTimeout))
+val CACHE: Cache<String, AccessToken> = CacheUtils.buildCache(CacheConfig.DEFAULT.withTimeToLiveMillis(cacheTimeout))
 
 const val SWAGGER_URL_V1 = "/meldekortservice/internal/apidocs/index.html?url=swagger.json"
 
@@ -62,13 +59,14 @@ const val SWAGGER_URL_V1 = "/meldekortservice/internal/apidocs/index.html?url=sw
 @KtorExperimentalAPI
 fun Application.mainModule(
     env: Environment = Environment(),
-    mockInnsendtMeldekortService: InnsendtMeldekortService? = null,
+    mockDBService: DBService? = null,
     arenaOrdsService: ArenaOrdsService = ArenaOrdsService(),
     kontrollService: KontrollService = KontrollService(),
+    dokarkivService: DokarkivService = DokarkivService(),
     mockFlywayConfig: org.flywaydb.core.Flyway? = null
 ) {
     setAppProperties(env)
-    val innsendtMeldekortService: InnsendtMeldekortService = mockInnsendtMeldekortService ?: initializeInnsendtMeldekortServiceApi(env)
+    val dbService: DBService = mockDBService ?: initializeInnsendtMeldekortServiceApi(env)
     val flywayConfig: org.flywaydb.core.Flyway = mockFlywayConfig ?: initializeFlyway(env)
 
     DefaultExports.initialize()
@@ -95,7 +93,7 @@ fun Application.mainModule(
         swaggerRoutes()
         weblogicApi()
         meldekortApi(arenaOrdsService)
-        personApi(arenaOrdsService, innsendtMeldekortService, kontrollService)
+        personApi(arenaOrdsService, dbService, kontrollService, dokarkivService)
     }
 
     install(CallLogging) {
@@ -103,10 +101,14 @@ fun Application.mainModule(
     }
 
     flywayConfig.migrate()
+
+    if (env.dokarkivResendInterval > 0L) {
+        SendJournalposterPaaNytt(dbService, dokarkivService, env.dokarkivResendInterval, 0).start()
+    }
 }
 
 private fun setAppProperties(environment: Environment) {
-    setProperty(StsSecurityConstants.STS_URL_KEY, environment.securityTokenService, PUBLIC)
+    setProperty(StsSecurityConstants.STS_URL_KEY, environment.stsUrl, PUBLIC)
     setProperty(StsSecurityConstants.SYSTEMUSER_USERNAME, environment.srvMeldekortservice.username, PUBLIC)
     setProperty(StsSecurityConstants.SYSTEMUSER_PASSWORD, environment.srvMeldekortservice.password, SECRET)
     setProperty(SBL_ARBEID_USERNAME, environment.srvSblArbeid.username, PUBLIC)
@@ -116,12 +118,12 @@ private fun setAppProperties(environment: Environment) {
     setProperty(DB_ORACLE_CONF, environment.dbConfOracle.jdbcUrl, PUBLIC)
 }
 
-private fun initializeInnsendtMeldekortServiceApi(env: Environment): InnsendtMeldekortService {
-    return InnsendtMeldekortService(
-    when (isCurrentlyRunningOnNais()) {
-        true -> OracleDatabase()
-        false -> PostgreSqlDatabase(env)
-    }
+private fun initializeInnsendtMeldekortServiceApi(env: Environment): DBService {
+    return DBService(
+        when (isCurrentlyRunningOnNais()) {
+            true -> OracleDatabase()
+            false -> PostgreSqlDatabase(env)
+        }
     )
 }
 

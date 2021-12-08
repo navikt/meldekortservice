@@ -1,12 +1,10 @@
 package no.nav.meldeplikt.meldekortservice.api
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
-import io.ktor.locations.KtorExperimentalLocationsAPI
-import io.ktor.server.testing.handleRequest
-import io.ktor.server.testing.withTestApplication
-import io.ktor.util.KtorExperimentalAPI
+import io.ktor.http.*
+import io.ktor.locations.*
+import io.ktor.server.testing.*
+import io.ktor.util.*
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
@@ -15,6 +13,7 @@ import no.nav.meldeplikt.meldekortservice.config.SoapConfig
 import no.nav.meldeplikt.meldekortservice.config.mainModule
 import no.nav.meldeplikt.meldekortservice.model.WeblogicPing
 import no.nav.meldeplikt.meldekortservice.service.SoapServiceImpl
+import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import org.amshove.kluent.shouldBe
 import org.flywaydb.core.Flyway
@@ -38,16 +37,17 @@ class WeblogicKtTest {
         every { soapServiceImpl.pingWeblogic() } returns WeblogicPing(erWeblogicOppe = true)
 
         withTestApplication({
-            mainModule(arenaOrdsService  = mockk(),
-                    kontrollService = mockk(),
-                    mockInnsendtMeldekortService = mockk(),
-                    mockFlywayConfig = flywayConfig
+            mainModule(
+                arenaOrdsService = mockk(),
+                kontrollService = mockk(),
+                mockDBService = mockk(),
+                mockFlywayConfig = flywayConfig
             )
         }) {
             handleRequest(HttpMethod.Get, "/meldekortservice/api/weblogic") {
             }.apply {
                 kotlin.test.assertNotNull(response.content)
-                val responseObject = jsonMapper.readValue<WeblogicPing>(response.content!!)
+                val responseObject = defaultObjectMapper.readValue<WeblogicPing>(response.content!!)
                 response.status() shouldBe HttpStatusCode.OK
                 kotlin.test.assertTrue(responseObject.erWeblogicOppe)
             }
@@ -66,16 +66,17 @@ class WeblogicKtTest {
         every { soapServiceImpl.pingWeblogic() } returns WeblogicPing(erWeblogicOppe = false)
 
         withTestApplication({
-            mainModule(arenaOrdsService  = mockk(),
-                    kontrollService = mockk(),
-                    mockInnsendtMeldekortService = mockk(),
-                    mockFlywayConfig = flywayConfig
+            mainModule(
+                arenaOrdsService = mockk(),
+                kontrollService = mockk(),
+                mockDBService = mockk(),
+                mockFlywayConfig = flywayConfig
             )
         }) {
             handleRequest(HttpMethod.Get, "/meldekortservice/api/weblogic") {
             }.apply {
                 kotlin.test.assertNotNull(response.content)
-                val responseObject = jsonMapper.readValue<WeblogicPing>(response.content!!)
+                val responseObject = defaultObjectMapper.readValue<WeblogicPing>(response.content!!)
                 response.status() shouldBe HttpStatusCode.OK
                 kotlin.test.assertFalse(responseObject.erWeblogicOppe)
             }

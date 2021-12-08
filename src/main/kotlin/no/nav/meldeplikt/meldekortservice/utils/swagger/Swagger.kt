@@ -8,6 +8,7 @@ import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Location
 import no.nav.meldeplikt.meldekortservice.config.swagger
 import no.nav.meldeplikt.meldekortservice.utils.defaultLog
+import org.slf4j.Logger
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime

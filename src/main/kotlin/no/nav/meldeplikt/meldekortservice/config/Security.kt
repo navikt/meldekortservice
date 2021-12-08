@@ -6,6 +6,7 @@ import io.ktor.http.*
 import io.ktor.util.pipeline.*
 import no.nav.meldeplikt.meldekortservice.utils.defaultLog
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
+import org.slf4j.Logger
 
 fun PipelineContext<Unit, ApplicationCall>.extractIdentFromToken(): String {
     val authTokenHeader = getTokenFromHeader()

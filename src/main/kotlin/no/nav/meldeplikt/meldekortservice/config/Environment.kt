@@ -2,14 +2,13 @@ package no.nav.meldeplikt.meldekortservice.config
 
 import java.net.URL
 
-private const val DUMMY_URL: String = "https://dummyUrl.com"
+private const val DUMMY_URL: String = "https://dummyurl.nav.no"
 
 data class Environment(
     val ameldingUrl: URL = URL(getEnvVar("AMELDING_URI", "$DUMMY_URL/path")),
     val ordsUrl: URL = URL(getEnvVar("ORDS_URI", DUMMY_URL)),
     val ordsClientId: String = getEnvVar("CLIENT_ID", "cLiEnTiD"),
     val ordsClientSecret: String = getEnvVar("CLIENT_SECRET", "cLiEnTsEcReT"),
-    val securityTokenService: String = getEnvVar("SECURITYTOKENSERVICE", DUMMY_URL),
     val sakOgAktivitetUrl: String = getEnvVar("SAKOGAKTIVITET_URI", DUMMY_URL),
 
     // Meldekort-kontroll
@@ -46,12 +45,28 @@ data class Environment(
     val srvSblArbeid: VaultCredentials = VaultCredentials(
         getEnvVar("SERVICEUSER_SBLARBEID_USERNAME", "username"),
         getEnvVar("SERVICEUSER_SBLARBEID_PASSWORD", "password")
-    )
+    ),
+
+    // Brukes av SoapService
+    val stsUrl: String = getEnvVar("SECURITYTOKENSERVICE", "https://ststest.nav.no/"), // URL må ha / på slutten
+    // Brukes av DokarkiveService
+    val stsNaisUrl: String = removeTrailingSlash(getEnvVar("SECURITYTOKENSERVICE_NAIS", "https://ststest.nav.no/")),
+
+    val dokarkivUrl: String = removeTrailingSlash(getEnvVar("DOKARKIV_URL", "https://dokarkivtest.nav.no/")),
+    val dokarkivResendInterval: Long = getEnvVar("DOKARKIV_RESEND_INTERVAL", "30000").toLong()
 )
 
 fun getEnvVar(varName: String, defaultValue: String? = null): String {
     return System.getenv(varName) ?: defaultValue
     ?: throw IllegalArgumentException("Variabelen $varName kan ikke være tom")
+}
+
+fun removeTrailingSlash(s: String): String {
+    if (s.endsWith("/")) {
+        return s.substring(0, s.length - 1);
+    } else {
+        return s
+    }
 }
 
 data class VaultCredentials(

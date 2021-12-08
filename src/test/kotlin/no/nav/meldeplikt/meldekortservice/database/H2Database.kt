@@ -1,34 +1,23 @@
 package no.nav.meldeplikt.meldekortservice.database
 
 import com.zaxxer.hikari.HikariDataSource
-import org.flywaydb.core.Flyway
+import no.nav.meldeplikt.meldekortservice.config.Flyway
 
 class H2Database : Database {
 
-    private val memDataSource: HikariDataSource
+    override val dataSource: HikariDataSource = HikariDataSource().apply {
+        jdbcUrl = "jdbc:h2:mem:testdb"
+        username = "sa"
+        password = ""
+
+        validate()
+    }
 
     init {
-        memDataSource = createDataSource()
-        flyway()
+        Flyway.configure(dataSource).load().migrate()
     }
 
-    override val dataSource: HikariDataSource
-        get() = memDataSource
-
-    private fun createDataSource(): HikariDataSource {
-        return HikariDataSource().apply {
-            jdbcUrl = "jdbc:h2:mem:testdb"
-            username = "sa"
-            password = ""
-
-            validate()
-        }
-    }
-
-    private fun flyway() {
-        Flyway.configure()
-            .dataSource(dataSource)
-            .load()
-            .migrate()
+    fun closeConnection() {
+        dataSource.close()
     }
 }

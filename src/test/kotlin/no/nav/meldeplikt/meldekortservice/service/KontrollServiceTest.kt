@@ -1,6 +1,5 @@
 package no.nav.meldeplikt.meldekortservice.service
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldStartWith
@@ -19,7 +18,6 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class KontrollServiceTest {
-    val mapper = jacksonObjectMapper()
     val fnr = "1111111111"
     //TODO trenger å fikse feil
     @Test
@@ -44,9 +42,9 @@ class KontrollServiceTest {
                     request.headers["Authorization"] shouldNotBe null
                     request.headers["Authorization"] shouldStartWith "Bearer token"
                     //request.body.contentType.toString() shouldBe "application/json"
-                    request.url.toString() shouldBe "https://dummyUrl.com/api/kontroll"
+                    request.url.toString() shouldBe "https://dummyurl.nav.no/api/kontroll"
                     respondOk(
-                        mapper.writeValueAsString(kontrollResponse)
+                        defaultObjectMapper.writeValueAsString(kontrollResponse)
                     )
                 }
             }

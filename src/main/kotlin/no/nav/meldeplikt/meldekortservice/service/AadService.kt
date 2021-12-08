@@ -1,7 +1,6 @@
 package no.nav.meldeplikt.meldekortservice.service
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.DeserializationFeature
 import io.ktor.client.*
 import io.ktor.client.engine.apache.*
@@ -10,7 +9,8 @@ import io.ktor.client.request.forms.*
 import io.ktor.http.*
 import no.nav.meldeplikt.meldekortservice.config.AadServiceConfiguration
 import no.nav.meldeplikt.meldekortservice.config.Environment
-import no.nav.meldeplikt.meldekortservice.utils.getLogger
+import no.nav.meldeplikt.meldekortservice.model.AccessToken
+import no.nav.meldeplikt.meldekortservice.utils.defaultLog
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import org.apache.http.impl.conn.SystemDefaultRoutePlanner
 import java.net.ProxySelector
@@ -19,7 +19,6 @@ import java.time.LocalDateTime
 class AadService(
     private val config: AadServiceConfiguration
 ) {
-    private val log = getLogger(KontrollService::class)
     private val env = Environment()
     private val cacheSafetyMarginSeconds = 100
     private var aadToken: String = ""
@@ -49,12 +48,12 @@ class AadService(
     suspend fun fetchAadToken(): String {
         if (aadTokenExpires.isBefore(LocalDateTime.now())) {
             if (isCurrentlyRunningOnNais()) {
-                log.info("Henter nytt token fra AAD")
+                defaultLog.info("Henter nytt token fra AAD")
                 val token = getAccessTokenForResource(meldekortKontrollResource)
-                aadToken = token.accessToken
-                aadTokenExpires = LocalDateTime.now().plusSeconds(token.expiresIn.toLong() - cacheSafetyMarginSeconds)
+                aadToken = token.accessToken!!
+                aadTokenExpires = LocalDateTime.now().plusSeconds((token.expiresIn?.toLong() ?: 0) - cacheSafetyMarginSeconds)
             } else {
-                log.info("Henter ikke token da appen kjører lokalt")
+                defaultLog.info("Henter ikke token da appen kjører lokalt")
                 aadToken = "Lokalt"
                 aadTokenExpires = LocalDateTime.now().plusYears(1L)
             }
@@ -83,15 +82,6 @@ class AadService(
         const val clientCredentials = "client_credentials"
         const val jwt = "urn:ietf:params:oauth:grant-type:jwt-bearer"
     }
-
-    data class AccessToken(
-        @JsonProperty("access_token")
-        val accessToken: String,
-        @JsonProperty("expires_in")
-        val expiresIn: Int,
-        @JsonProperty("token_type")
-        val tokenType: String
-    )
 
     internal object Params {
         const val assertion: String = "assertion"

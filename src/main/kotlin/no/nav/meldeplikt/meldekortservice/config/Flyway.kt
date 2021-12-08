@@ -16,9 +16,24 @@ object Flyway {
     }
 
     fun configure(env: Environment): FluentConfiguration {
-        val configBuilder = Flyway.configure()
         val dataSource = createCorrectAdminDatasourceForEnvironment(env)
+
+        return configure(dataSource)
+    }
+
+    fun configure(dataSource: DataSource): FluentConfiguration {
+        val configBuilder = Flyway.configure()
         configBuilder.dataSource(dataSource)
+
+        val commonMigrationFiles = "classpath:db/migration/common"
+        val oracleMigrationFiles = "classpath:db/migration/oracle"
+        val postgreSqlMigrationFiles = "classpath:db/migration/postgresql"
+
+        if (isCurrentlyRunningOnNais()) {
+            configBuilder.locations(commonMigrationFiles, oracleMigrationFiles)
+        } else {
+            configBuilder.locations(commonMigrationFiles, postgreSqlMigrationFiles)
+        }
 
         return configBuilder
     }

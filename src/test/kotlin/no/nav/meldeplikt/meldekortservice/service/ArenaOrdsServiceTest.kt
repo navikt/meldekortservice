@@ -1,30 +1,26 @@
 package no.nav.meldeplikt.meldekortservice.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldStartWith
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.mock.MockEngine
-import io.ktor.client.engine.mock.respond
-import io.ktor.client.engine.mock.respondError
-import io.ktor.client.engine.mock.respondOk
+import io.ktor.client.*
+import io.ktor.client.engine.mock.*
 import io.ktor.http.*
 import io.mockk.every
 import io.mockk.mockkStatic
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.model.feil.OrdsException
 import no.nav.meldeplikt.meldekortservice.model.response.OrdsStringResponse
+import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
-class ArenaOrdsServiceTest{
-    private val mapper = jacksonObjectMapper()
+class ArenaOrdsServiceTest {
     private val fnr = "1111111111"
 
     @BeforeAll
@@ -39,8 +35,13 @@ class ArenaOrdsServiceTest{
         val client = HttpClient(MockEngine) {
             engine {
                 addHandler { request ->
-                    if (request.url.encodedPath.contains("/api/v1/meldeplikt/meldekort") && request.url.host.contains("dummyUrl.com")) {
-                        respond(ObjectMapper().writeValueAsString(response), headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()))
+                    if (request.url.encodedPath.contains("/api/v1/meldeplikt/meldekort")
+                        && request.url.host.contains("dummyurl.nav.no")
+                    ) {
+                        respond(
+                            ObjectMapper().writeValueAsString(response),
+                            headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                        )
                     } else {
                         respondError(HttpStatusCode.BadRequest)
                     }
@@ -51,7 +52,7 @@ class ArenaOrdsServiceTest{
 
         runBlocking {
             val actualResponse = arenaOrdsService.hentMeldekort(fnr)
-            val ordsResponse: OrdsStringResponse =  mapper.readValue(actualResponse.content)
+            val ordsResponse: OrdsStringResponse = defaultObjectMapper.readValue(actualResponse.content)
 
             assertEquals(HttpStatusCode.OK, actualResponse.status)
             assertEquals(response.content, ordsResponse.content)
@@ -63,8 +64,13 @@ class ArenaOrdsServiceTest{
         val client = HttpClient(MockEngine) {
             engine {
                 addHandler { request ->
-                    if (request.url.encodedPath.contains("/api/v1/meldeplikt/meldekort/12345678") && request.url.host.contains("dummyUrl.com")) {
-                        respond("", headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()))
+                    if (request.url.encodedPath.contains("/api/v1/meldeplikt/meldekort/12345678")
+                        && request.url.host.contains("dummyurl.nav.no")
+                    ) {
+                        respond(
+                            "",
+                            headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                        )
                     } else {
                         respondError(HttpStatusCode.BadRequest)
                     }
@@ -72,7 +78,7 @@ class ArenaOrdsServiceTest{
             }
         }
         val arenaOrdsService = ArenaOrdsService(client)
-        val exception = assertThrows<OrdsException>{
+        val exception = assertThrows<OrdsException> {
             runBlocking {
                 arenaOrdsService.hentMeldekort(fnr)
             }
@@ -89,9 +95,9 @@ class ArenaOrdsServiceTest{
                     request.method shouldBe HttpMethod.Get
                     request.headers["Authorization"] shouldNotBe null
                     request.headers["Authorization"] shouldStartWith "Bearer token"
-                    request.url.toString() shouldBe "https://dummyUrl.com/api/v1/meldeplikt/meldekort/historiske?fnr=1234&antMeldeperioder=10"
+                    request.url.toString() shouldBe "https://dummyurl.nav.no/api/v1/meldeplikt/meldekort/historiske?fnr=1234&antMeldeperioder=10"
                     respond(
-                           xmlString
+                        xmlString
                     )
                 }
             }
@@ -135,7 +141,7 @@ class ArenaOrdsServiceTest{
                     request.method shouldBe HttpMethod.Get
                     request.headers["Authorization"] shouldNotBe null
                     request.headers["Authorization"] shouldStartWith "Bearer token"
-                    request.url.toString() shouldBe "https://dummyUrl.com/api/v1/meldeplikt/meldekort/detaljer?meldekortId=1"
+                    request.url.toString() shouldBe "https://dummyurl.nav.no/api/v1/meldeplikt/meldekort/detaljer?meldekortId=1"
                     respond(
                         xmlString
                     )
@@ -160,9 +166,9 @@ class ArenaOrdsServiceTest{
                     request.headers["Authorization"] shouldNotBe null
                     request.headers["Authorization"] shouldStartWith "Bearer token"
                     request.headers["meldekortId"] shouldBe "123"
-                    request.url.toString() shouldBe "https://dummyUrl.com/api/v1/meldeplikt/meldekort/kopi"
+                    request.url.toString() shouldBe "https://dummyurl.nav.no/api/v1/meldeplikt/meldekort/kopi"
                     respondOk(
-                           xmlString
+                        xmlString
                     )
                 }
             }

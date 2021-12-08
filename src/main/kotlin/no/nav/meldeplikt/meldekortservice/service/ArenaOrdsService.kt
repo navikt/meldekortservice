@@ -6,11 +6,10 @@ import io.ktor.client.features.json.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import kotlinx.coroutines.runBlocking
+import no.nav.meldeplikt.meldekortservice.config.CACHE
 import no.nav.meldeplikt.meldekortservice.config.Environment
-import no.nav.meldeplikt.meldekortservice.config.cache
 import no.nav.meldeplikt.meldekortservice.mapper.MeldekortdetaljerMapper
-import no.nav.meldeplikt.meldekortservice.model.Meldeperiode
-import no.nav.meldeplikt.meldekortservice.model.OrdsToken
+import no.nav.meldeplikt.meldekortservice.model.AccessToken
 import no.nav.meldeplikt.meldekortservice.model.feil.OrdsException
 import no.nav.meldeplikt.meldekortservice.model.korriger.KopierMeldekortResponse
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
@@ -28,7 +27,6 @@ class ArenaOrdsService(
     },
     private val env: Environment = Environment()
 ) {
-    private val log = getLogger(ArenaOrdsService::class)
 
     suspend fun hentMeldekort(fnr: String): OrdsStringResponse {
         val execResult: Result<HttpResponse> = runCatching {
@@ -80,13 +78,13 @@ class ArenaOrdsService(
         }
     }
 
-    private fun hentToken(): OrdsToken {
-        return cache.get("ordsToken", this::hentOrdsToken)
+    private fun hentToken(): AccessToken {
+        return CACHE.get("ordsToken", this::hentOrdsToken)
     }
 
-    private fun hentOrdsToken(): OrdsToken {
-        log.info("Cache timet ut. Henter token")
-        var token = OrdsToken(null, null, null)
+    private fun hentOrdsToken(): AccessToken {
+        defaultLog.info("Cache timet ut. Henter token")
+        var token = AccessToken(null, null, null)
 
         if (isCurrentlyRunningOnNais()) {
             runBlocking {
@@ -95,7 +93,7 @@ class ArenaOrdsService(
                 }
             }
         } else {
-            log.info("Henter ikke token da appen kjører lokalt")
+            defaultLog.info("Henter ikke token da appen kjører lokalt")
             token = token.copy(accessToken = "token")
         }
 

@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
 import io.ktor.application.*
@@ -40,13 +42,15 @@ internal const val DB_ORACLE_USERNAME = "oracleDbUser.username"
 internal const val DB_ORACLE_PASSWORD = "oracleDbUser.password"
 internal const val DB_ORACLE_CONF = "oracleDbConf.jdbcUrl"
 
+internal const val STS_PATH = "/rest/v1/sts/token"
+
+internal const val JOURNALPOSTAPI_PATH = "/rest/journalpostapi/v1"
+internal const val JOURNALPOST_PATH = "$JOURNALPOSTAPI_PATH/journalpost"
 
 const val vaultUrl = "https://vault.adeo.no"
 const val vaultTokenPath = "/var/run/secrets/nais.io/vault/vault_token"
 
 internal val HTTP_STATUS_CODES_2XX = IntRange(200, 299)
-
-private val xmlMapper = XmlMapper()
 
 internal data class ErrorMessage(val error: String)
 
@@ -78,8 +82,12 @@ fun isCurrentlyRunningOnNais(): Boolean {
 }
 
 fun <T> mapFraXml(xml: String, responseKlasse: Class<T>): T {
-    return xmlMapper.readValue(xml, responseKlasse)
+    return XmlMapper().readValue(xml, responseKlasse)
 }
+
+val defaultXmlMapper = XmlMapper().registerModule(KotlinModule())
+
+val defaultObjectMapper = jacksonObjectMapper()
 
 val objectMapper: ObjectMapper = ObjectMapper()
     .registerKotlinModule()

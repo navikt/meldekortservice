@@ -3,32 +3,32 @@ package no.nav.meldeplikt.meldekortservice.mapper
 import no.nav.meldeplikt.meldekortservice.model.database.feil.UnretriableDatabaseException
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Meldekort
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
-import no.nav.meldeplikt.meldekortservice.service.InnsendtMeldekortService
+import no.nav.meldeplikt.meldekortservice.service.DBService
 import java.sql.SQLException
 
 object MeldekortMapper {
 
-    fun filtrerMeldekortliste(person: Person, meldekortService: InnsendtMeldekortService): Person {
+    fun filtrerMeldekortliste(person: Person, dbService: DBService): Person {
         return if (person.meldekortListe.isNullOrEmpty()) {
             person
         } else {
             person.copy(
-                meldekortListe = fjernTidligereInnsendteMeldekort(person.meldekortListe, meldekortService)
+                meldekortListe = fjernTidligereInnsendteMeldekort(person.meldekortListe, dbService)
             )
         }
     }
 
     private fun fjernTidligereInnsendteMeldekort(
         meldekortListe: List<Meldekort>,
-        meldekortService: InnsendtMeldekortService
+        dbService: DBService
     ) =
         meldekortListe.filter {
-            !erMeldekortSendtInnTidligere(it.meldekortId, meldekortService)
+            !erMeldekortSendtInnTidligere(it.meldekortId, dbService)
         }
 
-    private fun erMeldekortSendtInnTidligere(meldekortId: Long, meldekortService: InnsendtMeldekortService): Boolean {
+    private fun erMeldekortSendtInnTidligere(meldekortId: Long, dbService: DBService): Boolean {
         return try {
-            meldekortService.hentInnsendtMeldekort(meldekortId)
+            dbService.hentInnsendtMeldekort(meldekortId)
             true
         } catch (se: SQLException) {
             if (se.message == "Found no rows") {
