@@ -10,5 +10,4 @@
     </root>
 
     <logger name="org.apache.cxf" level="warn"/>
-    <logger name="org.apache.cxf.interceptor" level="warn"/>
 </configuration>
