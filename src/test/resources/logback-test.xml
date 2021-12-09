@@ -1,11 +1,3 @@
 <configuration>
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>%date %-5level %logger{60} - %msg%n</pattern>
-        </encoder>
-    </appender>
-
-    <root level="info">
-        <appender-ref ref="STDOUT" />
-    </root>
+    <include resource="logback-default.xml"/>
 </configuration>
