@@ -9,5 +9,7 @@
         <appender-ref ref="STDOUT" />
     </root>
 
-    <logger name="org.springframework.ws" level="trace" />
+    <logger name="org.springframework.ws" level="warn" />
+    <logger name="org.apache.cxf" level="warn"/>
+    <logger name="org.apache.cxf.interceptor" level="warn"/>
 </configuration>
