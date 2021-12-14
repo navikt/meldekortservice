@@ -17,6 +17,7 @@ import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import org.amshove.kluent.shouldBe
 import org.flywaydb.core.Flyway
+import org.flywaydb.core.api.output.MigrateResult
 import org.junit.jupiter.api.Test
 
 @KtorExperimentalLocationsAPI
@@ -32,7 +33,7 @@ class WeblogicKtTest {
         every { isCurrentlyRunningOnNais() } returns false
 
         mockkObject(SoapConfig)
-        every { flywayConfig.migrate() } returns 0
+        every { flywayConfig.migrate() } returns MigrateResult("", "", "")
         every { SoapConfig.soapService() } returns soapServiceImpl
         every { soapServiceImpl.pingWeblogic() } returns WeblogicPing(erWeblogicOppe = true)
 
@@ -61,7 +62,7 @@ class WeblogicKtTest {
         mockkObject(SoapConfig)
         mockkStatic(::isCurrentlyRunningOnNais)
         every { isCurrentlyRunningOnNais() } returns false
-        every { flywayConfig.migrate() } returns 0
+        every { flywayConfig.migrate() } returns MigrateResult("", "", "")
         every { SoapConfig.soapService() } returns soapServiceImpl
         every { soapServiceImpl.pingWeblogic() } returns WeblogicPing(erWeblogicOppe = false)
 

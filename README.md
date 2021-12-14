@@ -9,7 +9,7 @@ Microservice / proxy som henter data fra meldekort ORDS (Arena DB).
 4. Appen starter på http://localhost:8090. Sjekk for eksempel at ping svarer på http://localhost:8090/meldekortservice/internal/ping.
 
 # Feilsøking
-For å være sikker på at man får en ny tom database kan man kjøre kommandoen: `docker-compose down -v`.
+For å være sikker på at man får en ny tom database, kan man kjøre kommandoen: `docker-compose down -v`.
 
 # Henvendelser
 Spørsmål knyttet til koden eller prosjektet kan rettes mot https://github.com/orgs/navikt/teams/meldekort.
@@ -21,3 +21,5 @@ Interne henvendelser kan sendes via Slack i kanalen #meldekort.
 Dokumentasjon finnes i [Confluence](https://confluence.adeo.no/display/TMP/Meldekort-api).  
 Swagger er tilgjengelig på `meldekortservice/internal/apidocs`.  
 Om Meldekort journalføring: https://confluence.adeo.no/pages/viewpage.action?pageId=431009242
+
+For å sjekke om det finnes nye versjoner av avhengigheter, kan man kjøre: `./gradlew dependencyUpdates`
