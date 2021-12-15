@@ -6,7 +6,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val flywayVersion = "8.2.1"
 val h2Version = "1.4.200"
-val jacksonVersion = "2.13.0"
+val jacksonVersion = "2.12.4"
 val javaxActivationVersion = "1.1.1"
 val javaxAnnotationApiVersion = "1.3.2"
 val javaxJaxwsApiVersion = "2.3.1"
