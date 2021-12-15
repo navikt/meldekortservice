@@ -45,8 +45,8 @@ plugins {
 
     id("no.nils.wsdl2java") version "0.10"
 
-    id("org.jetbrains.kotlin.jvm") version "1.6.10"
-    id("org.jetbrains.kotlin.plugin.allopen") version "1.6.10"
+    id("org.jetbrains.kotlin.jvm") version "1.5.21"
+    id("org.jetbrains.kotlin.plugin.allopen") version "1.5.21"
 
     id("com.github.johnrengelman.shadow") version "6.1.0"
 
@@ -169,7 +169,7 @@ jacoco {
 tasks {
     withType<Jar> {
         manifest.attributes["Main-Class"] = project.property("mainClassName").toString()
-        from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
+        from(configurations.runtime.get().map { if (it.isDirectory) it else zipTree(it) })
     }
 
     withType<Test> {
