@@ -28,13 +28,13 @@ val navCommonCacheVersion = "1.2021.07.07_10.18-72bd65c546f6"
 val navCommonVersion = "1.2021.07.07_10.18-72bd65c546f6"
 val ojdbc8Version = "19.3.0.0"
 val postgresVersion = "42.3.1"
-val prometheusVersion = "0.13.0"
+val prometheusVersion = "0.11.0"
 val slf4jVersion = "1.7.32"
 val swaggerVersion = "3.23.8"
 val tjenestespecVersion = "1.2019.08.16-13.46-35cbdfd492d4"
 val tokenValidationVersion = "1.3.9"
-val vaultJdbcVersion = "1.3.9"
-val vaultVersion = "5.1.0"
+val vaultJdbcVersion = "1.3.1"
+val vaultVersion = "3.1.0"
 
 
 project.setProperty("mainClassName", "io.ktor.server.netty.EngineMain")
