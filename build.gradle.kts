@@ -27,7 +27,7 @@ val mockkVersion = "1.12.0"
 val navCommonCacheVersion = "1.2021.07.07_10.18-72bd65c546f6"
 val navCommonVersion = "1.2021.07.07_10.18-72bd65c546f6"
 val ojdbc8Version = "19.3.0.0"
-val postgresVersion = "42.3.1"
+val postgresVersion = "42.2.23"
 val prometheusVersion = "0.11.0"
 val slf4jVersion = "1.7.32"
 val swaggerVersion = "3.23.8"
@@ -48,11 +48,11 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version "1.6.10"
     id("org.jetbrains.kotlin.plugin.allopen") version "1.6.10"
 
-    id("com.github.johnrengelman.shadow") version "7.1.0"
+    id("com.github.johnrengelman.shadow") version "6.1.0"
 
     id("org.flywaydb.flyway") version ("8.2.1")
 
-    id("org.sonarqube") version "3.3"
+    id("org.sonarqube") version "2.8"
 
     id("com.github.ben-manes.versions") version "0.39.0"
 
