@@ -4,7 +4,7 @@ import no.nils.wsdl2java.Wsdl2JavaTask
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val flywayVersion = "8.2.1"
+val flywayVersion = "8.2.2"
 val h2Version = "1.4.200"
 val jacksonVersion = "2.13.0"
 val javaxActivationVersion = "1.1.1"
@@ -45,12 +45,12 @@ plugins {
 
     id("no.nils.wsdl2java") version "0.10"
 
-    id("org.jetbrains.kotlin.jvm") version "1.6.10"
-    id("org.jetbrains.kotlin.plugin.allopen") version "1.6.10"
+    id("org.jetbrains.kotlin.jvm") version "1.5.21"
+    id("org.jetbrains.kotlin.plugin.allopen") version "1.5.21"
 
-    id("com.github.johnrengelman.shadow") version "7.1.0"
+    id("com.github.johnrengelman.shadow") version "7.1.1"
 
-    id("org.flywaydb.flyway") version ("8.2.1")
+    id("org.flywaydb.flyway") version ("8.2.2")
 
     id("org.sonarqube") version "3.3"
 
@@ -169,7 +169,7 @@ jacoco {
 tasks {
     withType<Jar> {
         manifest.attributes["Main-Class"] = project.property("mainClassName").toString()
-        from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
+        from(configurations.runtime.get().map { if (it.isDirectory) it else zipTree(it) })
     }
 
     withType<Test> {
