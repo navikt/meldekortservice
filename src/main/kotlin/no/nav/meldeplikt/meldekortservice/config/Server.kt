@@ -7,7 +7,6 @@ import io.ktor.jackson.*
 import io.ktor.locations.*
 import io.ktor.request.*
 import io.ktor.routing.*
-import io.ktor.util.KtorExperimentalAPI
 import io.prometheus.client.hotspot.DefaultExports
 import no.nav.cache.Cache
 import no.nav.cache.CacheConfig
@@ -56,7 +55,6 @@ val CACHE: Cache<String, AccessToken> = CacheUtils.buildCache(CacheConfig.DEFAUL
 const val SWAGGER_URL_V1 = "/meldekortservice/internal/apidocs/index.html?url=swagger.json"
 
 @KtorExperimentalLocationsAPI
-@KtorExperimentalAPI
 fun Application.mainModule(
     env: Environment = Environment(),
     mockDBService: DBService? = null,
@@ -94,6 +92,7 @@ fun Application.mainModule(
         weblogicApi()
         meldekortApi(arenaOrdsService)
         personApi(arenaOrdsService, dbService, kontrollService, dokarkivService)
+        textsApi(dbService)
     }
 
     install(CallLogging) {

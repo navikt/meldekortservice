@@ -98,4 +98,24 @@ class DBServiceTest {
             assertEquals(1, result.size)
         }
     }
+
+    @Test
+    fun `test hente tekst som eksisterer`() {
+        val dbService = DBService(database)
+
+        runBlocking {
+            val result = database.dbQuery { getText("diverse.tilbake", "nb", "0000-00-00 00:00:00") }
+            assertEquals("Til Ditt NAV", result)
+        }
+    }
+
+    @Test
+    fun `test hente tekst som ikke eksisterer`() {
+        val dbService = DBService(database)
+
+        runBlocking {
+            val result = database.dbQuery { getText("eksisterer_ikke", "nb", "0000-00-00 00:00:00") }
+            assertEquals(null, result)
+        }
+    }
 }

@@ -43,6 +43,16 @@ class DBService(private val database: Database) {
         }
     }
 
+    fun getText(key: String, language: String, fromDateTime: String): String? =
+        runBlocking {
+            database.dbQuery { getText(key, language, fromDateTime) }
+        }
+
+    fun getTexts(language: String, fromDateTime: String): Map<String, String> =
+        runBlocking {
+            database.dbQuery { getTexts(language, fromDateTime) }
+        }
+
     fun getConnection(): Connection {
         return database.dataSource.connection
     }

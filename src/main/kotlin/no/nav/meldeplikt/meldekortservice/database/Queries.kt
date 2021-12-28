@@ -120,6 +120,54 @@ fun Connection.oppdaterMidlertidigLagretJournalpost(id: String, retries: Int) =
             it.executeUpdate()
         }
 
+fun Connection.getText(key: String, language: String, fromDateTime: String): String? = prepareStatement(
+    "SELECT value " +
+            "FROM texts " +
+            "WHERE key = ? " +
+            "AND language = ? " +
+            "AND fromDateTime <= ? " +
+            "ORDER BY fromDateTime DESC"
+)
+    .use { preparedStatement ->
+        preparedStatement.setString(1, key)
+        preparedStatement.setString(2, language)
+        preparedStatement.setString(3, fromDateTime)
+
+        preparedStatement.executeQuery()
+            .use { resultSet ->
+                if (resultSet.next()) {
+                    clobToString(resultSet.getCharacterStream("value"))
+                } else {
+                    null
+                }
+            }
+    }
+
+fun Connection.getTexts(language: String, fromDateTime: String): Map<String, String> {
+    val out = mutableMapOf<String, String>()
+
+    this.prepareStatement(
+        "SELECT key, value " +
+                "FROM texts " +
+                "WHERE language = ? " +
+                "AND fromDateTime <= ? " +
+                "ORDER BY fromDateTime DESC"
+    )
+        .use { preparedStatement ->
+            preparedStatement.setString(1, language)
+            preparedStatement.setString(2, fromDateTime)
+
+            preparedStatement.executeQuery()
+                .use { resultSet ->
+                    while (resultSet.next()) {
+                        out[resultSet.getString("key")] = clobToString(resultSet.getCharacterStream("value"))
+                    }
+                }
+        }
+
+    return out
+}
+
 fun ResultSet.tilInnsendtMeldekort(): InnsendtMeldekort {
     return InnsendtMeldekort(
         meldekortId = getLong("meldekortId")
