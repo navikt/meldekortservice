@@ -5,7 +5,6 @@ import io.ktor.config.*
 import io.ktor.http.*
 import io.ktor.locations.*
 import io.ktor.server.testing.*
-import io.ktor.util.*
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -36,7 +35,6 @@ import kotlin.test.assertNotNull
 // Ignored because works locally, but fails in Jenkins
 @Ignore
 @KtorExperimentalLocationsAPI
-@KtorExperimentalAPI
 class MeldekortKtTest {
     private fun MapApplicationConfig.setOidcConfig() {
         put("no.nav.security.jwt.issuers.size", "1")

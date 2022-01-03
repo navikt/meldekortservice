@@ -7,7 +7,6 @@ import io.ktor.config.*
 import io.ktor.http.*
 import io.ktor.locations.*
 import io.ktor.server.testing.*
-import io.ktor.util.*
 import io.mockk.*
 import no.aetat.amelding.externcontrolemelding.webservices.ExternControlEmeldingSOAP
 import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
@@ -48,7 +47,6 @@ import kotlin.test.assertNotNull
 // Ignored because works locally, but fails in Jenkins
 @Ignore
 @KtorExperimentalLocationsAPI
-@KtorExperimentalAPI
 class PersonKtTest {
     private fun MapApplicationConfig.setOidcConfig() {
         put("no.nav.security.jwt.issuers.size", "1")

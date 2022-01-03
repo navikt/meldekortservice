@@ -3,7 +3,6 @@ package no.nav.meldeplikt.meldekortservice.api
 import io.ktor.http.*
 import io.ktor.locations.*
 import io.ktor.server.testing.*
-import io.ktor.util.*
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -14,7 +13,6 @@ import org.flywaydb.core.api.output.MigrateResult
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
-@KtorExperimentalAPI
 @KtorExperimentalLocationsAPI
 class InternalKtTest {
     @Test
