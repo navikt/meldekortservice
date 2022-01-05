@@ -182,7 +182,11 @@ private fun bytesToChars(bytes: ByteArray?): CharArray {
 }
 
 // Generic solution for Oracle Clob and PostgreSQL Text
-private fun clobToString(reader: Reader): String {
+private fun clobToString(reader: Reader?): String {
+    if (reader == null) {
+        return ""
+    }
+
     val buffer = StringBuffer()
     var ch: Int
     while (reader.read().also { ch = it } != -1) {

@@ -105,10 +105,10 @@ class DBServiceTest {
     fun `skal returnere tekst hvis eksisterer`() {
         val dbService = DBService(database)
 
-        var result = dbService.getText("diverse.tilbake", "nb", "0000-00-00 00:00:00")
+        var result = dbService.getText("diverse.tilbake", "nb", "0000-00-00T00:00:00")
         assertEquals("Til Ditt NAV", result)
 
-        result = dbService.getText("diverse.tilbake", "en", "0000-00-00 00:00:00")
+        result = dbService.getText("diverse.tilbake", "en", "0000-00-00T00:00:00")
         assertEquals("To Your page", result)
     }
 
@@ -116,10 +116,10 @@ class DBServiceTest {
     fun `skal returnere null hvis tekst ikke eksisterer`() {
         val dbService = DBService(database)
 
-        var result = dbService.getText("eksisterer_ikke", "nb", "0000-00-00 00:00:00")
+        var result = dbService.getText("eksisterer_ikke", "nb", "0000-00-00T00:00:00")
         assertEquals(null, result)
 
-        result = dbService.getText("eksisterer_ikke", "en", "0000-00-00 00:00:00")
+        result = dbService.getText("eksisterer_ikke", "en", "0000-00-00T00:00:00")
         assertEquals(null, result)
     }
 
@@ -127,10 +127,10 @@ class DBServiceTest {
     fun `skal returnere tekster`() {
         val dbService = DBService(database)
 
-        var result = dbService.getTexts("nb", "0000-00-00 00:00:00")
+        var result = dbService.getTexts("nb", "0000-00-00T00:00:00")
         assertTrue(result.size > 1)
 
-        result = dbService.getTexts("en", "0000-00-00 00:00:00")
+        result = dbService.getTexts("en", "0000-00-00T00:00:00")
         assertTrue(result.size > 1)
     }
 }
