@@ -273,7 +273,7 @@ INSERT INTO texts (key, value, language, fromDateTime) VALUES ('overskrift.melde
 INSERT INTO texts (key, value, language, fromDateTime) VALUES ('overskrift.meldekort.sendt.info', '<strong>NB:</strong> Du vil stå registrert som arbeidssøker inntil våre systemer oppdateres i natt', 'nb',  '0000-00-00T00:00:00');
 INSERT INTO texts (key, value, language, fromDateTime) VALUES ('overskrift.meldekorttype', 'Meldekorttype', 'nb',  '0000-00-00T00:00:00');
 INSERT INTO texts (key, value, language, fromDateTime) VALUES ('overskrift.mottatt', 'Mottatt', 'nb',  '0000-00-00T00:00:00');
-INSERT INTO texts (key, value, language, fromDateTime) VALUES ('overskrift.nesteMeldekort', 'Neste meldekort', 'nb',  '0000-00-00T00:00:00');
+INSERT INTO texts (key, value, language, fromDateTime) VALUES ('overskrift.nesteMeldekort', 'Neste meldekort ', 'nb',  '0000-00-00T00:00:00');
 INSERT INTO texts (key, value, language, fromDateTime) VALUES ('overskrift.ofteStilteSporsmal', 'Ofte stilte spørsmål', 'nb',  '0000-00-00T00:00:00');
 INSERT INTO texts (key, value, language, fromDateTime) VALUES ('overskrift.periode', 'Periode', 'nb',  '0000-00-00T00:00:00');
 INSERT INTO texts (key, value, language, fromDateTime) VALUES ('overskrift.sendMeldekort', 'Bekreft og send meldekort', 'nb',  '0000-00-00T00:00:00');
@@ -302,7 +302,7 @@ INSERT INTO texts (key, value, language, fromDateTime) VALUES ('sendMeldekort.in
 INSERT INTO texts (key, value, language, fromDateTime) VALUES ('sendMeldekort.info.forMangeMeldekort', 'Du har ikke sendt inn fem eller flere meldekort.', 'nb',  '0000-00-00T00:00:00');
 INSERT INTO texts (key, value, language, fromDateTime) VALUES ('sendMeldekort.info.forMangeMeldekort.feilmelding', 'På grunn av manglende innsending av meldekort, må du ta kontakt med ditt lokale NAV-kontor før du kan sende meldekort igjen.', 'nb',  '0000-00-00T00:00:00');
 INSERT INTO texts (key, value, language, fromDateTime) VALUES ('sendMeldekort.info.ingenKlare', 'Det er for tidlig å sende inn meldekort nå.', 'nb',  '0000-00-00T00:00:00');
-INSERT INTO texts (key, value, language, fromDateTime) VALUES ('sendMeldekort.info.innsendingStatus.kanSendes', 'kan sendes inn:', 'nb',  '0000-00-00T00:00:00');
+INSERT INTO texts (key, value, language, fromDateTime) VALUES ('sendMeldekort.info.innsendingStatus.kanSendes', 'kan sendes inn: ', 'nb',  '0000-00-00T00:00:00');
 INSERT INTO texts (key, value, language, fromDateTime) VALUES ('sendMeldekort.info.innsendingStatus.sendesSenest', '<span class="orange">Sendes inn senest:</span>', 'nb',  '0000-00-00T00:00:00');
 INSERT INTO texts (key, value, language, fromDateTime) VALUES ('sendMeldekort.info.innsendingStatus.sendesSnarest', '<span class="orange">Sendes inn snarest!</span>', 'nb',  '0000-00-00T00:00:00');
 INSERT INTO texts (key, value, language, fromDateTime) VALUES ('sendMeldekort.info.kanSende', 'Du kan sende inn meldekort for følgende perioder:', 'nb',  '0000-00-00T00:00:00');
@@ -660,7 +660,7 @@ INSERT INTO texts (key, value, language, fromDateTime) VALUES ('overskrift.melde
 INSERT INTO texts (key, value, language, fromDateTime) VALUES ('overskrift.meldekort.sendt.info', '<strong>NB:</strong>You will have status as job seeker until our systems are updated', 'en',  '0000-00-00T00:00:00');
 INSERT INTO texts (key, value, language, fromDateTime) VALUES ('overskrift.meldekorttype', 'Type of form', 'en',  '0000-00-00T00:00:00');
 INSERT INTO texts (key, value, language, fromDateTime) VALUES ('overskrift.mottatt', 'Received', 'en',  '0000-00-00T00:00:00');
-INSERT INTO texts (key, value, language, fromDateTime) VALUES ('overskrift.nesteMeldekort', 'Next employment status form', 'en',  '0000-00-00T00:00:00');
+INSERT INTO texts (key, value, language, fromDateTime) VALUES ('overskrift.nesteMeldekort', 'Next employment status form ', 'en',  '0000-00-00T00:00:00');
 INSERT INTO texts (key, value, language, fromDateTime) VALUES ('overskrift.ofteStilteSporsmal', 'Frequently Asked Questions', 'en',  '0000-00-00T00:00:00');
 INSERT INTO texts (key, value, language, fromDateTime) VALUES ('overskrift.periode', 'Period', 'en',  '0000-00-00T00:00:00');
 INSERT INTO texts (key, value, language, fromDateTime) VALUES ('overskrift.sendMeldekort', 'Send employment status form', 'en',  '0000-00-00T00:00:00');
@@ -689,7 +689,7 @@ INSERT INTO texts (key, value, language, fromDateTime) VALUES ('sendMeldekort.in
 INSERT INTO texts (key, value, language, fromDateTime) VALUES ('sendMeldekort.info.forMangeMeldekort', 'You have not sent 5 or more employment status forms', 'en',  '0000-00-00T00:00:00');
 INSERT INTO texts (key, value, language, fromDateTime) VALUES ('sendMeldekort.info.forMangeMeldekort.feilmelding', 'Due to lack of submitted employment status forms, please contact NAV.', 'en',  '0000-00-00T00:00:00');
 INSERT INTO texts (key, value, language, fromDateTime) VALUES ('sendMeldekort.info.ingenKlare', 'There are not yet any avaliable employment status forms', 'en',  '0000-00-00T00:00:00');
-INSERT INTO texts (key, value, language, fromDateTime) VALUES ('sendMeldekort.info.innsendingStatus.kanSendes', 'may be sent:', 'en',  '0000-00-00T00:00:00');
+INSERT INTO texts (key, value, language, fromDateTime) VALUES ('sendMeldekort.info.innsendingStatus.kanSendes', 'may be sent: ', 'en',  '0000-00-00T00:00:00');
 INSERT INTO texts (key, value, language, fromDateTime) VALUES ('sendMeldekort.info.innsendingStatus.sendesSenest', '<span class="orange">Final submission deadline without reduced payout!</span>', 'en',  '0000-00-00T00:00:00');
 INSERT INTO texts (key, value, language, fromDateTime) VALUES ('sendMeldekort.info.innsendingStatus.sendesSnarest', '<span class="red">Submit </span>immediately, your benefits may be reduced!!', 'en',  '0000-00-00T00:00:00');
 INSERT INTO texts (key, value, language, fromDateTime) VALUES ('sendMeldekort.info.kanSende', 'You may send employment status forms concerning the period:', 'en',  '0000-00-00T00:00:00');
