@@ -4,9 +4,9 @@ import no.nils.wsdl2java.Wsdl2JavaTask
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val flywayVersion = "8.2.2"
+val flywayVersion = "8.4.0"
 val h2Version = "1.4.200"
-val jacksonVersion = "2.13.0"
+val jacksonVersion = "2.13.1"
 val javaxActivationVersion = "1.1.1"
 val javaxAnnotationApiVersion = "1.3.2"
 val javaxJaxwsApiVersion = "2.3.1"
@@ -16,19 +16,19 @@ val jaxwsApiVersion = "2.3.1"
 val jaxwsToolsVersion = "2.3.5"
 val junitVersion = "5.8.2"
 val kluentVersion = "1.68"
-val kotestVersion = "5.0.2"
-val kotlinLoggerVersion = "2.1.16"
+val kotestVersion = "5.0.3"
+val kotlinLoggerVersion = "2.1.21"
 val ktorVersion = "1.6.7"
 val logbackVersion = "1.2.7"
 val logstashVersion = "7.0.1"
-val mockOauthVersion = "0.4.0"
-val mockitoVersion = "4.1.0"
-val mockkVersion = "1.12.1"
+val mockOauthVersion = "0.4.1"
+val mockitoVersion = "4.2.0"
+val mockkVersion = "1.12.2"
 val navCommonCacheVersion = "2.2020.03.18_12.19-ac82e907ebc9"
 val navCommonVersion = "1.2021.07.07_10.18-72bd65c546f6"
 val ojdbc8Version = "19.3.0.0"
 val postgresVersion = "42.3.1"
-val prometheusVersion = "0.13.0"
+val prometheusVersion = "0.14.1"
 val slf4jVersion = "1.7.32"
 val swaggerVersion = "3.23.8"
 val tjenestespecVersion = "1.2019.09.25-00.21-49b69f0625e0"
@@ -48,13 +48,13 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version "1.5.21"
     id("org.jetbrains.kotlin.plugin.allopen") version "1.5.21"
 
-    id("com.github.johnrengelman.shadow") version "7.1.1"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 
-    id("org.flywaydb.flyway") version ("8.2.2")
+    id("org.flywaydb.flyway") version ("8.4.0")
 
     id("org.sonarqube") version "3.3"
 
-    id("com.github.ben-manes.versions") version "0.39.0"
+    id("com.github.ben-manes.versions") version "0.41.0"
 
     jacoco
 
