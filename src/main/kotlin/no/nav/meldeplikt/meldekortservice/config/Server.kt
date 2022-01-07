@@ -92,7 +92,7 @@ fun Application.mainModule(
         weblogicApi()
         meldekortApi(arenaOrdsService)
         personApi(arenaOrdsService, dbService, kontrollService, dokarkivService)
-        textsApi(dbService)
+        teksterApi(dbService)
     }
 
     install(CallLogging) {

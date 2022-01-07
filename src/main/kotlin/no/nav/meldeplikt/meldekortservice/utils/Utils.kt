@@ -22,7 +22,7 @@ internal const val INTERNAL_PATH = "$BASE_PATH/internal"
 internal const val MELDEKORT_PATH = "$API_PATH/meldekort"
 internal const val PERSON_PATH = "$API_PATH/person"
 internal const val WEBLOGIC_PING_PATH = "$API_PATH/weblogic"
-internal const val TEXTS_PATH = "$API_PATH/texts"
+internal const val TEKSTER_PATH = "$API_PATH/tekster"
 
 internal const val KONTROLL_KONTROLL = "/api/kontroll"
 

@@ -120,7 +120,7 @@ fun Connection.oppdaterMidlertidigLagretJournalpost(id: String, retries: Int) =
             it.executeUpdate()
         }
 
-fun Connection.getText(key: String, language: String, fromDateTime: String): String? = prepareStatement(
+fun Connection.hentTekst(key: String, language: String, fromDateTime: String): String? = prepareStatement(
     "SELECT value " +
             "FROM texts " +
             "WHERE key = ? " +
@@ -143,7 +143,7 @@ fun Connection.getText(key: String, language: String, fromDateTime: String): Str
             }
     }
 
-fun Connection.getTexts(language: String, fromDateTime: String): Map<String, String> {
+fun Connection.hentAlleTekster(language: String, fromDateTime: String): Map<String, String> {
     val out = mutableMapOf<String, String>()
 
     this.prepareStatement(

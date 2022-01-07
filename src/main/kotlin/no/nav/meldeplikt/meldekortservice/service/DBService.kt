@@ -43,14 +43,14 @@ class DBService(private val database: Database) {
         }
     }
 
-    fun getText(key: String, language: String, fromDateTime: String): String? =
+    fun hentTekst(key: String, language: String, fromDateTime: String): String? =
         runBlocking {
-            database.dbQuery { getText(key, language, fromDateTime) }
+            database.dbQuery { hentTekst(key, language, fromDateTime) }
         }
 
-    fun getTexts(language: String, fromDateTime: String): Map<String, String> =
+    fun hentAlleTekster(language: String, fromDateTime: String): Map<String, String> =
         runBlocking {
-            database.dbQuery { getTexts(language, fromDateTime) }
+            database.dbQuery { hentAlleTekster(language, fromDateTime) }
         }
 
     fun getConnection(): Connection {

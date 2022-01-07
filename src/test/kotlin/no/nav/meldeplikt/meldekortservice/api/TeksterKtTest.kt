@@ -15,7 +15,7 @@ import org.flywaydb.core.api.output.MigrateResult
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
-class TextsKtTest {
+class TeksterKtTest {
     @Test
     fun `skal returnere id hvis eksisterer`() {
         val id = "some.id-AAP"
@@ -28,7 +28,7 @@ class TextsKtTest {
         mockkStatic(::isCurrentlyRunningOnNais)
         every { isCurrentlyRunningOnNais() } returns false
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
-        every { dbService.getText(id, language, from) } returns id
+        every { dbService.hentTekst(id, language, from) } returns id
 
         withTestApplication({
             mainModule(
@@ -40,7 +40,7 @@ class TextsKtTest {
         }) {
             handleRequest(
                 HttpMethod.Get,
-                "/meldekortservice/api/texts/exists?id=${id}&language=${language}&from=${from}"
+                "/meldekortservice/api/tekster/eksisterer?id=${id}&language=${language}&from=${from}"
             ) {}.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertEquals(id, response.content)
@@ -61,7 +61,7 @@ class TextsKtTest {
         mockkStatic(::isCurrentlyRunningOnNais)
         every { isCurrentlyRunningOnNais() } returns false
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
-        every { dbService.getText(id, language, from) } returns null
+        every { dbService.hentTekst(id, language, from) } returns null
 
         withTestApplication({
             mainModule(
@@ -73,7 +73,7 @@ class TextsKtTest {
         }) {
             handleRequest(
                 HttpMethod.Get,
-                "/meldekortservice/api/texts/exists?id=${id}&language=${language}&from=${from}"
+                "/meldekortservice/api/tekster/eksisterer?id=${id}&language=${language}&from=${from}"
             ) {}.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertEquals(forkortetId, response.content)
@@ -94,7 +94,7 @@ class TextsKtTest {
         mockkStatic(::isCurrentlyRunningOnNais)
         every { isCurrentlyRunningOnNais() } returns false
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
-        every { dbService.getText(id, language, from) } returns tekst
+        every { dbService.hentTekst(id, language, from) } returns tekst
 
         withTestApplication({
             mainModule(
@@ -106,7 +106,7 @@ class TextsKtTest {
         }) {
             handleRequest(
                 HttpMethod.Get,
-                "/meldekortservice/api/texts/get?id=${id}&language=${language}&from=${from}"
+                "/meldekortservice/api/tekster/hent?id=${id}&language=${language}&from=${from}"
             ) {}.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertEquals(tekst, response.content)
@@ -126,7 +126,7 @@ class TextsKtTest {
         mockkStatic(::isCurrentlyRunningOnNais)
         every { isCurrentlyRunningOnNais() } returns false
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
-        every { dbService.getText(id, language, from) } returns null
+        every { dbService.hentTekst(id, language, from) } returns null
 
         withTestApplication({
             mainModule(
@@ -138,7 +138,7 @@ class TextsKtTest {
         }) {
             handleRequest(
                 HttpMethod.Get,
-                "/meldekortservice/api/texts/get?id=${id}&language=${language}&from=${from}"
+                "/meldekortservice/api/tekster/hent?id=${id}&language=${language}&from=${from}"
             ) {}.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertEquals(id, response.content)
@@ -161,7 +161,7 @@ class TextsKtTest {
         mockkStatic(::isCurrentlyRunningOnNais)
         every { isCurrentlyRunningOnNais() } returns false
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
-        every { dbService.getTexts(language, from) } returns tekster
+        every { dbService.hentAlleTekster(language, from) } returns tekster
 
         withTestApplication({
             mainModule(
@@ -173,7 +173,7 @@ class TextsKtTest {
         }) {
             handleRequest(
                 HttpMethod.Get,
-                "/meldekortservice/api/texts/getall?language=${language}&from=${from}"
+                "/meldekortservice/api/tekster/hentAlle?language=${language}&from=${from}"
             ) {}.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 val responseObject = defaultObjectMapper.readValue<Map<String, String>>(response.content!!)
