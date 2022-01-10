@@ -5,15 +5,18 @@ import io.ktor.routing.*
 import no.nav.meldeplikt.meldekortservice.service.DBService
 import no.nav.meldeplikt.meldekortservice.utils.Error
 import no.nav.meldeplikt.meldekortservice.utils.ErrorMessage
-import no.nav.meldeplikt.meldekortservice.utils.TEKSTER_PATH
+import no.nav.meldeplikt.meldekortservice.utils.TEKST_PATH
 import no.nav.meldeplikt.meldekortservice.utils.respondOrError
 import no.nav.meldeplikt.meldekortservice.utils.swagger.*
 
 /**
-REST-controller for text-api
+REST-controller for tekst-api som tilbyr operasjoner for å:
+- sjekke at tekst med gitt kode, språr og tidspunkt eksisterer
+- hente tekst med gitt kode, språr og tidspunkt
+- hente alle tekster med gitt språk og tidspunkt
  */
 @KtorExperimentalLocationsAPI
-fun Routing.teksterApi(dbService: DBService) {
+fun Routing.tekstApi(dbService: DBService) {
     eksisterer(dbService)
     hent(dbService)
     hentAlle(dbService)
@@ -22,14 +25,14 @@ fun Routing.teksterApi(dbService: DBService) {
 private const val teksterGroup = "Tekster"
 
 @Group(teksterGroup)
-@Location("$TEKSTER_PATH/eksisterer")
+@Location("$TEKST_PATH/eksisterer")
 @KtorExperimentalLocationsAPI
-data class ExistsInput(val id: String, val language: String, val from: String)
+data class ExistsInput(val kode: String, val sprak: String, val fraTidspunkt: String)
 
 @KtorExperimentalLocationsAPI
 fun Routing.eksisterer(dbService: DBService) =
     get<ExistsInput>(
-        "Sjekker at det finnes tekst med gitt nøkkel, språk og tid".securityAndResponse(
+        "Sjekker at det finnes tekst med gitt kode, språk og tidspunkt".securityAndResponse(
             BearerTokenSecurity(),
             ok<String>(),
             serviceUnavailable<ErrorMessage>(),
@@ -37,24 +40,24 @@ fun Routing.eksisterer(dbService: DBService) =
         )
     ) { input ->
         respondOrError {
-            val result = dbService.hentTekst(input.id, input.language, input.from)
+            val result = dbService.hentTekst(input.kode, input.sprak, input.fraTidspunkt)
             if (result != null) {
-                input.id
+                input.kode
             } else {
-                input.id.split('-')[0]
+                input.kode.split('-')[0]
             }
         }
     }
 
 @Group(teksterGroup)
-@Location("$TEKSTER_PATH/hent")
+@Location("$TEKST_PATH/hent")
 @KtorExperimentalLocationsAPI
-data class GetOneInput(val id: String, val language: String, val from: String)
+data class GetOneInput(val kode: String, val sprak: String, val fraTidspunkt: String)
 
 @KtorExperimentalLocationsAPI
 fun Routing.hent(dbService: DBService) =
     get<GetOneInput>(
-        "Returnerer tekst med gitt nøkkel, språk og tid".securityAndResponse(
+        "Returnerer tekst med gitt kode, språk og tidspunkt".securityAndResponse(
             BearerTokenSecurity(),
             ok<String>(),
             serviceUnavailable<ErrorMessage>(),
@@ -62,21 +65,21 @@ fun Routing.hent(dbService: DBService) =
         )
     ) { input ->
         respondOrError {
-            // If getText gives not null, return this result
-            // If getText gives null, return input id
-            dbService.hentTekst(input.id, input.language, input.from) ?: input.id
+            // If hentTekst gives not null, return this result
+            // If hentTekst gives null, return input id
+            dbService.hentTekst(input.kode, input.sprak, input.fraTidspunkt) ?: input.kode
         }
     }
 
 @Group(teksterGroup)
-@Location("$TEKSTER_PATH/hentAlle")
+@Location("$TEKST_PATH/hentAlle")
 @KtorExperimentalLocationsAPI
-data class GetAllInput(val language: String, val from: String)
+data class GetAllInput(val sprak: String, val fraTidspunkt: String)
 
 @KtorExperimentalLocationsAPI
 fun Routing.hentAlle(dbService: DBService) =
     get<GetAllInput>(
-        "Returnerer alle tekster med gitt språk og tid".securityAndResponse(
+        "Returnerer alle tekster med gitt språk og tidspunkt".securityAndResponse(
             BearerTokenSecurity(),
             ok<Any>(),
             serviceUnavailable<ErrorMessage>(),
@@ -84,7 +87,7 @@ fun Routing.hentAlle(dbService: DBService) =
         )
     ) { input ->
         respondOrError {
-            dbService.hentAlleTekster(input.language, input.from)
+            dbService.hentAlleTekster(input.sprak, input.fraTidspunkt)
         }
     }
 

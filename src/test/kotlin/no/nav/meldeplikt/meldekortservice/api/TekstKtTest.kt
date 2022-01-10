@@ -15,12 +15,12 @@ import org.flywaydb.core.api.output.MigrateResult
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
-class TeksterKtTest {
+class TekstKtTest {
     @Test
     fun `skal returnere id hvis eksisterer`() {
-        val id = "some.id-AAP"
-        val language = "nb"
-        val from = "0000-00-00T00:00:00"
+        val kode = "test.kode-AAP"
+        val sprak = "nb"
+        val fraTidspunkt = "0000-00-00T00:00:00"
 
         val flywayConfig = mockk<Flyway>()
         val dbService = mockk<DBService>()
@@ -28,7 +28,7 @@ class TeksterKtTest {
         mockkStatic(::isCurrentlyRunningOnNais)
         every { isCurrentlyRunningOnNais() } returns false
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
-        every { dbService.hentTekst(id, language, from) } returns id
+        every { dbService.hentTekst(kode, sprak, fraTidspunkt) } returns kode
 
         withTestApplication({
             mainModule(
@@ -40,20 +40,20 @@ class TeksterKtTest {
         }) {
             handleRequest(
                 HttpMethod.Get,
-                "/meldekortservice/api/tekster/eksisterer?id=${id}&language=${language}&from=${from}"
+                "/meldekortservice/api/tekst/eksisterer?kode=${kode}&sprak=${sprak}&fraTidspunkt=${fraTidspunkt}"
             ) {}.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
-                assertEquals(id, response.content)
+                assertEquals(kode, response.content)
             }
         }
     }
 
     @Test
     fun `skal returnere forkortet id hvis ikke eksisterer`() {
-        val forkortetId = "some.id"
-        val id = "$forkortetId-AAP"
-        val language = "nb"
-        val from = "0000-00-00T00:00:00"
+        val forkortetKode = "test.kode"
+        val kode = "$forkortetKode-AAP"
+        val sprak = "nb"
+        val fraTidspunkt = "0000-00-00T00:00:00"
 
         val flywayConfig = mockk<Flyway>()
         val dbService = mockk<DBService>()
@@ -61,7 +61,7 @@ class TeksterKtTest {
         mockkStatic(::isCurrentlyRunningOnNais)
         every { isCurrentlyRunningOnNais() } returns false
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
-        every { dbService.hentTekst(id, language, from) } returns null
+        every { dbService.hentTekst(kode, sprak, fraTidspunkt) } returns null
 
         withTestApplication({
             mainModule(
@@ -73,20 +73,20 @@ class TeksterKtTest {
         }) {
             handleRequest(
                 HttpMethod.Get,
-                "/meldekortservice/api/tekster/eksisterer?id=${id}&language=${language}&from=${from}"
+                "/meldekortservice/api/tekst/eksisterer?kode=${kode}&sprak=${sprak}&fraTidspunkt=${fraTidspunkt}"
             ) {}.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
-                assertEquals(forkortetId, response.content)
+                assertEquals(forkortetKode, response.content)
             }
         }
     }
 
     @Test
     fun `skal returnere tekst hvis eksisterer`() {
-        val id = "some.id"
-        val language = "nb"
-        val from = "0000-00-00T00:00:00"
-        val tekst = "Some text"
+        val kode = "test.kode"
+        val sprak = "nb"
+        val fraTidspunkt = "0000-00-00T00:00:00"
+        val tekst = "Bla bla bla"
 
         val flywayConfig = mockk<Flyway>()
         val dbService = mockk<DBService>()
@@ -94,7 +94,7 @@ class TeksterKtTest {
         mockkStatic(::isCurrentlyRunningOnNais)
         every { isCurrentlyRunningOnNais() } returns false
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
-        every { dbService.hentTekst(id, language, from) } returns tekst
+        every { dbService.hentTekst(kode, sprak, fraTidspunkt) } returns tekst
 
         withTestApplication({
             mainModule(
@@ -106,7 +106,7 @@ class TeksterKtTest {
         }) {
             handleRequest(
                 HttpMethod.Get,
-                "/meldekortservice/api/tekster/hent?id=${id}&language=${language}&from=${from}"
+                "/meldekortservice/api/tekst/hent?kode=${kode}&sprak=${sprak}&fraTidspunkt=${fraTidspunkt}"
             ) {}.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertEquals(tekst, response.content)
@@ -116,9 +116,9 @@ class TeksterKtTest {
 
     @Test
     fun `skal returnere id hvis tekst ikke eksisterer`() {
-        val id = "some.id-AAP"
-        val language = "nb"
-        val from = "0000-00-00T00:00:00"
+        val kode = "test.kode-AAP"
+        val sprak = "nb"
+        val fraTidspunkt = "0000-00-00T00:00:00"
 
         val flywayConfig = mockk<Flyway>()
         val dbService = mockk<DBService>()
@@ -126,7 +126,7 @@ class TeksterKtTest {
         mockkStatic(::isCurrentlyRunningOnNais)
         every { isCurrentlyRunningOnNais() } returns false
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
-        every { dbService.hentTekst(id, language, from) } returns null
+        every { dbService.hentTekst(kode, sprak, fraTidspunkt) } returns null
 
         withTestApplication({
             mainModule(
@@ -138,22 +138,22 @@ class TeksterKtTest {
         }) {
             handleRequest(
                 HttpMethod.Get,
-                "/meldekortservice/api/tekster/hent?id=${id}&language=${language}&from=${from}"
+                "/meldekortservice/api/tekst/hent?kode=${kode}&sprak=${sprak}&fraTidspunkt=${fraTidspunkt}"
             ) {}.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
-                assertEquals(id, response.content)
+                assertEquals(kode, response.content)
             }
         }
     }
 
     @Test
     fun `skal returnere tekster`() {
-        val language = "nb"
-        val from = "0000-00-00T00:00:00"
+        val sprak = "nb"
+        val fraTidspunkt = "0000-00-00T00:00:00"
         val tekster = mutableMapOf<String, String>()
-        tekster["key1"] = "value1"
-        tekster["key2"] = "value2"
-        tekster["key3"] = "value3"
+        tekster["kode1"] = "verdi1"
+        tekster["kode2"] = "verdi2"
+        tekster["kode3"] = "verdi3"
 
         val flywayConfig = mockk<Flyway>()
         val dbService = mockk<DBService>()
@@ -161,7 +161,7 @@ class TeksterKtTest {
         mockkStatic(::isCurrentlyRunningOnNais)
         every { isCurrentlyRunningOnNais() } returns false
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
-        every { dbService.hentAlleTekster(language, from) } returns tekster
+        every { dbService.hentAlleTekster(sprak, fraTidspunkt) } returns tekster
 
         withTestApplication({
             mainModule(
@@ -173,7 +173,7 @@ class TeksterKtTest {
         }) {
             handleRequest(
                 HttpMethod.Get,
-                "/meldekortservice/api/tekster/hentAlle?language=${language}&from=${from}"
+                "/meldekortservice/api/tekst/hentAlle?sprak=${sprak}&fraTidspunkt=${fraTidspunkt}"
             ) {}.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 val responseObject = defaultObjectMapper.readValue<Map<String, String>>(response.content!!)

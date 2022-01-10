@@ -1,7 +1,8 @@
-create table texts
+create table tekst
 (
-    key          varchar2(255) not null,
-    value        clob,
-    language     char(2)       not null,
-    fromDateTime char(19)      not null
+    kode          varchar2(255) not null,
+    verdi         clob,
+    sprak         varchar2(2)   not null,
+    fra_tidspunkt varchar2(19)  not null,
+    PRIMARY KEY (kode, sprak, fra_tidspunkt)
 );

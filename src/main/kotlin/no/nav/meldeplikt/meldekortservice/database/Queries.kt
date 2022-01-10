@@ -120,47 +120,47 @@ fun Connection.oppdaterMidlertidigLagretJournalpost(id: String, retries: Int) =
             it.executeUpdate()
         }
 
-fun Connection.hentTekst(key: String, language: String, fromDateTime: String): String? = prepareStatement(
-    "SELECT value " +
-            "FROM texts " +
-            "WHERE key = ? " +
-            "AND language = ? " +
-            "AND fromDateTime <= ? " +
-            "ORDER BY fromDateTime DESC"
+fun Connection.hentTekst(kode: String, sprak: String, fraTidspunkt: String): String? = prepareStatement(
+    "SELECT verdi " +
+            "FROM tekst " +
+            "WHERE kode = ? " +
+            "AND sprak = ? " +
+            "AND fra_tidspunkt <= ? " +
+            "ORDER BY fra_tidspunkt DESC"
 )
     .use { preparedStatement ->
-        preparedStatement.setString(1, key)
-        preparedStatement.setString(2, language)
-        preparedStatement.setString(3, fromDateTime)
+        preparedStatement.setString(1, kode)
+        preparedStatement.setString(2, sprak)
+        preparedStatement.setString(3, fraTidspunkt)
 
         preparedStatement.executeQuery()
             .use { resultSet ->
                 if (resultSet.next()) {
-                    clobToString(resultSet.getCharacterStream("value"))
+                    clobToString(resultSet.getCharacterStream("verdi"))
                 } else {
                     null
                 }
             }
     }
 
-fun Connection.hentAlleTekster(language: String, fromDateTime: String): Map<String, String> {
+fun Connection.hentAlleTekster(sprak: String, fraTidspunkt: String): Map<String, String> {
     val out = mutableMapOf<String, String>()
 
     this.prepareStatement(
-        "SELECT key, value " +
-                "FROM texts " +
-                "WHERE language = ? " +
-                "AND fromDateTime <= ? " +
-                "ORDER BY fromDateTime DESC"
+        "SELECT kode, verdi " +
+                "FROM tekst " +
+                "WHERE sprak = ? " +
+                "AND fra_tidspunkt <= ? " +
+                "ORDER BY fra_tidspunkt DESC"
     )
         .use { preparedStatement ->
-            preparedStatement.setString(1, language)
-            preparedStatement.setString(2, fromDateTime)
+            preparedStatement.setString(1, sprak)
+            preparedStatement.setString(2, fraTidspunkt)
 
             preparedStatement.executeQuery()
                 .use { resultSet ->
                     while (resultSet.next()) {
-                        out[resultSet.getString("key")] = clobToString(resultSet.getCharacterStream("value"))
+                        out[resultSet.getString("kode")] = clobToString(resultSet.getCharacterStream("verdi"))
                     }
                 }
         }
