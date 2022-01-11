@@ -105,10 +105,10 @@ class DBServiceTest {
     fun `skal returnere tekst hvis eksisterer`() {
         val dbService = DBService(database)
 
-        var result = dbService.hentTekst("diverse.tilbake", "nb", "0000-00-00T00:00:00")
+        var result = dbService.hentTekst("diverse.tilbake", "nb", "1000-01-01")
         assertEquals("Til Ditt NAV", result)
 
-        result = dbService.hentTekst("diverse.tilbake", "en", "0000-00-00T00:00:00")
+        result = dbService.hentTekst("diverse.tilbake", "en", "1000-01-01")
         assertEquals("To Your page", result)
     }
 
@@ -116,10 +116,10 @@ class DBServiceTest {
     fun `skal returnere null hvis tekst ikke eksisterer`() {
         val dbService = DBService(database)
 
-        var result = dbService.hentTekst("eksisterer_ikke", "nb", "0000-00-00T00:00:00")
+        var result = dbService.hentTekst("eksisterer_ikke", "nb", "1000-01-01")
         assertEquals(null, result)
 
-        result = dbService.hentTekst("eksisterer_ikke", "en", "0000-00-00T00:00:00")
+        result = dbService.hentTekst("eksisterer_ikke", "en", "1000-01-01")
         assertEquals(null, result)
     }
 
@@ -127,10 +127,10 @@ class DBServiceTest {
     fun `skal returnere tekster`() {
         val dbService = DBService(database)
 
-        var result = dbService.hentAlleTekster("nb", "0000-00-00T00:00:00")
+        var result = dbService.hentAlleTekster("nb", "1000-01-01")
         assertTrue(result.size > 1)
 
-        result = dbService.hentAlleTekster("en", "0000-00-00T00:00:00")
+        result = dbService.hentAlleTekster("en", "1000-01-01")
         assertTrue(result.size > 1)
     }
 }

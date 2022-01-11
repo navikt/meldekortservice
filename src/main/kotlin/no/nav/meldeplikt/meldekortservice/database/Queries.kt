@@ -120,18 +120,18 @@ fun Connection.oppdaterMidlertidigLagretJournalpost(id: String, retries: Int) =
             it.executeUpdate()
         }
 
-fun Connection.hentTekst(kode: String, sprak: String, fraTidspunkt: String): String? = prepareStatement(
+fun Connection.hentTekst(kode: String, sprak: String, fraDato: String): String? = prepareStatement(
     "SELECT verdi " +
             "FROM tekst " +
             "WHERE kode = ? " +
             "AND sprak = ? " +
-            "AND fra_tidspunkt <= ? " +
-            "ORDER BY fra_tidspunkt DESC"
+            "AND fra_dato <= TO_DATE(?, 'YYYY-MM-DD') " +
+            "ORDER BY fra_dato DESC"
 )
     .use { preparedStatement ->
         preparedStatement.setString(1, kode)
         preparedStatement.setString(2, sprak)
-        preparedStatement.setString(3, fraTidspunkt)
+        preparedStatement.setString(3, fraDato)
 
         preparedStatement.executeQuery()
             .use { resultSet ->
@@ -143,19 +143,19 @@ fun Connection.hentTekst(kode: String, sprak: String, fraTidspunkt: String): Str
             }
     }
 
-fun Connection.hentAlleTekster(sprak: String, fraTidspunkt: String): Map<String, String> {
+fun Connection.hentAlleTekster(sprak: String, fraDato: String): Map<String, String> {
     val out = mutableMapOf<String, String>()
 
     this.prepareStatement(
         "SELECT kode, verdi " +
                 "FROM tekst " +
                 "WHERE sprak = ? " +
-                "AND fra_tidspunkt <= ? " +
-                "ORDER BY fra_tidspunkt DESC"
+                "AND fra_dato <= TO_DATE(?, 'YYYY-MM-DD') " +
+                "ORDER BY fra_dato DESC"
     )
         .use { preparedStatement ->
             preparedStatement.setString(1, sprak)
-            preparedStatement.setString(2, fraTidspunkt)
+            preparedStatement.setString(2, fraDato)
 
             preparedStatement.executeQuery()
                 .use { resultSet ->

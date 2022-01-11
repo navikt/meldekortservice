@@ -27,7 +27,7 @@ private const val teksterGroup = "Tekster"
 @Group(teksterGroup)
 @Location("$TEKST_PATH/eksisterer")
 @KtorExperimentalLocationsAPI
-data class ExistsInput(val kode: String, val sprak: String, val fraTidspunkt: String)
+data class ExistsInput(val kode: String, val sprak: String, val fraDato: String)
 
 @KtorExperimentalLocationsAPI
 fun Routing.eksisterer(dbService: DBService) =
@@ -40,7 +40,7 @@ fun Routing.eksisterer(dbService: DBService) =
         )
     ) { input ->
         respondOrError {
-            val result = dbService.hentTekst(input.kode, input.sprak, input.fraTidspunkt)
+            val result = dbService.hentTekst(input.kode, input.sprak, input.fraDato)
             if (result != null) {
                 input.kode
             } else {
@@ -52,7 +52,7 @@ fun Routing.eksisterer(dbService: DBService) =
 @Group(teksterGroup)
 @Location("$TEKST_PATH/hent")
 @KtorExperimentalLocationsAPI
-data class GetOneInput(val kode: String, val sprak: String, val fraTidspunkt: String)
+data class GetOneInput(val kode: String, val sprak: String, val fraDato: String)
 
 @KtorExperimentalLocationsAPI
 fun Routing.hent(dbService: DBService) =
@@ -67,14 +67,14 @@ fun Routing.hent(dbService: DBService) =
         respondOrError {
             // If hentTekst gives not null, return this result
             // If hentTekst gives null, return input id
-            dbService.hentTekst(input.kode, input.sprak, input.fraTidspunkt) ?: input.kode
+            dbService.hentTekst(input.kode, input.sprak, input.fraDato) ?: input.kode
         }
     }
 
 @Group(teksterGroup)
 @Location("$TEKST_PATH/hentAlle")
 @KtorExperimentalLocationsAPI
-data class GetAllInput(val sprak: String, val fraTidspunkt: String)
+data class GetAllInput(val sprak: String, val fraDato: String)
 
 @KtorExperimentalLocationsAPI
 fun Routing.hentAlle(dbService: DBService) =
@@ -87,7 +87,7 @@ fun Routing.hentAlle(dbService: DBService) =
         )
     ) { input ->
         respondOrError {
-            dbService.hentAlleTekster(input.sprak, input.fraTidspunkt)
+            dbService.hentAlleTekster(input.sprak, input.fraDato)
         }
     }
 
