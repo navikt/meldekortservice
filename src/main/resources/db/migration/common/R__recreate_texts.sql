@@ -1048,8 +1048,8 @@ INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('ikke.tilgang.tekst', 
 INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('innlogget.tekst', 'Fom1.12. Innlogget:', 'nb',  TO_DATE('2021-12-01', 'YYYY-MM-DD'));
 INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('innlogget.tekst', 'Fom1.12. Logged in:', 'en',  TO_DATE('2021-12-01', 'YYYY-MM-DD'));
 
-INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('korriger.begrunnelse.valg', 'Fom1.12. {"1": "Feil i antall arbeidstimer","2": "Glemt å registrere aktivitet","3": "Sykdom","4": "Utenlandsopphold","5": "Feil annet fravær","6": "Lønnskompensasjon","7": "Annet"}', 'nb',  TO_DATE('2021-12-01', 'YYYY-MM-DD'));
-INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('korriger.begrunnelse.valg', 'Fom1.12. {"1": "Wrong amount of work hours","2": "Forgotten to register activity","3": "Illness","4": "Staying abroad","5": "Wrong other absence","6": "Salary loss compensation","7": "Other"}', 'en',  TO_DATE('2021-12-01', 'YYYY-MM-DD'));
+INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('korriger.begrunnelse.valg', '{"1": "Fom1.12. Feil i antall arbeidstimer","2": "Fom1.12. Glemt å registrere aktivitet","3": "Fom1.12. Sykdom","4": "Fom1.12. Utenlandsopphold","5": "Fom1.12. Feil annet fravær","6": "Fom1.12. Lønnskompensasjon","7": "Fom1.12. Annet"}', 'nb',  TO_DATE('2021-12-01', 'YYYY-MM-DD'));
+INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('korriger.begrunnelse.valg', '{"1": "Fom1.12. Wrong amount of work hours","2": "Fom1.12. Forgotten to register activity","3": "Fom1.12. Illness","4": "Fom1.12. Staying abroad","5": "Fom1.12. Wrong other absence","6": "Fom1.12. Salary loss compensation","7": "Fom1.12. Other"}', 'en',  TO_DATE('2021-12-01', 'YYYY-MM-DD'));
 
 INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('korriger.meldekort', 'Fom1.12. Korriger meldekortet', 'nb',  TO_DATE('2021-12-01', 'YYYY-MM-DD'));
 INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('korriger.meldekort', 'Fom1.12. Correct the form', 'en',  TO_DATE('2021-12-01', 'YYYY-MM-DD'));
