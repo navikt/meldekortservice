@@ -4,6 +4,7 @@
 -- If you need to add new version of a text: copy-paste INSERT-command, make necessary changes in the text, don't forget to set correct fra_dato
 -- fra_dato has format YYYY-MM-DD HH24:MI:SS and represents date and time from which this version of text should be used
 -- If the text has no specific time to be used from, then fra_dato should be 1000-01-01
+-- NB: korriger.begrunnelse.valg kan ikke erstattes med search / replace, da den bruker JSON. ENDRE MANUELT.
 
 DELETE FROM tekst;
 
