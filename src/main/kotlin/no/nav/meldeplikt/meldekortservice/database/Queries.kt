@@ -147,11 +147,17 @@ fun Connection.hentAlleTekster(sprak: String, fraDato: String): Map<String, Stri
     val out = mutableMapOf<String, String>()
 
     this.prepareStatement(
-        "SELECT kode, verdi " +
-                "FROM tekst " +
-                "WHERE sprak = ? " +
-                "AND fra_dato <= TO_DATE(?, 'YYYY-MM-DD') " +
-                "ORDER BY fra_dato DESC"
+        "SELECT t1.kode, t1.verdi " +
+                "FROM tekst t1 " +
+                "WHERE t1.sprak = ? " +
+                "AND t1.fra_dato = ( " +
+                "    SELECT MAX(t2.fra_dato) " +
+                "    FROM tekst t2 " +
+                "    WHERE t2.sprak = t1.sprak " +
+                "    AND t2.fra_dato <= TO_DATE(?, 'YYYY-MM-DD') " +
+                "    AND t2.kode = t1.kode " +
+                ") " +
+                "ORDER BY t1.kode"
     )
         .use { preparedStatement ->
             preparedStatement.setString(1, sprak)
