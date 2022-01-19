@@ -670,7 +670,7 @@ INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('svar.aktivitetArbeid.
 INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('svar.aktivitetArbeid.nei-TP', 'Nei, jeg har ikke deltatt på tiltak eller kurs/utdanning ', 'nb',  TO_DATE('1000-01-01', 'YYYY-MM-DD'));
 INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('svar.aktivitetArbeid.nei-TP', 'No, I have not attended employment schemes or courses/education ', 'en',  TO_DATE('1000-01-01', 'YYYY-MM-DD'));
 
-INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('svar.arbeid.ja', 'Ja, jeg har vært i arbeid de siste 14 dagene ', 'nb',  TO_DATE('1000-01-01', 'YYYY-MM-DD'));
+INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('svar.arbeid.ja', '<font color="red">Ja, jeg har vært i arbeid de siste 14 dagene </font>', 'nb',  TO_DATE('1000-01-01', 'YYYY-MM-DD'));
 INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('svar.arbeid.ja', 'Yes, I have been working the last 14 days ', 'en',  TO_DATE('1000-01-01', 'YYYY-MM-DD'));
 
 INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('svar.arbeid.nei', 'Nei, jeg har ikke vært i arbeid de siste 14 dagene ', 'nb',  TO_DATE('1000-01-01', 'YYYY-MM-DD'));
@@ -1487,7 +1487,7 @@ INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('svar.aktivitetArbeid.
 INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('svar.aktivitetArbeid.nei-TP', 'fom27.12. Nei, jeg har ikke deltatt på tiltak eller kurs/utdanning ', 'nb',  TO_DATE('2021-12-27', 'YYYY-MM-DD'));
 INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('svar.aktivitetArbeid.nei-TP', 'fom27.12. No, I have not attended employment schemes or courses/education ', 'en',  TO_DATE('2021-12-27', 'YYYY-MM-DD'));
 
-INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('svar.arbeid.ja', 'fom27.12. Ja, jeg har vært i arbeid de siste 14 dagene ', 'nb',  TO_DATE('2021-12-27', 'YYYY-MM-DD'));
+INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('svar.arbeid.ja', '<font color="red">fom27.12. Ja, jeg har vært i arbeid de siste 14 dagene  </font>', 'nb',  TO_DATE('2021-12-27', 'YYYY-MM-DD'));
 INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('svar.arbeid.ja', 'fom27.12. Yes, I have been working the last 14 days ', 'en',  TO_DATE('2021-12-27', 'YYYY-MM-DD'));
 
 INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('svar.arbeid.nei', 'fom27.12. Nei, jeg har ikke vært i arbeid de siste 14 dagene ', 'nb',  TO_DATE('2021-12-27', 'YYYY-MM-DD'));
