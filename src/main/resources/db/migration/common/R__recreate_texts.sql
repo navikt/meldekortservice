@@ -68,8 +68,8 @@ INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('diverse.nei', 'No ', 
 INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('diverse.show.info', '? hjelpetekst ', 'nb',  TO_DATE('1000-01-01', 'YYYY-MM-DD'));
 INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('diverse.show.info', '? Guidance notes ', 'en',  TO_DATE('1000-01-01', 'YYYY-MM-DD'));
 
-INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('diverse.tilbake', 'Til Ditt NAV ', 'nb',  TO_DATE('1000-01-01', 'YYYY-MM-DD'));
-INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('diverse.tilbake', 'To Your page ', 'en',  TO_DATE('1000-01-01', 'YYYY-MM-DD'));
+INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('diverse.tilbake', 'Til Ditt NAV', 'nb',  TO_DATE('1000-01-01', 'YYYY-MM-DD'));
+INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('diverse.tilbake', 'To Your page', 'en',  TO_DATE('1000-01-01', 'YYYY-MM-DD'));
 
 INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('etterregistrering.sporsmal.begrunnelse', 'Kommentar på meldekortet: ', 'nb',  TO_DATE('1000-01-01', 'YYYY-MM-DD'));
 INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('etterregistrering.sporsmal.begrunnelse', 'Comment on this employment form: ', 'en',  TO_DATE('1000-01-01', 'YYYY-MM-DD'));
@@ -757,8 +757,8 @@ INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('tidligereMeldekort.si
 INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('tidligereMeldekort.tittel', 'Tidligere meldekort ', 'nb',  TO_DATE('1000-01-01', 'YYYY-MM-DD'));
 INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('tidligereMeldekort.tittel', 'Previously received employment status forms ', 'en',  TO_DATE('1000-01-01', 'YYYY-MM-DD'));
 
-INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('tilbake.dittNav', 'Til Ditt NAV ', 'nb',  TO_DATE('1000-01-01', 'YYYY-MM-DD'));
-INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('tilbake.dittNav', 'To Ditt NAV ', 'en',  TO_DATE('1000-01-01', 'YYYY-MM-DD'));
+INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('tilbake.dittNav', 'Til Ditt NAV', 'nb',  TO_DATE('1000-01-01', 'YYYY-MM-DD'));
+INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('tilbake.dittNav', 'To Ditt NAV', 'en',  TO_DATE('1000-01-01', 'YYYY-MM-DD'));
 
 INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('ukedag.fredag', 'Fredag ', 'nb',  TO_DATE('1000-01-01', 'YYYY-MM-DD'));
 INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('ukedag.fredag', 'Friday ', 'en',  TO_DATE('1000-01-01', 'YYYY-MM-DD'));
