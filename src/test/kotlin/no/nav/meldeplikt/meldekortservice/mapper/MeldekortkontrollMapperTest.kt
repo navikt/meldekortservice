@@ -57,7 +57,7 @@ class MeldekortkontrollMapperTest {
             meldekortDager[0],
             meldekortkontroll.periodeFra!!
         )
-        assert(meldekortkontroll.meldekortdager[0].harSyk!!)
+        assert(meldekortkontroll.meldekortdager[0].syk!!)
         sammenlignMeldekortDag(
             meldekortkontroll.meldekortdager[1],
             meldekortDager[1],
@@ -69,6 +69,6 @@ class MeldekortkontrollMapperTest {
 
     private fun sammenlignMeldekortDag(fra: FravaerInn, til: MeldekortDag, foersteDag: LocalDate) {
         assert(fra.arbeidTimer == til.arbeidetTimerSum!!.toDouble())
-        assert(fra.dag == foersteDag.plusDays(til.dag.toLong() - 1))
+        assert(fra.dato == foersteDag.plusDays(til.dag.toLong() - 1))
     }
 }

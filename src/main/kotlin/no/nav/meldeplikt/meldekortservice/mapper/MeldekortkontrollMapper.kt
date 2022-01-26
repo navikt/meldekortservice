@@ -33,7 +33,7 @@ class MeldekortkontrollMapper {
         )
     }
 
-    // Her utleder vi spørsmålene harAnnet, harKurs og harSyk fra avkrysningene. Dette burde være avkrysningene
+    // Her utleder vi spørsmålene annetFravaer, kurs og syk fra avkrysningene på dagnivå. Dette burde være avkrysningene
     // som blir gjort i frontenden, men de blir ikke sendt fra frontenden.
     // Vi gjør dette fordi meldekortkontroll-api konsistenssjekker kryssene mot spørsmålene, noe som kan være
     // aktuelt når meldekort kommer fra andre kilder enn vår frontend
@@ -45,10 +45,10 @@ class MeldekortkontrollMapper {
             fravaer.add(
                 FravaerInn(
                     // Vi har -1 her fordi datoene som kommer inn fra frontend er feil.
-                    dag = fraD.plusDays(mdag.dag.toLong() - 1),
-                    harAnnet = mdag.annetFravaer == true,
-                    harKurs = mdag.kurs == true,
-                    harSyk = mdag.syk == true,
+                    dato = fraD.plusDays(mdag.dag.toLong() - 1),
+                    annetFravaer = mdag.annetFravaer == true,
+                    kurs = mdag.kurs == true,
+                    syk = mdag.syk == true,
                     arbeidTimer = mdag.arbeidetTimerSum?.toDouble()
                 )
             )
