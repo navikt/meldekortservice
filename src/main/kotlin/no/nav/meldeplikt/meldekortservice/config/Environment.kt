@@ -12,7 +12,6 @@ data class Environment(
     val sakOgAktivitetUrl: String = getEnvVar("SAKOGAKTIVITET_URI", DUMMY_URL),
 
     // Meldekort-kontroll
-    // TODO: Legge inn URL for meldekort-kontroll i prod i Vault, når URLen er kjent
     val meldekortKontrollUrl: String = getEnvVar("KONTROLL_URI", DUMMY_URL),
     val meldekortKontrollClientid: String = getEnvVar("KONTROLL_CLIENT_ID", "test"),
 

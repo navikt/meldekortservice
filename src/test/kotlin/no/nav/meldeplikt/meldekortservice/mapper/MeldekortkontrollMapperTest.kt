@@ -43,31 +43,27 @@ class MeldekortkontrollMapperTest {
         assert(meldekortkontroll.personId == meldekortdetaljer.personId)
         assert(meldekortkontroll.periodeFra == LocalDate.parse("2020-01-20", DateTimeFormatter.ISO_DATE))
         assert(meldekortkontroll.periodeTil == LocalDate.parse("2020-02-02", DateTimeFormatter.ISO_DATE))
-        assert(meldekortkontroll.kortKanSendesFra == LocalDate.parse("2020-02-01", DateTimeFormatter.ISO_DATE))
         assert(meldekortkontroll.meldedato == LocalDate.now().minusDays(1))
-        assert(meldekortkontroll.periodeKode == meldekortdetaljer.meldeperiode)
         assert(meldekortkontroll.meldegruppe.equals(meldekortdetaljer.meldegruppe))
         assert(meldekortkontroll.personId.equals(meldekortdetaljer.personId))
         assert(meldekortkontroll.annetFravaer == sporsmal.annetFravaer)
         assert(meldekortkontroll.arbeidet == sporsmal.arbeidet)
         assert(meldekortkontroll.arbeidssoker == sporsmal.arbeidssoker)
-        assert(meldekortkontroll.forskudd == sporsmal.forskudd)
         assert(meldekortkontroll.kurs == sporsmal.kurs)
-        assert(meldekortkontroll.signatur == sporsmal.signatur)
         assert(meldekortkontroll.syk == sporsmal.syk)
-        assert(meldekortkontroll.fravaersdager.size == meldekortDager.size)
+        assert(meldekortkontroll.meldekortdager.size == meldekortDager.size)
         sammenlignMeldekortDag(
-            meldekortkontroll.fravaersdager[0],
+            meldekortkontroll.meldekortdager[0],
             meldekortDager[0],
             meldekortkontroll.periodeFra!!
         )
-        assert(meldekortkontroll.fravaersdager[0].harSyk!!)
+        assert(meldekortkontroll.meldekortdager[0].harSyk!!)
         sammenlignMeldekortDag(
-            meldekortkontroll.fravaersdager[1],
+            meldekortkontroll.meldekortdager[1],
             meldekortDager[1],
             meldekortkontroll.periodeFra!!
         )
-        assert(meldekortkontroll.fravaersdager[1].arbeidTimer!! > 0)
+        assert(meldekortkontroll.meldekortdager[1].arbeidTimer!! > 0)
         assert(meldekortkontroll.begrunnelse == meldekortdetaljer.begrunnelse)
     }
 
