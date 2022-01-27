@@ -3,9 +3,7 @@ package no.nav.meldeplikt.meldekortservice.database
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
 import org.amshove.kluent.*
-import org.junit.Before
 import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import java.sql.SQLException
 
@@ -17,8 +15,7 @@ class DatabaseTest {
     private val innsendtMeldekort3 = InnsendtMeldekort(3L)
     private val alleInnsendtMeldekort = listOf(innsendtMeldekort1, innsendtMeldekort2, innsendtMeldekort3)
 
-    @BeforeAll
-    fun init() {
+    init {
         runBlocking {
             database.dbQuery {
                 opprettInnsendtMeldekort(innsendtMeldekort1)
