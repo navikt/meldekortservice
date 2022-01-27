@@ -8,37 +8,32 @@ import java.time.format.DateTimeFormatter.ISO_WEEK_DATE
 
 class MeldekortkontrollMapper {
 
+    val KILDE_MELDEPLIKT = "MELDEPLIKT"
+
     fun mapMeldekortTilMeldekortkontroll(meldekort: Meldekortdetaljer): Meldekortkontroll {
-        val dagerFoer = 1L // TODO: Hent fra parameter i database
         val fraD: LocalDate = finnMeldeperiodeFraDato(meldekort.meldeperiode)
 
         return Meldekortkontroll(
             meldekortId = meldekort.meldekortId,
-            personId = meldekort.personId,
             fnr = meldekort.fodselsnr,
-            kilde = "MELDEPLIKT",
-            meldegruppe = meldekort.meldegruppe,
+            personId = meldekort.personId,
+            kilde = KILDE_MELDEPLIKT,
             kortType = meldekort.kortType.name,
-            kortStatus = "SENDT", // TODO: Finn ut hvordan vi forholder oss til denne. Ligger ikke i request.
+            meldedato = meldekort.meldeDato,
             periodeFra = fraD,
             periodeTil = fraD.plusDays(13L),
-            kortKanSendesFra = fraD.plusDays(13L - dagerFoer),
-            kanKortSendes = LocalDate.now() >= (fraD.plusDays(13L - dagerFoer)),
-            meldedato = meldekort.meldeDato,
-            periodeKode = meldekort.meldeperiode,
-            fravaersdager = trekkutFravaersdager(meldekort),
-            arbeidssoker = meldekort.sporsmal?.arbeidssoker,
-            arbeidet = meldekort.sporsmal?.arbeidet,
-            syk = meldekort.sporsmal?.syk,
+            meldegruppe = meldekort.meldegruppe,
             annetFravaer = meldekort.sporsmal?.annetFravaer,
+            arbeidet = meldekort.sporsmal?.arbeidet,
+            arbeidssoker = meldekort.sporsmal?.arbeidssoker,
             kurs = meldekort.sporsmal?.kurs,
-            forskudd = meldekort.sporsmal?.forskudd,
-            signatur = meldekort.sporsmal?.signatur,
-            begrunnelse = meldekort.begrunnelse
+            syk = meldekort.sporsmal?.syk,
+            begrunnelse = meldekort.begrunnelse,
+            meldekortdager = trekkutFravaersdager(meldekort)
         )
     }
 
-    // Her utleder vi spørsmålene harAnnet, harKurs og harSyk fra avkrysningene. Dette burde være avkrysningene
+    // Her utleder vi spørsmålene annetFravaer, kurs og syk fra avkrysningene på dagnivå. Dette burde være avkrysningene
     // som blir gjort i frontenden, men de blir ikke sendt fra frontenden.
     // Vi gjør dette fordi meldekortkontroll-api konsistenssjekker kryssene mot spørsmålene, noe som kan være
     // aktuelt når meldekort kommer fra andre kilder enn vår frontend
@@ -50,10 +45,10 @@ class MeldekortkontrollMapper {
             fravaer.add(
                 FravaerInn(
                     // Vi har -1 her fordi datoene som kommer inn fra frontend er feil.
-                    dag = fraD.plusDays(mdag.dag.toLong() - 1),
-                    harAnnet = mdag.annetFravaer == true,
-                    harKurs = mdag.kurs == true,
-                    harSyk = mdag.syk == true,
+                    dato = fraD.plusDays(mdag.dag.toLong() - 1),
+                    annetFravaer = mdag.annetFravaer == true,
+                    kurs = mdag.kurs == true,
+                    syk = mdag.syk == true,
                     arbeidTimer = mdag.arbeidetTimerSum?.toDouble()
                 )
             )
