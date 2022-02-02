@@ -9,9 +9,9 @@ import java.time.LocalDate
 data class FravaerInn constructor(
     @JsonSerialize(using = LocalDateSerializer::class)
     @JsonDeserialize(using = LocalDateDeserializer::class)
-    val dag: LocalDate? = null,
-    val harSyk: Boolean? = null,
-    val harKurs: Boolean? = null,
-    val harAnnet: Boolean? = null,
+    val dato: LocalDate? = null,
+    val syk: Boolean? = null,
+    val kurs: Boolean? = null,
+    val annetFravaer: Boolean? = null,
     val arbeidTimer: Double? = null
 )

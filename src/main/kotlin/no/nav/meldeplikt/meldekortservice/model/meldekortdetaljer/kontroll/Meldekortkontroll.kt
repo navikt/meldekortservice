@@ -11,34 +11,26 @@ import java.time.LocalDate
  */
 data class Meldekortkontroll constructor(
     var meldekortId: Long = 0,
-    var personId: Long = 0,
     var fnr: String,
+    var personId: Long = 0,
     var kilde: String,
     var kortType: String,
-    var kortStatus: String?,
-    var meldegruppe: String,
+    @JsonSerialize(using = LocalDateSerializer::class)
+    @JsonDeserialize(using = LocalDateDeserializer::class)
+    val meldedato: LocalDate? = null,
     @JsonSerialize(using = LocalDateSerializer::class)
     @JsonDeserialize(using = LocalDateDeserializer::class)
     val periodeFra: LocalDate? = null,
     @JsonSerialize(using = LocalDateSerializer::class)
     @JsonDeserialize(using = LocalDateDeserializer::class)
     val periodeTil: LocalDate? = null,
-    @JsonSerialize(using = LocalDateSerializer::class)
-    @JsonDeserialize(using = LocalDateDeserializer::class)
-    val kortKanSendesFra: LocalDate? = null,
-    val kanKortSendes: Boolean? = null,
-    @JsonSerialize(using = LocalDateSerializer::class)
-    @JsonDeserialize(using = LocalDateDeserializer::class)
-    val meldedato: LocalDate? = null,
-    val periodeKode: String? = null,
-    var fravaersdager: List<FravaerInn>,
-    var arbeidssoker: Boolean? = null,
-    var arbeidet: Boolean? = null,
-    var syk: Boolean? = null,
+    var meldegruppe: String,
     var annetFravaer: Boolean? = null,
+    var arbeidet: Boolean? = null,
+    var arbeidssoker: Boolean? = null,
     var kurs: Boolean? = null,
-    var forskudd: Boolean? = null,
-    var signatur: Boolean? = null,
-    var begrunnelse: String?
+    var syk: Boolean? = null,
+    var begrunnelse: String?,
+    var meldekortdager: List<FravaerInn>
 
 )
