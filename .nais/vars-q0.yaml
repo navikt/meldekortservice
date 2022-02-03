@@ -1,8 +1,7 @@
 dashEnv: -q0
 dbEnv: _q0
-releaseVersion: ##RELEASE_VERSION##
 slackAlertChannel: team-meldeplikt-alerts-dev
-vaultKvEnv: preprod
+vaultKvEnv: preprod/fss
 vaultServiceuserEnv: dev
 ingresses:
   - "https://meldekortservice-q0.dev.intern.nav.no"
