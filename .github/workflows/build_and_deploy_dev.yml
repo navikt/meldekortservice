@@ -112,7 +112,7 @@ jobs:
 #          mvn clean verify -B -e -U
 
       - name: Build application
-        run: gradlew build
+        run: ./gradlew build
 
 #      - name: Build Docker image
 #        run: |
