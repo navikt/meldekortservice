@@ -58,44 +58,62 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
-        
+
 #      - name: Read version from POM
 #        uses: entimaniac/read-pom-version-action@1.0.0
 #        id: pomVersion
-#
-#      - name: Set snapshot timestamp
-#        id: snapshotTimestamp
-#        if: github.event.inputs.bump_patch != 'bump'
-#        run: |
-#          echo "::set-output name=timestamp::$(date +'%Y%m%d%H%M%S')"
-#
-#      # Version blir eksisterende versjon fra POM uten -SNAPSHOT
-#      # For release:  eks 1.0.1
-#      # For snapshot: eks 1.0.1-20220104111118
-#      - name: Calculate release version
-#        uses: slime-hatena/semantic-versioning-calculator-action@main
-#        id: releaseVersion
-#        with:
-#          version: ${{ steps.pomVersion.outputs.version }}
-#          increment_major: 'false'
-#          increment_minor: 'false'
-#          increment_patch: 'false'
-#          prerelease: ${{ steps.snapshotTimestamp.outputs.timestamp }}
-#
-#      - name: Set vars
-#        id: setVars
-#        run: |
-#          echo "::set-output name=jarfile::${{ env.APPNAME }}-${{ steps.releaseVersion.outputs.version }}.jar"
-#          echo "::set-output name=image::ghcr.io/${{ github.repository }}/${{ env.APPNAME }}:${{ steps.releaseVersion.outputs.version }}"
-#
+
+      - name: Read version from version.json
+        id: customVersion
+        run: echo "::set-output name=version::$(jq -r '.version' version.json)"
+
+      - name: Debug steps.customVersion.outputs.version
+        run: echo ${{ steps.customVersion.outputs.version }}
+
+      - name: Set snapshot timestamp
+        id: snapshotTimestamp
+        if: github.event.inputs.bump_patch != 'bump'
+        run: |
+          echo "::set-output name=timestamp::$(date +'%Y%m%d%H%M%S')"
+      - name: Debug steps.snapshotTimestamp.outputs.timestamp
+        run: echo ${{ steps.snapshotTimestamp.outputs.timestamp }}
+
+      # Version blir eksisterende versjon fra POM uten -SNAPSHOT
+      # For release:  eks 1.0.1
+      # For snapshot: eks 1.0.1-20220104111118
+      - name: Calculate release version
+        uses: slime-hatena/semantic-versioning-calculator-action@main
+        id: releaseVersion
+        with:
+          version: ${{ steps.customVersion.outputs.version }}
+          increment_major: 'false'
+          increment_minor: 'false'
+          increment_patch: 'false'
+          prerelease: ${{ steps.snapshotTimestamp.outputs.timestamp }}
+
+      - name: Debug steps.releaseVersion.outputs.version
+        run: echo ${{ steps.releaseVersion.outputs.version }}
+
+      - name: Set vars
+        id: setVars
+        run: |
+          echo "::set-output name=image::ghcr.io/${{ github.repository }}/${{ env.APPNAME }}:${{ steps.releaseVersion.outputs.version }}"
 #      - name: Set release version in pom.xml
 #        run: mvn versions:set -DnewVersion=${{ steps.releaseVersion.outputs.version }}
+
+      - name: Set release version in version.json
+        run: |
+          jq '.version="${{ steps.releaseVersion.outputs.version }}"' version.json > version.json.new
+          mv version.json.new version.json
 #
 #      - name: Build application
 #        run: |
 #          mvn dependency:go-offline
 #          mvn clean verify -B -e -U
-#
+
+      - name: Build application
+        run: gradle build
+
 #      - name: Build Docker image
 #        run: |
 #          mvn clean package -DskipTests -B
