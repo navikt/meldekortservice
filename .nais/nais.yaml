@@ -1,7 +1,7 @@
 apiVersion: nais.io/v1alpha1
 kind: Application
 metadata:
-  name: meldekortservice{{ dashEnv }}
+  name: {{ appName }}{{ dashEnv }}
   namespace: meldekort
   labels:
     team: meldekort
@@ -13,7 +13,7 @@ spec:
         extra:
           - "azp_name"
 
-  image: repo.adeo.no:5443/meldeplikt/meldekortservice:{{ releaseVersion }}
+  image: {{image}}
   port: 8090
   secureLogs:
     enabled: true
@@ -30,15 +30,15 @@ spec:
   vault:
     enabled: true
     paths:
-      - kvPath: oracle/data/{{ vaultServiceuserEnv }}/creds/meldekortservice{{ dbEnv }}-user
+      - kvPath: oracle/data/{{ vaultServiceuserEnv }}/creds/{{ appName }}{{ dbEnv }}-user
         mountPath: /secrets/dbuser/meldekortservicedbuser
-      - kvPath: oracle/data/{{ vaultServiceuserEnv }}/config/meldekortservice{{ dbEnv }}
+      - kvPath: oracle/data/{{ vaultServiceuserEnv }}/config/{{ appName }}{{ dbEnv }}
         mountPath: /secrets/dbconf/meldekortservicedbconf
       - kvPath: serviceuser/data/{{ vaultServiceuserEnv }}/srvmeldekortservice
         mountPath: /secrets/serviceuser/srvmeldekortservice
       - kvPath: serviceuser/data/{{ vaultServiceuserEnv }}/srvsblarbeid
         mountPath: /secrets/serviceuser/srvsblarbeid
-      - kvPath: kv/{{ vaultKvEnv }}/fss/meldekortservice{{ dashEnv }}/meldekort
+      - kvPath: kv/{{ vaultKvEnv }}/{{ appName }}{{ dashEnv }}/meldekort
         mountPath: /var/run/secrets/nais.io/vault
   replicas:
     min: 2

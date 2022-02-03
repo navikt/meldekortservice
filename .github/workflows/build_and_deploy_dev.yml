@@ -139,61 +139,68 @@ jobs:
         run: |
           docker push ${{ steps.setVars.outputs.image }}
 
-#      - name: Deploy to dev
-#        if: always() && (env.ENVIRONMENT == 'q0' || env.ENVIRONMENT == 'q1'  || env.ENVIRONMENT == 'q2'  || env.ENVIRONMENT == 'q4'  || env.ENVIRONMENT == 't0' || (github.event_name == 'push' && github.ref == env.MAIN_BRANCH))
-#        uses: nais/deploy/actions/deploy@v1
-#        env:
-#          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-#          PRINT_PAYLOAD: true
-#          CLUSTER: ${{ env.CLUSTER }}
-#          RESOURCE: ${{ env.NAIS_FILE }}
-#          VAR: image=${{ steps.setVars.outputs.image }},appName=${{ env.APPNAME }}
-#          VARS: .nais/vars-${{ env.ENVIRONMENT }}.yaml
-#          WAIT: false
-#
-#      - name: Archive files in .nais
-#        if: github.event.inputs.bump_patch == 'bump' && github.ref == env.MAIN_BRANCH
-#        uses: thedoctor0/zip-release@master
-#        with:
-#          path: .nais
-#          filename: '${{ env.APPNAME }}-${{ steps.releaseVersion.outputs.version }}.zip'
-#
-#      - name: Create release
-#        if: github.event.inputs.bump_patch == 'bump' && github.ref == env.MAIN_BRANCH
-#        uses: ncipollo/release-action@v1
-#        with:
-#          tag: 'v${{ steps.releaseVersion.outputs.version }}'
-#          artifacts: '${{ env.APPNAME }}-${{ steps.releaseVersion.outputs.version }}.zip'
-#          token: ${{ secrets.GITHUB_TOKEN }}
-#
-#      # Next version blir eksisterende versjon + 0.0.1, med postfix -SNAPSHOT
-#      - name: Calculate next version
-#        if: github.event.inputs.bump_patch == 'bump' && github.ref == env.MAIN_BRANCH
-#        uses: slime-hatena/semantic-versioning-calculator-action@main
-#        id: nextReleaseVersion
-#        with:
-#          version: ${{ steps.pomVersion.outputs.version }}
-#          increment_major: 'false'
-#          increment_minor: 'false'
-#          increment_patch: 'true'
-#          prerelease: 'SNAPSHOT'
-#
-#      # Hvis det er ny versjon, oppdater pom.xml og utfør git commit/push
+      - name: Deploy to dev
+        if: always() && (env.ENVIRONMENT == 'q0' || env.ENVIRONMENT == 'q1' || (github.event_name == 'push' && github.ref == env.MAIN_BRANCH))
+        uses: nais/deploy/actions/deploy@v1
+        env:
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          PRINT_PAYLOAD: true
+          CLUSTER: ${{ env.CLUSTER }}
+          RESOURCE: ${{ env.NAIS_FILE }}
+          VAR: image=${{ steps.setVars.outputs.image }},appName=${{ env.APPNAME }}
+          VARS: .nais/vars-${{ env.ENVIRONMENT }}.yaml
+          WAIT: false
+
+      - name: Archive files in .nais
+        if: github.event.inputs.bump_patch == 'bump' && github.ref == env.MAIN_BRANCH
+        uses: thedoctor0/zip-release@master
+        with:
+          path: .nais
+          filename: '${{ env.APPNAME }}-${{ steps.releaseVersion.outputs.version }}.zip'
+
+      - name: Create release
+        if: github.event.inputs.bump_patch == 'bump' && github.ref == env.MAIN_BRANCH
+        uses: ncipollo/release-action@v1
+        with:
+          tag: 'v${{ steps.releaseVersion.outputs.version }}'
+          artifacts: '${{ env.APPNAME }}-${{ steps.releaseVersion.outputs.version }}.zip'
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Next version blir eksisterende versjon + 0.0.1, med postfix -SNAPSHOT
+      - name: Calculate next version
+        if: github.event.inputs.bump_patch == 'bump' && github.ref == env.MAIN_BRANCH
+        uses: slime-hatena/semantic-versioning-calculator-action@main
+        id: nextReleaseVersion
+        with:
+          version: ${{ steps.customVersion.outputs.version }}
+          increment_major: 'false'
+          increment_minor: 'false'
+          increment_patch: 'true'
+          prerelease: 'SNAPSHOT'
+
+      # Hvis det er ny versjon, oppdater pom.xml og utfør git commit/push
 #      - name: Set next version in pom.xml
 #        if: github.event.inputs.bump_patch == 'bump' && github.ref == env.MAIN_BRANCH
 #        run: mvn versions:set -DnewVersion=${{ steps.nextReleaseVersion.outputs.version }}
-#
-#      - name: Commit bumped version
-#        if: github.event.inputs.bump_patch == 'bump' && github.ref == env.MAIN_BRANCH
-#        run: |
-#          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-#          git config --local user.name "github-actions[bot]"
-#          git commit -m "Bump version fra Github Actions" -a
-#          git tag -a ${{ env.APPNAME }}-${{ steps.nextReleaseVersion.outputs.version }} -m ${{ env.APPNAME }}-${{ steps.nextReleaseVersion.outputs.version }}
-#
-#      - name: Push changes
-#        if: github.event.inputs.bump_patch == 'bump' && github.ref == env.MAIN_BRANCH
-#        uses: ad-m/github-push-action@master
-#        with:
-#          github_token: ${{ secrets.GITHUB_TOKEN }}
-#          branch: ${{ github.ref }}
+
+      # Hvis det er ny versjon, oppdater version.json og utfør git commit/push
+      - name: Set next version in version.json
+        if: github.event.inputs.bump_patch == 'bump' && github.ref == env.MAIN_BRANCH
+        run: |
+          jq '.version="${{ steps.nextReleaseVersion.outputs.version }}"' version.json > version.json.new
+          mv version.json.new version.json
+
+      - name: Commit bumped version
+        if: github.event.inputs.bump_patch == 'bump' && github.ref == env.MAIN_BRANCH
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git commit -m "Bump version fra Github Actions" -a
+          git tag -a ${{ env.APPNAME }}-${{ steps.nextReleaseVersion.outputs.version }} -m ${{ env.APPNAME }}-${{ steps.nextReleaseVersion.outputs.version }}
+
+      - name: Push changes
+        if: github.event.inputs.bump_patch == 'bump' && github.ref == env.MAIN_BRANCH
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
