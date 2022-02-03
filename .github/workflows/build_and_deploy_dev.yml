@@ -16,7 +16,6 @@ on:
 
 env:
   APPNAME: meldekortservice
-  SPRINGPROFILES: nais
   ENVIRONMENT: ${{ github.event.inputs.environment }}
   CLUSTER: dev-fss
   NAIS_FILE: .nais/nais.yaml
@@ -47,36 +46,18 @@ jobs:
           java-version: '11'
           distribution: 'adopt-openj9'
 
-#      - name: Cache Maven packages
-#        uses: actions/cache@v2
-#        with:
-#          path: ~/.m2/repository
-#          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-#          restore-keys: |
-#            ${{ runner.os }}-maven-
-#
-
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
-
-#      - name: Read version from POM
-#        uses: entimaniac/read-pom-version-action@1.0.0
-#        id: pomVersion
 
       - name: Read version from version.json
         id: customVersion
         run: echo "::set-output name=version::$(jq -r '.version' version.json)"
-
-      - name: Debug steps.customVersion.outputs.version
-        run: echo ${{ steps.customVersion.outputs.version }}
 
       - name: Set snapshot timestamp
         id: snapshotTimestamp
         if: github.event.inputs.bump_patch != 'bump'
         run: |
           echo "::set-output name=timestamp::$(date +'%Y%m%d%H%M%S')"
-      - name: Debug steps.snapshotTimestamp.outputs.timestamp
-        run: echo ${{ steps.snapshotTimestamp.outputs.timestamp }}
 
       # Version blir eksisterende versjon fra POM uten -SNAPSHOT
       # For release:  eks 1.0.1
@@ -91,38 +72,19 @@ jobs:
           increment_patch: 'false'
           prerelease: ${{ steps.snapshotTimestamp.outputs.timestamp }}
 
-      - name: Debug steps.releaseVersion.outputs.version
-        run: echo ${{ steps.releaseVersion.outputs.version }}
-
       - name: Set vars
         id: setVars
         run: |
           echo "::set-output name=image::ghcr.io/${{ github.repository }}/${{ env.APPNAME }}:${{ steps.releaseVersion.outputs.version }}"
-#      - name: Set release version in pom.xml
-#        run: mvn versions:set -DnewVersion=${{ steps.releaseVersion.outputs.version }}
 
       - name: Set release version in version.json
         run: |
           jq '.version="${{ steps.releaseVersion.outputs.version }}"' version.json > version.json.new
           mv version.json.new version.json
-#
-#      - name: Build application
-#        run: |
-#          mvn dependency:go-offline
-#          mvn clean verify -B -e -U
 
       - name: Build application
         run: ./gradlew build
 
-#      - name: Build Docker image
-#        run: |
-#          mvn clean package -DskipTests -B
-#          ls -l ./target
-#          echo ${{ steps.setVars.outputs.jarfile }}
-#          echo ${{ env.SPRINGPROFILES }}
-#          echo ${{ steps.setVars.outputs.image }}
-#          docker build --build-arg JAR_FILE=${{ steps.setVars.outputs.jarfile }} --build-arg SPRING_PROFILES=${{ env.SPRINGPROFILES }} -t ${{ steps.setVars.outputs.image }} .
-#
       - name: Build Docker image
         run: |
           ./gradlew clean build -x test
@@ -177,11 +139,6 @@ jobs:
           increment_minor: 'false'
           increment_patch: 'true'
           prerelease: 'SNAPSHOT'
-
-      # Hvis det er ny versjon, oppdater pom.xml og utfør git commit/push
-#      - name: Set next version in pom.xml
-#        if: github.event.inputs.bump_patch == 'bump' && github.ref == env.MAIN_BRANCH
-#        run: mvn versions:set -DnewVersion=${{ steps.nextReleaseVersion.outputs.version }}
 
       # Hvis det er ny versjon, oppdater version.json og utfør git commit/push
       - name: Set next version in version.json
