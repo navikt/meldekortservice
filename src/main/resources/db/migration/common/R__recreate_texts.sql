@@ -260,7 +260,7 @@ INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('loggut', 'Logg ut ', 
 INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('loggut', 'Log out ', 'en',  TO_DATE('1000-01-01', 'YYYY-MM-DD'));
 
 INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('meldekort.for', 'Meldekort for ', 'nb',  TO_DATE('1000-01-01', 'YYYY-MM-DD'));
-INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('meldekort.for', 'Card for ', 'en',  TO_DATE('1000-01-01', 'YYYY-MM-DD'));
+INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('meldekort.for', 'Employment status form for ', 'en',  TO_DATE('1000-01-01', 'YYYY-MM-DD'));
 
 INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('meldekort.for.perioden', 'Meldekort for perioden ', 'nb',  TO_DATE('1000-01-01', 'YYYY-MM-DD'));
 INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('meldekort.for.perioden', 'Employment status form for period ', 'en',  TO_DATE('1000-01-01', 'YYYY-MM-DD'));
@@ -1077,7 +1077,7 @@ INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('loggut', 'fom27.12. L
 INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('loggut', 'fom27.12. Log out ', 'en',  TO_DATE('2021-12-27', 'YYYY-MM-DD'));
 
 INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('meldekort.for', 'fom27.12. Meldekort for ', 'nb',  TO_DATE('2021-12-27', 'YYYY-MM-DD'));
-INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('meldekort.for', 'fom27.12. Card for ', 'en',  TO_DATE('2021-12-27', 'YYYY-MM-DD'));
+INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('meldekort.for', 'fom27.12. Employment status form for ', 'en',  TO_DATE('2021-12-27', 'YYYY-MM-DD'));
 
 INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('meldekort.for.perioden', 'fom27.12. Meldekort for perioden ', 'nb',  TO_DATE('2021-12-27', 'YYYY-MM-DD'));
 INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('meldekort.for.perioden', 'fom27.12. Employment status form for period ', 'en',  TO_DATE('2021-12-27', 'YYYY-MM-DD'));
@@ -1895,7 +1895,7 @@ INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('loggut', 'fom10.01. L
 INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('loggut', 'fom10.01. Log out ', 'en',  TO_DATE('2022-01-10', 'YYYY-MM-DD'));
 
 INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('meldekort.for', 'fom10.01. Meldekort for ', 'nb',  TO_DATE('2022-01-10', 'YYYY-MM-DD'));
-INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('meldekort.for', 'fom10.01. Card for ', 'en',  TO_DATE('2022-01-10', 'YYYY-MM-DD'));
+INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('meldekort.for', 'fom10.01. Employment status form for ', 'en',  TO_DATE('2022-01-10', 'YYYY-MM-DD'));
 
 INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('meldekort.for.perioden', 'fom10.01. Meldekort for perioden ', 'nb',  TO_DATE('2022-01-10', 'YYYY-MM-DD'));
 INSERT INTO tekst (kode, verdi, sprak,  fra_dato) VALUES ('meldekort.for.perioden', 'fom10.01. Employment status form for period ', 'en',  TO_DATE('2022-01-10', 'YYYY-MM-DD'));
