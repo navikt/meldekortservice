@@ -6,9 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import com.fasterxml.jackson.module.kotlin.*
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
 import io.ktor.application.*
 import io.ktor.http.*
@@ -24,6 +22,7 @@ internal const val INTERNAL_PATH = "$BASE_PATH/internal"
 internal const val MELDEKORT_PATH = "$API_PATH/meldekort"
 internal const val PERSON_PATH = "$API_PATH/person"
 internal const val WEBLOGIC_PING_PATH = "$API_PATH/weblogic"
+internal const val TEKST_PATH = "$API_PATH/tekst"
 
 internal const val KONTROLL_KONTROLL = "/api/kontroll"
 
@@ -85,7 +84,16 @@ fun <T> mapFraXml(xml: String, responseKlasse: Class<T>): T {
     return XmlMapper().readValue(xml, responseKlasse)
 }
 
-val defaultXmlMapper = XmlMapper().registerModule(KotlinModule())
+val defaultXmlMapper: ObjectMapper = XmlMapper().registerModule(
+    KotlinModule.Builder()
+        .withReflectionCacheSize(512)
+        .configure(KotlinFeature.NullToEmptyCollection, false)
+        .configure(KotlinFeature.NullToEmptyMap, false)
+        .configure(KotlinFeature.NullIsSameAsDefault, false)
+        .configure(KotlinFeature.SingletonSupport, false)
+        .configure(KotlinFeature.StrictNullChecks, false)
+        .build()
+)
 
 val defaultObjectMapper = jacksonObjectMapper()
 

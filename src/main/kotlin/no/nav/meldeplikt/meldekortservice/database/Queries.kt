@@ -120,6 +120,60 @@ fun Connection.oppdaterMidlertidigLagretJournalpost(id: String, retries: Int) =
             it.executeUpdate()
         }
 
+fun Connection.hentTekst(kode: String, sprak: String, fraDato: String): String? = prepareStatement(
+    "SELECT verdi " +
+            "FROM tekst " +
+            "WHERE kode = ? " +
+            "AND sprak = ? " +
+            "AND fra_dato <= TO_DATE(?, 'YYYY-MM-DD') " +
+            "ORDER BY fra_dato DESC"
+)
+    .use { preparedStatement ->
+        preparedStatement.setString(1, kode)
+        preparedStatement.setString(2, sprak)
+        preparedStatement.setString(3, fraDato)
+
+        preparedStatement.executeQuery()
+            .use { resultSet ->
+                if (resultSet.next()) {
+                    clobToString(resultSet.getCharacterStream("verdi"))
+                } else {
+                    null
+                }
+            }
+    }
+
+fun Connection.hentAlleTekster(sprak: String, fraDato: String): Map<String, String> {
+    val out = mutableMapOf<String, String>()
+
+    this.prepareStatement(
+        "SELECT t1.kode, t1.verdi " +
+                "FROM tekst t1 " +
+                "WHERE t1.sprak = ? " +
+                "AND t1.fra_dato = ( " +
+                "    SELECT MAX(t2.fra_dato) " +
+                "    FROM tekst t2 " +
+                "    WHERE t2.sprak = t1.sprak " +
+                "    AND t2.fra_dato <= TO_DATE(?, 'YYYY-MM-DD') " +
+                "    AND t2.kode = t1.kode " +
+                ") " +
+                "ORDER BY t1.kode"
+    )
+        .use { preparedStatement ->
+            preparedStatement.setString(1, sprak)
+            preparedStatement.setString(2, fraDato)
+
+            preparedStatement.executeQuery()
+                .use { resultSet ->
+                    while (resultSet.next()) {
+                        out[resultSet.getString("kode")] = clobToString(resultSet.getCharacterStream("verdi"))
+                    }
+                }
+        }
+
+    return out
+}
+
 fun ResultSet.tilInnsendtMeldekort(): InnsendtMeldekort {
     return InnsendtMeldekort(
         meldekortId = getLong("meldekortId")
@@ -134,7 +188,11 @@ private fun bytesToChars(bytes: ByteArray?): CharArray {
 }
 
 // Generic solution for Oracle Clob and PostgreSQL Text
-private fun clobToString(reader: Reader): String {
+private fun clobToString(reader: Reader?): String {
+    if (reader == null) {
+        return ""
+    }
+
     val buffer = StringBuffer()
     var ch: Int
     while (reader.read().also { ch = it } != -1) {

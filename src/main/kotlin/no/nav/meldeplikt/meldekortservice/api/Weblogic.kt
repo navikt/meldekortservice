@@ -16,7 +16,7 @@ fun Routing.weblogicApi() {
 }
 
 @Group("Weblogic")
-@Location("$WEBLOGIC_PING_PATH")
+@Location(WEBLOGIC_PING_PATH)
 @KtorExperimentalLocationsAPI
 class PingWeblogicInput
 

@@ -4,7 +4,6 @@ import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
-import io.ktor.util.*
 import no.nav.meldeplikt.meldekortservice.config.SWAGGER_URL_V1
 import no.nav.meldeplikt.meldekortservice.config.swagger
 import no.nav.meldeplikt.meldekortservice.utils.API_PATH
@@ -31,7 +30,6 @@ fun Route.healthApi() {
     }
 }
 
-@KtorExperimentalAPI
 fun Routing.swaggerRoutes() {
     val swaggerUI = SwaggerUi()
 

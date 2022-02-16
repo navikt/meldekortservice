@@ -43,6 +43,16 @@ class DBService(private val database: Database) {
         }
     }
 
+    fun hentTekst(kode: String, sprak: String, fraDato: String): String? =
+        runBlocking {
+            database.dbQuery { hentTekst(kode, sprak, fraDato) }
+        }
+
+    fun hentAlleTekster(sprak: String, fraDato: String): Map<String, String> =
+        runBlocking {
+            database.dbQuery { hentAlleTekster(sprak, fraDato) }
+        }
+
     fun getConnection(): Connection {
         return database.dataSource.connection
     }

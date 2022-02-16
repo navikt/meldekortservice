@@ -1,14 +1,12 @@
 package no.nav.meldeplikt.meldekortservice.utils.swagger
 
-import io.ktor.application.ApplicationCall
-import io.ktor.http.content.URIFileContent
-import io.ktor.response.respond
-import io.ktor.util.KtorExperimentalAPI
+import io.ktor.application.*
+import io.ktor.http.content.*
+import io.ktor.response.*
 
 /**
  * @author Niels Falk, changed by Torstein Nesby and Yrjan Fraschetti
  */
-@KtorExperimentalAPI
 class SwaggerUi {
 
     private val notFound = mutableListOf<String>()

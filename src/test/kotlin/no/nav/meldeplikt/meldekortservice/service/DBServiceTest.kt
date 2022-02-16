@@ -1,6 +1,7 @@
 package no.nav.meldeplikt.meldekortservice.service
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import io.kotest.matchers.stats.haveVariance
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.database.*
 import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.sql.SQLException
+import kotlin.test.assertTrue
 
 class DBServiceTest {
     private val database = H2Database()
@@ -23,7 +25,7 @@ class DBServiceTest {
     }
 
     @Test
-    fun `test settInn og hent av meldekort `() {
+    fun `skal lagre og hente innsendt meldekort `() {
         val dbService = DBService(database)
 
         runBlocking {
@@ -34,7 +36,7 @@ class DBServiceTest {
     }
 
     @Test
-    fun `test hent av meldekort throws Exception `() {
+    fun `skal kaste Exception hvis henter ikke eksisterende innsendt meldekort`() {
         val dbService = DBService(database)
 
         invoking {
@@ -45,7 +47,7 @@ class DBServiceTest {
     }
 
     @Test
-    fun `test lagre, hente, slette og oppdater midlertidig lagrede journalposter`() {
+    fun `skal lagre, hente, slette og oppdatere midlertidig lagrede journalposter`() {
         val dbService = DBService(database)
         val connection = dbService.getConnection()
 
@@ -83,7 +85,7 @@ class DBServiceTest {
     }
 
     @Test
-    fun `test lagre journalpost data`() {
+    fun `skal lagre journalpost data`() {
         val dbService = DBService(database)
 
         runBlocking {
@@ -97,5 +99,38 @@ class DBServiceTest {
             val result = database.dbQuery { hentJournalpostData() }
             assertEquals(1, result.size)
         }
+    }
+
+    @Test
+    fun `skal returnere tekst hvis eksisterer`() {
+        val dbService = DBService(database)
+
+        var result = dbService.hentTekst("diverse.tilbake", "nb", "1000-01-01")
+        assertEquals("Til Ditt NAV", result)
+
+        result = dbService.hentTekst("diverse.tilbake", "en", "1000-01-01")
+        assertEquals("To Your page", result)
+    }
+
+    @Test
+    fun `skal returnere null hvis tekst ikke eksisterer`() {
+        val dbService = DBService(database)
+
+        var result = dbService.hentTekst("eksisterer_ikke", "nb", "1000-01-01")
+        assertEquals(null, result)
+
+        result = dbService.hentTekst("eksisterer_ikke", "en", "1000-01-01")
+        assertEquals(null, result)
+    }
+
+    @Test
+    fun `skal returnere tekster`() {
+        val dbService = DBService(database)
+
+        var result = dbService.hentAlleTekster("nb", "1000-01-01")
+        assertTrue(result.size > 1)
+
+        result = dbService.hentAlleTekster("en", "1000-01-01")
+        assertTrue(result.size > 1)
     }
 }
