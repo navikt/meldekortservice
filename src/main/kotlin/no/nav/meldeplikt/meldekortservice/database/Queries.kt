@@ -206,13 +206,13 @@ private fun clobToString(reader: Reader?): String {
 }
 
 private fun checkDate(fraDato: String): String {
-    var checkedDato = fraDato
+    var checkedDate = fraDato
 
     val pattern = "\\d{4}-\\d{2}-\\d{2}".toRegex()
     if (!pattern.matches(fraDato)) {
-        checkedDato = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE).toString()
+        checkedDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE).toString()
         defaultLog.warn("Feil i fraDato. Fikk $fraDato")
     }
 
-    return checkedDato
+    return checkedDate
 }
