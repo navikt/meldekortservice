@@ -57,7 +57,7 @@ class PersonKtTest {
         mockOAuth2Server.issueToken(
             ISSUER_ID,
             "myclient",
-            DefaultOAuth2TokenCallback(audience = listOf(REQUIRED_AUDIENCE), claims = mapOf("sub" to "01020312345"))
+            DefaultOAuth2TokenCallback(audience = listOf(REQUIRED_AUDIENCE), claims = mapOf("pid" to "01020312345"))
         ).serialize()
 
     companion object {
