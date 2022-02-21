@@ -6,7 +6,6 @@ import io.ktor.http.*
 import io.ktor.util.pipeline.*
 import no.nav.meldeplikt.meldekortservice.utils.defaultLog
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
-import org.slf4j.Logger
 
 fun PipelineContext<Unit, ApplicationCall>.extractIdentFromToken(): String {
     val authTokenHeader = getTokenFromHeader()
@@ -21,7 +20,7 @@ fun PipelineContext<Unit, ApplicationCall>.extractIdentFromToken(): String {
     return extractSubject(authToken)
 }
 
-val PipelineContext<Unit, ApplicationCall>.userIdent get() = if (isCurrentlyRunningOnNais()) extractIdentFromToken() else "11111111111"
+val PipelineContext<Unit, ApplicationCall>.userIdent get() = if (isCurrentlyRunningOnNais()) extractIdentFromToken() else "01020312345"
 
 private fun verifyThatATokenWasFound(authToken: String?) {
     if (authToken == null) {
@@ -52,5 +51,15 @@ private fun PipelineContext<Unit, ApplicationCall>.getTokenFromCookie() =
 
 private fun extractSubject(authToken: String?): String {
     val jwt = JWT.decode(authToken)
-    return jwt.getClaim("sub").asString() ?: "subject (ident) ikke funnet"
+
+    val pid = jwt.getClaim("pid")
+    val sub = jwt.getClaim("sub")
+
+    if (!pid.isNull) {
+        return pid.asString()
+    } else if (!sub.isNull) {
+        return sub.asString()
+    }
+
+    return "subject (ident) ikke funnet"
 }

@@ -39,13 +39,9 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import java.sql.SQLException
 import java.time.LocalDate
-import kotlin.test.Ignore
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-
-// Ignored because works locally, but fails in Jenkins
-@Ignore
 @KtorExperimentalLocationsAPI
 class PersonKtTest {
     private fun MapApplicationConfig.setOidcConfig() {
@@ -61,7 +57,7 @@ class PersonKtTest {
         mockOAuth2Server.issueToken(
             ISSUER_ID,
             "myclient",
-            DefaultOAuth2TokenCallback(audience = listOf(REQUIRED_AUDIENCE), claims = mapOf("sub" to "11111111111"))
+            DefaultOAuth2TokenCallback(audience = listOf(REQUIRED_AUDIENCE), claims = mapOf("sub" to "01020312345"))
         ).serialize()
 
     companion object {
@@ -98,7 +94,7 @@ class PersonKtTest {
     @Test
     fun `get historiske meldekort returns ok with valid JWT`() {
         val period = 1
-        val fnr = "11111111111"
+        val fnr = "01020312345"
         val person = Person(1L, "Bob", "Kåre", "No", "Papp", listOf(), 10, listOf())
 
         coEvery { arenaOrdsService.hentHistoriskeMeldekort(fnr, period) } returns (person)
@@ -131,7 +127,7 @@ class PersonKtTest {
     @Test
     fun `get historiske meldekort returns 401-Unauthorized with missing JWT`() {
         val period = 1
-        val fnr = "11111111111"
+        val fnr = "01020312345"
         val person = Person(1L, "Bob", "Kåre", "No", "Papp", listOf(), 10, listOf())
 
         coEvery { arenaOrdsService.hentHistoriskeMeldekort(fnr, period) } returns (person)
@@ -252,7 +248,7 @@ class PersonKtTest {
     fun `Kontroll or innsending of meldekort returns OK`() {
         val meldekortdetaljer = Meldekortdetaljer(
             id = "1",
-            fodselsnr = "11111111111",
+            fodselsnr = "01020312345",
             kortType = KortType.AAP,
             meldeperiode = "20200105",
             sporsmal = Sporsmal(meldekortDager = listOf())
@@ -301,7 +297,7 @@ class PersonKtTest {
     fun `Kontroll of meldekort returns ServiceUnavailable`() {
         val meldekortdetaljer = Meldekortdetaljer(
             id = "1",
-            fodselsnr = "11111111111",
+            fodselsnr = "01020312345",
             kortType = KortType.AAP,
             meldeperiode = "20200105",
             sporsmal = Sporsmal(meldekortDager = listOf())

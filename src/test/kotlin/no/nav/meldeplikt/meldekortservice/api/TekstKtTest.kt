@@ -13,10 +13,19 @@ import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.output.MigrateResult
+import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class TekstKtTest {
+
+    private val database = H2Database()
+
+    @AfterAll
+    fun tearDown() {
+        database.closeConnection()
+    }
+
     @Test
     fun `skal returnere id hvis eksisterer`() {
         val kode = "test.kode-AAP"
@@ -189,8 +198,7 @@ class TekstKtTest {
         val fraDato = "0-00-00"
 
         val flywayConfig = mockk<Flyway>()
-        val dbService = DBService(H2Database())
-
+        val dbService = DBService(database)
 
         mockkStatic(::isCurrentlyRunningOnNais)
         every { isCurrentlyRunningOnNais() } returns false
