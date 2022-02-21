@@ -1,7 +1,6 @@
 package no.nav.meldeplikt.meldekortservice.service
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import io.kotest.matchers.stats.haveVariance
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.database.*
 import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort

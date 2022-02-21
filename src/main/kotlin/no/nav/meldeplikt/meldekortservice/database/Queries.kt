@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Journalpost
+import no.nav.meldeplikt.meldekortservice.utils.defaultLog
 import java.io.Reader
 import java.io.Writer
 import java.nio.ByteBuffer
@@ -13,6 +14,8 @@ import java.sql.Clob
 import java.sql.Connection
 import java.sql.DatabaseMetaData
 import java.sql.ResultSet
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.sql.rowset.serial.SerialClob
 
@@ -131,7 +134,7 @@ fun Connection.hentTekst(kode: String, sprak: String, fraDato: String): String? 
     .use { preparedStatement ->
         preparedStatement.setString(1, kode)
         preparedStatement.setString(2, sprak)
-        preparedStatement.setString(3, fraDato)
+        preparedStatement.setString(3, checkDate(fraDato))
 
         preparedStatement.executeQuery()
             .use { resultSet ->
@@ -161,7 +164,7 @@ fun Connection.hentAlleTekster(sprak: String, fraDato: String): Map<String, Stri
     )
         .use { preparedStatement ->
             preparedStatement.setString(1, sprak)
-            preparedStatement.setString(2, fraDato)
+            preparedStatement.setString(2, checkDate(fraDato))
 
             preparedStatement.executeQuery()
                 .use { resultSet ->
@@ -200,4 +203,16 @@ private fun clobToString(reader: Reader?): String {
     }
 
     return buffer.toString()
+}
+
+private fun checkDate(fraDato: String): String {
+    var checkedDate = fraDato
+
+    val pattern = "\\d{4}-\\d{2}-\\d{2}".toRegex()
+    if (!pattern.matches(fraDato)) {
+        checkedDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE).toString()
+        defaultLog.warn("Feil i fraDato. Fikk $fraDato")
+    }
+
+    return checkedDate
 }
