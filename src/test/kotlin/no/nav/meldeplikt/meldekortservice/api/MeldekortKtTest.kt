@@ -28,12 +28,9 @@ import org.flywaydb.core.api.output.MigrateResult
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import kotlin.test.Ignore
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-// Ignored because works locally, but fails in Jenkins
-@Ignore
 @KtorExperimentalLocationsAPI
 class MeldekortKtTest {
     private fun MapApplicationConfig.setOidcConfig() {
@@ -45,14 +42,26 @@ class MeldekortKtTest {
         put("ktor.environment", "local")
     }
 
-    private fun issueToken(): String =
+    private fun issueTokenWithSub(): String =
         mockOAuth2Server.issueToken(
             ISSUER_ID,
             "myclient",
             DefaultOAuth2TokenCallback(
                 audience = listOf(REQUIRED_AUDIENCE),
                 claims = mapOf(
-                    "sub" to "11111111111"
+                    "sub" to "01020312345"
+                )
+            )
+        ).serialize()
+
+    private fun issueTokenWithPid(): String =
+        mockOAuth2Server.issueToken(
+            ISSUER_ID,
+            "myclient",
+            DefaultOAuth2TokenCallback(
+                audience = listOf(REQUIRED_AUDIENCE),
+                claims = mapOf(
+                    "pid" to "01020312345"
                 )
             )
         ).serialize()
@@ -93,7 +102,7 @@ class MeldekortKtTest {
         val id: Long = 1
         val meldekortdetaljer = Meldekortdetaljer(
             id = "1",
-            fodselsnr = "11111111111",
+            fodselsnr = "01020312345",
             kortType = KortType.AAP
         )
 
@@ -111,7 +120,7 @@ class MeldekortKtTest {
             )
         }) {
             handleRequest(HttpMethod.Get, "/meldekortservice/api/meldekort?meldekortId=${id}") {
-                addHeader(HttpHeaders.Authorization, "Bearer ${issueToken()}")
+                addHeader(HttpHeaders.Authorization, "Bearer ${issueTokenWithSub()}")
             }.apply {
                 assertNotNull(response.content)
                 val responseObject = defaultObjectMapper.readValue<Meldekortdetaljer>(response.content!!)
@@ -144,7 +153,7 @@ class MeldekortKtTest {
             )
         }) {
             handleRequest(HttpMethod.Get, "/meldekortservice/api/meldekort?meldekortId=${id}") {
-                addHeader(HttpHeaders.Authorization, "Bearer ${issueToken()}")
+                addHeader(HttpHeaders.Authorization, "Bearer ${issueTokenWithSub()}")
             }.apply {
                 assertNotNull(response.content)
                 val responseObject = defaultObjectMapper.readValue<ErrorMessage>(response.content!!)
@@ -162,7 +171,7 @@ class MeldekortKtTest {
         val id: Long = 1
         val meldekortdetaljer = Meldekortdetaljer(
             id = "1",
-            fodselsnr = "11111111111",
+            fodselsnr = "01020312345",
             kortType = KortType.AAP
         )
 
@@ -217,7 +226,7 @@ class MeldekortKtTest {
         val id: Long = 1
         val meldekortdetaljer = Meldekortdetaljer(
             id = "1",
-            fodselsnr = "11111111111",
+            fodselsnr = "01020312345",
             kortType = KortType.AAP
         )
 
@@ -243,7 +252,7 @@ class MeldekortKtTest {
     }
 
     @Test
-    fun `get korrigert meldekortid returns OK with valid JWT`() {
+    fun `get korrigert meldekortid returns OK with valid JWT with sub`() {
         val id: Long = 1
         val nyId: Long = 123
 
@@ -261,7 +270,36 @@ class MeldekortKtTest {
             )
         }) {
             handleRequest(HttpMethod.Get, "/meldekortservice/api/meldekort/korrigering?meldekortId=${id}") {
-                addHeader(HttpHeaders.Authorization, "Bearer ${issueToken()}")
+                addHeader(HttpHeaders.Authorization, "Bearer ${issueTokenWithSub()}")
+            }.apply {
+                assertNotNull(response.content)
+                val responseObject = defaultObjectMapper.readValue<Long>(response.content!!)
+                response.status() shouldBe HttpStatusCode.OK
+                assertEquals(nyId, responseObject)
+            }
+        }
+    }
+
+    @Test
+    fun `get korrigert meldekortid returns OK with valid JWT with pid`() {
+        val id: Long = 1
+        val nyId: Long = 123
+
+        coEvery { arenaOrdsService.kopierMeldekort(any()) } returns (nyId)
+
+        withTestApplication({
+            (environment.config as MapApplicationConfig).setOidcConfig()
+            mainModule(
+                env = env,
+                mockDBService = dbService,
+                arenaOrdsService = arenaOrdsService,
+                kontrollService = kontrollService,
+                dokarkivService = dokarkivService,
+                mockFlywayConfig = flywayConfig
+            )
+        }) {
+            handleRequest(HttpMethod.Get, "/meldekortservice/api/meldekort/korrigering?meldekortId=${id}") {
+                addHeader(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")
             }.apply {
                 assertNotNull(response.content)
                 val responseObject = defaultObjectMapper.readValue<Long>(response.content!!)
