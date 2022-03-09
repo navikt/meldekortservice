@@ -109,6 +109,8 @@ fun Application.mainModule(
         // To allow additional headers
         header(HttpHeaders.Authorization)
         header(HttpHeaders.ContentType)
+        header(HttpHeaders.AccessControlAllowHeaders)
+        header(HttpHeaders.AccessControlAllowOrigin)
     }
 
     flywayConfig.migrate()
