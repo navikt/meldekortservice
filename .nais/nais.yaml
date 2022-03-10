@@ -53,7 +53,7 @@ spec:
       cpu: 500m
       memory: 1024Mi
   envFrom:
-    - configmap: loginservice-idporten
+    - configmap: loginservice-idporten # trenger ikke videre?
 ---
 apiVersion: nais.io/v1
 kind: Alert
