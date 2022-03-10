@@ -3,7 +3,6 @@ package no.nav.meldeplikt.meldekortservice.config
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.features.*
-import io.ktor.http.*
 import io.ktor.jackson.*
 import io.ktor.locations.*
 import io.ktor.request.*
@@ -100,6 +99,7 @@ fun Application.mainModule(
         filter { call -> call.request.path().startsWith("/api") }
     }
 
+    /*
     install(CORS) {
         anyHost()
         // By default, the CORS plugin allows the GET, POST and HEAD HTTP methods
@@ -109,9 +109,8 @@ fun Application.mainModule(
         // To allow additional headers
         header(HttpHeaders.Authorization)
         header(HttpHeaders.ContentType)
-        header(HttpHeaders.AccessControlAllowHeaders)
-        header(HttpHeaders.AccessControlAllowOrigin)
     }
+    */
 
     flywayConfig.migrate()
 

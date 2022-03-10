@@ -165,7 +165,6 @@ fun Routing.kontrollerMeldekort(kontrollService: KontrollService, dbService: DBS
                 defaultObjectMapper.writeValueAsString(ameldingResponse),
                 contentType = ContentType.Application.Json
             )
-//            call.respondText(jsonMapper.writeValueAsString(kontrollResponse), contentType = ContentType.Application.Json)
         } catch (e: Exception) {
             val errorMessage =
                 ErrorMessage("Meldekort med id ${meldekort.meldekortId} ble ikke sendt inn. ${e.message}")
