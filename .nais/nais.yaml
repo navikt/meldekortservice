@@ -54,15 +54,11 @@ spec:
       memory: 1024Mi
   envFrom:
     - configmap: loginservice-idporten # trenger ikke videre?
-  no:
-    nav:
-      security:
-        jwt:
-          expirythreshold: 1 #threshold in minutes until token expires
-          issuer:
-            idporten:
-              discoveryurl: https://oidc-ver2.difi.no/idporten-oidc-provider/.well-known/openid-configuration
-              accepted_audience: https://nav.no
+  env:
+    - name: IDPORTEN_DISCOVERY_URL
+      value: '{{ idportenDiscoveryUrl }}'
+    - name: IDPORTEN_ACCEPTED_AUDIENCE
+        value: '{{ idportenAcceptedAudience }}'
 ---
 apiVersion: nais.io/v1
 kind: Alert

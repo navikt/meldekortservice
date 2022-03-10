@@ -8,9 +8,5 @@ ingresses:
   - "https://app-q1.adeo.no/meldekortservice"
   - "https://meldekortservice-q1.nais.preprod.local"
   - "https://meldekortservice-q1.dev-fss-pub.nais.io"
-no.nav.security.jwt:
-  expirythreshold: 1 #threshold in minutes until token expires
-  issuer:
-    idporten:
-      discoveryurl: https://oidc-ver2.difi.no/idporten-oidc-provider/.well-known/openid-configuration
-      accepted_audience: https://nav.no
+idportenDiscoveryUrl: https://oidc-ver2.difi.no/idporten-oidc-provider/.well-known/openid-configuration
+idportenAcceptedAudience: https://nav.no
