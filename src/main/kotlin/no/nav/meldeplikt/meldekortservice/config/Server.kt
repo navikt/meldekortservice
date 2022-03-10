@@ -99,19 +99,6 @@ fun Application.mainModule(
         filter { call -> call.request.path().startsWith("/api") }
     }
 
-    /*
-    install(CORS) {
-        anyHost()
-        // By default, the CORS plugin allows the GET, POST and HEAD HTTP methods
-        // To allow additional methods
-        method(HttpMethod.Delete)
-        // By default, the CORS plugin allows the Accept, Accept-Language, Content-Language headers
-        // To allow additional headers
-        header(HttpHeaders.Authorization)
-        header(HttpHeaders.ContentType)
-    }
-    */
-
     flywayConfig.migrate()
 
     if (env.dokarkivResendInterval > 0L) {
