@@ -52,8 +52,6 @@ spec:
     requests:
       cpu: 500m
       memory: 1024Mi
-  envFrom:
-    - configmap: loginservice-idporten # trenger ikke videre?
   env:
     - name: IDPORTEN_DISCOVERY_URL
       value: '{{ idportenDiscoveryUrl }}'
