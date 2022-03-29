@@ -28,7 +28,6 @@ jobs:
         run: | 
           echo "Jobben skal kun kjøres fra master branch!"
           exit 1        
-        continue-on-error: false
 
       - name: Set vars
         id: setVars
@@ -57,7 +56,7 @@ jobs:
           args: unzip ${{ env.APPNAME }}-${{ github.event.inputs.deploy_version }}.zip -d .
 
       - name: Deploy release to dev or prod
-        if: always() && (env.ENVIRONMENT == 'q0' || env.ENVIRONMENT == 'q1' || env.ENVIRONMENT == 'p')
+        if:env.ENVIRONMENT == 'q0' || env.ENVIRONMENT == 'q1' || env.ENVIRONMENT == 'p'
         uses: nais/deploy/actions/deploy@v1
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
