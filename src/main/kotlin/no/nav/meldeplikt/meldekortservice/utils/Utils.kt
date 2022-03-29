@@ -24,7 +24,7 @@ internal const val PERSON_PATH = "$API_PATH/person"
 internal const val WEBLOGIC_PING_PATH = "$API_PATH/weblogic"
 internal const val TEKST_PATH = "$API_PATH/tekst"
 
-internal const val KONTROLL_KONTROLL = "/api/kontroll"
+internal const val KONTROLL_KONTROLL = "/api/v1/kontroll"
 
 internal const val ARENA_ORDS_API_V1 = "/api/v1/meldeplikt"
 internal const val ARENA_ORDS_TOKEN_PATH = "/api/oauth/token"

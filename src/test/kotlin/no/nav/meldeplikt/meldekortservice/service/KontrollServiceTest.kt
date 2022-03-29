@@ -42,7 +42,7 @@ class KontrollServiceTest {
                     request.headers["Authorization"] shouldNotBe null
                     request.headers["Authorization"] shouldStartWith "Bearer token"
                     //request.body.contentType.toString() shouldBe "application/json"
-                    request.url.toString() shouldBe "https://dummyurl.nav.no/api/kontroll"
+                    request.url.toString() shouldBe "https://dummyurl.nav.no/api/v1/kontroll"
                     respondOk(
                         defaultObjectMapper.writeValueAsString(kontrollResponse)
                     )
