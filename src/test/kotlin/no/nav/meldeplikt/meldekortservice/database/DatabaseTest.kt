@@ -9,7 +9,7 @@ import java.sql.SQLException
 
 class DatabaseTest {
 
-    private val database = H2Database()
+    private val database = H2Database("dbtest")
     private val innsendtMeldekort1 = InnsendtMeldekort(1L)
     private val innsendtMeldekort2 = InnsendtMeldekort(2L)
     private val innsendtMeldekort3 = InnsendtMeldekort(3L)
