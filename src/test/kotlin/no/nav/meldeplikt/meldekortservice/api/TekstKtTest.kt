@@ -19,7 +19,7 @@ import kotlin.test.assertEquals
 
 class TekstKtTest {
 
-    private val database = H2Database()
+    private val database = H2Database("teksttest")
 
     @AfterAll
     fun tearDown() {
