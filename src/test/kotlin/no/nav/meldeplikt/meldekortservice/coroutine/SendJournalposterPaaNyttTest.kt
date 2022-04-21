@@ -28,7 +28,7 @@ class SendJournalposterPaaNyttTest {
 
     @BeforeEach
     fun setUp() {
-        database = H2Database()
+        database = H2Database("journalposttest")
         dbService = DBService(database)
     }
 

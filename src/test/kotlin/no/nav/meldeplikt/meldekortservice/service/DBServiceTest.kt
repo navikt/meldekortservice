@@ -15,7 +15,7 @@ import java.sql.SQLException
 import kotlin.test.assertTrue
 
 class DBServiceTest {
-    private val database = H2Database()
+    private val database = H2Database("dbservicetest")
     private val innsendtMeldekort1 = InnsendtMeldekort(1L)
 
     @AfterAll

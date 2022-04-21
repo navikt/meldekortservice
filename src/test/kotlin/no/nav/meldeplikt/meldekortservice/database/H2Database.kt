@@ -3,10 +3,10 @@ package no.nav.meldeplikt.meldekortservice.database
 import com.zaxxer.hikari.HikariDataSource
 import no.nav.meldeplikt.meldekortservice.config.Flyway
 
-class H2Database : Database {
+class H2Database(val dbname: String) : Database {
 
     override val dataSource: HikariDataSource = HikariDataSource().apply {
-        jdbcUrl = "jdbc:h2:mem:testdb"
+        jdbcUrl = "jdbc:h2:mem:$dbname"
         username = "sa"
         password = ""
 
