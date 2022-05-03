@@ -5,11 +5,9 @@ import java.net.URL
 private const val DUMMY_URL: String = "https://dummyurl.nav.no"
 
 data class Environment(
-    val ameldingUrl: URL = URL(getEnvVar("AMELDING_URI", "$DUMMY_URL/path")),
     val ordsUrl: URL = URL(getEnvVar("ORDS_URI", DUMMY_URL)),
     val ordsClientId: String = getEnvVar("CLIENT_ID", "cLiEnTiD"),
     val ordsClientSecret: String = getEnvVar("CLIENT_SECRET", "cLiEnTsEcReT"),
-    val sakOgAktivitetUrl: String = getEnvVar("SAKOGAKTIVITET_URI", DUMMY_URL),
 
     // Meldekort-kontroll
     val meldekortKontrollUrl: String = getEnvVar("KONTROLL_URI", DUMMY_URL),

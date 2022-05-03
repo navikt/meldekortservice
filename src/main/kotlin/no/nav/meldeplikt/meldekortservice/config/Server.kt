@@ -35,7 +35,7 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 val swagger = Swagger(
     info = Information(
         version = "1",
-        title = "Meldekortservice. Proxy-api for meldekort mot Arena og Amelding",
+        title = "Meldekortservice. Proxy-api for meldekort mot Arena og meldekortkontroll-api",
         description = "[Meldekortservice](https://github.com/navikt/meldekortservice)",
         contact = Contact(
             name = "#meldeplikt på Slack",
@@ -89,7 +89,6 @@ fun Application.mainModule(
     install(Routing) {
         healthApi()
         swaggerRoutes()
-        weblogicApi()
         meldekortApi(arenaOrdsService)
         personApi(arenaOrdsService, dbService, kontrollService, dokarkivService)
         tekstApi(dbService)

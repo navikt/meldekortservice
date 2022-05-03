@@ -1,6 +1,6 @@
 package no.nav.meldeplikt.meldekortservice.mapper
 
-import no.aetat.arena.mk_meldekort.*
+import no.nav.meldeplikt.meldekortservice.model.MeldekortDagType
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Sporsmal
 import java.time.LocalDate

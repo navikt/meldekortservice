@@ -1,8 +1,8 @@
 package no.nav.meldeplikt.meldekortservice.mapper
 
-import no.aetat.arena.mk_meldekort_kontrollert.ArsakskodeType
-import no.aetat.arena.mk_meldekort_kontrollert.MeldekortDagType
-import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
+import no.nav.meldeplikt.meldekortservice.model.ArsakskodeType
+import no.nav.meldeplikt.meldekortservice.model.MeldekortDagType
+import no.nav.meldeplikt.meldekortservice.model.MeldekortKontrollertType
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.response.KontrollResponse
 
 class KontrollertTypeMapper {

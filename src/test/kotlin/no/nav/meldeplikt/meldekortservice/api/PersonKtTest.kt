@@ -8,12 +8,10 @@ import io.ktor.http.*
 import io.ktor.locations.*
 import io.ktor.server.testing.*
 import io.mockk.*
-import no.aetat.amelding.externcontrolemelding.webservices.ExternControlEmeldingSOAP
-import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
 import no.nav.meldeplikt.meldekortservice.config.Environment
-import no.nav.meldeplikt.meldekortservice.config.SoapConfig
 import no.nav.meldeplikt.meldekortservice.config.mainModule
 import no.nav.meldeplikt.meldekortservice.database.hentMidlertidigLagredeJournalposter
+import no.nav.meldeplikt.meldekortservice.model.MeldekortKontrollertType
 import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.DokumentInfo
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Journalpost
@@ -24,7 +22,10 @@ import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Sporsmal
 import no.nav.meldeplikt.meldekortservice.model.response.OrdsStringResponse
-import no.nav.meldeplikt.meldekortservice.service.*
+import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
+import no.nav.meldeplikt.meldekortservice.service.DBService
+import no.nav.meldeplikt.meldekortservice.service.DokarkivService
+import no.nav.meldeplikt.meldekortservice.service.KontrollService
 import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
 import no.nav.meldeplikt.meldekortservice.utils.defaultXmlMapper
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
@@ -258,12 +259,12 @@ class PersonKtTest {
         meldekortKontrollertType.status = "OK"
         meldekortKontrollertType.arsakskoder = MeldekortKontrollertType.Arsakskoder()
 
-
-        mockkObject(SoapConfig)
-        val externControlEmeldingSOAP = mockk<ExternControlEmeldingSOAP>()
-
-        every { SoapConfig.soapService() } returns SoapServiceImpl(externControlEmeldingSOAP, mockk())
-        every { externControlEmeldingSOAP.kontrollerEmeldingMeldekort(any()) } returns meldekortKontrollertType
+//
+//  TODO      mockkObject(SoapConfig)
+//        val externControlEmeldingSOAP = mockk<ExternControlEmeldingSOAP>()
+//
+//        every { SoapConfig.soapService() } returns SoapServiceImpl(externControlEmeldingSOAP, mockk())
+//        every { externControlEmeldingSOAP.kontrollerEmeldingMeldekort(any()) } returns meldekortKontrollertType
 
         coEvery { dbService.settInnInnsendtMeldekort(any()) } just Runs
         coEvery { kontrollService.kontroller(any()) } returns meldekortKontrollertType
@@ -307,11 +308,11 @@ class PersonKtTest {
         meldekortKontrollertType.arsakskoder = MeldekortKontrollertType.Arsakskoder()
 
 
-        mockkObject(SoapConfig)
-        val externControlEmeldingSOAP = mockk<ExternControlEmeldingSOAP>()
-
-        every { SoapConfig.soapService() } returns SoapServiceImpl(externControlEmeldingSOAP, mockk())
-        every { externControlEmeldingSOAP.kontrollerEmeldingMeldekort(any()) } throws RuntimeException("Error i arena")
+// TODO       mockkObject(SoapConfig)
+//        val externControlEmeldingSOAP = mockk<ExternControlEmeldingSOAP>()
+//
+//        every { SoapConfig.soapService() } returns SoapServiceImpl(externControlEmeldingSOAP, mockk())
+//        every { externControlEmeldingSOAP.kontrollerEmeldingMeldekort(any()) } throws RuntimeException("Error i arena")
 
         coEvery { dbService.settInnInnsendtMeldekort(any()) } just Runs
         coEvery { kontrollService.kontroller(any()) } returns meldekortKontrollertType
