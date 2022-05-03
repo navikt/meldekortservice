@@ -30,7 +30,7 @@ Interne henvendelser kan sendes via Slack i kanalen #meldekort.
 
 ## Dokumentasjon
 Dokumentasjon finnes i [Confluence](https://confluence.adeo.no/display/TMP/Meldekort-api).  
-Swagger er tilgjengelig på `meldekortservice/internal/apidocs`.  
+Swagger er tilgjengelig på `http://localhost:8090/meldekortservice/internal/apidocs/index.html?url=swagger.json`.  
 Om Meldekort journalføring: https://confluence.adeo.no/pages/viewpage.action?pageId=431009242
 
 For å sjekke om det finnes nye versjoner av avhengigheter, kan man kjøre: `./gradlew dependencyUpdates`
