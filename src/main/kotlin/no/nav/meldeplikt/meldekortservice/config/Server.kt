@@ -89,6 +89,7 @@ fun Application.mainModule(
     install(Routing) {
         healthApi()
         swaggerRoutes()
+        weblogicApi()
         meldekortApi(arenaOrdsService)
         personApi(arenaOrdsService, dbService, kontrollService, dokarkivService)
         tekstApi(dbService)
@@ -128,4 +129,3 @@ private fun initializeInnsendtMeldekortServiceApi(env: Environment): DBService {
 private fun initializeFlyway(env: Environment): org.flywaydb.core.Flyway {
     return Flyway.configure(env).load()
 }
-

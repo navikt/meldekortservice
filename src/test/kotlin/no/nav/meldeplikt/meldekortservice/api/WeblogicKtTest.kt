@@ -6,9 +6,12 @@ import io.ktor.locations.*
 import io.ktor.server.testing.*
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.mockkStatic
+import no.nav.meldeplikt.meldekortservice.config.SoapConfig
 import no.nav.meldeplikt.meldekortservice.config.mainModule
 import no.nav.meldeplikt.meldekortservice.model.WeblogicPing
+import no.nav.meldeplikt.meldekortservice.service.SoapServiceImpl
 import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import org.amshove.kluent.shouldBe
@@ -22,15 +25,15 @@ class WeblogicKtTest {
 
     @Test
     fun `test weblogic returns true when Arena is up`() {
-//        val soapServiceImpl = mockk<SoapServiceImpl>()
+        val soapServiceImpl = mockk<SoapServiceImpl>()
 
         mockkStatic(::isCurrentlyRunningOnNais)
         every { isCurrentlyRunningOnNais() } returns false
 
-//        mockkObject(SoapConfig)
+        mockkObject(SoapConfig)
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
-//        every { SoapConfig.soapService() } returns soapServiceImpl
-//        every { soapServiceImpl.pingWeblogic() } returns WeblogicPing(erWeblogicOppe = true)
+        every { SoapConfig.soapService() } returns soapServiceImpl
+        every { soapServiceImpl.pingWeblogic() } returns WeblogicPing(erWeblogicOppe = true)
 
         withTestApplication({
             mainModule(
@@ -52,14 +55,14 @@ class WeblogicKtTest {
 
     @Test
     fun `test weblogic returns false when Arena is not up`() {
-//        val soapServiceImpl = mockk<SoapServiceImpl>()
-//
-//        mockkObject(SoapConfig)
+        val soapServiceImpl = mockk<SoapServiceImpl>()
+
+        mockkObject(SoapConfig)
         mockkStatic(::isCurrentlyRunningOnNais)
         every { isCurrentlyRunningOnNais() } returns false
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
-//        every { SoapConfig.soapService() } returns soapServiceImpl
-//        every { soapServiceImpl.pingWeblogic() } returns WeblogicPing(erWeblogicOppe = false)
+        every { SoapConfig.soapService() } returns soapServiceImpl
+        every { soapServiceImpl.pingWeblogic() } returns WeblogicPing(erWeblogicOppe = false)
 
         withTestApplication({
             mainModule(
