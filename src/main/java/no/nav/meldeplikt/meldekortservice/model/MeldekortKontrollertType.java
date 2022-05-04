@@ -5,7 +5,6 @@ package no.nav.meldeplikt.meldekortservice.model;
         import javax.xml.bind.annotation.XmlAccessType;
         import javax.xml.bind.annotation.XmlAccessorType;
         import javax.xml.bind.annotation.XmlElement;
-        import javax.xml.bind.annotation.XmlSeeAlso;
         import javax.xml.bind.annotation.XmlType;
 /**
  *
@@ -165,22 +164,6 @@ public class MeldekortKontrollertType {
         }
     }
     /**
-     * <p>Java class for anonymous complex type.
-     *
-     * <p>The following schema fragment specifies the expected content contained within this class.
-     *
-     * <pre>
-     * &lt;complexType&gt;
-     *   &lt;complexContent&gt;
-     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
-     *       &lt;sequence&gt;
-     *         &lt;element name="MeldekortDag" type="{http://www.aetat.no/arena/mk_meldekort_kontrollert.xsd}MeldekortDagType" maxOccurs="14" minOccurs="14"/&gt;
-     *       &lt;/sequence&gt;
-     *     &lt;/restriction&gt;
-     *   &lt;/complexContent&gt;
-     * &lt;/complexType&gt;
-     * </pre>
-     *
      *
      */
     @XmlAccessorType(XmlAccessType.FIELD)
@@ -189,7 +172,7 @@ public class MeldekortKontrollertType {
     })
     public static class MeldekortDager {
         @XmlElement(name = "MeldekortDag", required = true)
-        protected List<MeldekortDagType> meldekortDag;
+        protected List<MeldekortDagKontrollertType> meldekortDag;
         /**
          * Gets the value of the meldekortDag property.
          *
@@ -208,13 +191,13 @@ public class MeldekortKontrollertType {
          *
          * <p>
          * Objects of the following type(s) are allowed in the list
-         * {@link MeldekortDagType }
+         * {@link MeldekortDagKontrollertType }
          *
          *
          */
-        public List<MeldekortDagType> getMeldekortDag() {
+        public List<MeldekortDagKontrollertType> getMeldekortDag() {
             if (meldekortDag == null) {
-                meldekortDag = new ArrayList<MeldekortDagType>();
+                meldekortDag = new ArrayList<MeldekortDagKontrollertType>();
             }
             return this.meldekortDag;
         }

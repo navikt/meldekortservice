@@ -1,6 +1,6 @@
 package no.nav.meldeplikt.meldekortservice.mapper
 
-import no.nav.meldeplikt.meldekortservice.model.MeldekortDagType
+import no.nav.meldeplikt.meldekortservice.model.*
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Sporsmal
 import java.time.LocalDate
@@ -84,7 +84,8 @@ object MeldekortTypeMapper {
                 val kursSoap = VerdiBooleanType()
                 kursSoap.isVerdi = meldekortDag.kurs?: false
 
-                val meldekortDagTypeSoap = MeldekortDagType()
+                val meldekortDagTypeSoap =
+                    MeldekortDagType()
                 meldekortDagTypeSoap.dag = meldekortDag.dag
                 meldekortDagTypeSoap.arbeidetTimerSum = arbeidetTimerSumSoap
                 meldekortDagTypeSoap.syk = sykSoap
