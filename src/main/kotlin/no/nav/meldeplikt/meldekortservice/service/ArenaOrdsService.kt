@@ -7,6 +7,7 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.config.CACHE
+import no.nav.meldeplikt.meldekortservice.config.DUMMY_TOKEN
 import no.nav.meldeplikt.meldekortservice.config.DUMMY_URL
 import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.mapper.MeldekortdetaljerMapper
@@ -96,7 +97,11 @@ class ArenaOrdsService(
             }
         } else {
             defaultLog.info("Henter ikke token da appen kjører lokalt")
-            token = token.copy(accessToken = "token")
+            token = AccessToken(
+                accessToken = DUMMY_TOKEN,
+                tokenType = "bearer",
+                expiresIn = 3600
+            )
         }
 
         return token

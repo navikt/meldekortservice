@@ -5,7 +5,6 @@ import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.util.pipeline.*
 import no.nav.meldeplikt.meldekortservice.utils.defaultLog
-import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 
 fun PipelineContext<Unit, ApplicationCall>.extractIdentFromToken(): String {
     val authTokenHeader = getTokenFromHeader()
@@ -20,7 +19,7 @@ fun PipelineContext<Unit, ApplicationCall>.extractIdentFromToken(): String {
     return extractSubject(authToken)
 }
 
-val PipelineContext<Unit, ApplicationCall>.userIdent get() = if (isCurrentlyRunningOnNais()) extractIdentFromToken() else "01020312345"
+val PipelineContext<Unit, ApplicationCall>.userIdent get() = extractIdentFromToken()
 
 private fun verifyThatATokenWasFound(authToken: String?) {
     if (authToken == null) {

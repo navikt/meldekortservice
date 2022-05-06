@@ -1,8 +1,16 @@
 package no.nav.meldeplikt.meldekortservice.config
 
+import com.auth0.jwt.JWT
+import com.auth0.jwt.algorithms.Algorithm
 import java.net.URL
 
 const val DUMMY_URL: String = "https://dummyurl.nav.no"
+var DUMMY_TOKEN: String = JWT.create()
+    .withClaim("pid", "01020312345")
+    .withClaim("name", "Test Testesen")
+    .withClaim("iat", 1616239022)
+    .sign(Algorithm.none())
+    .toString()
 
 data class Environment(
     val ameldingUrl: URL = URL(getEnvVar("AMELDING_URI", "$DUMMY_URL/path")),
@@ -14,13 +22,13 @@ data class Environment(
     // Meldekort-kontroll
     val meldekortKontrollUrl: String = getEnvVar("KONTROLL_URI", DUMMY_URL),
     val meldekortKontrollClientid: String = getEnvVar("KONTROLL_CLIENT_ID", "test"),
+    val oauthEndpoint: String = getEnvVar("KONTROLL_OAUTH_ENDPOINT", "test"),
+    val oauthTenant: String = getEnvVar("KONTROLL_OAUTH_TENANT_ID", "test"),
 
     // Azure AD
     val oauthClientId: String = getEnvVar("AZURE_APP_CLIENT_ID", "test"),
     val oauthJwk: String = getEnvVar("AZURE_APP_JWK", "test"),
     val oauthClientSecret: String = getEnvVar("AZURE_APP_CLIENT_SECRET", "test"),
-    val oauthEndpoint: String = getEnvVar("KONTROLL_OAUTH_ENDPOINT", "test"),
-    val oauthTenant: String = getEnvVar("KONTROLL_OAUTH_TENANT_ID", "test"),
 
     // PostgreSQL
     val dbHostPostgreSQL: String = getEnvVar("DB_HOST", "localhost:5432"),
