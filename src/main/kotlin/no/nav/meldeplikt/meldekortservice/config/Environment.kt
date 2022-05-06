@@ -2,7 +2,7 @@ package no.nav.meldeplikt.meldekortservice.config
 
 import java.net.URL
 
-private const val DUMMY_URL: String = "https://dummyurl.nav.no"
+const val DUMMY_URL: String = "https://dummyurl.nav.no"
 
 data class Environment(
     val ameldingUrl: URL = URL(getEnvVar("AMELDING_URI", "$DUMMY_URL/path")),

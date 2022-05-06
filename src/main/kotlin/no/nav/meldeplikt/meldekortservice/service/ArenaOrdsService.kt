@@ -7,6 +7,7 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.config.CACHE
+import no.nav.meldeplikt.meldekortservice.config.DUMMY_URL
 import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.mapper.MeldekortdetaljerMapper
 import no.nav.meldeplikt.meldekortservice.model.AccessToken
@@ -17,6 +18,7 @@ import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetal
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.arena.Meldekort
 import no.nav.meldeplikt.meldekortservice.model.response.OrdsStringResponse
 import no.nav.meldeplikt.meldekortservice.utils.*
+import java.net.URL
 import java.util.*
 
 class ArenaOrdsService(
@@ -86,7 +88,7 @@ class ArenaOrdsService(
         defaultLog.info("Cache timet ut. Henter token")
         var token = AccessToken(null, null, null)
 
-        if (isCurrentlyRunningOnNais()) {
+        if (env.ordsUrl != URL(DUMMY_URL)) {
             runBlocking {
                 token = ordsClient.post("${env.ordsUrl}$ARENA_ORDS_TOKEN_PATH?grant_type=client_credentials") {
                     setupTokenRequest()
@@ -102,6 +104,7 @@ class ArenaOrdsService(
 
     private fun HttpRequestBuilder.setupTokenRequest() {
         val base = "${env.ordsClientId}:${env.ordsClientSecret}"
+        headers.append("Accept", "application/json; charset=UTF-8")
         headers.append("Authorization", "Basic ${Base64.getEncoder().encodeToString(base.toByteArray())}")
     }
 }

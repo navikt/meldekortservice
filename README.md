@@ -5,8 +5,25 @@ Microservice / proxy som henter data fra meldekort ORDS (Arena DB).
 ## Kom i gang
 1. Bygg meldekortservice ved å kjøre `gradle clean build`. Dette vil også kjøre testene.
 2. Start lokal instans av Postgres ved å kjøre `docker-compose up -d`.
-3. Start appen ved å kjøre Server.kt sin main-metode eller kjør `gradle runServer`.
-4. Appen starter på http://localhost:8090. Sjekk for eksempel at ping svarer på http://localhost:8090/meldekortservice/internal/ping.
+3. For å være sikker på at man får en ny tom database, kan man kjøre kommandoen: `docker-compose down -v`.
+
+## Lokal kjøring
+Start appen ved å kjøre Server.kt sin main-metode eller kjør `gradle runServer`.  
+For å kjøre mot f.eks Q1 kan man enten sette riktige miljøvariabler (manuelt eller ved hjelp av bat/bash script) eller midlertidig skrive disse inn i Environment.kt i stedet for defaultValue'er.  
+For eksempel, for å bruke ORDS i Q1 må man erstatte
+```
+val ordsUrl: URL = URL(getEnvVar("ORDS_URI", DUMMY_URL)),
+val ordsClientId: String = getEnvVar("CLIENT_ID", "cLiEnTiD"),
+val ordsClientSecret: String = getEnvVar("CLIENT_SECRET", "cLiEnTsEcReT"),
+```
+med
+```
+val ordsUrl: URL = URL(getEnvVar("ORDS_URI", "https://arena-ords-q1.dev.adeo.no/arena")),
+val ordsClientId: String = getEnvVar("CLIENT_ID", "%CLIENT_ID_FRA_VAULT%"),
+val ordsClientSecret: String = getEnvVar("CLIENT_SECRET", "%CLIENT_SECRET_FRA_VAULT%"),
+```
+Appen starter på http://localhost:8090. Sjekk for eksempel at ping svarer på http://localhost:8090/meldekortservice/internal/ping.  
+Swagger er tilgjengelig på http://localhost:8090/meldekortservice/internal/apidocs/index.html?url=swagger.json
 
 ## Feilsøking
 For å være sikker på at man får en ny tom database, kan man kjøre kommandoen: `docker-compose down -v`.
@@ -29,8 +46,7 @@ Spørsmål knyttet til koden eller prosjektet kan rettes mot https://github.com/
 Interne henvendelser kan sendes via Slack i kanalen #meldekort.
 
 ## Dokumentasjon
-Dokumentasjon finnes i [Confluence](https://confluence.adeo.no/display/TMP/Meldekort-api).  
-Swagger er tilgjengelig på `http://localhost:8090/meldekortservice/internal/apidocs/index.html?url=swagger.json`.  
+Dokumentasjon finnes i [Confluence](https://confluence.adeo.no/display/TMP/Meldekort-api).
 Om Meldekort journalføring: https://confluence.adeo.no/pages/viewpage.action?pageId=431009242
 
 For å sjekke om det finnes nye versjoner av avhengigheter, kan man kjøre: `./gradlew dependencyUpdates`
