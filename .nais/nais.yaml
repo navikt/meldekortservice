@@ -61,6 +61,10 @@ spec:
       value: '{{ tokenxDiscoveryUrl }}'
     - name: TOKENX_ACCEPTED_AUDIENCE
       value: '{{ tokenxAcceptedAudience }}'
+  accessPolicy:
+    outbound:
+      external:
+        - host: 'tokendings.dev-gcp.nais.io'
 ---
 apiVersion: nais.io/v1
 kind: Alert
