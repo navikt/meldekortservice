@@ -57,6 +57,10 @@ spec:
       value: '{{ idportenDiscoveryUrl }}'
     - name: IDPORTEN_ACCEPTED_AUDIENCE
       value: '{{ idportenAcceptedAudience }}'
+    - name: TOKENX_DISCOVERY_URL
+      value: '{{ tokenxDiscoveryUrl }}'
+    - name: TOKENX_ACCEPTED_AUDIENCE
+      value: '{{ tokenxAcceptedAudience }}'
 ---
 apiVersion: nais.io/v1
 kind: Alert
