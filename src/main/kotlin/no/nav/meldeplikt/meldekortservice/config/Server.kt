@@ -1,13 +1,18 @@
 package no.nav.meldeplikt.meldekortservice.config
 
+import com.nimbusds.jose.util.Resource
 import io.ktor.application.*
 import io.ktor.auth.*
+import io.ktor.client.*
+import io.ktor.client.features.json.*
+import io.ktor.client.request.*
 import io.ktor.features.*
 import io.ktor.jackson.*
 import io.ktor.locations.*
 import io.ktor.request.*
 import io.ktor.routing.*
 import io.prometheus.client.hotspot.DefaultExports
+import kotlinx.coroutines.runBlocking
 import no.nav.cache.Cache
 import no.nav.cache.CacheConfig
 import no.nav.cache.CacheUtils
@@ -28,7 +33,9 @@ import no.nav.sbl.dialogarena.common.cxf.StsSecurityConstants
 import no.nav.sbl.util.EnvironmentUtils.Type.PUBLIC
 import no.nav.sbl.util.EnvironmentUtils.Type.SECRET
 import no.nav.sbl.util.EnvironmentUtils.setProperty
+import no.nav.security.token.support.core.configuration.ProxyAwareResourceRetriever
 import no.nav.security.token.support.ktor.tokenValidationSupport
+import java.net.URL
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -74,10 +81,28 @@ fun Application.mainModule(
         jackson { objectMapper }
     }
 
+    val httpClient = HttpClient {
+        install(JsonFeature) {
+            serializer = JacksonSerializer { objectMapper }
+        }
+    }
+
     val conf = this.environment.config
     install(Authentication) {
         if (isCurrentlyRunningOnNais()) {
-            tokenValidationSupport(config = conf)
+            tokenValidationSupport(
+                config = conf,
+                resourceRetriever = object : ProxyAwareResourceRetriever() {
+                    override fun retrieveResource(url: URL): Resource {
+                        var resource: Resource
+                        runBlocking {
+                            val json: String = httpClient.get(url)
+                            resource = Resource(json, "application/json")
+                        }
+                        return resource
+                    }
+                }
+            )
         } else {
             provider { skipWhen { true } }
         }
