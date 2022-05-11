@@ -12,7 +12,6 @@ spec:
       claims:
         extra:
           - "azp_name"
-
   image: {{image}}
   port: 8090
   secureLogs:
@@ -57,8 +56,6 @@ spec:
       value: '{{ idportenDiscoveryUrl }}'
     - name: IDPORTEN_ACCEPTED_AUDIENCE
       value: '{{ idportenAcceptedAudience }}'
-  idporten:
-    enabled: true
   tokenx:
     enabled: true
 ---
