@@ -77,7 +77,6 @@ fun Application.mainModule(
     val conf = this.environment.config
     install(Authentication) {
         if (isCurrentlyRunningOnNais()) {
-
             tokenValidationSupport(config = conf)
         } else {
             provider { skipWhen { true } }
