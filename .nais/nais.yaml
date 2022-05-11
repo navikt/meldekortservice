@@ -57,7 +57,9 @@ spec:
     - name: IDPORTEN_ACCEPTED_AUDIENCE
       value: '{{ idportenAcceptedAudience }}'
     - name: TOKEN_X_ACCEPTED_AUDIENCE
-      value: '{{ idportenAcceptedAudience }}'
+      value: '{{ tokenxAcceptedAudience }}'
+  idporten:
+    enabled: true
   tokenx:
     enabled: true
 ---
