@@ -8,6 +8,5 @@ ingresses:
   - "https://app-q0.adeo.no/meldekortservice"
   - "https://meldekortservice-q0.nais.preprod.local"
   - "https://meldekortservice-q0.dev-fss-pub.nais.io"
-idportenDiscoveryUrl: https://oidc-ver2.difi.no/idporten-oidc-provider/.well-known/openid-configuration
 idportenAcceptedAudience: https://nav.no
 tokenxAcceptedAudience: dev-gcp:meldekort:meldekort-api-q0
