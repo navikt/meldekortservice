@@ -44,7 +44,6 @@ spec:
     min: 2
     max: 6
     cpuThresholdPercentage: 10
-  webproxy: true
   resources:
     limits:
       cpu: '1'
