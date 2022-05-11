@@ -1,6 +1,7 @@
 package no.nav.meldeplikt.meldekortservice.model;
 
 public class MeldekortType {
+
     protected HodeType hode;
     protected SpmType spm;
     protected String id;

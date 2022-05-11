@@ -1,6 +1,7 @@
 package no.nav.meldeplikt.meldekortservice.model;
 
 public class SvarType {
+
     protected VerdiBooleanType svarJa;
     protected VerdiBooleanType svarNei;
 

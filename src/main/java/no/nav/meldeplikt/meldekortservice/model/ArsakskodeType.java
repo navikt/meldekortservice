@@ -1,6 +1,7 @@
 package no.nav.meldeplikt.meldekortservice.model;
 
 public class ArsakskodeType {
+
     protected String kode;
     protected String tekst;
 

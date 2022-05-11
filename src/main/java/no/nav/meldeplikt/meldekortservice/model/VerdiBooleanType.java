@@ -8,7 +8,7 @@ public class VerdiBooleanType {
         return verdi;
     }
 
-    public void setVerdi(boolean value) {
-        this.verdi = value;
+    public void setVerdi(boolean verdi) {
+        this.verdi = verdi;
     }
 }

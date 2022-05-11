@@ -260,10 +260,6 @@ class PersonKtTest {
 
 
         mockkObject(SoapConfig)
-        //TODO slett val externControlEmeldingSOAP = mockk<ExternControlEmeldingSOAP>()
-
-        //TODO slett every { SoapConfig.soapService() } returns SoapServiceImpl(externControlEmeldingSOAP, mockk())
-        //TODO slett every { externControlEmeldingSOAP.kontrollerEmeldingMeldekort(any()) } returns meldekortKontrollertType
 
         coEvery { dbService.settInnInnsendtMeldekort(any()) } just Runs
         coEvery { kontrollService.kontroller(any()) } returns meldekortKontrollertType
@@ -306,12 +302,8 @@ class PersonKtTest {
         meldekortKontrollertType.status = "OK"
         meldekortKontrollertType.arsakskoder = MeldekortKontrollertType.Arsakskoder()
 
-
         mockkObject(SoapConfig)
-        //TODO slett val externControlEmeldingSOAP = mockk<ExternControlEmeldingSOAP>()
-
         every { SoapConfig.soapService() } returns SoapServiceImpl(mockk())
-        //TODO slett every { externControlEmeldingSOAP.kontrollerEmeldingMeldekort(any()) } throws RuntimeException("Error i arena")
 
         coEvery { dbService.settInnInnsendtMeldekort(any()) } just Runs
         coEvery { kontrollService.kontroller(any()) } throws RuntimeException("Feil i meldekortkontroll-api")
@@ -417,6 +409,4 @@ class PersonKtTest {
             )
         }
     }
-
-
 }

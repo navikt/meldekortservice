@@ -1,6 +1,7 @@
 package no.nav.meldeplikt.meldekortservice.model;
 
 public class MeldekortDagKontrollertType {
+
     protected int dag;
     protected String meldegruppe;
 

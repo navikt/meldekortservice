@@ -89,7 +89,6 @@ public class HodeType {
     public static class Fodselsnr {
 
         protected String verdi;
-//        protected Boolean usikkerVerdi;
 
         public String getVerdi() {
             return verdi;
@@ -98,21 +97,11 @@ public class HodeType {
         public void setVerdi(String value) {
             this.verdi = value;
         }
-
-//        public Boolean isUsikkerVerdi() {
-//            return usikkerVerdi;
-//        }
-//
-//        public void setUsikkerVerdi(Boolean value) {
-//            this.usikkerVerdi = value;
-//        }
-
     }
 
     public static class MeldekortId {
 
         protected long verdi;
-//        protected Boolean usikkerVerdi;
 
         public long getVerdi() {
             return verdi;
@@ -121,21 +110,11 @@ public class HodeType {
         public void setVerdi(long value) {
             this.verdi = value;
         }
-
-//        public Boolean isUsikkerVerdi() {
-//            return usikkerVerdi;
-//        }
-//
-//        public void setUsikkerVerdi(Boolean value) {
-//            this.usikkerVerdi = value;
-//        }
-
     }
 
     public static class PersonId {
 
         protected long verdi;
-//        protected Boolean usikkerVerdi;
 
         public long getVerdi() {
             return verdi;
@@ -145,12 +124,5 @@ public class HodeType {
             this.verdi = value;
         }
 
-//        public Boolean isUsikkerVerdi() {
-//            return usikkerVerdi;
-//        }
-//
-//        public void setUsikkerVerdi(Boolean value) {
-//            this.usikkerVerdi = value;
-//        }
     }
 }
