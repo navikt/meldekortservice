@@ -1,8 +1,6 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
-import no.nils.wsdl2java.Wsdl2JavaTask
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val flywayVersion = "8.4.0"
 val h2Version = "1.4.200"
@@ -43,8 +41,6 @@ plugins {
 
     id("com.github.ManifestClasspath") version "0.1.0-RELEASE"
 
-    id("no.nils.wsdl2java") version "0.10"
-
     id("org.jetbrains.kotlin.jvm") version "1.5.21"
     id("org.jetbrains.kotlin.plugin.allopen") version "1.5.21"
 
@@ -83,16 +79,7 @@ repositories {
     maven("https://plugins.gradle.org/m2/")
 }
 
-
 dependencies {
-    wsdl2java("javax.annotation:javax.annotation-api:$javaxAnnotationApiVersion")
-    wsdl2java("javax.activation:activation:$javaxActivationVersion")
-    wsdl2java("org.glassfish.jaxb:jaxb-runtime:$jaxbRuntimeVersion")
-    wsdl2java("javax.xml.bind:jaxb-api:$jaxbApiVersion")
-    wsdl2java("javax.xml.ws:jaxws-api:$javaxJaxwsApiVersion")
-    wsdl2java("com.sun.xml.ws:jaxws-tools:$jaxwsToolsVersion") {
-        exclude(group = "com.sun.xml.ws", module = "policy")
-    }
 
     implementation(kotlin("stdlib"))
     implementation("no.nav:vault-jdbc:$vaultJdbcVersion")
@@ -134,7 +121,6 @@ dependencies {
     testImplementation("io.ktor:ktor-client-mock:$ktorVersion")
     testImplementation("io.ktor:ktor-client-mock-jvm:$ktorVersion")
     testImplementation("io.kotest:kotest-assertions-core-jvm:$kotestVersion")
-
 
     testImplementation("com.h2database:h2:$h2Version")
     testImplementation("org.amshove.kluent:kluent:$kluentVersion")
@@ -180,23 +166,6 @@ tasks {
         }
     }
 
-    withType<KotlinCompile> {
-        dependsOn("wsdl2java")
-        kotlinOptions.jvmTarget = "11"
-    }
-
-    withType<Wsdl2JavaTask> {
-        wsdlDir = file("$projectDir/src/main/resources/wsdl")
-        wsdlsToGenerate = listOf(
-            mutableListOf(
-                "-xjc",
-                "-b",
-                "$projectDir/src/main/resources/xjb/bindings.xml",
-                "$projectDir/src/main/resources/wsdl/amelding_EksternKontrolEmeldingService.wsdl"
-            )
-        )
-    }
-
     withType<ShadowJar> {
         transform(ServiceFileTransformer::class.java) {
             setPath("META-INF/cxf")
@@ -206,16 +175,6 @@ tasks {
     register("runServer", JavaExec::class) {
         main = project.property("mainClassName").toString()
         classpath = sourceSets["main"].runtimeClasspath
-    }
-
-    sonarqube {
-        properties {
-            property("sonar.projectKey", System.getenv("SONAR_PROJECT_KEY_MELDEKORTSERVICE"))
-            property("sonar.organization", "navit")
-            property("sonar.host.url", "https://sonarcloud.io")
-            property("sonar.login", System.getenv("SONAR_TOKEN_MELDEKORTSERVICE"))
-            property("sonar.java.coveragePlugin", "jacoco")
-        }
     }
 
     jacocoTestReport {

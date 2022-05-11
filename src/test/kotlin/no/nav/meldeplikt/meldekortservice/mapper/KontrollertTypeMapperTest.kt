@@ -1,6 +1,6 @@
 package no.nav.meldeplikt.meldekortservice.mapper
 
-import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
+import no.nav.meldeplikt.meldekortservice.model.MeldekortKontrollertType
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.response.KontrollFeil
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.response.KontrollResponse
 import org.junit.jupiter.api.Test
