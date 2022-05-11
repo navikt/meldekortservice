@@ -4,6 +4,8 @@ import com.nimbusds.jose.util.Resource
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.client.*
+import io.ktor.client.engine.*
+import io.ktor.client.engine.ProxyBuilder.http
 import io.ktor.client.features.json.*
 import io.ktor.client.request.*
 import io.ktor.features.*
@@ -86,6 +88,18 @@ fun Application.mainModule(
             serializer = JacksonSerializer { objectMapper }
         }
     }
+    val httpProxyClient = HttpClient {
+        install(JsonFeature) {
+            serializer = JacksonSerializer { objectMapper }
+        }
+        engine {
+            proxy = if(System.getenv("HTTP_PROXY") != null) {
+                ProxyBuilder.http(System.getenv("HTTP_PROXY"))
+            } else {
+                null
+            }
+        }
+    }
 
     val conf = this.environment.config
     install(Authentication) {
@@ -96,7 +110,11 @@ fun Application.mainModule(
                     override fun retrieveResource(url: URL): Resource {
                         var resource: Resource
                         runBlocking {
-                            val json: String = httpClient.get(url)
+                            val json: String = if (url.host.startsWith("tokendings")) {
+                                httpClient.get(url)
+                            } else {
+                                httpProxyClient.get(url)
+                            }
                             resource = Resource(json, "application/json")
                         }
                         return resource
