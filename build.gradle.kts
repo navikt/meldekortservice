@@ -32,7 +32,7 @@ val prometheusVersion = "0.14.1"
 val slf4jVersion = "1.7.32"
 val swaggerVersion = "3.23.8"
 val tjenestespecVersion = "1.2019.09.25-00.21-49b69f0625e0"
-val tokenValidationVersion = "1.3.19"
+val tokenValidationVersion = "2.0.0"
 val vaultJdbcVersion = "1.3.9"
 val vaultVersion = "5.1.0"
 
