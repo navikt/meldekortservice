@@ -56,6 +56,8 @@ spec:
       value: '{{ idportenDiscoveryUrl }}'
     - name: IDPORTEN_ACCEPTED_AUDIENCE
       value: '{{ idportenAcceptedAudience }}'
+    - name: TOKEN_X_ACCEPTED_AUDIENCE
+      value: '{{ idportenAcceptedAudience }}'
   tokenx:
     enabled: true
 ---
