@@ -12,7 +12,6 @@ import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.arena.Meldekor
 object MeldekortdetaljerMapper {
 
     fun mapOrdsMeldekortTilMeldekortdetaljer(meldekort: ArenaMeldekort): Meldekortdetaljer {
-        defaultLog.info("TODO behold? MeldekortdetaljerMapper.mapOrdsMeldekortTilMeldekortdetaljer meldekort id = ${meldekort.hode.meldekortId.verdi}")
         return Meldekortdetaljer(
             id = "1",
             personId = meldekort.hode.personId.verdi,
