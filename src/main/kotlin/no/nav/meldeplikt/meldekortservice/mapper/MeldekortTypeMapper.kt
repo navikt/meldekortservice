@@ -3,6 +3,7 @@ package no.nav.meldeplikt.meldekortservice.mapper
 import no.nav.meldeplikt.meldekortservice.model.*
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Sporsmal
+import no.nav.meldeplikt.meldekortservice.utils.defaultLog
 import java.time.LocalDate
 import java.util.*
 import javax.xml.datatype.DatatypeFactory
@@ -11,6 +12,7 @@ import javax.xml.datatype.XMLGregorianCalendar
 object MeldekortTypeMapper {
 
     fun mapMeldekortType(meldekortdetaljer: Meldekortdetaljer): MeldekortType {
+        defaultLog.info("TODO slett? MeldekortTypeMapper.mapMeldekortType meldekort id = ${meldekortdetaljer.meldekortId}")
         val meldekortTypeSoap = MeldekortType()
         meldekortTypeSoap.id = meldekortdetaljer.id
         meldekortTypeSoap.hode = mapHodeType(meldekortdetaljer)
