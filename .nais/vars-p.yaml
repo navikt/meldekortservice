@@ -4,9 +4,6 @@ slackAlertChannel: team-meldeplikt-alerts
 vaultKvEnv: prod/fss
 vaultServiceuserEnv: prod
 ingresses:
-  - "https://meldekortservice.intern.nav.no"
-  - "https://meldekortservice.nais.adeo.no"
-  - "https://app.adeo.no/meldekortservice"
   - "https://meldekortservice.prod-fss-pub.nais.io"
 idportenAcceptedAudience: https://nav.no
 tokenxAcceptedAudience: prod-gcp:meldekort:meldekort-api
