@@ -32,7 +32,7 @@ val prometheusVersion = "0.14.1"
 val slf4jVersion = "1.7.32"
 val swaggerVersion = "3.23.8"
 val tjenestespecVersion = "1.2019.09.25-00.21-49b69f0625e0"
-val tokenValidationVersion = "2.0.0"
+val tokenValidationVersion = "2.0.17"
 val vaultJdbcVersion = "1.3.9"
 val vaultVersion = "5.1.0"
 
@@ -45,8 +45,8 @@ plugins {
 
     id("no.nils.wsdl2java") version "0.10"
 
-    id("org.jetbrains.kotlin.jvm") version "1.5.21"
-    id("org.jetbrains.kotlin.plugin.allopen") version "1.5.21"
+    id("org.jetbrains.kotlin.jvm") version "1.6.21"
+    id("org.jetbrains.kotlin.plugin.allopen") version "1.6.21"
 
     id("com.github.johnrengelman.shadow") version "7.1.2"
 
@@ -154,8 +154,8 @@ dependencies {
 }
 
 configure<JavaPluginConvention> {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 application {
@@ -182,7 +182,7 @@ tasks {
 
     withType<KotlinCompile> {
         dependsOn("wsdl2java")
-        kotlinOptions.jvmTarget = "11"
+        kotlinOptions.jvmTarget = "17"
     }
 
     withType<Wsdl2JavaTask> {
