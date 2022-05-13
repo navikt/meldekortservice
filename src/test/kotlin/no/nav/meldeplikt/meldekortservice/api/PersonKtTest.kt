@@ -9,7 +9,7 @@ import io.ktor.locations.*
 import io.ktor.server.testing.*
 import io.mockk.*
 import no.nav.meldeplikt.meldekortservice.config.Environment
-import no.nav.meldeplikt.meldekortservice.config.SoapConfig
+//import no.nav.meldeplikt.meldekortservice.config.SoapConfig
 import no.nav.meldeplikt.meldekortservice.config.mainModule
 import no.nav.meldeplikt.meldekortservice.database.hentMidlertidigLagredeJournalposter
 import no.nav.meldeplikt.meldekortservice.model.MeldekortKontrollertType
@@ -259,7 +259,7 @@ class PersonKtTest {
         meldekortKontrollertType.arsakskoder = MeldekortKontrollertType.Arsakskoder()
 
 
-        mockkObject(SoapConfig)
+//        mockkObject(SoapConfig)
 
         coEvery { dbService.settInnInnsendtMeldekort(any()) } just Runs
         coEvery { kontrollService.kontroller(any()) } returns meldekortKontrollertType
@@ -302,8 +302,8 @@ class PersonKtTest {
         meldekortKontrollertType.status = "OK"
         meldekortKontrollertType.arsakskoder = MeldekortKontrollertType.Arsakskoder()
 
-        mockkObject(SoapConfig)
-        every { SoapConfig.soapService() } returns SoapServiceImpl(mockk())
+//        mockkObject(SoapConfig)
+//        every { SoapConfig.soapService() } returns SoapServiceImpl(mockk())
 
         coEvery { dbService.settInnInnsendtMeldekort(any()) } just Runs
         coEvery { kontrollService.kontroller(any()) } throws RuntimeException("Feil i meldekortkontroll-api")

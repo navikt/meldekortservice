@@ -97,7 +97,7 @@ fun Routing.getMeldekort(arenaOrdsService: ArenaOrdsService, dbService: DBServic
         }
     }
 
-// Innsending/kontroll av meldekort (Amelding)
+// Innsending/kontroll av meldekort
 @KtorExperimentalLocationsAPI
 fun Routing.kontrollerMeldekort(kontrollService: KontrollService, dbService: DBService) =
     post(
