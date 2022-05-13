@@ -1,8 +1,8 @@
 package no.nav.meldeplikt.meldekortservice.mapper
 
-import no.aetat.arena.mk_meldekort_kontrollert.ArsakskodeType
-import no.aetat.arena.mk_meldekort_kontrollert.MeldekortDagType
-import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
+import no.nav.meldeplikt.meldekortservice.model.ArsakskodeType
+import no.nav.meldeplikt.meldekortservice.model.MeldekortDagKontrollertType
+import no.nav.meldeplikt.meldekortservice.model.MeldekortKontrollertType
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.response.KontrollResponse
 
 class KontrollertTypeMapper {
@@ -34,11 +34,10 @@ class KontrollertTypeMapper {
     private fun trekkutMeldekortDager(message: KontrollResponse): MeldekortKontrollertType.MeldekortDager {
         var uttrekk = MeldekortKontrollertType.MeldekortDager()
         message.feilListe.forEach {
-            var item = MeldekortDagType()
+            var item = MeldekortDagKontrollertType()
             item.dag = it.dag!!
             uttrekk.meldekortDag.add(item)
         }
         return uttrekk
     }
-
 }

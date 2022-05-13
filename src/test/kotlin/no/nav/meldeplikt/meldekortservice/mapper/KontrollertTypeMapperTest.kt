@@ -1,6 +1,6 @@
 package no.nav.meldeplikt.meldekortservice.mapper
 
-import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
+import no.nav.meldeplikt.meldekortservice.model.MeldekortKontrollertType
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.response.KontrollFeil
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.response.KontrollResponse
 import org.junit.jupiter.api.Test
@@ -17,7 +17,7 @@ class KontrollertTypeMapperTest {
         feilListe.add(feil1)
         feilListe.add(feil2)
 
-        var fra = KontrollResponse(87576, "ignore me", "OK", feilListe)
+        var fra = KontrollResponse(87576,  "OK", feilListe)
         var til: MeldekortKontrollertType = kontrollertTypeMapper.mapKontrollResponseToKontrollertType(fra)
 
         assert(til.arsakskoder.arsakskode.size == fra.feilListe.size)

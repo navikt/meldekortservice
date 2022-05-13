@@ -48,7 +48,7 @@ class AadService(
     suspend fun fetchAadToken(): String {
         if (aadTokenExpires.isBefore(LocalDateTime.now())) {
             if (isCurrentlyRunningOnNais()) {
-                defaultLog.info("Henter nytt token fra AAD")
+                defaultLog.debug("Henter nytt token fra AAD")
                 val token = getAccessTokenForResource(meldekortKontrollResource)
                 aadToken = token.accessToken!!
                 aadTokenExpires = LocalDateTime.now().plusSeconds((token.expiresIn?.toLong() ?: 0) - cacheSafetyMarginSeconds)

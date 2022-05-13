@@ -24,7 +24,6 @@ import kotlin.reflect.full.memberProperties
  */
 
 typealias ModelName = String
-
 typealias PropertyName = String
 typealias Path = String
 typealias Definitions = MutableMap<ModelName, ModelData>
@@ -314,7 +313,7 @@ open class Property(
 
 fun addDefinition(kClass: KClass<*>) {
     if ((kClass != Unit::class) && !swagger.components.schemas.containsKey(kClass.modelName())) {
-        defaultLog.info("Generating swagger spec for model ${kClass.modelName()}")
+        defaultLog.debug("Generating swagger spec for model ${kClass.modelName()}")
         swagger.components.schemas[kClass.modelName()] = ModelData(kClass)
     }
 }

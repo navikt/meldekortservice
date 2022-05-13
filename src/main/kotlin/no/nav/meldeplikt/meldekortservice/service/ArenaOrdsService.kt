@@ -86,7 +86,7 @@ class ArenaOrdsService(
     }
 
     private fun hentOrdsToken(): AccessToken {
-        defaultLog.info("Cache timet ut. Henter token")
+        defaultLog.debug("Henter ORDS-token")
         var token = AccessToken(null, null, null)
 
         if (env.ordsUrl != URL(DUMMY_URL)) {
@@ -96,7 +96,7 @@ class ArenaOrdsService(
                 }
             }
         } else {
-            defaultLog.info("Henter ikke token da appen kjører lokalt")
+            defaultLog.info("Henter ikke ORDS-token, da appen kjører lokalt")
             token = AccessToken(
                 accessToken = DUMMY_TOKEN,
                 tokenType = "bearer",

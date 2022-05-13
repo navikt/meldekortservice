@@ -5,15 +5,13 @@ import io.ktor.http.*
 import io.ktor.locations.*
 import io.ktor.response.*
 import io.ktor.routing.Routing
-import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
-import no.nav.meldeplikt.meldekortservice.config.SoapConfig
 import no.nav.meldeplikt.meldekortservice.config.userIdent
 import no.nav.meldeplikt.meldekortservice.mapper.MeldekortMapper
 import no.nav.meldeplikt.meldekortservice.mapper.MeldekortkontrollMapper
+import no.nav.meldeplikt.meldekortservice.model.MeldekortKontrollertType
 import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
 import no.nav.meldeplikt.meldekortservice.model.database.feil.UnretriableDatabaseException
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Journalpost
-import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Tilleggsopplysning
 import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
@@ -21,7 +19,6 @@ import no.nav.meldeplikt.meldekortservice.model.response.EmptyResponse
 import no.nav.meldeplikt.meldekortservice.service.*
 import no.nav.meldeplikt.meldekortservice.utils.*
 import no.nav.meldeplikt.meldekortservice.utils.swagger.*
-import kotlin.Metadata
 
 /**
 REST-controller for meldekort-api som tilbyr operasjoner for å hente:
@@ -100,11 +97,11 @@ fun Routing.getMeldekort(arenaOrdsService: ArenaOrdsService, dbService: DBServic
         }
     }
 
-// Innsending/kontroll av meldekort (Amelding)
+// Innsending/kontroll av meldekort
 @KtorExperimentalLocationsAPI
 fun Routing.kontrollerMeldekort(kontrollService: KontrollService, dbService: DBService) =
     post(
-        "Kontroll/innsending av meldekort til Amelding".securityAndResponse(
+        "Kontroll/innsending av meldekort".securityAndResponse(
             BearerTokenSecurity(),
             ok<MeldekortKontrollertType>(),
             serviceUnavailable<ErrorMessage>(),
@@ -112,68 +109,33 @@ fun Routing.kontrollerMeldekort(kontrollService: KontrollService, dbService: DBS
         )
     ) { _: MeldekortInput, meldekort: Meldekortdetaljer ->
         try {
-            // Send først kortet til kontroll i meldekort-kontroll. Foreløpig er dette kun for testformål og logging.
-            try {
-                val kontrollResponse = kontrollService.kontroller(
-                    meldekort = meldekortkontrollMapper.mapMeldekortTilMeldekortkontroll(meldekort)
-                )
-                if (kontrollResponse.arsakskoder.arsakskode.size > 0) {
-                    defaultLog.info(
-                        "Kontroll feilet i meldekort-kontroll: " + defaultObjectMapper.writeValueAsString(
-                            kontrollResponse
-                        )
-                    )
-                    defaultLog.info(
-                        "Feilet meldekort i meldekortkontroll er: " + defaultObjectMapper.writeValueAsString(
-                            meldekort
-                        )
-                    )
-                }
-            } catch (e: Exception) {
-                defaultLog.error("Kunne ikke sende meldekort "+ meldekort.meldekortId +" til meldekort-kontroll: ", e)
-            }
-
-            // Send kortet til Amelding (uansett om kontrollen gikk bra eller ikke)
-            val ameldingResponse = SoapConfig.soapService().kontrollerMeldekort(meldekort)
-            if (ameldingResponse.arsakskoder?.arsakskode?.isNotEmpty() == true) {
-                defaultLog.info(
-                    "Kontroll feilet i Amelding: " + defaultObjectMapper.writeValueAsString(
-                        ameldingResponse
-                    )
-                )
-                defaultLog.info(
-                    "Feilet meldekort i Amelding er: " + defaultObjectMapper.writeValueAsString(
-                        maskerFnrIAmeldingMeldekort(meldekort)
-                    )
-                )
-            }
-
-            if (ameldingResponse.status == "OK") {
+            val kontrollResponse = kontrollService.kontroller(
+                meldekort = meldekortkontrollMapper.mapMeldekortTilMeldekortkontroll(meldekort)
+            )
+            if (kontrollResponse.arsakskoder.arsakskode.size == 0) {
                 try {
-                    dbService.settInnInnsendtMeldekort(InnsendtMeldekort(ameldingResponse.meldekortId))
+                    dbService.settInnInnsendtMeldekort(InnsendtMeldekort(kontrollResponse.meldekortId))
                 } catch (e: UnretriableDatabaseException) {
                     // Meldekort er sendt inn ok til baksystem, men det oppstår feil ved skriving til MIP-tabellen i databasen.
-                    // Logger warning, og returnerer ok status til brukeren slik at den ikke forsøker å sende inn meldekortet på
+                    // Logger warning, og returnerer ok status til brukeren, slik at bruker ikke forsøker å sende inn meldekortet på
                     // nytt (gir dubletter).
                     val errorMessage =
-                        ErrorMessage("Meldekort med id ${meldekort.meldekortId} ble sendt inn, men klarte ikke å skrive til MIP-tabellen. ${e.message}")
+                        ErrorMessage("Meldekort med id ${meldekort.meldekortId} ble sendt inn, men applikasjonen klarte ikke å skrive til MIP-tabellen. ${e.message}")
                     defaultLog.warn(errorMessage.error, e)
                 }
             }
-            // Send responsen fra Amelding tilbake som respons
+
+            // Send kontroll-responsen tilbake som respons
             call.respondText(
-                defaultObjectMapper.writeValueAsString(ameldingResponse),
+                defaultObjectMapper.writeValueAsString(kontrollResponse),
                 contentType = ContentType.Application.Json
             )
         } catch (e: Exception) {
             val errorMessage =
                 ErrorMessage("Meldekort med id ${meldekort.meldekortId} ble ikke sendt inn. ${e.message}")
-            defaultLog.error(errorMessage.error, e)
-            defaultLog.info(
-                "Feilet meldekort i Amelding (exception) er: " + defaultObjectMapper.writeValueAsString(
-                    maskerFnrIAmeldingMeldekort(meldekort)
-                )
-            )
+            defaultLog.warn(errorMessage.error, e)
+            defaultLog.info("Exception fra meldekortkontroll for meldekort: "
+                    + defaultObjectMapper.writeValueAsString(meldekort))
             call.respond(status = HttpStatusCode.ServiceUnavailable, message = errorMessage)
         }
     }
@@ -201,7 +163,7 @@ fun Routing.opprettJournalpost(
 
         try {
             val journalpostResponse = dokarkivService.createJournalpost(journalpost)
-            defaultLog.info("JournalpostId = " + journalpostResponse.journalpostId)
+            defaultLog.info("Journalpost med id " + journalpostResponse.journalpostId + " opprettet for meldekort med id $meldekortId")
 
             dbService.lagreJournalpostData(
                 journalpostResponse.journalpostId,
@@ -212,7 +174,7 @@ fun Routing.opprettJournalpost(
             call.respond(status = HttpStatusCode.OK, message = "Journalpost opprettet")
         } catch (e: Exception) {
             val errorMessage = ErrorMessage(
-                "Kan ikke opprette journalpost i dokarkiv for meldekort med id $meldekortId"
+                "Kan ikke opprette journalpost i dokumentarkiv for meldekort med id $meldekortId"
             )
             defaultLog.warn(errorMessage.error, e)
 
@@ -223,13 +185,3 @@ fun Routing.opprettJournalpost(
             call.respond(status = HttpStatusCode.OK, message = errorMessage)
         }
     }
-
-fun maskerFnrIAmeldingMeldekort(meldekort: Meldekortdetaljer): Meldekortdetaljer {
-    meldekort.fodselsnr =
-        if (meldekort.fodselsnr.length == 11) meldekort.fodselsnr.substring(
-            0,
-            6
-        ) + "*****" else "00000000000"
-
-    return meldekort
-}
