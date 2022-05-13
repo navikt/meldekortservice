@@ -163,7 +163,7 @@ fun Routing.opprettJournalpost(
 
         try {
             val journalpostResponse = dokarkivService.createJournalpost(journalpost)
-            defaultLog.info("Journalpost med id $journalpostResponse.journalpostId opprettet for meldekort med id $meldekortId")
+            defaultLog.info("Journalpost med id " + journalpostResponse.journalpostId + " opprettet for meldekort med id $meldekortId")
 
             dbService.lagreJournalpostData(
                 journalpostResponse.journalpostId,
