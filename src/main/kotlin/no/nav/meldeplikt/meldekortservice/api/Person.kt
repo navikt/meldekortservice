@@ -166,7 +166,7 @@ fun Routing.opprettJournalpost(
 
         try {
             val journalpostResponse = dokarkivService.createJournalpost(journalpost)
-            defaultLog.info("JournalpostId = " + journalpostResponse.journalpostId)
+            defaultLog.info("Journalpost med id $journalpostResponse.journalpostId opprettet for meldekort med id $meldekortId")
 
             dbService.lagreJournalpostData(
                 journalpostResponse.journalpostId,
@@ -177,7 +177,7 @@ fun Routing.opprettJournalpost(
             call.respond(status = HttpStatusCode.OK, message = "Journalpost opprettet")
         } catch (e: Exception) {
             val errorMessage = ErrorMessage(
-                "Kan ikke opprette journalpost i dokarkiv for meldekort med id $meldekortId"
+                "Kan ikke opprette journalpost i dokumentarkiv for meldekort med id $meldekortId"
             )
             defaultLog.warn(errorMessage.error, e)
 
