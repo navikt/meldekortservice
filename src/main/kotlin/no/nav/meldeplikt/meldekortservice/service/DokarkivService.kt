@@ -44,7 +44,7 @@ class DokarkivService(
     }
 
     private fun hentAccessToken(): AccessToken {
-        defaultLog.info("Henter AccessToken for Dokarkiv")
+        defaultLog.debug("Henter AccessToken for Dokarkiv")
         var token = AccessToken(null, null, null)
 
         if (isCurrentlyRunningOnNais()) {
@@ -54,7 +54,7 @@ class DokarkivService(
                 }
             }
         } else {
-            defaultLog.info("Henter ikke AccessToken, da appen kjører lokalt")
+            defaultLog.info("Henter ikke AccessToken for Dokarkiv, da appen kjører lokalt")
             token = token.copy(accessToken = "token")
         }
 

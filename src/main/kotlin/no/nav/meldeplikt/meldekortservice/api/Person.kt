@@ -134,11 +134,8 @@ fun Routing.kontrollerMeldekort(kontrollService: KontrollService, dbService: DBS
             val errorMessage =
                 ErrorMessage("Meldekort med id ${meldekort.meldekortId} ble ikke sendt inn. ${e.message}")
             defaultLog.warn(errorMessage.error, e)
-            defaultLog.info(
-                "Exception fra meldekortkontroll for meldekort: " + defaultObjectMapper.writeValueAsString(
-                    meldekort
-                )
-            )
+            defaultLog.info("Exception fra meldekortkontroll for meldekort: "
+                    + defaultObjectMapper.writeValueAsString(meldekort))
             call.respond(status = HttpStatusCode.ServiceUnavailable, message = errorMessage)
         }
     }

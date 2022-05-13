@@ -83,7 +83,7 @@ class ArenaOrdsService(
     }
 
     private fun hentOrdsToken(): AccessToken {
-        defaultLog.info("Henter ORDS-token")
+        defaultLog.debug("Henter ORDS-token")
         var token = AccessToken(null, null, null)
 
         if (isCurrentlyRunningOnNais()) {
