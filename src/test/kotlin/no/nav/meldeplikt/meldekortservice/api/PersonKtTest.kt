@@ -396,7 +396,7 @@ class PersonKtTest {
                 setBody(journalpost!!.readText())
             }.apply {
                 response.status() shouldBe HttpStatusCode.OK
-                response.content shouldBeEqualTo "{\"error\":\"Kan ikke opprette journalpost i dokarkiv for meldekort med id 1011121315\"}"
+                response.content shouldBeEqualTo "{\"error\":\"Kan ikke opprette journalpost i dokumentarkiv for meldekort med id 1011121315\"}"
             }
         }
 
