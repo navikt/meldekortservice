@@ -1,5 +1,5 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
+// import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+// import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
 val flywayVersion = "8.4.0"
@@ -44,7 +44,7 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version "1.6.21"
     id("org.jetbrains.kotlin.plugin.allopen") version "1.6.21"
 
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    // id("com.github.johnrengelman.shadow") version "6.1.0"
 
     id("org.flywaydb.flyway") version ("8.4.0")
 
@@ -62,7 +62,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.github.jengelman.gradle.plugins:shadow:6.1.0")
+        // classpath("com.github.jengelman.gradle.plugins:shadow:6.1.0")
         classpath("org.junit.platform:junit-platform-gradle-plugin:1.2.0")
         classpath("javax.xml.bind:jaxb-api:2.4.0-b180830.0359")
         classpath("org.glassfish.jaxb:jaxb-runtime:2.4.0-b180830.0438")
@@ -143,6 +143,11 @@ configure<JavaPluginConvention> {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
 }
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+}
 
 application {
     mainClass.set(project.property("mainClassName").toString())
@@ -154,8 +159,10 @@ jacoco {
 
 tasks {
     withType<Jar> {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
         manifest.attributes["Main-Class"] = project.property("mainClassName").toString()
-        from(configurations.runtime.get().map { if (it.isDirectory) it else zipTree(it) })
+        from(configurations.compileClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
     }
 
     withType<Test> {
@@ -166,11 +173,13 @@ tasks {
         }
     }
 
+    /*
     withType<ShadowJar> {
         transform(ServiceFileTransformer::class.java) {
             setPath("META-INF/cxf")
         }
     }
+    */
 
     register("runServer", JavaExec::class) {
         main = project.property("mainClassName").toString()
