@@ -1,5 +1,5 @@
-// import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-// import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
 val flywayVersion = "8.4.0"
@@ -44,7 +44,7 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version "1.6.21"
     id("org.jetbrains.kotlin.plugin.allopen") version "1.6.21"
 
-    // id("com.github.johnrengelman.shadow") version "6.1.0"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 
     id("org.flywaydb.flyway") version ("8.4.0")
 
@@ -173,13 +173,11 @@ tasks {
         }
     }
 
-    /*
     withType<ShadowJar> {
         transform(ServiceFileTransformer::class.java) {
             setPath("META-INF/cxf")
         }
     }
-    */
 
     register("runServer", JavaExec::class) {
         main = project.property("mainClassName").toString()
