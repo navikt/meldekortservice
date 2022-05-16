@@ -37,6 +37,12 @@ val vaultVersion = "5.1.0"
 
 project.setProperty("mainClassName", "io.ktor.server.netty.EngineMain")
 
+repositories {
+    mavenCentral()
+    jcenter()
+    maven("https://plugins.gradle.org/m2/")
+}
+
 plugins {
 
     id("com.github.ManifestClasspath") version "0.1.0-RELEASE"
@@ -57,26 +63,12 @@ plugins {
     application
 }
 
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        // classpath("com.github.jengelman.gradle.plugins:shadow:6.1.0")
-        classpath("org.junit.platform:junit-platform-gradle-plugin:1.2.0")
-        classpath("javax.xml.bind:jaxb-api:2.4.0-b180830.0359")
-        classpath("org.glassfish.jaxb:jaxb-runtime:2.4.0-b180830.0438")
-        classpath("com.sun.activation:javax.activation:1.2.0")
-        classpath("com.sun.xml.ws:jaxws-tools:2.3.5") {
-            exclude(group = "com.sun.xml.ws", module = "policy")
-        }
-    }
+jacoco {
+    toolVersion = "0.8.7"
 }
 
-repositories {
-    mavenCentral()
-    jcenter()
-    maven("https://plugins.gradle.org/m2/")
+application {
+    mainClass.set(project.property("mainClassName").toString())
 }
 
 dependencies {
@@ -143,26 +135,25 @@ configure<JavaPluginConvention> {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
 }
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-}
-
-application {
-    mainClass.set(project.property("mainClassName").toString())
-}
-
-jacoco {
-    toolVersion = "0.8.7"
-}
 
 tasks {
+    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+        kotlinOptions {
+            jvmTarget = "17"
+        }
+    }
+
     withType<Jar> {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
         manifest.attributes["Main-Class"] = project.property("mainClassName").toString()
         from(configurations.compileClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
+    }
+
+    withType<ShadowJar> {
+        transform(ServiceFileTransformer::class.java) {
+            setPath("META-INF/cxf")
+        }
     }
 
     withType<Test> {
@@ -173,24 +164,18 @@ tasks {
         }
     }
 
-    withType<ShadowJar> {
-        transform(ServiceFileTransformer::class.java) {
-            setPath("META-INF/cxf")
+    jacocoTestReport {
+        reports {
+            xml.isEnabled = true
         }
+    }
+
+    named("sonarqube") {
+        dependsOn("jacocoTestReport")
     }
 
     register("runServer", JavaExec::class) {
         main = project.property("mainClassName").toString()
         classpath = sourceSets["main"].runtimeClasspath
     }
-
-    jacocoTestReport {
-        reports {
-            xml.isEnabled = true
-        }
-    }
-}
-
-tasks.named("sonarqube") {
-    dependsOn("jacocoTestReport")
 }
