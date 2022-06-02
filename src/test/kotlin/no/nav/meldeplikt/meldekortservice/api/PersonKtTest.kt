@@ -8,12 +8,10 @@ import io.ktor.http.*
 import io.ktor.locations.*
 import io.ktor.server.testing.*
 import io.mockk.*
-import no.aetat.amelding.externcontrolemelding.webservices.ExternControlEmeldingSOAP
-import no.aetat.arena.mk_meldekort_kontrollert.MeldekortKontrollertType
 import no.nav.meldeplikt.meldekortservice.config.Environment
-import no.nav.meldeplikt.meldekortservice.config.SoapConfig
 import no.nav.meldeplikt.meldekortservice.config.mainModule
 import no.nav.meldeplikt.meldekortservice.database.hentMidlertidigLagredeJournalposter
+import no.nav.meldeplikt.meldekortservice.model.MeldekortKontrollertType
 import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.DokumentInfo
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Journalpost
@@ -259,13 +257,6 @@ class PersonKtTest {
         meldekortKontrollertType.status = "OK"
         meldekortKontrollertType.arsakskoder = MeldekortKontrollertType.Arsakskoder()
 
-
-        mockkObject(SoapConfig)
-        val externControlEmeldingSOAP = mockk<ExternControlEmeldingSOAP>()
-
-        every { SoapConfig.soapService() } returns SoapServiceImpl(externControlEmeldingSOAP, mockk())
-        every { externControlEmeldingSOAP.kontrollerEmeldingMeldekort(any()) } returns meldekortKontrollertType
-
         coEvery { dbService.settInnInnsendtMeldekort(any()) } just Runs
         coEvery { kontrollService.kontroller(any()) } returns meldekortKontrollertType
 
@@ -307,15 +298,8 @@ class PersonKtTest {
         meldekortKontrollertType.status = "OK"
         meldekortKontrollertType.arsakskoder = MeldekortKontrollertType.Arsakskoder()
 
-
-        mockkObject(SoapConfig)
-        val externControlEmeldingSOAP = mockk<ExternControlEmeldingSOAP>()
-
-        every { SoapConfig.soapService() } returns SoapServiceImpl(externControlEmeldingSOAP, mockk())
-        every { externControlEmeldingSOAP.kontrollerEmeldingMeldekort(any()) } throws RuntimeException("Error i arena")
-
         coEvery { dbService.settInnInnsendtMeldekort(any()) } just Runs
-        coEvery { kontrollService.kontroller(any()) } returns meldekortKontrollertType
+        coEvery { kontrollService.kontroller(any()) } throws RuntimeException("Feil i meldekortkontroll-api")
 
         withTestApplication({
             (environment.config as MapApplicationConfig).setOidcConfig()
@@ -405,7 +389,7 @@ class PersonKtTest {
                 setBody(journalpost!!.readText())
             }.apply {
                 response.status() shouldBe HttpStatusCode.OK
-                response.content shouldBeEqualTo "{\"error\":\"Kan ikke opprette journalpost i dokarkiv for meldekort med id 1011121315\"}"
+                response.content shouldBeEqualTo "{\"error\":\"Kan ikke opprette journalpost i dokumentarkiv for meldekort med id 1011121315\"}"
             }
         }
 
@@ -418,6 +402,4 @@ class PersonKtTest {
             )
         }
     }
-
-
 }

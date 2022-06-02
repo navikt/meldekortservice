@@ -2,13 +2,10 @@
 
 package no.nav.meldeplikt.meldekortservice.utils.swagger
 
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
-import io.ktor.locations.KtorExperimentalLocationsAPI
-import io.ktor.locations.Location
+import io.ktor.http.*
+import io.ktor.locations.*
 import no.nav.meldeplikt.meldekortservice.config.swagger
 import no.nav.meldeplikt.meldekortservice.utils.defaultLog
-import org.slf4j.Logger
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -27,7 +24,6 @@ import kotlin.reflect.full.memberProperties
  */
 
 typealias ModelName = String
-
 typealias PropertyName = String
 typealias Path = String
 typealias Definitions = MutableMap<ModelName, ModelData>
@@ -317,7 +313,7 @@ open class Property(
 
 fun addDefinition(kClass: KClass<*>) {
     if ((kClass != Unit::class) && !swagger.components.schemas.containsKey(kClass.modelName())) {
-        defaultLog.info("Generating swagger spec for model ${kClass.modelName()}")
+        defaultLog.debug("Generating swagger spec for model ${kClass.modelName()}")
         swagger.components.schemas[kClass.modelName()] = ModelData(kClass)
     }
 }

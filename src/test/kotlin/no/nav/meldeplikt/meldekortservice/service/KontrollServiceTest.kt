@@ -3,56 +3,77 @@ package no.nav.meldeplikt.meldekortservice.service
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldStartWith
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.mock.MockEngine
-import io.ktor.client.engine.mock.respondOk
-import io.ktor.http.HttpMethod
+import io.ktor.client.*
+import io.ktor.client.engine.mock.*
+import io.ktor.client.features.json.*
+import io.ktor.http.*
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.FravaerInn
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.Meldekortkontroll
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.response.KontrollResponse
+import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
+import no.nav.meldeplikt.meldekortservice.utils.objectMapper
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlin.test.assertEquals
 
 class KontrollServiceTest {
-    val fnr = "1111111111"
-    //TODO trenger å fikse feil
+
     @Test
     fun kontroller() {
-       /* val kontrollResponse: KontrollResponse = KontrollResponse(meldekortId = 123, status = "test")
+        val kontrollResponse = KontrollResponse(meldekortId = 123, kontrollStatus = "OK")
         val meldekortkontroll = Meldekortkontroll(
             meldekortId = 123,
+            fnr = "11111111111",
             personId = 335,
-            kortType = "MASKINELT_OPPDATERT",
-            kortStatus = "SENDT",
+            kilde = "MELDEPLIKT",
+            kortType = "ELEKTRONISK",
+            periodeFra = LocalDate.parse("2020-01-20", DateTimeFormatter.ISO_DATE),
+            periodeTil = LocalDate.parse("2020-02-02", DateTimeFormatter.ISO_DATE),
+            meldedato = LocalDate.parse("2020-02-03", DateTimeFormatter.ISO_DATE),
             meldegruppe = "DAGP",
-            meldeperiode = MeldeperiodeInn(fra =  LocalDate.parse("2020-01-20", DateTimeFormatter.ISO_DATE), til =  LocalDate.parse("2020-02-02", DateTimeFormatter.ISO_DATE), kortKanSendesFra = LocalDate.parse("2020-02-01", DateTimeFormatter.ISO_DATE), kanKortSendes = true, periodeKode = "202004"),
-            fravaersdager = listOf(FravaerInn(dag =  LocalDate.parse("2020-01-21", DateTimeFormatter.ISO_DATE), harSyk=true, harKurs=true, harAnnet=true, arbeidTimer=0.0)),
-            sporsmal = Sporsmal(arbeidssoker=true, arbeidet=false, syk=false, annetFravaer=true, kurs=true, forskudd=false, signatur=false),
-            begrunnelse = "Begrunnelse"
+            arbeidssoker = true,
+            arbeidet = false,
+            syk = false,
+            annetFravaer = true,
+            kurs = false,
+            begrunnelse = "Begrunnelsen er fin",
+            meldekortdager = listOf(
+                FravaerInn(
+                    dato = LocalDate.parse("2020-01-21", DateTimeFormatter.ISO_DATE),
+                    syk = false,
+                    kurs = false,
+                    annetFravaer = true,
+                    arbeidTimer = 0.0
+                )
+            )
         )
-        val xmlString = """<KopierMeldekortResponse><meldekortId>123</meldekortId></KopierMeldekortResponse>"""
+
         val client = HttpClient(MockEngine) {
+            install(JsonFeature) {
+                serializer = JacksonSerializer { objectMapper }
+            }
+
             engine {
                 addHandler { request ->
                     request.method shouldBe HttpMethod.Post
                     request.headers["Authorization"] shouldNotBe null
                     request.headers["Authorization"] shouldStartWith "Bearer token"
-                    //request.body.contentType.toString() shouldBe "application/json"
+                    request.body.contentType.toString() shouldBe "application/json"
                     request.url.toString() shouldBe "https://dummyurl.nav.no/api/v1/kontroll"
-                    respondOk(
-                        defaultObjectMapper.writeValueAsString(kontrollResponse)
+                    respond(
+                        defaultObjectMapper.writeValueAsString(kontrollResponse),
+                        HttpStatusCode.OK,
+                        headersOf(HttpHeaders.ContentType, "application/json")
                     )
                 }
             }
-           *//* install(JsonFeature) {
-                serializer = JacksonSerializer { objectMapper }
-            }*//*
         }
-        val aadService: AadService = mockk<AadService>()
+
+        val aadService: AadService = mockk()
         coEvery { aadService.fetchAadToken() } returns "token"
 
         val kontrollService = KontrollService(
@@ -61,8 +82,10 @@ class KontrollServiceTest {
         )
 
         runBlocking {
-            var actualResponse = kontrollService.kontroller(meldekortkontroll)
-
-        }*/
+            val actualResponse = kontrollService.kontroller(meldekortkontroll)
+            assertEquals(actualResponse.meldekortId, kontrollResponse.meldekortId)
+            assertEquals(actualResponse.status, kontrollResponse.kontrollStatus)
+        }
     }
+
 }
