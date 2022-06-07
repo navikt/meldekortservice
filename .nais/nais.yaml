@@ -12,7 +12,6 @@ spec:
       claims:
         extra:
           - "azp_name"
-
   image: {{image}}
   port: 8090
   secureLogs:
@@ -52,13 +51,20 @@ spec:
     requests:
       cpu: 500m
       memory: 1024Mi
-  envFrom:
-    - configmap: loginservice-idporten
+  env:
+    - name: IDPORTEN_ACCEPTED_AUDIENCE
+      value: '{{ idportenAcceptedAudience }}'
+    - name: TOKEN_X_ACCEPTED_AUDIENCE
+      value: '{{ tokenxAcceptedAudience }}'
+  idporten:
+    enabled: true
+  tokenx:
+    enabled: true
 ---
 apiVersion: nais.io/v1
 kind: Alert
 metadata:
-  name: meldekortservice
+  name: {{ appName }}
   namespace: meldekort
   labels:
     team: meldekort
@@ -67,7 +73,7 @@ spec:
     slack:
       channel: '#{{ slackAlertChannel }}'
   alerts:
-    - alert: meldekortservice_applikasjonsinstanser nede
+    - alert: {{ appName }}_applikasjonsinstanser nede
       expr: kube_deployment_status_replicas_unavailable{deployment=~"meldekortservice.*"} > 0
       for: 2m
       description: >
@@ -77,7 +83,7 @@ spec:
             evt. kjør først `kubectl get pods -l app=\{{ $labels.deployment }} -n \{{ $labels.namespace }}` for en oversikt over poddene.
             Sjekk også Kibana for eventuelle feil som er logget; query `application:\{{ $labels.deployment }} AND (level:Error OR level:Warning)`.
       severity: danger
-    - alert: meldekortservice_feil er logget
+    - alert: {{ appName }}_feil er logget
       expr: sum(increase(logd_messages_total{log_app=~"meldekortservice.*",log_level="Error"}[10m])) by (log_app, log_namespace) > 0
       for: 3m
       description: >

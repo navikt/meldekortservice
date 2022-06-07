@@ -11,6 +11,7 @@ import io.ktor.http.*
 import io.mockk.every
 import io.mockk.mockkStatic
 import kotlinx.coroutines.runBlocking
+import no.nav.meldeplikt.meldekortservice.config.DUMMY_TOKEN
 import no.nav.meldeplikt.meldekortservice.model.feil.OrdsException
 import no.nav.meldeplikt.meldekortservice.model.response.OrdsStringResponse
 import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
@@ -94,7 +95,7 @@ class ArenaOrdsServiceTest {
                 addHandler { request ->
                     request.method shouldBe HttpMethod.Get
                     request.headers["Authorization"] shouldNotBe null
-                    request.headers["Authorization"] shouldStartWith "Bearer token"
+                    request.headers["Authorization"] shouldStartWith "Bearer $DUMMY_TOKEN"
                     request.url.toString() shouldBe "https://dummyurl.nav.no/api/v1/meldeplikt/meldekort/historiske?fnr=1234&antMeldeperioder=10"
                     respond(
                         xmlString
@@ -140,7 +141,7 @@ class ArenaOrdsServiceTest {
                 addHandler { request ->
                     request.method shouldBe HttpMethod.Get
                     request.headers["Authorization"] shouldNotBe null
-                    request.headers["Authorization"] shouldStartWith "Bearer token"
+                    request.headers["Authorization"] shouldStartWith "Bearer $DUMMY_TOKEN"
                     request.url.toString() shouldBe "https://dummyurl.nav.no/api/v1/meldeplikt/meldekort/detaljer?meldekortId=1"
                     respond(
                         xmlString
@@ -164,7 +165,7 @@ class ArenaOrdsServiceTest {
                 addHandler { request ->
                     request.method shouldBe HttpMethod.Post
                     request.headers["Authorization"] shouldNotBe null
-                    request.headers["Authorization"] shouldStartWith "Bearer token"
+                    request.headers["Authorization"] shouldStartWith "Bearer $DUMMY_TOKEN"
                     request.headers["meldekortId"] shouldBe "123"
                     request.url.toString() shouldBe "https://dummyurl.nav.no/api/v1/meldeplikt/meldekort/kopi"
                     respondOk(
