@@ -33,6 +33,7 @@ val tjenestespecVersion = "1.2019.09.25-00.21-49b69f0625e0"
 val tokenValidationVersion = "2.0.17"
 val vaultJdbcVersion = "1.3.9"
 val vaultVersion = "5.1.0"
+val cxfVersion = "3.5.2"
 
 
 project.setProperty("mainClassName", "io.ktor.server.netty.EngineMain")
@@ -129,6 +130,10 @@ dependencies {
     implementation("com.sun.xml.ws:jaxws-tools:$jaxwsToolsVersion") {
         exclude(group = "com.sun.xml.ws", module = "policy")
     }
+
+    implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
 }
 
 configure<JavaPluginConvention> {
