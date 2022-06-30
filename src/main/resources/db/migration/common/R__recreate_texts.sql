@@ -1,0 +1,3 @@
+--
+-- This migration is not used. Texts have been moved to meldekort-api
+--
