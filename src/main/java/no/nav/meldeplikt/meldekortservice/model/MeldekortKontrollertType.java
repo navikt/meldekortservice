@@ -2,6 +2,7 @@ package no.nav.meldeplikt.meldekortservice.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MeldekortKontrollertType {
 
@@ -51,6 +52,15 @@ public class MeldekortKontrollertType {
             }
             return this.arsakskode;
         }
+
+        @Override
+        public String toString() {
+            return "[" +
+                    this.arsakskode.stream()
+                            .map(arsakskode -> "{" + arsakskode.kode + " " + arsakskode.tekst + "}")
+                            .collect(Collectors.joining())
+                    + "]";
+        }
     }
 
     public static class MeldekortDager {
@@ -62,5 +72,22 @@ public class MeldekortKontrollertType {
             }
             return this.meldekortDag;
         }
+
+        @Override
+        public String toString() {
+            return "[" +
+                    this.meldekortDag.stream()
+                            .map(meldekortDag -> "{" + meldekortDag.dag + " " + meldekortDag.meldegruppe + "}")
+                            .collect(Collectors.joining())
+                    + "]";
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "meldekortId: " + this.meldekortId + "\n" +
+                "status: " + this.status + "\n" +
+                "arsakskoder: " + this.arsakskoder + "\n" +
+                "meldekortDager: " + this.meldekortDager + "\n";
     }
 }
