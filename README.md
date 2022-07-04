@@ -28,17 +28,6 @@ Swagger er tilgjengelig på http://localhost:8090/meldekortservice/internal/apid
 ## Feilsøking
 For å være sikker på at man får en ny tom database, kan man kjøre kommandoen: `docker-compose down -v`.
 
-## Tekster
-Denne appen blant annet støtter tekstversjonering for meldekort-frontend.
-Meldekort-frontend viser de versjonenne av tekstene som var gyldige i begynnelsen av meldeperioden til aktivt
-meldekort. Hvis meldekort ikke er valgt, viser frontend de nyeste versjonene av tekstene.
-
-Tekstene er lagret i en DB og derfor må frontend gå gjennom meldekort-api og meldekortservice for å nå dem.
-
-For å endre tekstene (eller opprette nye versjoner) må man endre fil R__recreate_texts.sql her, i meldekortservice, og
-deploye meldekortservice på nytt.
-Dette gir mulighet å teste endringer i DEV/QA først og hindrer direkte endringer i prod DB.
-
 ## Henvendelser
 Spørsmål knyttet til koden eller prosjektet kan rettes mot https://github.com/orgs/navikt/teams/meldekort.
 

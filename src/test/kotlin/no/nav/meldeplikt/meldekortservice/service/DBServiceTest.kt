@@ -12,7 +12,6 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.sql.SQLException
-import kotlin.test.assertTrue
 
 class DBServiceTest {
     private val database = H2Database("dbservicetest")
@@ -98,38 +97,5 @@ class DBServiceTest {
             val result = database.dbQuery { hentJournalpostData() }
             assertEquals(1, result.size)
         }
-    }
-
-    @Test
-    fun `skal returnere tekst hvis eksisterer`() {
-        val dbService = DBService(database)
-
-        var result = dbService.hentTekst("diverse.tilbake", "nb", "1000-01-01")
-        assertEquals("Til Ditt NAV", result)
-
-        result = dbService.hentTekst("diverse.tilbake", "en", "1000-01-01")
-        assertEquals("To Your page", result)
-    }
-
-    @Test
-    fun `skal returnere null hvis tekst ikke eksisterer`() {
-        val dbService = DBService(database)
-
-        var result = dbService.hentTekst("eksisterer_ikke", "nb", "1000-01-01")
-        assertEquals(null, result)
-
-        result = dbService.hentTekst("eksisterer_ikke", "en", "1000-01-01")
-        assertEquals(null, result)
-    }
-
-    @Test
-    fun `skal returnere tekster`() {
-        val dbService = DBService(database)
-
-        var result = dbService.hentAlleTekster("nb", "1000-01-01")
-        assertTrue(result.size > 1)
-
-        result = dbService.hentAlleTekster("en", "1000-01-01")
-        assertTrue(result.size > 1)
     }
 }
