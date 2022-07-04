@@ -4,7 +4,6 @@ import no.nav.meldeplikt.meldekortservice.model.ArsakskodeType
 import no.nav.meldeplikt.meldekortservice.model.MeldekortDagKontrollertType
 import no.nav.meldeplikt.meldekortservice.model.MeldekortKontrollertType
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.response.KontrollResponse
-import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
 
 class KontrollertTypeMapper {
 
@@ -18,8 +17,6 @@ class KontrollertTypeMapper {
             0 -> "OK"
             else -> "FEIL"
         }
-
-        println("########### " + defaultObjectMapper.writeValueAsString(kontroll))
         return kontroll
     }
 

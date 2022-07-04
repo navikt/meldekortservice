@@ -125,6 +125,8 @@ fun Routing.kontrollerMeldekort(kontrollService: KontrollService, dbService: DBS
                 }
             }
 
+            println(defaultObjectMapper.writeValueAsString(kontrollResponse))
+
             // Send kontroll-responsen tilbake som respons
             call.respondText(
                 defaultObjectMapper.writeValueAsString(kontrollResponse),
