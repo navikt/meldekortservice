@@ -9,7 +9,7 @@ class KontrollertTypeMapper {
 
     // Vi ignorerer kontrollstatus her
     fun mapKontrollResponseToKontrollertType(message: KontrollResponse): MeldekortKontrollertType {
-        var kontroll = MeldekortKontrollertType()
+        val kontroll = MeldekortKontrollertType()
         kontroll.meldekortId = message.meldekortId
         kontroll.arsakskoder = trekkutArsakskoder(message)
         kontroll.meldekortDager = trekkutMeldekortDager(message)
@@ -17,13 +17,15 @@ class KontrollertTypeMapper {
             0 -> "OK"
             else -> "FEIL"
         }
+
+        println("########### $kontroll")
         return kontroll
     }
 
     private fun trekkutArsakskoder(message: KontrollResponse): MeldekortKontrollertType.Arsakskoder {
-        var uttrekk = MeldekortKontrollertType.Arsakskoder()
+        val uttrekk = MeldekortKontrollertType.Arsakskoder()
         message.feilListe.forEach {
-            var item = ArsakskodeType()
+            val item = ArsakskodeType()
             item.kode = it.kode
             item.tekst = it.tekst
             uttrekk.arsakskode.add(item)
@@ -32,9 +34,9 @@ class KontrollertTypeMapper {
     }
 
     private fun trekkutMeldekortDager(message: KontrollResponse): MeldekortKontrollertType.MeldekortDager {
-        var uttrekk = MeldekortKontrollertType.MeldekortDager()
+        val uttrekk = MeldekortKontrollertType.MeldekortDager()
         message.feilListe.forEach {
-            var item = MeldekortDagKontrollertType()
+            val item = MeldekortDagKontrollertType()
             item.dag = it.dag!!
             uttrekk.meldekortDag.add(item)
         }

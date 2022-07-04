@@ -13,7 +13,6 @@ var DUMMY_TOKEN: String = JWT.create()
     .toString()
 
 data class Environment(
-    val ameldingUrl: URL = URL(getEnvVar("AMELDING_URI", "$DUMMY_URL/path")),
     val ordsUrl: URL = URL(getEnvVar("ORDS_URI", DUMMY_URL)),
     val ordsClientId: String = getEnvVar("CLIENT_ID", "cLiEnTiD"),
     val ordsClientSecret: String = getEnvVar("CLIENT_SECRET", "cLiEnTsEcReT"),
@@ -69,10 +68,10 @@ fun getEnvVar(varName: String, defaultValue: String? = null): String {
 }
 
 fun removeTrailingSlash(s: String): String {
-    if (s.endsWith("/")) {
-        return s.substring(0, s.length - 1);
+    return if (s.endsWith("/")) {
+        s.substring(0, s.length - 1)
     } else {
-        return s
+        s
     }
 }
 
