@@ -55,6 +55,9 @@ public class MeldekortKontrollertType {
 
         @Override
         public String toString() {
+            if (this.arsakskode == null) {
+                return "[ ]";
+            }
             return "[" +
                     this.arsakskode.stream()
                             .map(arsakskode -> "{" + arsakskode.kode + " " + arsakskode.tekst + "}")
@@ -75,6 +78,9 @@ public class MeldekortKontrollertType {
 
         @Override
         public String toString() {
+            if (this.meldekortDag == null) {
+                return "[ ]";
+            }
             return "[" +
                     this.meldekortDag.stream()
                             .map(meldekortDag -> "{" + meldekortDag.dag + " " + meldekortDag.meldegruppe + "}")
