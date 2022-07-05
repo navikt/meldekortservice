@@ -12,6 +12,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.FravaerInn
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.Meldekortkontroll
+import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.response.KontrollFeil
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.response.KontrollResponse
 import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
 import no.nav.meldeplikt.meldekortservice.utils.objectMapper
@@ -23,8 +24,24 @@ import kotlin.test.assertEquals
 class KontrollServiceTest {
 
     @Test
-    fun kontroller() {
+    fun kontrollerSkalReturnereOk() {
         val kontrollResponse = KontrollResponse(meldekortId = 123, kontrollStatus = "OK")
+
+        test(kontrollResponse, "OK")
+    }
+
+    @Test
+    fun kontrollerSkalReturnereFeil() {
+        val kontrollResponse = KontrollResponse(
+            meldekortId = 123, kontrollStatus = "OK", feilListe = listOf(
+                KontrollFeil(kode = "", tekst = "", dag = 1)
+            )
+        )
+
+        test(kontrollResponse, "FEIL")
+    }
+
+    private fun test(kontrollResponse: KontrollResponse, forventetStatus: String) {
         val meldekortkontroll = Meldekortkontroll(
             meldekortId = 123,
             fnr = "11111111111",
@@ -83,8 +100,8 @@ class KontrollServiceTest {
 
         runBlocking {
             val actualResponse = kontrollService.kontroller(meldekortkontroll)
-            assertEquals(actualResponse.meldekortId, kontrollResponse.meldekortId)
-            assertEquals(actualResponse.status, kontrollResponse.kontrollStatus)
+            assertEquals(kontrollResponse.meldekortId, actualResponse.meldekortId)
+            assertEquals(forventetStatus, actualResponse.status)
         }
     }
 
