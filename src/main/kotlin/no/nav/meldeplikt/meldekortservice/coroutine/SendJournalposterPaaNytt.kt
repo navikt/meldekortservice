@@ -67,7 +67,7 @@ class SendJournalposterPaaNytt(
                         // Slette midlertidig lagret journalpost
                         openConnection.sletteMidlertidigLagretJournalpost(triple.first)
                     } catch (e: Exception) {
-                        logger.error(e)
+                        defaultLog.error(e.message)
                         // Kan ikke opprette journalpost igjen. Oppdater teller
                         openConnection.oppdaterMidlertidigLagretJournalpost(triple.first, triple.third + 1)
                         defaultLog.warn("Kan ikke opprette journalpost igjen. Data ID = ${triple.first}, retries = ${triple.third}")
