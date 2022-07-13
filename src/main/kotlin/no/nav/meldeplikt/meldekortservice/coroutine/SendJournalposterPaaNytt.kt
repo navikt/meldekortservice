@@ -9,6 +9,7 @@ import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Journalpost
 import no.nav.meldeplikt.meldekortservice.service.DBService
 import no.nav.meldeplikt.meldekortservice.service.DokarkivService
 import no.nav.meldeplikt.meldekortservice.utils.defaultLog
+import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
 
@@ -55,7 +56,8 @@ class SendJournalposterPaaNytt(
                         // Dvs. vi kan lagre journalpostId og dokumentInfoId og slette midlertidig lagret journalpost fra DB
 
                         // Send
-                        val journalpostResponse = dokarkivService.createJournalpost(triple.second)
+                        defaultLog.info(defaultObjectMapper.writeValueAsString(journalpost))
+                        val journalpostResponse = dokarkivService.createJournalpost(journalpost)
 
                         // Lagre journalpostId-meldekortId
                         openConnection.lagreJournalpostData(
