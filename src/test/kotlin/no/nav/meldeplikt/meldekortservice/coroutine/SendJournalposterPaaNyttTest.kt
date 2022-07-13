@@ -1,17 +1,27 @@
 package no.nav.meldeplikt.meldekortservice.coroutine
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import io.ktor.client.*
+import io.ktor.client.engine.mock.*
+import io.ktor.client.features.json.*
+import io.ktor.http.*
+import io.ktor.routing.*
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
+import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.database.H2Database
 import no.nav.meldeplikt.meldekortservice.database.hentAlleMidlertidigLagredeJournalposter
 import no.nav.meldeplikt.meldekortservice.database.hentJournalpostData
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.DokumentInfo
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Journalpost
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.JournalpostResponse
+import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.service.DBService
 import no.nav.meldeplikt.meldekortservice.service.DokarkivService
+import no.nav.meldeplikt.meldekortservice.utils.JOURNALPOST_PATH
+import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -51,8 +61,33 @@ class SendJournalposterPaaNyttTest {
             )
         )
 
-        val dokarkivService = mockk<DokarkivService>()
-        coEvery { dokarkivService.createJournalpost(any()) } returns journalpostResponse
+        val env = Environment()
+
+        val httpClient = HttpClient(MockEngine) {
+            install(JsonFeature) {
+                serializer = JacksonSerializer { defaultObjectMapper }
+            }
+            expectSuccess = false
+            engine {
+                addHandler { request ->
+                    respondError(HttpStatusCode.ServiceUnavailable)
+                    if (
+                        request.method == HttpMethod.Post &&
+                        request.url.protocol.name + "://" + request.url.host == env.dokarkivUrl &&
+                        request.url.fullPath == "$JOURNALPOST_PATH?forsoekFerdigstill=true"
+                    ) {
+                        respond(
+                            ObjectMapper().writeValueAsString(journalpostResponse),
+                            HttpStatusCode.Conflict,
+                            headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                        )
+                    } else {
+                        respondError(HttpStatusCode.BadRequest)
+                    }
+                }
+            }
+        }
+        val dokarkivService = DokarkivService(httpClient)
 
         // Sjekk at det ikke finnes midlertidig lagrede journalposter
         runBlocking {
