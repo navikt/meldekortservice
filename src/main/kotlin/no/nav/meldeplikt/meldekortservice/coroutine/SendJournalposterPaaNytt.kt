@@ -1,5 +1,6 @@
 package no.nav.meldeplikt.meldekortservice.coroutine
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import kotlinx.coroutines.*
 import no.nav.meldeplikt.meldekortservice.database.hentMidlertidigLagredeJournalposter
 import no.nav.meldeplikt.meldekortservice.database.lagreJournalpostData
@@ -9,7 +10,10 @@ import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Journalpost
 import no.nav.meldeplikt.meldekortservice.service.DBService
 import no.nav.meldeplikt.meldekortservice.service.DokarkivService
 import no.nav.meldeplikt.meldekortservice.utils.defaultLog
-import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
+import java.nio.ByteBuffer
+import java.nio.CharBuffer
+import java.nio.charset.StandardCharsets
+import java.util.*
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
 
@@ -56,7 +60,7 @@ class SendJournalposterPaaNytt(
                         // Dvs. vi kan lagre journalpostId og dokumentInfoId og slette midlertidig lagret journalpost fra DB
 
                         // Send
-                        defaultLog.info(defaultObjectMapper.writeValueAsString(journalpost))
+                        println(bytesToChars(ObjectMapper().writeValueAsBytes(journalpost)))
                         val journalpostResponse = dokarkivService.createJournalpost(journalpost)
 
                         // Lagre journalpostId-meldekortId
@@ -82,5 +86,12 @@ class SendJournalposterPaaNytt(
 
             delay(interval)
         }
+    }
+
+    // It would be better to convert an object to a string and then string to array of chars
+    // But because of some interceptor that converts FNR into * in test-environment, we have to convert objects to bytes first
+    private fun bytesToChars(bytes: ByteArray?): CharArray {
+        val charBuffer: CharBuffer = StandardCharsets.UTF_8.decode(ByteBuffer.wrap(bytes))
+        return Arrays.copyOf(charBuffer.array(), charBuffer.limit())
     }
 }
