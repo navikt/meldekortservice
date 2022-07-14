@@ -32,7 +32,7 @@ class DokarkivService(
 ) {
 
     suspend fun createJournalpost(journalpost: Journalpost): JournalpostResponse {
-        return httpClient.post("${env.dokarkivUrl}$JOURNALPOST_PATH?forsoekFerdigstill=true") {
+        return httpClient.post("https://dokarkiv.dev.intern.nav.no$JOURNALPOST_PATH?forsoekFerdigstill=true") {
             contentType(ContentType.Application.Json)
             header("Authorization", "Bearer " + hentToken().accessToken)
             body = journalpost
