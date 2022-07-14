@@ -17,18 +17,11 @@ import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import org.amshove.kluent.shouldBe
 import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.output.MigrateResult
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 
 @KtorExperimentalLocationsAPI
 class WeblogicKtTest {
     private val flywayConfig = mockk<Flyway>()
-
-    @BeforeAll
-    fun setUp() {
-        System.setProperty("NAIS_APP_NAME", "TEST")
-        System.setProperty("NAIS_NAMESPACE", "TEST")
-    }
 
     @Test
     fun `test weblogic returns true when Arena is up`() {

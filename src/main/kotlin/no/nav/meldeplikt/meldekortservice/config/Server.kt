@@ -67,8 +67,6 @@ fun Application.mainModule(
 ) {
     setAppProperties(env)
 
-    MetricsClient.enableMetrics(MetricsConfig.resolveNaisConfig())
-
     val dbService: DBService = mockDBService ?: initializeInnsendtMeldekortServiceApi(env)
     val flywayConfig: org.flywaydb.core.Flyway = mockFlywayConfig ?: initializeFlyway(env)
 

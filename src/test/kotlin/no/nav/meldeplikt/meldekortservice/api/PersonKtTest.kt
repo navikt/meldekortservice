@@ -79,9 +79,6 @@ class PersonKtTest {
 
             mockkStatic(::isCurrentlyRunningOnNais)
             every { isCurrentlyRunningOnNais() } returns true
-
-            System.setProperty("NAIS_APP_NAME", "TEST")
-            System.setProperty("NAIS_NAMESPACE", "TEST")
         }
 
         @AfterAll
