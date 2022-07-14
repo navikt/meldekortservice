@@ -24,8 +24,6 @@ import no.nav.meldeplikt.meldekortservice.utils.*
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Contact
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Information
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Swagger
-import no.nav.metrics.MetricsClient
-import no.nav.metrics.MetricsConfig
 import no.nav.sbl.dialogarena.common.cxf.StsSecurityConstants
 import no.nav.sbl.util.EnvironmentUtils.Type.PUBLIC
 import no.nav.sbl.util.EnvironmentUtils.Type.SECRET

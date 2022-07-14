@@ -16,7 +16,7 @@ spec:
   port: 8090
   prometheus:
     enabled: true
-    path: /meldekortservice/internal/isAlive
+    path: /meldekortservice/internal/metrics
   secureLogs:
     enabled: true
   ingresses:
