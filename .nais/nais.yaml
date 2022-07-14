@@ -55,8 +55,6 @@ spec:
       cpu: 500m
       memory: 1024Mi
   env:
-    - name: DISABLE_SENSU_METRICS
-      value: 'true'
     - name: IDPORTEN_ACCEPTED_AUDIENCE
       value: '{{ idportenAcceptedAudience }}'
     - name: TOKEN_X_ACCEPTED_AUDIENCE
