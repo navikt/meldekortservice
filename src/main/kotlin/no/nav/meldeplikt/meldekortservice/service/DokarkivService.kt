@@ -36,7 +36,6 @@ class DokarkivService(
 ) {
 
     suspend fun createJournalpost(journalpost: Journalpost): JournalpostResponse {
-        println(bytesToChars(ObjectMapper().writeValueAsBytes(journalpost)))
         return httpClient.post("${env.dokarkivUrl}$JOURNALPOST_PATH?forsoekFerdigstill=true") {
             contentType(ContentType.Application.Json)
             header("Authorization", "Bearer " + hentToken().accessToken)
@@ -58,6 +57,7 @@ class DokarkivService(
                     setupTokenRequest()
                 }
             }
+            println(token)
         } else {
             defaultLog.info("Henter ikke AccessToken for Dokarkiv, da appen kjører lokalt")
             token = token.copy(accessToken = "token")
