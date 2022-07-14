@@ -1,6 +1,5 @@
 package no.nav.meldeplikt.meldekortservice.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.ktor.client.*
 import io.ktor.client.engine.apache.*
 import io.ktor.client.features.*
@@ -14,9 +13,6 @@ import no.nav.meldeplikt.meldekortservice.model.AccessToken
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Journalpost
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.JournalpostResponse
 import no.nav.meldeplikt.meldekortservice.utils.*
-import java.nio.ByteBuffer
-import java.nio.CharBuffer
-import java.nio.charset.StandardCharsets
 import java.util.*
 
 class DokarkivService(
@@ -57,7 +53,6 @@ class DokarkivService(
                     setupTokenRequest()
                 }
             }
-            println(token)
         } else {
             defaultLog.info("Henter ikke AccessToken for Dokarkiv, da appen kjører lokalt")
             token = token.copy(accessToken = "token")
@@ -69,13 +64,5 @@ class DokarkivService(
     private fun HttpRequestBuilder.setupTokenRequest() {
         val base = "${env.srvMeldekortservice.username}:${env.srvMeldekortservice.password}"
         header("Authorization", "Basic ${Base64.getEncoder().encodeToString(base.toByteArray())}")
-    }
-
-
-    // It would be better to convert an object to a string and then string to array of chars
-    // But because of some interceptor that converts FNR into * in test-environment, we have to convert objects to bytes first
-    private fun bytesToChars(bytes: ByteArray?): CharArray {
-        val charBuffer: CharBuffer = StandardCharsets.UTF_8.decode(ByteBuffer.wrap(bytes))
-        return Arrays.copyOf(charBuffer.array(), charBuffer.limit())
     }
 }
