@@ -1,6 +1,5 @@
 package no.nav.meldeplikt.meldekortservice.coroutine
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import kotlinx.coroutines.*
 import no.nav.meldeplikt.meldekortservice.database.hentMidlertidigLagredeJournalposter
 import no.nav.meldeplikt.meldekortservice.database.lagreJournalpostData
@@ -10,10 +9,6 @@ import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Journalpost
 import no.nav.meldeplikt.meldekortservice.service.DBService
 import no.nav.meldeplikt.meldekortservice.service.DokarkivService
 import no.nav.meldeplikt.meldekortservice.utils.defaultLog
-import java.nio.ByteBuffer
-import java.nio.CharBuffer
-import java.nio.charset.StandardCharsets
-import java.util.*
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
 
