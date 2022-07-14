@@ -23,6 +23,9 @@ class InternalKtTest {
         every { isCurrentlyRunningOnNais() } returns false
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
+        System.setProperty("NAIS_APP_NAME", "TEST")
+        System.setProperty("NAIS_NAMESPACE", "TEST")
+
         withTestApplication({
             mainModule(
                 arenaOrdsService = mockk(),
