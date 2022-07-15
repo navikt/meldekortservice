@@ -130,9 +130,11 @@ dependencies {
         exclude(group = "com.sun.xml.ws", module = "policy")
     }
 
+    /*
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
+    */
 }
 
 configure<JavaPluginConvention> {
