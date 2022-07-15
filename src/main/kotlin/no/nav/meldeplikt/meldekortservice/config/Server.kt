@@ -5,9 +5,14 @@ import io.ktor.auth.*
 import io.ktor.features.*
 import io.ktor.jackson.*
 import io.ktor.locations.*
+import io.ktor.metrics.micrometer.*
 import io.ktor.request.*
 import io.ktor.routing.*
-import io.prometheus.client.hotspot.DefaultExports
+import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics
+import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics
+import io.micrometer.core.instrument.binder.system.ProcessorMetrics
+import io.micrometer.prometheus.PrometheusConfig
+import io.micrometer.prometheus.PrometheusMeterRegistry
 import no.nav.cache.Cache
 import no.nav.cache.CacheConfig
 import no.nav.cache.CacheUtils
@@ -68,7 +73,16 @@ fun Application.mainModule(
     val dbService: DBService = mockDBService ?: initializeInnsendtMeldekortServiceApi(env)
     val flywayConfig: org.flywaydb.core.Flyway = mockFlywayConfig ?: initializeFlyway(env)
 
-    DefaultExports.initialize()
+    val appMicrometerRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
+    install(MicrometerMetrics) {
+        registry = appMicrometerRegistry
+        meterBinders = listOf(
+            JvmMemoryMetrics(),
+            JvmGcMetrics(),
+            ProcessorMetrics()
+        )
+    }
+
     install(DefaultHeaders)
 
     install(ContentNegotiation) {
@@ -87,7 +101,7 @@ fun Application.mainModule(
     install(Locations)
 
     install(Routing) {
-        healthApi()
+        healthApi(appMicrometerRegistry)
         swaggerRoutes()
         weblogicApi()
         meldekortApi(arenaOrdsService)

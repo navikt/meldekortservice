@@ -26,8 +26,6 @@ val navCommonCacheVersion = "2.2020.03.18_12.19-ac82e907ebc9"
 val navCommonVersion = "1.2021.07.07_10.18-72bd65c546f6"
 val ojdbc8Version = "19.3.0.0"
 val postgresVersion = "42.3.1"
-val prometheusVersion = "0.16.0"
-val prometheusMicrometerVersion = "1.9.2"
 val slf4jVersion = "1.7.32"
 val swaggerVersion = "3.23.8"
 val tjenestespecVersion = "1.2019.09.25-00.21-49b69f0625e0"
@@ -80,11 +78,6 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("ch.qos.logback:logback-core:$logbackVersion")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashVersion")
-    implementation("io.prometheus:simpleclient_common:$prometheusVersion")
-    implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
-    implementation("io.prometheus:simpleclient:$prometheusVersion")
-    implementation("io.prometheus:simpleclient_servlet:$prometheusVersion")
-    implementation("io.micrometer:micrometer-registry-prometheus:$prometheusMicrometerVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-auth:$ktorVersion")
     implementation("io.ktor:ktor-auth-jwt:$ktorVersion")

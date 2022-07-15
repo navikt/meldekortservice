@@ -4,6 +4,7 @@ import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import io.micrometer.prometheus.PrometheusMeterRegistry
 import no.nav.meldeplikt.meldekortservice.config.SWAGGER_URL_V1
 import no.nav.meldeplikt.meldekortservice.config.swagger
 import no.nav.meldeplikt.meldekortservice.utils.API_PATH
@@ -11,7 +12,7 @@ import no.nav.meldeplikt.meldekortservice.utils.BASE_PATH
 import no.nav.meldeplikt.meldekortservice.utils.INTERNAL_PATH
 import no.nav.meldeplikt.meldekortservice.utils.swagger.SwaggerUi
 
-fun Route.healthApi() {
+fun Route.healthApi(appMicrometerRegistry: PrometheusMeterRegistry) {
 
     route(INTERNAL_PATH) {
 
@@ -26,6 +27,10 @@ fun Route.healthApi() {
         get("/ping") {
             val pingJsonResponse = """{"ping": "pong"}"""
             call.respondText(text = pingJsonResponse, contentType = ContentType.Application.Json)
+        }
+
+        get("metrics") {
+            call.respond(appMicrometerRegistry.scrape())
         }
     }
 }
