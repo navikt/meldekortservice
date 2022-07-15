@@ -142,4 +142,3 @@ private fun initializeInnsendtMeldekortServiceApi(env: Environment): DBService {
 private fun initializeFlyway(env: Environment): org.flywaydb.core.Flyway {
     return Flyway.configure(env).load()
 }
-
