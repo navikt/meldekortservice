@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test
 class WeblogicKtTest {
     private val flywayConfig = mockk<Flyway>()
 
+    /*
     @Test
     fun `test weblogic returns true when Arena is up`() {
         val soapServiceImpl = mockk<SoapServiceImpl>()
@@ -81,4 +82,5 @@ class WeblogicKtTest {
             }
         }
     }
+    */
 }

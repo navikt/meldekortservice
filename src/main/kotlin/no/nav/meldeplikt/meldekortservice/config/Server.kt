@@ -105,7 +105,7 @@ fun Application.mainModule(
     install(Routing) {
         healthApi(appMicrometerRegistry)
         swaggerRoutes()
-        weblogicApi()
+        // weblogicApi()
         meldekortApi(arenaOrdsService)
         personApi(arenaOrdsService, dbService, kontrollService, dokarkivService)
     }
