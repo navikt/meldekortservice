@@ -3,7 +3,7 @@ import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransf
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
 val flywayVersion = "8.4.0"
-val h2Version = "1.4.200"
+val h2Version = "2.1.214"
 val jacksonVersion = "2.13.3"
 val javaxActivationVersion = "1.1.1"
 val javaxAnnotationApiVersion = "1.3.2"
@@ -11,7 +11,7 @@ val javaxJaxwsApiVersion = "2.3.1"
 val jaxbApiVersion = "2.4.0-b180830.0359"
 val jaxbRuntimeVersion = "3.0.2"
 val jaxwsApiVersion = "2.3.1"
-val jaxwsToolsVersion = "4.0.0"
+val jaxwsToolsVersion = "3.0.2"
 val junitVersion = "5.8.2"
 val kluentVersion = "1.68"
 val kotestVersion = "5.3.2"
@@ -27,7 +27,7 @@ val navCommonVersion = "1.2021.07.07_10.18-72bd65c546f6"
 val ojdbc8Version = "19.3.0.0"
 val postgresVersion = "42.4.0"
 val slf4jVersion = "1.7.36"
-val swaggerVersion = "3.23.8"
+val swaggerVersion = "4.11.1"
 val tjenestespecVersion = "1.2019.09.25-00.21-49b69f0625e0"
 val tokenValidationVersion = "2.1.2"
 val vaultJdbcVersion = "1.3.9"
@@ -39,7 +39,6 @@ project.setProperty("mainClassName", "io.ktor.server.netty.EngineMain")
 
 repositories {
     mavenCentral()
-    jcenter()
     maven("https://plugins.gradle.org/m2/")
 }
 
@@ -136,12 +135,14 @@ dependencies {
     implementation("javax.xml.bind:jaxb-api:$jaxbApiVersion")
     implementation("org.glassfish.jaxb:jaxb-runtime:$jaxbRuntimeVersion")
     implementation("javax.activation:activation:$javaxActivationVersion")
+    /*
     implementation("com.sun.xml.ws:jaxws-tools:$jaxwsToolsVersion") {
         exclude(group = "com.sun.xml.ws", module = "policy")
     }
+    */
 }
 
-configure<JavaPluginConvention> {
+configure<JavaPluginExtension> {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
 }
@@ -161,7 +162,7 @@ tasks {
     }
 
     withType<ShadowJar> {
-        setZip64(true)
+        isZip64 = true
 
         transform(ServiceFileTransformer::class.java) {
             setPath("META-INF/cxf")
@@ -178,7 +179,7 @@ tasks {
 
     jacocoTestReport {
         reports {
-            xml.isEnabled = true
+            xml.required.set(true)
         }
     }
 
@@ -187,7 +188,7 @@ tasks {
     }
 
     register("runServer", JavaExec::class) {
-        main = project.property("mainClassName").toString()
+        mainClass.set(project.property("mainClassName").toString())
         classpath = sourceSets["main"].runtimeClasspath
     }
 }
