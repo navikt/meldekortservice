@@ -72,16 +72,6 @@ application {
 
 dependencies {
 
-    /*
-    implementation("org.apache.cxf:cxf-core:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-bindings-soap:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-ws-policy:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-frontend-simple:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
-    */
-
     implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
 
     implementation(kotlin("stdlib"))
@@ -137,13 +127,9 @@ dependencies {
     implementation("javax.xml.bind:jaxb-api:$jaxbApiVersion")
     implementation("org.glassfish.jaxb:jaxb-runtime:$jaxbRuntimeVersion")
     implementation("javax.activation:activation:$javaxActivationVersion")
-    /*
-    implementation("com.sun.xml.ws:jaxws-tools:$jaxwsToolsVersion") {
-        exclude(group = "com.sun.xml.ws", module = "policy")
+    implementation("com.sun.xml.ws:jaxws-rt:$jaxwsToolsVersion") {
+        exclude(group = "com.sun.xml.bind", module = "jaxb-core")
     }
-    */
-    // implementation("com.sun.xml.bind:jaxb-impl:$jaxwsToolsVersion")
-    implementation("jakarta.xml.bind:jakarta.xml.bind-api:3.0.1")
 }
 
 configure<JavaPluginExtension> {
