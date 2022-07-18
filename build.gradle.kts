@@ -142,7 +142,8 @@ dependencies {
         exclude(group = "com.sun.xml.ws", module = "policy")
     }
     */
-    implementation("com.sun.xml.bind:jaxb-impl:$jaxwsToolsVersion")
+    // implementation("com.sun.xml.bind:jaxb-impl:$jaxwsToolsVersion")
+    implementation("jakarta.xml.bind:jakarta.xml.bind-api:3.0.1")
 }
 
 configure<JavaPluginExtension> {
