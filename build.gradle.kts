@@ -11,7 +11,7 @@ val javaxJaxwsApiVersion = "2.3.1"
 val jaxbApiVersion = "2.4.0-b180830.0359"
 val jaxbRuntimeVersion = "3.0.2"
 val jaxwsApiVersion = "2.3.1"
-val jaxwsToolsVersion = "3.0.2"
+val jaxwsToolsVersion = "4.0.0"
 val junitVersion = "5.8.2"
 val kluentVersion = "1.68"
 val kotestVersion = "5.3.2"
@@ -127,9 +127,7 @@ dependencies {
     implementation("javax.xml.bind:jaxb-api:$jaxbApiVersion")
     implementation("org.glassfish.jaxb:jaxb-runtime:$jaxbRuntimeVersion")
     implementation("javax.activation:activation:$javaxActivationVersion")
-    implementation("com.sun.xml.ws:jaxws-rt:$jaxwsToolsVersion") {
-        exclude(group = "com.sun.xml.bind", module = "jaxb-core")
-    }
+    implementation("com.sun.xml.ws:jaxws-rt:$jaxwsToolsVersion")
 }
 
 configure<JavaPluginExtension> {
