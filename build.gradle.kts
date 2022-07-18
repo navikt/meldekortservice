@@ -73,6 +73,7 @@ application {
 
 dependencies {
 
+    /*
     implementation("org.apache.cxf:cxf-core:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-bindings-soap:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-ws-policy:$cxfVersion")
@@ -80,6 +81,7 @@ dependencies {
     implementation("org.apache.cxf:cxf-rt-frontend-simple:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
+    */
 
     implementation(kotlin("stdlib"))
     implementation("no.nav:vault-jdbc:$vaultJdbcVersion")
