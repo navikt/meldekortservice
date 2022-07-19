@@ -1,5 +1,6 @@
 package no.nav.meldeplikt.meldekortservice.service
 
+import mu.KLogging
 import no.nav.common.cxf.StsConfig
 import no.nav.meldeplikt.meldekortservice.config.SoapConfig
 import no.nav.meldeplikt.meldekortservice.model.WeblogicPing
@@ -19,12 +20,14 @@ class SoapServiceImpl(
     ).build()
 ) : SoapService {
 
+    companion object : KLogging()
+
     override fun pingWeblogic(): WeblogicPing {
         return try {
             oppfoelgingPing?.ping()
             WeblogicPing(true)
         } catch (e: Exception) {
-            defaultLog.info("Ingen svar fra WebLogic, ping feilet", e)
+            logger.info("Ingen svar fra WebLogic, ping feilet", e)
             WeblogicPing(false)
         }
     }
