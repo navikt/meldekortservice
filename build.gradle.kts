@@ -127,7 +127,9 @@ dependencies {
     implementation("javax.xml.bind:jaxb-api:$jaxbApiVersion")
     implementation("org.glassfish.jaxb:jaxb-runtime:$jaxbRuntimeVersion")
     implementation("javax.activation:activation:$javaxActivationVersion")
-    implementation("com.sun.xml.ws:jaxws-rt:$jaxwsToolsVersion")
+    implementation("com.sun.xml.ws:jaxws-tools:$jaxwsToolsVersion") {
+        exclude(group = "com.sun.xml.ws", module = "policy")
+    }
 }
 
 configure<JavaPluginExtension> {
