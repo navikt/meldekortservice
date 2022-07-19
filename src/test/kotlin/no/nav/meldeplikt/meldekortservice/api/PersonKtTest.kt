@@ -392,7 +392,10 @@ class PersonKtTest {
             }.apply {
                 response.status() shouldBe HttpStatusCode.OK
                 response.content?.replace(
-                    "\r\n",
+                    "\n",
+                    ""
+                )?.replace(
+                    "\r",
                     ""
                 ) shouldBeEqualTo "{  \"error\" : \"Kan ikke opprette journalpost i dokumentarkiv for meldekort med id 1011121315\"}"
             }
