@@ -9,9 +9,9 @@ val javaxActivationVersion = "1.1.1"
 val javaxAnnotationApiVersion = "1.3.2"
 val javaxJaxwsApiVersion = "2.3.1"
 val jaxbApiVersion = "2.4.0-b180830.0359"
-val jaxbRuntimeVersion = "3.0.2"
+val jaxbRuntimeVersion = "4.0.0"
 val jaxwsApiVersion = "2.3.1"
-val jaxwsToolsVersion = "2.3.5"
+val jaxwsToolsVersion = "2.3.5" // Senere versjoner har ikke javax.jws.WebService
 val junitVersion = "5.8.2"
 val kluentVersion = "1.68"
 val kotestVersion = "5.3.2"
@@ -72,15 +72,6 @@ application {
 
 dependencies {
 
-    implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-bindings-soap:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-ws-policy:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
-    implementation("org.apache.cxf:cxf-core:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-frontend-simple:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
-
     implementation(kotlin("stdlib"))
     implementation("no.nav:vault-jdbc:$vaultJdbcVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
@@ -137,6 +128,15 @@ dependencies {
     implementation("com.sun.xml.ws:jaxws-tools:$jaxwsToolsVersion") {
         exclude(group = "com.sun.xml.ws", module = "policy")
     }
+
+    implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-bindings-soap:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-ws-policy:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
+    implementation("org.apache.cxf:cxf-core:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-frontend-simple:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
 }
 
 configure<JavaPluginExtension> {
