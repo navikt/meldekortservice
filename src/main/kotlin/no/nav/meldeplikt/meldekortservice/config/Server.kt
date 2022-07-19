@@ -20,9 +20,6 @@ import io.micrometer.prometheus.PrometheusMeterRegistry
 import no.nav.cache.Cache
 import no.nav.cache.CacheConfig
 import no.nav.cache.CacheUtils
-import no.nav.common.utils.EnvironmentUtils.Type.PUBLIC
-import no.nav.common.utils.EnvironmentUtils.Type.SECRET
-import no.nav.common.utils.EnvironmentUtils.setProperty
 import no.nav.meldeplikt.meldekortservice.api.*
 import no.nav.meldeplikt.meldekortservice.coroutine.SendJournalposterPaaNytt
 import no.nav.meldeplikt.meldekortservice.database.OracleDatabase
@@ -36,6 +33,9 @@ import no.nav.meldeplikt.meldekortservice.utils.*
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Contact
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Information
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Swagger
+import no.nav.sbl.util.EnvironmentUtils.Type.PUBLIC
+import no.nav.sbl.util.EnvironmentUtils.Type.SECRET
+import no.nav.sbl.util.EnvironmentUtils.setProperty
 import no.nav.security.token.support.v2.tokenValidationSupport
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
