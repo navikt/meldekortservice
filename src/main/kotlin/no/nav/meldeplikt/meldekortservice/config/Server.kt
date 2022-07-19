@@ -20,6 +20,9 @@ import io.micrometer.prometheus.PrometheusMeterRegistry
 import no.nav.cache.Cache
 import no.nav.cache.CacheConfig
 import no.nav.cache.CacheUtils
+import no.nav.common.utils.EnvironmentUtils.Type.PUBLIC
+import no.nav.common.utils.EnvironmentUtils.Type.SECRET
+import no.nav.common.utils.EnvironmentUtils.setProperty
 import no.nav.meldeplikt.meldekortservice.api.*
 import no.nav.meldeplikt.meldekortservice.coroutine.SendJournalposterPaaNytt
 import no.nav.meldeplikt.meldekortservice.database.OracleDatabase
@@ -33,10 +36,6 @@ import no.nav.meldeplikt.meldekortservice.utils.*
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Contact
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Information
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Swagger
-import no.nav.sbl.dialogarena.common.cxf.StsSecurityConstants
-import no.nav.sbl.util.EnvironmentUtils.Type.PUBLIC
-import no.nav.sbl.util.EnvironmentUtils.Type.SECRET
-import no.nav.sbl.util.EnvironmentUtils.setProperty
 import no.nav.security.token.support.v2.tokenValidationSupport
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
@@ -127,9 +126,9 @@ fun Application.mainModule(
 }
 
 private fun setAppProperties(environment: Environment) {
-    setProperty(StsSecurityConstants.STS_URL_KEY, environment.stsUrl, PUBLIC)
-    setProperty(StsSecurityConstants.SYSTEMUSER_USERNAME, environment.srvMeldekortservice.username, PUBLIC)
-    setProperty(StsSecurityConstants.SYSTEMUSER_PASSWORD, environment.srvMeldekortservice.password, SECRET)
+    setProperty(STS_URL_KEY, environment.stsUrl, PUBLIC)
+    setProperty(SYSTEMUSER_USERNAME, environment.srvMeldekortservice.username, PUBLIC)
+    setProperty(SYSTEMUSER_PASSWORD, environment.srvMeldekortservice.password, SECRET)
     setProperty(SBL_ARBEID_USERNAME, environment.srvSblArbeid.username, PUBLIC)
     setProperty(SBL_ARBEID_PASSWORD, environment.srvSblArbeid.password, SECRET)
     setProperty(DB_ORACLE_USERNAME, environment.dbUserOracle.username, PUBLIC)
