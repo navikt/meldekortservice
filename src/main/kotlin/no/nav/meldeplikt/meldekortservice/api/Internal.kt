@@ -29,7 +29,7 @@ fun Route.healthApi(appMicrometerRegistry: PrometheusMeterRegistry) {
             call.respondText(text = pingJsonResponse, contentType = ContentType.Application.Json)
         }
 
-        get("/metrics") {
+        get("metrics") {
             call.respond(appMicrometerRegistry.scrape())
         }
     }
