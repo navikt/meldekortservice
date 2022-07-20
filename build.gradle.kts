@@ -23,7 +23,7 @@ val mockOauthVersion = "0.5.1"
 val mockitoVersion = "4.6.1"
 val mockkVersion = "1.12.4"
 val navCommonCacheVersion = "2.2020.03.18_12.19-ac82e907ebc9"
-val navCommonVersion = "1.2021.07.07_10.18-72bd65c546f6"
+val navCommonVersion = "2.2022.07.01_07.12-6a0864fa6938"
 val ojdbc8Version = "19.3.0.0"
 val postgresVersion = "42.4.0"
 val slf4jVersion = "1.7.36"
@@ -86,6 +86,7 @@ dependencies {
     implementation("io.ktor:ktor-locations:$ktorVersion")
     implementation("io.ktor:ktor-metrics-micrometer:$ktorVersion")
     implementation("io.ktor:ktor-jackson:$ktorVersion")
+    implementation("io.micrometer:micrometer-registry-prometheus:1.9.2")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
