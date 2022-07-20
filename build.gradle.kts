@@ -2,44 +2,43 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
-val flywayVersion = "8.4.0"
-val h2Version = "1.4.200"
-val jacksonVersion = "2.13.1"
+val flywayVersion = "8.5.12"
+val h2Version = "2.1.214"
+val jacksonVersion = "2.13.3"
 val javaxActivationVersion = "1.1.1"
 val javaxAnnotationApiVersion = "1.3.2"
 val javaxJaxwsApiVersion = "2.3.1"
 val jaxbApiVersion = "2.4.0-b180830.0359"
-val jaxbRuntimeVersion = "3.0.2"
+val jaxbRuntimeVersion = "4.0.0"
 val jaxwsApiVersion = "2.3.1"
-val jaxwsToolsVersion = "2.3.5"
+val jaxwsToolsVersion = "2.3.5" // Senere versjoner har ikke javax.jws.WebService
 val junitVersion = "5.8.2"
 val kluentVersion = "1.68"
-val kotestVersion = "5.0.3"
-val kotlinLoggerVersion = "2.1.21"
+val kotestVersion = "5.3.2"
+val kotlinLoggerVersion = "2.1.23"
 val ktorVersion = "1.6.7"
-val logbackVersion = "1.2.7"
-val logstashVersion = "7.0.1"
-val mockOauthVersion = "0.4.1"
-val mockitoVersion = "4.2.0"
-val mockkVersion = "1.12.2"
+val logbackVersion = "1.2.11"
+val logstashVersion = "7.2"
+val mockOauthVersion = "0.5.1"
+val mockitoVersion = "4.6.1"
+val mockkVersion = "1.12.4"
 val navCommonCacheVersion = "2.2020.03.18_12.19-ac82e907ebc9"
 val navCommonVersion = "1.2021.07.07_10.18-72bd65c546f6"
 val ojdbc8Version = "19.3.0.0"
-val postgresVersion = "42.3.1"
-val slf4jVersion = "1.7.32"
-val swaggerVersion = "3.23.8"
+val postgresVersion = "42.4.0"
+val slf4jVersion = "1.7.36"
+val swaggerVersion = "4.11.1"
 val tjenestespecVersion = "1.2019.09.25-00.21-49b69f0625e0"
-val tokenValidationVersion = "2.0.17"
+val tokenValidationVersion = "2.1.2"
 val vaultJdbcVersion = "1.3.9"
 val vaultVersion = "5.1.0"
-val cxfVersion = "3.5.2"
+val cxfVersion = "3.5.3"
 
 
 project.setProperty("mainClassName", "io.ktor.server.netty.EngineMain")
 
 repositories {
     mavenCentral()
-    jcenter()
     maven("https://plugins.gradle.org/m2/")
 }
 
@@ -47,16 +46,16 @@ plugins {
 
     id("com.github.ManifestClasspath") version "0.1.0-RELEASE"
 
-    id("org.jetbrains.kotlin.jvm") version "1.6.21"
-    id("org.jetbrains.kotlin.plugin.allopen") version "1.6.21"
+    id("org.jetbrains.kotlin.jvm") version "1.7.10"
+    id("org.jetbrains.kotlin.plugin.allopen") version "1.7.10"
 
     id("com.github.johnrengelman.shadow") version "7.1.2"
 
-    id("org.flywaydb.flyway") version ("8.4.0")
+    id("org.flywaydb.flyway") version ("8.5.12")
 
-    id("org.sonarqube") version "3.3"
+    id("org.sonarqube") version "3.4.0.2513"
 
-    id("com.github.ben-manes.versions") version "0.41.0"
+    id("com.github.ben-manes.versions") version "0.42.0"
 
     jacoco
 
@@ -130,14 +129,17 @@ dependencies {
         exclude(group = "com.sun.xml.ws", module = "policy")
     }
 
-    /*
+    implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-bindings-soap:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-ws-policy:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
+    implementation("org.apache.cxf:cxf-core:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-frontend-simple:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
-    */
+    implementation("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
 }
 
-configure<JavaPluginConvention> {
+configure<JavaPluginExtension> {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
 }
@@ -157,6 +159,8 @@ tasks {
     }
 
     withType<ShadowJar> {
+        isZip64 = true
+
         transform(ServiceFileTransformer::class.java) {
             setPath("META-INF/cxf")
         }
@@ -172,7 +176,7 @@ tasks {
 
     jacocoTestReport {
         reports {
-            xml.isEnabled = true
+            xml.required.set(true)
         }
     }
 
@@ -181,7 +185,7 @@ tasks {
     }
 
     register("runServer", JavaExec::class) {
-        main = project.property("mainClassName").toString()
+        mainClass.set(project.property("mainClassName").toString())
         classpath = sourceSets["main"].runtimeClasspath
     }
 }
