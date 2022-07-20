@@ -1,7 +1,7 @@
 package no.nav.meldeplikt.meldekortservice.api
 
 import io.ktor.http.*
-import io.ktor.locations.*
+import io.ktor.server.locations.*
 import io.ktor.server.testing.*
 import io.mockk.every
 import io.mockk.mockk
@@ -38,6 +38,9 @@ class InternalKtTest {
                     handleRequest(HttpMethod.Get, "/meldekortservice/internal/ping") {}.apply {
                         assertEquals(HttpStatusCode.OK, response.status())
                         assertEquals("""{"ping": "pong"}""", response.content)
+                        handleRequest(HttpMethod.Get, "/meldekortservice/internal/metrics") {}.apply {
+                            assertEquals(HttpStatusCode.OK, response.status())
+                        }
                     }
                 }
             }
