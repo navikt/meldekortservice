@@ -17,10 +17,6 @@ class SoapServiceImpl(
 ) : SoapService {
 
     override fun pingWeblogic(): WeblogicPing {
-        println(getProperty(SOAP_STS_URL_KEY))
-        println(getProperty(SOAP_SYSTEMUSER_USERNAME))
-        println(getProperty(SOAP_SYSTEMUSER_PASSWORD))
-
         return try {
             oppfoelgingPing?.ping()
             WeblogicPing(true)

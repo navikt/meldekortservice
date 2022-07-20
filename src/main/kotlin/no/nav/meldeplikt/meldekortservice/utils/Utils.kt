@@ -22,7 +22,6 @@ internal const val INTERNAL_PATH = "$BASE_PATH/internal"
 internal const val MELDEKORT_PATH = "$API_PATH/meldekort"
 internal const val PERSON_PATH = "$API_PATH/person"
 internal const val WEBLOGIC_PING_PATH = "$API_PATH/weblogic"
-internal const val TEKST_PATH = "$API_PATH/tekst"
 
 internal const val KONTROLL_KONTROLL = "/api/v1/kontroll"
 
@@ -49,9 +48,6 @@ internal const val JOURNALPOST_PATH = "$JOURNALPOSTAPI_PATH/journalpost"
 internal const val SOAP_STS_URL_KEY = "no.nav.modig.security.sts.url"
 internal const val SOAP_SYSTEMUSER_USERNAME = "no.nav.modig.security.systemuser.username"
 internal const val SOAP_SYSTEMUSER_PASSWORD = "no.nav.modig.security.systemuser.password"
-
-const val vaultUrl = "https://vault.adeo.no"
-const val vaultTokenPath = "/var/run/secrets/nais.io/vault/vault_token"
 
 internal val HTTP_STATUS_CODES_2XX = IntRange(200, 299)
 
