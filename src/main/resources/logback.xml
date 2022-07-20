@@ -1,4 +1,4 @@
 <configuration>
-    <include resource="logback-default-without-abac.xml"/>
+    <include resource="logback-default.xml"/>
     <logger name="org.ehcache.core.EhcacheManager" level="WARN"/>
 </configuration>
