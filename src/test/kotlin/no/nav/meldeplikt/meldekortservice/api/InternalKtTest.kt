@@ -38,6 +38,9 @@ class InternalKtTest {
                     handleRequest(HttpMethod.Get, "/meldekortservice/internal/ping") {}.apply {
                         assertEquals(HttpStatusCode.OK, response.status())
                         assertEquals("""{"ping": "pong"}""", response.content)
+                        handleRequest(HttpMethod.Get, "/meldekortservice/internal/metrics") {}.apply {
+                            assertEquals(HttpStatusCode.OK, response.status())
+                        }
                     }
                 }
             }
