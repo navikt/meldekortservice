@@ -1,9 +1,9 @@
 package no.nav.meldeplikt.meldekortservice.api
 
 import com.fasterxml.jackson.module.kotlin.readValue
+import io.ktor.config.*
 import io.ktor.http.*
-import io.ktor.server.config.*
-import io.ktor.server.locations.*
+import io.ktor.locations.*
 import io.ktor.server.testing.*
 import io.mockk.coEvery
 import io.mockk.every

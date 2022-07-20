@@ -54,10 +54,8 @@ class DBServiceTest {
             journalpostJson,
             Journalpost::class.java
         )
-        val id1 = "123456789012345678901234567890123456"
-        val id2 = "223456789012345678901234567890123456"
-        val journalpost1 = journalpost.copy(eksternReferanseId = id1)
-        val journalpost2 = journalpost.copy(eksternReferanseId = id2)
+        val journalpost1 = journalpost.copy(eksternReferanseId = "11")
+        val journalpost2 = journalpost.copy(eksternReferanseId = "22")
 
         runBlocking {
             // Lagre
@@ -67,19 +65,19 @@ class DBServiceTest {
             // Hente
             var journalpostData = connection.hentMidlertidigLagredeJournalposter()
             assertEquals(2, journalpostData.size)
-            assertEquals(1, journalpostData.filter { it.first == id1 }.size)
-            assertEquals(1, journalpostData.filter { it.first == id2 }.size)
+            assertEquals(1, journalpostData.filter { it.first == "11" }.size)
+            assertEquals(1, journalpostData.filter { it.first == "22" }.size)
 
             // Slette
-            connection.sletteMidlertidigLagretJournalpost(id1)
+            connection.sletteMidlertidigLagretJournalpost("11")
 
             // Oppdater
-            connection.oppdaterMidlertidigLagretJournalpost(id2, 5)
+            connection.oppdaterMidlertidigLagretJournalpost("22", 5)
 
             // Hente
             journalpostData = connection.hentMidlertidigLagredeJournalposter()
             assertEquals(1, journalpostData.size)
-            val data = journalpostData.first { it.first == id2 }
+            val data = journalpostData.first { it.first == "22" }
             assertEquals(5, data.third)
         }
     }

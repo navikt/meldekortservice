@@ -1,7 +1,7 @@
 package no.nav.meldeplikt.meldekortservice.api
 
 import io.ktor.http.*
-import io.ktor.server.locations.*
+import io.ktor.locations.*
 import io.ktor.server.testing.*
 import io.mockk.every
 import io.mockk.mockk

@@ -1,5 +1,7 @@
 package no.nav.meldeplikt.meldekortservice.utils.swagger
 
+import io.ktor.application.*
+import io.ktor.auth.*
 import io.ktor.http.*
 import io.ktor.http.HttpStatusCode.Companion.BadRequest
 import io.ktor.http.HttpStatusCode.Companion.InternalServerError
@@ -7,16 +9,22 @@ import io.ktor.http.HttpStatusCode.Companion.NoContent
 import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.http.HttpStatusCode.Companion.ServiceUnavailable
 import io.ktor.http.HttpStatusCode.Companion.Unauthorized
-import io.ktor.server.application.*
-import io.ktor.server.auth.*
-import io.ktor.server.locations.*
-import io.ktor.server.request.*
-import io.ktor.server.routing.Route
+import io.ktor.locations.*
+import io.ktor.request.*
+import io.ktor.routing.Route
 import io.ktor.util.pipeline.*
 import no.nav.meldeplikt.meldekortservice.config.swagger
 import no.nav.meldeplikt.meldekortservice.utils.defaultLog
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import java.util.*
+import kotlin.collections.List
+import kotlin.collections.Map
+import kotlin.collections.emptyList
+import kotlin.collections.forEach
+import kotlin.collections.getOrPut
+import kotlin.collections.listOf
+import kotlin.collections.mapOf
+import kotlin.collections.mutableMapOf
 import kotlin.collections.set
 import kotlin.reflect.KClass
 

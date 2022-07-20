@@ -1,11 +1,9 @@
 package no.nav.meldeplikt.meldekortservice.service
 
 import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.features.json.*
 import io.ktor.client.request.*
 import io.ktor.http.*
-import io.ktor.serialization.jackson.*
 import no.nav.meldeplikt.meldekortservice.config.AadServiceConfiguration
 import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.mapper.KontrollertTypeMapper
@@ -20,17 +18,18 @@ class KontrollService(
     private val responseMapper: KontrollertTypeMapper = KontrollertTypeMapper(),
     private val aadService: AadService = AadService(AadServiceConfiguration()),
     private val kontrollClient: HttpClient = HttpClient {
-        install(ContentNegotiation) {
-            register(ContentType.Application.Json, JacksonConverter(objectMapper))
+        install(JsonFeature) {
+            serializer = JacksonSerializer { objectMapper }
         }
     }
 ) {
     suspend fun kontroller(meldekort: Meldekortkontroll): MeldekortKontrollertType {
-        val message: KontrollResponse = kontrollClient.post("${env.meldekortKontrollUrl}$KONTROLL_KONTROLL") {
+        val message = kontrollClient.post<KontrollResponse> {
+            url("${env.meldekortKontrollUrl}$KONTROLL_KONTROLL")
             contentType(ContentType.Application.Json)
             header("Authorization", "Bearer " + aadService.fetchAadToken())
-            setBody(meldekort)
-        }.body()
+            body = meldekort
+        }
         return responseMapper.mapKontrollResponseToKontrollertType(message)
     }
 }

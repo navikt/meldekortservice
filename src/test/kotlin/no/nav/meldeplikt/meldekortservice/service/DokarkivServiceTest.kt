@@ -2,9 +2,8 @@ package no.nav.meldeplikt.meldekortservice.service
 
 import io.ktor.client.*
 import io.ktor.client.engine.mock.*
-import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.features.json.*
 import io.ktor.http.*
-import io.ktor.serialization.jackson.*
 import io.mockk.every
 import io.mockk.mockkStatic
 import kotlinx.coroutines.runBlocking
@@ -58,11 +57,8 @@ class DokarkivServiceTest {
             val token = AccessToken("dG9rZW4=", "Bearer", 3600)
 
             val client = HttpClient(MockEngine) {
-                install(ContentNegotiation) {
-                    register(
-                        ContentType.Application.Json,
-                        JacksonConverter(defaultObjectMapper)
-                    )
+                install(JsonFeature) {
+                    serializer = JacksonSerializer { defaultObjectMapper }
                 }
                 expectSuccess = false
                 engine {

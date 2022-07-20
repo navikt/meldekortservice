@@ -3,9 +3,9 @@ package no.nav.meldeplikt.meldekortservice.api
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import io.ktor.config.*
 import io.ktor.http.*
-import io.ktor.server.config.*
-import io.ktor.server.locations.*
+import io.ktor.locations.*
 import io.ktor.server.testing.*
 import io.mockk.*
 import no.nav.meldeplikt.meldekortservice.config.Environment
@@ -22,10 +22,7 @@ import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Sporsmal
 import no.nav.meldeplikt.meldekortservice.model.response.OrdsStringResponse
-import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
-import no.nav.meldeplikt.meldekortservice.service.DBService
-import no.nav.meldeplikt.meldekortservice.service.DokarkivService
-import no.nav.meldeplikt.meldekortservice.service.KontrollService
+import no.nav.meldeplikt.meldekortservice.service.*
 import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
 import no.nav.meldeplikt.meldekortservice.utils.defaultXmlMapper
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
@@ -391,13 +388,7 @@ class PersonKtTest {
                 setBody(journalpost!!.readText())
             }.apply {
                 response.status() shouldBe HttpStatusCode.OK
-                response.content?.replace(
-                    "\n",
-                    ""
-                )?.replace(
-                    "\r",
-                    ""
-                ) shouldBeEqualTo "{  \"error\" : \"Kan ikke opprette journalpost i dokumentarkiv for meldekort med id 1011121315\"}"
+                response.content shouldBeEqualTo "{\"error\":\"Kan ikke opprette journalpost i dokumentarkiv for meldekort med id 1011121315\"}"
             }
         }
 

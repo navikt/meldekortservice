@@ -1,13 +1,11 @@
 package no.nav.meldeplikt.meldekortservice.service
 
 import io.ktor.client.*
-import io.ktor.client.call.*
 import io.ktor.client.engine.apache.*
-import io.ktor.client.plugins.*
-import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.features.*
+import io.ktor.client.features.json.*
 import io.ktor.client.request.*
 import io.ktor.http.*
-import io.ktor.serialization.jackson.*
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.config.CACHE
 import no.nav.meldeplikt.meldekortservice.config.Environment
@@ -19,8 +17,8 @@ import java.util.*
 
 class DokarkivService(
     private val httpClient: HttpClient = HttpClient(Apache) {
-        install(ContentNegotiation) {
-            register(ContentType.Application.Json, JacksonConverter(objectMapper))
+        install(JsonFeature) {
+            serializer = JacksonSerializer { objectMapper }
         }
         install(HttpTimeout) {
             // max time periods
@@ -37,8 +35,8 @@ class DokarkivService(
         return httpClient.post("${env.dokarkivUrl}$JOURNALPOST_PATH?forsoekFerdigstill=true") {
             contentType(ContentType.Application.Json)
             header("Authorization", "Bearer " + hentToken().accessToken)
-            setBody(journalpost)
-        }.body()
+            body = journalpost
+        }
     }
 
     private fun hentToken(): AccessToken {
@@ -53,7 +51,7 @@ class DokarkivService(
             runBlocking {
                 token = httpClient.post("${env.stsNaisUrl}$STS_PATH?grant_type=client_credentials&scope=openid") {
                     setupTokenRequest()
-                }.body()
+                }
             }
         } else {
             defaultLog.info("Henter ikke AccessToken for Dokarkiv, da appen kjører lokalt")
