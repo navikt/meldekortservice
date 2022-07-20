@@ -24,6 +24,7 @@ class SoapServiceImpl(
             oppfoelgingPing?.ping()
             WeblogicPing(true)
         } catch (e: Exception) {
+            println(e)
             logger.info("Ingen svar fra WebLogic, ping feilet", e)
             WeblogicPing(false)
         }
