@@ -5,9 +5,8 @@ import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldStartWith
 import io.ktor.client.*
 import io.ktor.client.engine.mock.*
-import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.features.json.*
 import io.ktor.http.*
-import io.ktor.serialization.jackson.*
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
@@ -71,11 +70,8 @@ class KontrollServiceTest {
         )
 
         val client = HttpClient(MockEngine) {
-            install(ContentNegotiation) {
-                register(
-                    ContentType.Application.Json,
-                    JacksonConverter(objectMapper)
-                )
+            install(JsonFeature) {
+                serializer = JacksonSerializer { objectMapper }
             }
 
             engine {

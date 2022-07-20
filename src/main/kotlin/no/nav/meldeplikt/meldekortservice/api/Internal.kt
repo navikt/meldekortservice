@@ -1,9 +1,9 @@
 package no.nav.meldeplikt.meldekortservice.api
 
+import io.ktor.application.*
 import io.ktor.http.*
-import io.ktor.server.application.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
+import io.ktor.response.*
+import io.ktor.routing.*
 import io.micrometer.prometheus.PrometheusMeterRegistry
 import no.nav.meldeplikt.meldekortservice.config.SWAGGER_URL_V1
 import no.nav.meldeplikt.meldekortservice.config.swagger

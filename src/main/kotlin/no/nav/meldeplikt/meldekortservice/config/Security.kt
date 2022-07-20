@@ -1,8 +1,8 @@
 package no.nav.meldeplikt.meldekortservice.config
 
 import com.auth0.jwt.JWT
+import io.ktor.application.*
 import io.ktor.http.*
-import io.ktor.server.application.*
 import io.ktor.util.pipeline.*
 import no.nav.meldeplikt.meldekortservice.utils.defaultLog
 

@@ -1,16 +1,13 @@
 package no.nav.meldeplikt.meldekortservice.config
 
-import io.ktor.http.*
-import io.ktor.serialization.jackson.*
-import io.ktor.server.application.*
-import io.ktor.server.auth.*
-import io.ktor.server.locations.*
-import io.ktor.server.metrics.micrometer.*
-import io.ktor.server.plugins.callloging.*
-import io.ktor.server.plugins.contentnegotiation.*
-import io.ktor.server.plugins.defaultheaders.*
-import io.ktor.server.request.*
-import io.ktor.server.routing.*
+import io.ktor.application.*
+import io.ktor.auth.*
+import io.ktor.features.*
+import io.ktor.jackson.*
+import io.ktor.locations.*
+import io.ktor.metrics.micrometer.*
+import io.ktor.request.*
+import io.ktor.routing.*
 import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics
 import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics
@@ -37,7 +34,7 @@ import no.nav.sbl.dialogarena.common.cxf.StsSecurityConstants
 import no.nav.sbl.util.EnvironmentUtils.Type.PUBLIC
 import no.nav.sbl.util.EnvironmentUtils.Type.SECRET
 import no.nav.sbl.util.EnvironmentUtils.setProperty
-import no.nav.security.token.support.v2.tokenValidationSupport
+import no.nav.security.token.support.ktor.tokenValidationSupport
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -91,7 +88,7 @@ fun Application.mainModule(
     install(DefaultHeaders)
 
     install(ContentNegotiation) {
-        register(ContentType.Application.Json, JacksonConverter(objectMapper))
+        jackson { objectMapper }
     }
 
     val conf = this.environment.config
@@ -99,9 +96,7 @@ fun Application.mainModule(
         if (isCurrentlyRunningOnNais()) {
             tokenValidationSupport(config = conf)
         } else {
-            basic {
-                skipWhen { true }
-            }
+            provider { skipWhen { true } }
         }
     }
 
