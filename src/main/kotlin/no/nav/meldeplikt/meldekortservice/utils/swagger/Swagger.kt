@@ -3,7 +3,7 @@
 package no.nav.meldeplikt.meldekortservice.utils.swagger
 
 import io.ktor.http.*
-import io.ktor.locations.*
+import io.ktor.server.locations.*
 import no.nav.meldeplikt.meldekortservice.config.swagger
 import no.nav.meldeplikt.meldekortservice.utils.defaultLog
 import java.time.Instant

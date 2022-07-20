@@ -1,10 +1,10 @@
 package no.nav.meldeplikt.meldekortservice.api
 
-import io.ktor.application.*
 import io.ktor.http.*
-import io.ktor.locations.*
-import io.ktor.response.*
-import io.ktor.routing.Routing
+import io.ktor.server.application.*
+import io.ktor.server.locations.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import no.nav.meldeplikt.meldekortservice.config.userIdent
 import no.nav.meldeplikt.meldekortservice.mapper.MeldekortMapper
 import no.nav.meldeplikt.meldekortservice.mapper.MeldekortkontrollMapper
@@ -16,7 +16,10 @@ import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.model.response.EmptyResponse
-import no.nav.meldeplikt.meldekortservice.service.*
+import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
+import no.nav.meldeplikt.meldekortservice.service.DBService
+import no.nav.meldeplikt.meldekortservice.service.DokarkivService
+import no.nav.meldeplikt.meldekortservice.service.KontrollService
 import no.nav.meldeplikt.meldekortservice.utils.*
 import no.nav.meldeplikt.meldekortservice.utils.swagger.*
 

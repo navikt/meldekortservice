@@ -1,8 +1,8 @@
 package no.nav.meldeplikt.meldekortservice.utils.swagger
 
-import io.ktor.application.*
 import io.ktor.http.content.*
-import io.ktor.response.*
+import io.ktor.server.application.*
+import io.ktor.server.response.*
 
 /**
  * @author Niels Falk, changed by Torstein Nesby and Yrjan Fraschetti
