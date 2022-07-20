@@ -41,13 +41,14 @@ internal const val DB_ORACLE_USERNAME = "oracleDbUser.username"
 internal const val DB_ORACLE_PASSWORD = "oracleDbUser.password"
 internal const val DB_ORACLE_CONF = "oracleDbConf.jdbcUrl"
 
-internal const val STS_URL_KEY = "no.nav.modig.security.sts.url"
 internal const val STS_PATH = "/rest/v1/sts/token"
-internal const val SYSTEMUSER_USERNAME = "no.nav.modig.security.systemuser.username"
-internal const val SYSTEMUSER_PASSWORD = "no.nav.modig.security.systemuser.password"
 
 internal const val JOURNALPOSTAPI_PATH = "/rest/journalpostapi/v1"
 internal const val JOURNALPOST_PATH = "$JOURNALPOSTAPI_PATH/journalpost"
+
+internal const val SOAP_STS_URL_KEY = "no.nav.modig.security.sts.url"
+internal const val SOAP_SYSTEMUSER_USERNAME = "no.nav.modig.security.systemuser.username"
+internal const val SOAP_SYSTEMUSER_PASSWORD = "no.nav.modig.security.systemuser.password"
 
 const val vaultUrl = "https://vault.adeo.no"
 const val vaultTokenPath = "/var/run/secrets/nais.io/vault/vault_token"
