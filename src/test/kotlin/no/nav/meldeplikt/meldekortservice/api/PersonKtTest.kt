@@ -29,7 +29,8 @@ import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import no.nav.security.mock.oauth2.MockOAuth2Server
 import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback
 import org.amshove.kluent.shouldBe
-import org.amshove.kluent.shouldBeEqualTo
+import org.amshove.kluent.shouldEndWith
+import org.amshove.kluent.shouldStartWith
 import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.output.MigrateResult
 import org.junit.jupiter.api.AfterAll
@@ -388,7 +389,8 @@ class PersonKtTest {
                 setBody(journalpost!!.readText())
             }.apply {
                 response.status() shouldBe HttpStatusCode.OK
-                response.content shouldBeEqualTo "{\"error\":\"Kan ikke opprette journalpost i dokumentarkiv for meldekort med id 1011121315\"}"
+                response.content?.shouldStartWith("{\"error\":\"Kan ikke opprette journalpost i dokumentarkiv med eksternReferanseId ")
+                response.content?.shouldEndWith("for meldekort med id 1011121315\"}")
             }
         }
 

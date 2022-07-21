@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Journalpost
-import no.nav.meldeplikt.meldekortservice.utils.defaultLog
 import java.io.Reader
 import java.io.Writer
 import java.nio.ByteBuffer
@@ -14,8 +13,6 @@ import java.sql.Clob
 import java.sql.Connection
 import java.sql.DatabaseMetaData
 import java.sql.ResultSet
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.sql.rowset.serial.SerialClob
 
@@ -34,6 +31,19 @@ fun Connection.opprettInnsendtMeldekort(innsendtMeldekort: InnsendtMeldekort): I
         .use {
             it.setLong(1, innsendtMeldekort.meldekortId)
             it.executeUpdate()
+        }
+
+fun Connection.hentJournalpostData(journalpostId: Long): List<Triple<Long, Long, Long>> =
+    prepareStatement("SELECT journalpostId, dokumentInfoId, meldekortId FROM opprettede_journalposter WHERE journalpostId = ?")
+        .use {
+            it.setLong(1, journalpostId)
+            it.executeQuery().list {
+                Triple(
+                    this.getLong("journalpostId"),
+                    this.getLong("dokumentInfoId"),
+                    this.getLong("meldekortId")
+                )
+            }
         }
 
 fun Connection.lagreJournalpostData(journalpostId: Long, dokumentInfoId: Long, meldekortId: Long): Int =
