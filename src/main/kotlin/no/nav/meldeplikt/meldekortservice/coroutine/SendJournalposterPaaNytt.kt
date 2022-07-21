@@ -1,10 +1,7 @@
 package no.nav.meldeplikt.meldekortservice.coroutine
 
 import kotlinx.coroutines.*
-import no.nav.meldeplikt.meldekortservice.database.hentMidlertidigLagredeJournalposter
-import no.nav.meldeplikt.meldekortservice.database.lagreJournalpostData
-import no.nav.meldeplikt.meldekortservice.database.oppdaterMidlertidigLagretJournalpost
-import no.nav.meldeplikt.meldekortservice.database.sletteMidlertidigLagretJournalpost
+import no.nav.meldeplikt.meldekortservice.database.*
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Journalpost
 import no.nav.meldeplikt.meldekortservice.service.DBService
 import no.nav.meldeplikt.meldekortservice.service.DokarkivService
@@ -43,9 +40,11 @@ class SendJournalposterPaaNytt(
                 val journalpostData: List<Triple<String, Journalpost, Int>> = openConnection.hentMidlertidigLagredeJournalposter()
 
                 journalpostData.forEach { triple ->
-                    try {
-                        val journalpost = triple.second
+                    val lagretJournalpostId = triple.first
+                    val journalpost = triple.second
+                    val retries = triple.third
 
+                    try {
                         // Det er mulig at vi får feil et sted her, dvs. f.eks. når vi lagrer informasjon om at en journalpost har blitt opprettet
                         // (noe med DB eller connection timeout før vi får JournalpostRepspose tilbake)
                         // Da prøver på nytt. Men journalposten eksisterer allerede, vi bare vet ikke om dette
@@ -56,21 +55,38 @@ class SendJournalposterPaaNytt(
 
                         // Send
                         val journalpostResponse = dokarkivService.createJournalpost(journalpost)
-
-                        // Lagre journalpostId-meldekortId
-                        openConnection.lagreJournalpostData(
-                            journalpostResponse.journalpostId,
-                            journalpostResponse.dokumenter[0].dokumentInfoId,
+                        val journalpostId = journalpostResponse.journalpostId
+                        val dokumentInfoId = journalpostResponse.dokumenter[0].dokumentInfoId
+                        val meldekortId =
                             journalpost.tilleggsopplysninger!!.first { it.nokkel == "meldekortId" }.verdi.toLong()
-                        )
 
-                        // Slette midlertidig lagret journalpost
-                        openConnection.sletteMidlertidigLagretJournalpost(triple.first)
+                        val lagretJournalpostData = openConnection.hentJournalpostData(journalpostId)
+
+                        if (lagretJournalpostData.isEmpty()) {
+                            // Lagre journalpostId-meldekortId
+                            openConnection.lagreJournalpostData(
+                                journalpostId,
+                                dokumentInfoId,
+                                meldekortId
+                            )
+
+                            // Slette midlertidig lagret journalpost
+                            openConnection.sletteMidlertidigLagretJournalpost(lagretJournalpostId)
+                        } else {
+                            val lagretJournalpost = lagretJournalpostData[0]
+
+                            if (lagretJournalpost.second == dokumentInfoId && lagretJournalpost.third == meldekortId) {
+                                // Slette midlertidig lagret journalpost
+                                openConnection.sletteMidlertidigLagretJournalpost(lagretJournalpostId)
+                            } else {
+                                defaultLog.error("Journalpost med ID $journalpostId eksisterer allerede, men har uforventet dokumentInfoId og meldekortId")
+                            }
+                        }
                     } catch (e: Exception) {
                         defaultLog.error(e.message)
                         // Kan ikke opprette journalpost igjen. Oppdater teller
-                        openConnection.oppdaterMidlertidigLagretJournalpost(triple.first, triple.third + 1)
-                        defaultLog.warn("Kan ikke opprette journalpost igjen. Data ID = ${triple.first}, retries = ${triple.third}")
+                        openConnection.oppdaterMidlertidigLagretJournalpost(lagretJournalpostId, retries + 1)
+                        defaultLog.warn("Kan ikke opprette journalpost igjen. Data ID = $lagretJournalpostId, retries = $retries")
                     }
                 }
 
