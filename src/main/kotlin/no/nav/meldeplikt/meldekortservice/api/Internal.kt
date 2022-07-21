@@ -7,7 +7,6 @@ import io.ktor.routing.*
 import io.micrometer.prometheus.PrometheusMeterRegistry
 import no.nav.meldeplikt.meldekortservice.config.SWAGGER_URL_V1
 import no.nav.meldeplikt.meldekortservice.config.swagger
-import no.nav.meldeplikt.meldekortservice.utils.API_PATH
 import no.nav.meldeplikt.meldekortservice.utils.BASE_PATH
 import no.nav.meldeplikt.meldekortservice.utils.INTERNAL_PATH
 import no.nav.meldeplikt.meldekortservice.utils.swagger.SwaggerUi
