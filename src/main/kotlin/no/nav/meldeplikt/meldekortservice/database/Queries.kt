@@ -36,6 +36,19 @@ fun Connection.opprettInnsendtMeldekort(innsendtMeldekort: InnsendtMeldekort): I
             it.executeUpdate()
         }
 
+fun Connection.hentJournalpostData(journalpostId: Long): List<Triple<Long, Long, Long>> =
+    prepareStatement("SELECT journalpostId, dokumentInfoId, meldekortId FROM opprettede_journalposter WHERE journalpostId = ?")
+        .use {
+            it.setLong(1, journalpostId)
+            it.executeQuery().list {
+                Triple(
+                    this.getLong("journalpostId"),
+                    this.getLong("dokumentInfoId"),
+                    this.getLong("meldekortId")
+                )
+            }
+        }
+
 fun Connection.lagreJournalpostData(journalpostId: Long, dokumentInfoId: Long, meldekortId: Long): Int =
     prepareStatement("INSERT INTO opprettede_journalposter (journalpostId, dokumentInfoId, meldekortId) VALUES (?, ?, ?)")
         .use {

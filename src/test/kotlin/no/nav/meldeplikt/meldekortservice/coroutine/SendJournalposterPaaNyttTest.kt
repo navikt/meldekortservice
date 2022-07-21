@@ -99,6 +99,113 @@ class SendJournalposterPaaNyttTest {
     }
 
     @Test
+    fun `skal sende journalpost, lagre journalpost data og slette midlertidig journalpost naar allerede eksisterer`() {
+        val journalpostId = 123456782L
+        val dokumentInfoId = 123456783L
+        val meldekortId = 1011121315L // MeldekortId kommer fra journalpost.json
+        val journalpostResponse = JournalpostResponse(
+            journalpostId = journalpostId,
+            journalstatus = "M",
+            melding = "MELDING FRA DOKARKIV",
+            journalpostferdigstilt = true,
+            dokumenter = listOf(
+                DokumentInfo(dokumentInfoId)
+            )
+        )
+
+        val dokarkivService = mockk<DokarkivService>()
+        coEvery { dokarkivService.createJournalpost(any()) } returns journalpostResponse
+
+        // Lagre journalpost data
+        dbService.lagreJournalpostData(journalpostId, dokumentInfoId, meldekortId)
+
+        // Lagre journalpost midlertidig
+        dbService.lagreJournalpostMidlertidig(journalpost)
+
+        // Sjekk at det finnes 1 midlertidig lagret journalpost med 0 i retries
+        runBlocking {
+            val journalpostData = database.dbQuery { hentAlleMidlertidigLagredeJournalposter() }
+            assertEquals(1, journalpostData.size)
+            assertEquals(0, journalpostData[0].second) // Retries
+        }
+
+        // Prøv å sende på nytt
+        val sendJournalposterPaaNytt = SendJournalposterPaaNytt(dbService, dokarkivService, 10_000L, 0)
+        sendJournalposterPaaNytt.start()
+        Thread.sleep(1_000)
+        sendJournalposterPaaNytt.stop()
+
+        // Sjekk at det ikke finnes midlertidig lagrede journalposter
+        runBlocking {
+            val journalpostData = database.dbQuery { hentAlleMidlertidigLagredeJournalposter() }
+            assertEquals(0, journalpostData.size)
+        }
+
+        // Sjekk at det finnes journalpost data
+        runBlocking {
+            val result = database.dbQuery { hentJournalpostData() }
+            assertEquals(1, result.size)
+            assertEquals(journalpostId, result[0].first)
+            assertEquals(dokumentInfoId, result[0].second)
+            assertEquals(meldekortId, result[0].third)
+        }
+    }
+
+    @Test
+    fun `skal ikke slette midlertidig journalpost naar det er feil i journalpost data`() {
+        val journalpostId = 123456782L
+        val dokumentInfoId = 123456783L
+        val annendokumentInfoId = 123456784L
+        val meldekortId = 1011121315L // MeldekortId kommer fra journalpost.json
+        val journalpostResponse = JournalpostResponse(
+            journalpostId = journalpostId,
+            journalstatus = "M",
+            melding = "MELDING FRA DOKARKIV",
+            journalpostferdigstilt = true,
+            dokumenter = listOf(
+                DokumentInfo(dokumentInfoId)
+            )
+        )
+
+        val dokarkivService = mockk<DokarkivService>()
+        coEvery { dokarkivService.createJournalpost(any()) } returns journalpostResponse
+
+        // Lagre journalpost data med en annen dokumentInfoId
+        dbService.lagreJournalpostData(journalpostId, annendokumentInfoId, meldekortId)
+
+        // Lagre journalpost midlertidig
+        dbService.lagreJournalpostMidlertidig(journalpost)
+
+        // Sjekk at det finnes 1 midlertidig lagret journalpost med 0 i retries
+        runBlocking {
+            val journalpostData = database.dbQuery { hentAlleMidlertidigLagredeJournalposter() }
+            assertEquals(1, journalpostData.size)
+            assertEquals(0, journalpostData[0].second) // Retries
+        }
+
+        // Prøv å sende på nytt
+        val sendJournalposterPaaNytt = SendJournalposterPaaNytt(dbService, dokarkivService, 10_000L, 0)
+        sendJournalposterPaaNytt.start()
+        Thread.sleep(1_000)
+        sendJournalposterPaaNytt.stop()
+
+        // Sjekk at det fortsatt finnes midlertidig lagrede journalposter
+        runBlocking {
+            val journalpostData = database.dbQuery { hentAlleMidlertidigLagredeJournalposter() }
+            assertEquals(1, journalpostData.size)
+        }
+
+        // Sjekk at det finnes journalpost data med en annen dokumentInfoId
+        runBlocking {
+            val result = database.dbQuery { hentJournalpostData() }
+            assertEquals(1, result.size)
+            assertEquals(journalpostId, result[0].first)
+            assertEquals(annendokumentInfoId, result[0].second)
+            assertEquals(meldekortId, result[0].third)
+        }
+    }
+
+    @Test
     fun `skal sende journalpost og ikke slette midlertidig journalpost naar ikke OK`() {
         val dokarkivService = mockk<DokarkivService>()
         coEvery { dokarkivService.createJournalpost(any()) } throws Exception()

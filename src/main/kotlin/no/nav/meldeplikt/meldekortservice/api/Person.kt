@@ -174,7 +174,7 @@ fun Routing.opprettJournalpost(
             call.respond(status = HttpStatusCode.OK, message = "Journalpost opprettet")
         } catch (e: Exception) {
             val errorMessage = ErrorMessage(
-                "Kan ikke opprette journalpost i dokumentarkiv for meldekort med id $meldekortId"
+                "Kan ikke opprette journalpost i dokumentarkiv med eksternReferanseId ${journalpost.eksternReferanseId} for meldekort med id $meldekortId"
             )
             defaultLog.warn(errorMessage.error, e)
 
