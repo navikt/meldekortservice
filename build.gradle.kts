@@ -2,7 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
-val flywayVersion = "8.5.12"
+val flywayVersion = "9.0.1"
 val h2Version = "2.1.214"
 val jacksonVersion = "2.13.3"
 val javaxActivationVersion = "1.1.1"
@@ -54,7 +54,7 @@ plugins {
 
     id("com.github.johnrengelman.shadow") version "7.1.2"
 
-    id("org.flywaydb.flyway") version ("8.5.12")
+    id("org.flywaydb.flyway") version ("9.0.1")
 
     id("org.sonarqube") version "3.4.0.2513"
 
