@@ -55,7 +55,7 @@ class SendJournalposterPaaNytt(
                         // Dvs. vi kan lagre journalpostId og dokumentInfoId og slette midlertidig lagret journalpost fra DB
 
                         // Send
-                        val journalpostResponse = dokarkivService.createJournalpost(triple.second)
+                        val journalpostResponse = dokarkivService.createJournalpost(journalpost)
 
                         // Lagre journalpostId-meldekortId
                         openConnection.lagreJournalpostData(
@@ -67,6 +67,7 @@ class SendJournalposterPaaNytt(
                         // Slette midlertidig lagret journalpost
                         openConnection.sletteMidlertidigLagretJournalpost(triple.first)
                     } catch (e: Exception) {
+                        defaultLog.error(e.message)
                         // Kan ikke opprette journalpost igjen. Oppdater teller
                         openConnection.oppdaterMidlertidigLagretJournalpost(triple.first, triple.third + 1)
                         defaultLog.warn("Kan ikke opprette journalpost igjen. Data ID = ${triple.first}, retries = ${triple.third}")
