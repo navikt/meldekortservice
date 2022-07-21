@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Journalpost
-import no.nav.meldeplikt.meldekortservice.utils.defaultLog
 import java.io.Reader
 import java.io.Writer
 import java.nio.ByteBuffer
@@ -14,8 +13,6 @@ import java.sql.Clob
 import java.sql.Connection
 import java.sql.DatabaseMetaData
 import java.sql.ResultSet
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.sql.rowset.serial.SerialClob
 
