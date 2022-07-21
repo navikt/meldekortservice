@@ -44,11 +44,11 @@ fun Route.healthApi(appMicrometerRegistry: PrometheusMeterRegistry) {
         }
 
         get("/isAlive") {
-            call.respondText(text = "Alive", contentType = ContentType.Text.Plain)
+            call.respondText("Alive")
         }
 
         get("/isReady") {
-            call.respondText(text = "Ready", contentType = ContentType.Text.Plain)
+            call.respondText("Ready")
         }
 
         get("/ping") {
@@ -57,7 +57,7 @@ fun Route.healthApi(appMicrometerRegistry: PrometheusMeterRegistry) {
         }
 
         get("/metrics") {
-            call.respond(appMicrometerRegistry.scrape())
+            call.respondText(appMicrometerRegistry.scrape())
         }
     }
 }
