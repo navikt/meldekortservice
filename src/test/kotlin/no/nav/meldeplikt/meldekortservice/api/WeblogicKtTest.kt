@@ -1,8 +1,9 @@
 package no.nav.meldeplikt.meldekortservice.api
 
 import com.fasterxml.jackson.module.kotlin.readValue
+import io.kotest.matchers.shouldBe
 import io.ktor.http.*
-import io.ktor.locations.*
+import io.ktor.server.locations.*
 import io.ktor.server.testing.*
 import io.mockk.every
 import io.mockk.mockk
@@ -14,7 +15,6 @@ import no.nav.meldeplikt.meldekortservice.model.WeblogicPing
 import no.nav.meldeplikt.meldekortservice.service.SoapServiceImpl
 import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
-import org.amshove.kluent.shouldBe
 import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.output.MigrateResult
 import org.junit.jupiter.api.Test

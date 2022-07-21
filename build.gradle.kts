@@ -7,16 +7,13 @@ val h2Version = "2.1.214"
 val jacksonVersion = "2.13.3"
 val javaxActivationVersion = "1.1.1"
 val javaxAnnotationApiVersion = "1.3.2"
-val javaxJaxwsApiVersion = "2.3.1"
 val jaxbApiVersion = "2.4.0-b180830.0359"
 val jaxbRuntimeVersion = "4.0.0"
 val jaxwsApiVersion = "2.3.1"
 val jaxwsToolsVersion = "2.3.5" // Senere versjoner har ikke javax.jws.WebService
-val junitVersion = "5.8.2"
-val kluentVersion = "1.68"
 val kotestVersion = "5.3.2"
 val kotlinLoggerVersion = "2.1.23"
-val ktorVersion = "1.6.8"
+val ktorVersion = "2.0.3"
 val logbackVersion = "1.2.11"
 val logstashVersion = "7.2"
 val mockOauthVersion = "0.5.1"
@@ -76,71 +73,68 @@ application {
 dependencies {
 
     implementation(kotlin("stdlib"))
-    implementation("no.nav:vault-jdbc:$vaultJdbcVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("ch.qos.logback:logback-core:$logbackVersion")
-    implementation("net.logstash.logback:logstash-logback-encoder:$logstashVersion")
-    implementation("io.ktor:ktor-server-netty:$ktorVersion")
-    implementation("io.ktor:ktor-auth:$ktorVersion")
-    implementation("io.ktor:ktor-auth-jwt:$ktorVersion")
-    implementation("io.ktor:ktor-client-apache:$ktorVersion")
-    implementation("io.ktor:ktor-client-json:$ktorVersion")
-    implementation("io.ktor:ktor-client-jackson:$ktorVersion")
-    implementation("io.ktor:ktor-locations:$ktorVersion")
-    implementation("io.ktor:ktor-metrics-micrometer:$ktorVersion")
-    implementation("io.ktor:ktor-jackson:$ktorVersion")
-    implementation("io.micrometer:micrometer-registry-prometheus:1.9.2")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
-    implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonVersion")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion")
-
-    implementation("no.nav.common:cache:$navCommonCacheVersion")
-    implementation("no.nav.common:cxf:$navCommonVersion")
-    implementation("no.nav.common:log:$navCommonVersion")
-    implementation("no.nav.common:types:$navCommonVersion")
-    implementation("org.slf4j:slf4j-api:$slf4jVersion")
-    implementation("io.github.microutils:kotlin-logging:$kotlinLoggerVersion")
     implementation("com.bettercloud:vault-java-driver:$vaultVersion")
-    implementation("no.nav.tjenestespesifikasjoner:arena-sakOgAktivitet_v1:$tjenestespecVersion")
-    implementation("org.flywaydb:flyway-core:$flywayVersion")
-    implementation("org.postgresql:postgresql:$postgresVersion")
-    implementation("no.nav.security:token-validation-ktor:$tokenValidationVersion")
-    implementation("no.nav.security:token-client-spring:$tokenValidationVersion")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
+    implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonVersion")
     implementation("com.oracle.ojdbc:ojdbc8:$ojdbc8Version")
-
-    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
-    testImplementation(kotlin("test-junit5"))
-    testImplementation("org.mockito:mockito-core:$mockitoVersion")
-    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
-    testImplementation("io.ktor:ktor-client-mock:$ktorVersion")
-    testImplementation("io.ktor:ktor-client-mock-jvm:$ktorVersion")
-    testImplementation("io.kotest:kotest-assertions-core-jvm:$kotestVersion")
-
-    testImplementation("com.h2database:h2:$h2Version")
-    testImplementation("org.amshove.kluent:kluent:$kluentVersion")
-    testImplementation("io.mockk:mockk:$mockkVersion")
-    testImplementation("no.nav.security:mock-oauth2-server:$mockOauthVersion")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
-
-    implementation("org.webjars:swagger-ui:$swaggerVersion")
-    implementation("javax.xml.ws:jaxws-api:$jaxwsApiVersion")
-    implementation("javax.annotation:javax.annotation-api:$javaxAnnotationApiVersion")
-    implementation("javax.xml.bind:jaxb-api:$jaxbApiVersion")
-    implementation("org.glassfish.jaxb:jaxb-runtime:$jaxbRuntimeVersion")
-    implementation("javax.activation:activation:$javaxActivationVersion")
     implementation("com.sun.xml.ws:jaxws-tools:$jaxwsToolsVersion") {
         exclude(group = "com.sun.xml.ws", module = "policy")
     }
-
-    implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-bindings-soap:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-ws-policy:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
+    implementation("io.github.microutils:kotlin-logging:$kotlinLoggerVersion")
+    implementation("io.ktor:ktor-client-apache:$ktorVersion")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+    implementation("io.ktor:ktor-client-jackson:$ktorVersion")
+    implementation("io.ktor:ktor-client-jackson:$ktorVersion")
+    implementation("io.ktor:ktor-client-json:$ktorVersion")
+    implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
+    implementation("io.ktor:ktor-server-auth-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
+    implementation("io.ktor:ktor-server-call-logging:$ktorVersion")
+    implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
+    implementation("io.ktor:ktor-server-default-headers:$ktorVersion")
+    implementation("io.ktor:ktor-server-locations:$ktorVersion")
+    implementation("io.ktor:ktor-server-metrics-micrometer:$ktorVersion")
+    implementation("io.ktor:ktor-server-netty:$ktorVersion")
+    implementation("io.micrometer:micrometer-registry-prometheus:1.9.2")
+    implementation("javax.activation:activation:$javaxActivationVersion")
+    implementation("javax.annotation:javax.annotation-api:$javaxAnnotationApiVersion")
+    implementation("javax.xml.bind:jaxb-api:$jaxbApiVersion")
+    implementation("javax.xml.ws:jaxws-api:$jaxwsApiVersion")
+    implementation("net.logstash.logback:logstash-logback-encoder:$logstashVersion")
+    implementation("no.nav.common:cache:$navCommonCacheVersion")
+    implementation("no.nav.common:cxf:$navCommonVersion")
+    // implementation("no.nav.common:log:$navCommonVersion")
+    implementation("no.nav.common:types:$navCommonVersion")
+    implementation("no.nav.security:token-client-spring:$tokenValidationVersion")
+    implementation("no.nav.security:token-validation-ktor-v2:$tokenValidationVersion")
+    implementation("no.nav.tjenestespesifikasjoner:arena-sakOgAktivitet_v1:$tjenestespecVersion")
     implementation("org.apache.cxf:cxf-core:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-bindings-soap:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-frontend-simple:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-ws-policy:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
+    implementation("org.flywaydb:flyway-core:$flywayVersion")
+    implementation("org.glassfish.jaxb:jaxb-runtime:$jaxbRuntimeVersion")
+    implementation("org.postgresql:postgresql:$postgresVersion")
+    implementation("org.slf4j:slf4j-api:$slf4jVersion")
+    implementation("org.webjars:swagger-ui:$swaggerVersion")
+    implementation("no.nav:vault-jdbc:$vaultJdbcVersion")
+
+    testImplementation(kotlin("test-junit5"))
+    testImplementation("com.h2database:h2:$h2Version")
+    testImplementation("io.kotest:kotest-assertions-core-jvm:$kotestVersion")
+    testImplementation("io.ktor:ktor-client-mock:$ktorVersion")
+    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
+    testImplementation("io.mockk:mockk:$mockkVersion")
+    testImplementation("no.nav.security:mock-oauth2-server:$mockOauthVersion")
+    testImplementation("org.mockito:mockito-core:$mockitoVersion")
 }
 
 configure<JavaPluginExtension> {

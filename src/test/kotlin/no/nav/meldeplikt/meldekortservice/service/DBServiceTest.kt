@@ -5,12 +5,10 @@ import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.database.*
 import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Journalpost
-import org.amshove.kluent.`with message`
-import org.amshove.kluent.invoking
-import org.amshove.kluent.shouldThrow
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.sql.SQLException
 
 class DBServiceTest {
@@ -37,11 +35,12 @@ class DBServiceTest {
     fun `skal kaste Exception hvis henter ikke eksisterende innsendt meldekort`() {
         val dbService = DBService(database)
 
-        invoking {
+        val exception = assertThrows<SQLException> {
             runBlocking {
                 dbService.hentInnsendtMeldekort(2L)
             }
-        } shouldThrow SQLException::class `with message` "Found no rows"
+        }
+        assertEquals("Found no rows", exception.localizedMessage)
     }
 
     @Test

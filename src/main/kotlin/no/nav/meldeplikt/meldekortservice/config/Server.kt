@@ -1,13 +1,15 @@
 package no.nav.meldeplikt.meldekortservice.config
 
-import io.ktor.application.*
-import io.ktor.auth.*
-import io.ktor.features.*
-import io.ktor.jackson.*
-import io.ktor.locations.*
-import io.ktor.metrics.micrometer.*
-import io.ktor.request.*
-import io.ktor.routing.*
+import io.ktor.serialization.jackson.*
+import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.locations.*
+import io.ktor.server.metrics.micrometer.*
+import io.ktor.server.plugins.callloging.*
+import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.server.plugins.defaultheaders.*
+import io.ktor.server.request.*
+import io.ktor.server.routing.*
 import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics
 import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics
@@ -33,10 +35,11 @@ import no.nav.meldeplikt.meldekortservice.utils.*
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Contact
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Information
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Swagger
-import no.nav.security.token.support.ktor.tokenValidationSupport
+import no.nav.security.token.support.v2.tokenValidationSupport
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
+@KtorExperimentalLocationsAPI
 val swagger = Swagger(
     info = Information(
         version = "1",
@@ -95,7 +98,9 @@ fun Application.mainModule(
         if (isCurrentlyRunningOnNais()) {
             tokenValidationSupport(config = conf)
         } else {
-            provider { skipWhen { true } }
+            basic {
+                skipWhen { true }
+            }
         }
     }
 

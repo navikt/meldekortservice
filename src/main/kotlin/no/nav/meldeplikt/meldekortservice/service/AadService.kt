@@ -3,14 +3,17 @@ package no.nav.meldeplikt.meldekortservice.service
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.DeserializationFeature
 import io.ktor.client.*
+import io.ktor.client.call.*
 import io.ktor.client.engine.apache.*
-import io.ktor.client.features.json.*
+import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
+import io.ktor.serialization.jackson.*
 import no.nav.meldeplikt.meldekortservice.config.AadServiceConfiguration
 import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.model.AccessToken
 import no.nav.meldeplikt.meldekortservice.utils.defaultLog
+import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import org.apache.http.impl.conn.SystemDefaultRoutePlanner
 import java.net.ProxySelector
@@ -30,11 +33,15 @@ class AadService(
     )
 
     private val aadClient = HttpClient(Apache) {
-        install(JsonFeature) {
-            serializer = JacksonSerializer {
-                configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                setSerializationInclusion(JsonInclude.Include.NON_NULL)
-            }
+        install(ContentNegotiation) {
+            register(
+                ContentType.Application.Json,
+                JacksonConverter(
+                    defaultObjectMapper
+                        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                        .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+                )
+            )
         }
         engine {
             customizeClient { setRoutePlanner(SystemDefaultRoutePlanner(ProxySelector.getDefault())) }
@@ -75,7 +82,7 @@ class AadService(
         return aadClient.submitForm(
             url = config.azureAd.openIdConfiguration.tokenEndpoint,
             formParameters = formParameters
-        )
+        ).body()
     }
 
     internal object GrantType {

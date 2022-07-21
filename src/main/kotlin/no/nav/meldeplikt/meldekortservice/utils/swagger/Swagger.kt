@@ -4,7 +4,7 @@ package no.nav.meldeplikt.meldekortservice.utils.swagger
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import io.ktor.http.*
-import io.ktor.locations.*
+import io.ktor.server.locations.*
 import no.nav.meldeplikt.meldekortservice.config.swagger
 import no.nav.meldeplikt.meldekortservice.utils.defaultLog
 import java.time.Instant
@@ -27,10 +27,12 @@ import kotlin.reflect.full.memberProperties
 typealias ModelName = String
 typealias PropertyName = String
 typealias Path = String
+@OptIn(KtorExperimentalLocationsAPI::class)
 typealias Definitions = MutableMap<ModelName, ModelData>
 typealias Paths = MutableMap<Path, Methods>
 typealias MethodName = String
 typealias HttpStatus = String
+@OptIn(KtorExperimentalLocationsAPI::class)
 typealias Methods = MutableMap<MethodName, Operation>
 typealias Content = MutableMap<String, MutableMap<String, ModelReference?>>
 
@@ -41,6 +43,7 @@ data class Key(
     val `in`: String
 )
 
+@KtorExperimentalLocationsAPI
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class Swagger(
     val openapi: String = "3.0.0",
@@ -58,6 +61,7 @@ data class Swagger(
     )
 )
 
+@KtorExperimentalLocationsAPI
 data class Components(
     val securitySchemes: SecuritySchemes,
     val schemas: Definitions = mutableMapOf()
@@ -177,6 +181,7 @@ private fun Group.toList(): List<String> {
     return listOf(name)
 }
 
+@KtorExperimentalLocationsAPI
 fun <T, R> KProperty1<T, R>.toParameter(
     path: String,
     inputType: ParameterInputType =
@@ -268,6 +273,7 @@ enum class ParameterInputType {
     Query, Path, Body, Header
 }
 
+@KtorExperimentalLocationsAPI
 class ModelData(kClass: KClass<*>) {
     val properties: Map<PropertyName, Property> =
         kClass.memberProperties.associate { it.name to it.toModelProperty() }
@@ -286,10 +292,12 @@ val propertyTypes = mapOf(
     LocalDate::class to Property("string", "date")
 ).mapKeys { it.key.qualifiedName }
 
+@KtorExperimentalLocationsAPI
 fun <T, R> KProperty1<T, R>.toModelProperty(): Property =
     (returnType.classifier as KClass<*>)
         .toModelProperty(returnType)
 
+@KtorExperimentalLocationsAPI
 private fun KClass<*>.toModelProperty(returnType: KType? = null): Property =
     propertyTypes[qualifiedName?.removeSuffix("?")]
         ?: if (returnType != null && (isSubclassOf(Collection::class) || this.isSubclassOf(Set::class))) {
@@ -324,6 +332,7 @@ open class Property(
     val `$ref`: String = ""
 )
 
+@KtorExperimentalLocationsAPI
 fun addDefinition(kClass: KClass<*>) {
     if ((kClass != Unit::class) && !swagger.components.schemas.containsKey(kClass.modelName())) {
         defaultLog.debug("Generating swagger spec for model ${kClass.modelName()}")
