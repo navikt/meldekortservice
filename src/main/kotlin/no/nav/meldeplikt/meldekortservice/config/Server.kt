@@ -40,11 +40,11 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 val swagger = Swagger(
     info = Information(
         version = "1",
-        title = "Meldekortservice. Proxy-api for meldekort-applikasjonen (front-end). Api'et benyttes mot Arena og meldekortkontroll-api",
-        description = "[Meldekortservice](https://github.com/navikt/meldekortservice)",
+        title = "Meldekortservice",
+        description = "Proxy-api for meldekort-applikasjonen (front-end). Api'et benyttes mot Arena og meldekortkontroll-api  \n" +
+                "GitHub repo: [https://github.com/navikt/meldekortservice](https://github.com/navikt/meldekortservice)  \n" +
+                "Slack: [#team-meldeplikt](https://nav-it.slack.com/archives/CQ61EHWP9)",
         contact = Contact(
-            name = "#meldeplikt på Slack",
-            url = "https://github.com/navikt/meldekortservice",
             email = "meldeplikt@nav.no"
         )
     )

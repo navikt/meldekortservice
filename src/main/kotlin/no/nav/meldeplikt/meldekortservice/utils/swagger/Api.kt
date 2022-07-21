@@ -81,6 +81,10 @@ fun <LOCATION : Any, BODY_TYPE : Any> Metadata.applyOperations(
     swagger.paths
         .getOrPut(location.path) { mutableMapOf() }[method.value.lowercase(Locale.getDefault())] =
         Operation(this, location, group, locationType, entityType, method)
+
+    if (group != null && swagger.tags.find { tag -> tag.name == group.name } == null) {
+        swagger.tags.add(Tag(group.name, group.description))
+    }
 }
 
 fun String.responds(vararg pairs: Pair<HttpStatusCode, KClass<*>>): Metadata =

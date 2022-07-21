@@ -15,6 +15,32 @@ import no.nav.meldeplikt.meldekortservice.utils.swagger.SwaggerUi
 fun Route.healthApi(appMicrometerRegistry: PrometheusMeterRegistry) {
 
     route(INTERNAL_PATH) {
+        val swaggerUI = SwaggerUi()
+
+        get("") {
+            call.respondRedirect(SWAGGER_URL_V1)
+        }
+
+        get("/") {
+            call.respondRedirect(SWAGGER_URL_V1)
+        }
+
+        get("/apidocs") {
+            call.respondRedirect(SWAGGER_URL_V1)
+        }
+
+        get("/apidocs/") {
+            call.respondRedirect(SWAGGER_URL_V1)
+        }
+
+        get("/apidocs/{fileName}") {
+            val fileName = call.parameters["fileName"]
+            if (fileName == "swagger.json") {
+                call.respond(swagger)
+            } else {
+                swaggerUI.serve(fileName, call)
+            }
+        }
 
         get("/isAlive") {
             call.respondText(text = "Alive", contentType = ContentType.Text.Plain)
@@ -36,17 +62,21 @@ fun Route.healthApi(appMicrometerRegistry: PrometheusMeterRegistry) {
 }
 
 fun Routing.swaggerRoutes() {
-    val swaggerUI = SwaggerUi()
+    route(BASE_PATH) {
+        get("") {
+            call.respondRedirect(SWAGGER_URL_V1)
+        }
 
-    get(BASE_PATH) { call.respondRedirect(SWAGGER_URL_V1) }
-    get(API_PATH) { call.respondRedirect(SWAGGER_URL_V1) }
-    get("$INTERNAL_PATH/apidocs") { call.respondRedirect(SWAGGER_URL_V1) }
-    get("$INTERNAL_PATH/apidocs/{fileName}") {
-        val fileName = call.parameters["fileName"]
-        if (fileName == "swagger.json") {
-            call.respond(swagger)
-        } else {
-            swaggerUI.serve(fileName, call)
+        get("/") {
+            call.respondRedirect(SWAGGER_URL_V1)
+        }
+
+        get("/api") {
+            call.respondRedirect(SWAGGER_URL_V1)
+        }
+
+        get("/api/") {
+            call.respondRedirect(SWAGGER_URL_V1)
         }
     }
 }
