@@ -76,13 +76,11 @@ class MeldekortKtTest {
         private var arenaOrdsService = mockk<ArenaOrdsService>()
         private var kontrollService = mockk<KontrollService>()
         private var dokarkivService = mockk<DokarkivService>()
-        private var flywayConfig = mockk<Flyway>()
 
         @BeforeAll
         @JvmStatic
         fun setup() {
             mockOAuth2Server.start(8091)
-            every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
             mockkStatic(::isCurrentlyRunningOnNais)
             every { isCurrentlyRunningOnNais() } returns true
@@ -105,6 +103,9 @@ class MeldekortKtTest {
         )
 
         coEvery { arenaOrdsService.hentMeldekortdetaljer(any()) } returns (meldekortdetaljer)
+
+        val flywayConfig = mockk<Flyway>()
+        every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         environment {
             config = setOidcConfig()
@@ -140,6 +141,9 @@ class MeldekortKtTest {
         )
 
         coEvery { arenaOrdsService.hentMeldekortdetaljer(any()) } returns (meldekortdetaljer)
+
+        val flywayConfig = mockk<Flyway>()
+        every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         environment {
             config = setOidcConfig()
@@ -178,6 +182,9 @@ class MeldekortKtTest {
 
         coEvery { arenaOrdsService.hentMeldekortdetaljer(any()) } returns (meldekortdetaljer)
 
+        val flywayConfig = mockk<Flyway>()
+        every { flywayConfig.migrate() } returns MigrateResult("", "", "")
+
         environment {
             config = setOidcConfig()
         }
@@ -203,6 +210,9 @@ class MeldekortKtTest {
         val nyId: Long = 123
 
         coEvery { arenaOrdsService.kopierMeldekort(any()) } returns (nyId)
+
+        val flywayConfig = mockk<Flyway>()
+        every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         environment {
             config = setOidcConfig()
@@ -236,6 +246,9 @@ class MeldekortKtTest {
 
         coEvery { arenaOrdsService.hentMeldekortdetaljer(any()) } returns (meldekortdetaljer)
 
+        val flywayConfig = mockk<Flyway>()
+        every { flywayConfig.migrate() } returns MigrateResult("", "", "")
+
         environment {
             config = setOidcConfig()
         }
@@ -263,6 +276,9 @@ class MeldekortKtTest {
         val nyId: Long = 123
 
         coEvery { arenaOrdsService.kopierMeldekort(any()) } returns (nyId)
+
+        val flywayConfig = mockk<Flyway>()
+        every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         environment {
             config = setOidcConfig()
@@ -294,6 +310,9 @@ class MeldekortKtTest {
         val nyId: Long = 123
 
         coEvery { arenaOrdsService.kopierMeldekort(any()) } returns (nyId)
+
+        val flywayConfig = mockk<Flyway>()
+        every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         environment {
             config = setOidcConfig()
