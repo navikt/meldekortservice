@@ -1,8 +1,5 @@
 package no.nav.meldeplikt.meldekortservice.service
 
-import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNotBe
-import io.kotest.matchers.string.shouldStartWith
 import io.ktor.client.*
 import io.ktor.client.engine.mock.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -80,11 +77,10 @@ class KontrollServiceTest {
 
             engine {
                 addHandler { request ->
-                    request.method shouldBe HttpMethod.Post
-                    request.headers["Authorization"] shouldNotBe null
-                    request.headers["Authorization"] shouldStartWith "Bearer token"
-                    request.body.contentType.toString() shouldBe "application/json"
-                    request.url.toString() shouldBe "https://dummyurl.nav.no/api/v1/kontroll"
+                    assertEquals(HttpMethod.Post, request.method)
+                    assertEquals("Bearer token", request.headers["Authorization"])
+                    assertEquals(ContentType.Application.Json, request.body.contentType)
+                    assertEquals("https://dummyurl.nav.no/api/v1/kontroll", request.url.toString())
                     respond(
                         defaultObjectMapper.writeValueAsString(kontrollResponse),
                         HttpStatusCode.OK,

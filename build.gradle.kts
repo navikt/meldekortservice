@@ -11,13 +11,11 @@ val jaxbApiVersion = "2.4.0-b180830.0359"
 val jaxbRuntimeVersion = "4.0.0"
 val jaxwsApiVersion = "2.3.1"
 val jaxwsToolsVersion = "2.3.5" // Senere versjoner har ikke javax.jws.WebService
-val kotestVersion = "5.3.2"
 val kotlinLoggerVersion = "2.1.23"
 val ktorVersion = "2.0.3"
 val logbackVersion = "1.2.11"
 val logstashVersion = "7.2"
 val mockOauthVersion = "0.5.1"
-val mockitoVersion = "4.6.1"
 val mockkVersion = "1.12.4"
 val navCommonCacheVersion = "2.2020.03.18_12.19-ac82e907ebc9"
 val navCommonVersion = "2.2022.07.01_07.12-6a0864fa6938"
@@ -127,12 +125,11 @@ dependencies {
 
     testImplementation(kotlin("test-junit5"))
     testImplementation("com.h2database:h2:$h2Version")
-    testImplementation("io.kotest:kotest-assertions-core-jvm:$kotestVersion")
     testImplementation("io.ktor:ktor-client-mock:$ktorVersion")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("no.nav.security:mock-oauth2-server:$mockOauthVersion")
-    testImplementation("org.mockito:mockito-core:$mockitoVersion")
+
 }
 
 configure<JavaPluginExtension> {

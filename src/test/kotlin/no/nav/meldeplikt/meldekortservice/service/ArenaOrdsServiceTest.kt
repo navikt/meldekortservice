@@ -2,9 +2,6 @@ package no.nav.meldeplikt.meldekortservice.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNotBe
-import io.kotest.matchers.string.shouldStartWith
 import io.ktor.client.*
 import io.ktor.client.engine.mock.*
 import io.ktor.http.*
@@ -16,10 +13,10 @@ import no.nav.meldeplikt.meldekortservice.model.feil.OrdsException
 import no.nav.meldeplikt.meldekortservice.model.response.OrdsStringResponse
 import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import kotlin.test.assertEquals
 
 class ArenaOrdsServiceTest {
     private val fnr = "1111111111"
@@ -93,10 +90,13 @@ class ArenaOrdsServiceTest {
         val client = HttpClient(MockEngine) {
             engine {
                 addHandler { request ->
-                    request.method shouldBe HttpMethod.Get
-                    request.headers["Authorization"] shouldNotBe null
-                    request.headers["Authorization"] shouldStartWith "Bearer $DUMMY_TOKEN"
-                    request.url.toString() shouldBe "https://dummyurl.nav.no/api/v1/meldeplikt/meldekort/historiske?fnr=1234&antMeldeperioder=10"
+                    assertEquals(HttpMethod.Get, request.method)
+                    assertEquals("Bearer $DUMMY_TOKEN", request.headers["Authorization"])
+                    assertEquals(
+                        "https://dummyurl.nav.no/api/v1/meldeplikt/meldekort/historiske?fnr=1234&antMeldeperioder=10",
+                        request.url.toString()
+                    )
+
                     respond(
                         xmlString
                     )
@@ -139,10 +139,13 @@ class ArenaOrdsServiceTest {
         val client = HttpClient(MockEngine) {
             engine {
                 addHandler { request ->
-                    request.method shouldBe HttpMethod.Get
-                    request.headers["Authorization"] shouldNotBe null
-                    request.headers["Authorization"] shouldStartWith "Bearer $DUMMY_TOKEN"
-                    request.url.toString() shouldBe "https://dummyurl.nav.no/api/v1/meldeplikt/meldekort/detaljer?meldekortId=1"
+                    assertEquals(HttpMethod.Get, request.method)
+                    assertEquals("Bearer $DUMMY_TOKEN", request.headers["Authorization"])
+                    assertEquals(
+                        "https://dummyurl.nav.no/api/v1/meldeplikt/meldekort/detaljer?meldekortId=1",
+                        request.url.toString()
+                    )
+
                     respond(
                         xmlString
                     )
@@ -163,11 +166,14 @@ class ArenaOrdsServiceTest {
         val client = HttpClient(MockEngine) {
             engine {
                 addHandler { request ->
-                    request.method shouldBe HttpMethod.Post
-                    request.headers["Authorization"] shouldNotBe null
-                    request.headers["Authorization"] shouldStartWith "Bearer $DUMMY_TOKEN"
-                    request.headers["meldekortId"] shouldBe "123"
-                    request.url.toString() shouldBe "https://dummyurl.nav.no/api/v1/meldeplikt/meldekort/kopi"
+                    assertEquals(HttpMethod.Post, request.method)
+                    assertEquals("Bearer $DUMMY_TOKEN", request.headers["Authorization"])
+                    assertEquals("123", request.headers["meldekortId"])
+                    assertEquals(
+                        "https://dummyurl.nav.no/api/v1/meldeplikt/meldekort/kopi",
+                        request.url.toString()
+                    )
+
                     respondOk(
                         xmlString
                     )

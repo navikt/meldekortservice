@@ -29,6 +29,7 @@ typealias PropertyName = String
 typealias Path = String
 @OptIn(KtorExperimentalLocationsAPI::class)
 typealias Definitions = MutableMap<ModelName, ModelData>
+@OptIn(KtorExperimentalLocationsAPI::class)
 typealias Paths = MutableMap<Path, Methods>
 typealias MethodName = String
 typealias HttpStatus = String

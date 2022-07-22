@@ -1,8 +1,10 @@
 package no.nav.meldeplikt.meldekortservice.api
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.kotest.matchers.shouldBe
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.server.config.*
 import io.ktor.server.locations.*
 import io.ktor.server.testing.*
 import io.mockk.every
@@ -18,13 +20,17 @@ import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.output.MigrateResult
 import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 @KtorExperimentalLocationsAPI
 class WeblogicKtTest {
     private val flywayConfig = mockk<Flyway>()
 
     @Test
-    fun `test weblogic returns true when Arena is up`() {
+    fun `test weblogic returns true when Arena is up`() = testApplication {
         val soapServiceImpl = mockk<SoapServiceImpl>()
 
         mockkStatic(::isCurrentlyRunningOnNais)
@@ -35,26 +41,27 @@ class WeblogicKtTest {
         every { SoapConfig.soapService() } returns soapServiceImpl
         every { soapServiceImpl.pingWeblogic() } returns WeblogicPing(erWeblogicOppe = true)
 
-        withTestApplication({
+        environment {
+            config = ApplicationConfig("application-dummy.conf")
+        }
+        application {
             mainModule(
                 arenaOrdsService = mockk(),
                 kontrollService = mockk(),
                 mockDBService = mockk(),
                 mockFlywayConfig = flywayConfig
             )
-        }) {
-            handleRequest(HttpMethod.Get, "/meldekortservice/api/weblogic") {
-            }.apply {
-                kotlin.test.assertNotNull(response.content)
-                val responseObject = defaultObjectMapper.readValue<WeblogicPing>(response.content!!)
-                response.status() shouldBe HttpStatusCode.OK
-                kotlin.test.assertTrue(responseObject.erWeblogicOppe)
-            }
         }
+
+        val response = client.get("/meldekortservice/api/weblogic")
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertNotNull(response.bodyAsText())
+        val responseObject = defaultObjectMapper.readValue<WeblogicPing>(response.bodyAsText())
+        assertTrue(responseObject.erWeblogicOppe)
     }
 
     @Test
-    fun `test weblogic returns false when Arena is not up`() {
+    fun `test weblogic returns false when Arena is not up`() = testApplication {
         val soapServiceImpl = mockk<SoapServiceImpl>()
 
         mockkObject(SoapConfig)
@@ -64,21 +71,22 @@ class WeblogicKtTest {
         every { SoapConfig.soapService() } returns soapServiceImpl
         every { soapServiceImpl.pingWeblogic() } returns WeblogicPing(erWeblogicOppe = false)
 
-        withTestApplication({
+        environment {
+            config = ApplicationConfig("application-dummy.conf")
+        }
+        application {
             mainModule(
                 arenaOrdsService = mockk(),
                 kontrollService = mockk(),
                 mockDBService = mockk(),
                 mockFlywayConfig = flywayConfig
             )
-        }) {
-            handleRequest(HttpMethod.Get, "/meldekortservice/api/weblogic") {
-            }.apply {
-                kotlin.test.assertNotNull(response.content)
-                val responseObject = defaultObjectMapper.readValue<WeblogicPing>(response.content!!)
-                response.status() shouldBe HttpStatusCode.OK
-                kotlin.test.assertFalse(responseObject.erWeblogicOppe)
-            }
         }
+
+        val response = client.get("/meldekortservice/api/weblogic")
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertNotNull(response.bodyAsText())
+        val responseObject = defaultObjectMapper.readValue<WeblogicPing>(response.bodyAsText())
+        assertFalse(responseObject.erWeblogicOppe)
     }
 }

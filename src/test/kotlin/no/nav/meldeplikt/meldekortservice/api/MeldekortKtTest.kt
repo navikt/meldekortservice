@@ -1,7 +1,8 @@
 package no.nav.meldeplikt.meldekortservice.api
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.kotest.matchers.shouldBe
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.config.*
 import io.ktor.server.locations.*
@@ -33,37 +34,35 @@ import kotlin.test.assertNotNull
 
 @KtorExperimentalLocationsAPI
 class MeldekortKtTest {
-    private fun MapApplicationConfig.setOidcConfig() {
-        put("no.nav.security.jwt.issuers.size", "1")
-        put("no.nav.security.jwt.issuers.0.issuer_name", ISSUER_ID)
-        put("no.nav.security.jwt.issuers.0.discoveryurl", mockOAuth2Server.wellKnownUrl(ISSUER_ID).toString())
-        put("no.nav.security.jwt.issuers.0.accepted_audience", REQUIRED_AUDIENCE)
-        put("ktor.environment", "local")
+
+    private fun setOidcConfig(): MapApplicationConfig {
+        return MapApplicationConfig(
+            "ktor.environment" to "test",
+            "no.nav.security.jwt.issuers.size" to "1",
+            "no.nav.security.jwt.issuers.0.issuer_name" to ISSUER_ID,
+            "no.nav.security.jwt.issuers.0.discoveryurl" to mockOAuth2Server.wellKnownUrl(ISSUER_ID).toString(),
+            "no.nav.security.jwt.issuers.0.accepted_audience" to REQUIRED_AUDIENCE,
+            "ktor.environment" to "local"
+        )
     }
 
-    private fun issueTokenWithSub(): String =
-        mockOAuth2Server.issueToken(
-            ISSUER_ID,
-            "myclient",
-            DefaultOAuth2TokenCallback(
-                audience = listOf(REQUIRED_AUDIENCE),
-                claims = mapOf(
-                    "sub" to "01020312345"
-                )
-            )
-        ).serialize()
+    private fun issueTokenWithSub(): String = mockOAuth2Server.issueToken(
+        ISSUER_ID,
+        "myclient",
+        DefaultOAuth2TokenCallback(
+            audience = listOf(REQUIRED_AUDIENCE),
+            claims = mapOf("sub" to "01020312345")
+        )
+    ).serialize()
 
-    private fun issueTokenWithPid(): String =
-        mockOAuth2Server.issueToken(
-            ISSUER_ID,
-            "myclient",
-            DefaultOAuth2TokenCallback(
-                audience = listOf(REQUIRED_AUDIENCE),
-                claims = mapOf(
-                    "pid" to "01020312345"
-                )
-            )
-        ).serialize()
+    private fun issueTokenWithPid(): String = mockOAuth2Server.issueToken(
+        ISSUER_ID,
+        "myclient",
+        DefaultOAuth2TokenCallback(
+            audience = listOf(REQUIRED_AUDIENCE),
+            claims = mapOf("pid" to "01020312345")
+        )
+    ).serialize()
 
     companion object {
         private const val ISSUER_ID = "default"
@@ -97,7 +96,7 @@ class MeldekortKtTest {
     }
 
     @Test
-    fun `get meldekortdetaljer returns ok with valid JWT`() {
+    fun `get meldekortdetaljer returns ok with valid JWT`() = testApplication {
         val id: Long = 1
         val meldekortdetaljer = Meldekortdetaljer(
             id = "1",
@@ -107,8 +106,10 @@ class MeldekortKtTest {
 
         coEvery { arenaOrdsService.hentMeldekortdetaljer(any()) } returns (meldekortdetaljer)
 
-        withTestApplication({
-            (environment.config as MapApplicationConfig).setOidcConfig()
+        environment {
+            config = setOidcConfig()
+        }
+        application {
             mainModule(
                 env = env,
                 mockDBService = dbService,
@@ -117,20 +118,20 @@ class MeldekortKtTest {
                 dokarkivService = dokarkivService,
                 mockFlywayConfig = flywayConfig
             )
-        }) {
-            handleRequest(HttpMethod.Get, "/meldekortservice/api/meldekort?meldekortId=${id}") {
-                addHeader(HttpHeaders.Authorization, "Bearer ${issueTokenWithSub()}")
-            }.apply {
-                assertNotNull(response.content)
-                val responseObject = defaultObjectMapper.readValue<Meldekortdetaljer>(response.content!!)
-                response.status() shouldBe HttpStatusCode.OK
-                assertEquals(meldekortdetaljer.id, responseObject.id)
-            }
         }
+
+        val response = client.get("/meldekortservice/api/meldekort?meldekortId=${id}") {
+            header(HttpHeaders.Authorization, "Bearer ${issueTokenWithSub()}")
+        }
+
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertNotNull(response.bodyAsText())
+        val responseObject = defaultObjectMapper.readValue<Meldekortdetaljer>(response.bodyAsText())
+        assertEquals(meldekortdetaljer.id, responseObject.id)
     }
 
     @Test
-    fun `get meldekortdetaljer returns Bad request with invalid fnr`() {
+    fun `get meldekortdetaljer returns Bad request with invalid fnr`() = testApplication {
         val id: Long = 1
         val meldekortdetaljer = Meldekortdetaljer(
             id = "1",
@@ -140,8 +141,10 @@ class MeldekortKtTest {
 
         coEvery { arenaOrdsService.hentMeldekortdetaljer(any()) } returns (meldekortdetaljer)
 
-        withTestApplication({
-            (environment.config as MapApplicationConfig).setOidcConfig()
+        environment {
+            config = setOidcConfig()
+        }
+        application {
             mainModule(
                 env = env,
                 mockDBService = dbService,
@@ -150,23 +153,22 @@ class MeldekortKtTest {
                 dokarkivService = dokarkivService,
                 mockFlywayConfig = flywayConfig
             )
-        }) {
-            handleRequest(HttpMethod.Get, "/meldekortservice/api/meldekort?meldekortId=${id}") {
-                addHeader(HttpHeaders.Authorization, "Bearer ${issueTokenWithSub()}")
-            }.apply {
-                assertNotNull(response.content)
-                val responseObject = defaultObjectMapper.readValue<ErrorMessage>(response.content!!)
-                response.status() shouldBe HttpStatusCode.BadRequest
-                assertEquals(
-                    "Personidentifikator matcher ikke. Bruker kan derfor ikke hente ut meldekortdetaljer.",
-                    responseObject.error
-                )
-            }
         }
+
+        val response = client.get("/meldekortservice/api/meldekort?meldekortId=${id}") {
+            header(HttpHeaders.Authorization, "Bearer ${issueTokenWithSub()}")
+        }
+
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+        assertNotNull(response.bodyAsText())
+        val responseObject = defaultObjectMapper.readValue<ErrorMessage>(response.bodyAsText())
+        assertEquals(
+            "Personidentifikator matcher ikke. Bruker kan derfor ikke hente ut meldekortdetaljer.", responseObject.error
+        )
     }
 
     @Test
-    fun `get meldekortdetaljer returns 401-Unauthorized with missing JWT`() {
+    fun `get meldekortdetaljer returns 401-Unauthorized with missing JWT`() = testApplication {
         val id: Long = 1
         val meldekortdetaljer = Meldekortdetaljer(
             id = "1",
@@ -176,8 +178,10 @@ class MeldekortKtTest {
 
         coEvery { arenaOrdsService.hentMeldekortdetaljer(any()) } returns (meldekortdetaljer)
 
-        withTestApplication({
-            (environment.config as MapApplicationConfig).setOidcConfig()
+        environment {
+            config = setOidcConfig()
+        }
+        application {
             mainModule(
                 env = env,
                 mockDBService = dbService,
@@ -186,23 +190,24 @@ class MeldekortKtTest {
                 dokarkivService = dokarkivService,
                 mockFlywayConfig = flywayConfig
             )
-        }) {
-            handleRequest(HttpMethod.Get, "/meldekortservice/api/meldekort?meldekortId=${id}") {
-            }.apply {
-                response.status() shouldBe HttpStatusCode.Unauthorized
-            }
         }
+
+        val response = client.get("/meldekortservice/api/meldekort?meldekortId=${id}")
+
+        assertEquals(HttpStatusCode.Unauthorized, response.status)
     }
 
     @Test
-    fun `get korrigert meldekortid returns 401-Unauthorized with invalid JWT`() {
+    fun `get korrigert meldekortid returns 401-Unauthorized with invalid JWT`() = testApplication {
         val id: Long = 1
         val nyId: Long = 123
 
         coEvery { arenaOrdsService.kopierMeldekort(any()) } returns (nyId)
 
-        withTestApplication({
-            (environment.config as MapApplicationConfig).setOidcConfig()
+        environment {
+            config = setOidcConfig()
+        }
+        application {
             mainModule(
                 env = env,
                 mockDBService = dbService,
@@ -211,17 +216,17 @@ class MeldekortKtTest {
                 dokarkivService = dokarkivService,
                 mockFlywayConfig = flywayConfig
             )
-        }) {
-            handleRequest(HttpMethod.Get, "/meldekortservice/api/meldekort/korrigering?meldekortId=${id}") {
-                addHeader(HttpHeaders.Authorization, "Bearer Token AD")
-            }.apply {
-                response.status() shouldBe HttpStatusCode.Unauthorized
-            }
         }
+
+        val response = client.get("/meldekortservice/api/meldekort/korrigering?meldekortId=${id}") {
+            header(HttpHeaders.Authorization, "Bearer Token AD")
+        }
+
+        assertEquals(HttpStatusCode.Unauthorized, response.status)
     }
 
     @Test
-    fun `get meldekortdetaljer returns 401-Unauthorized with invalid JWT`() {
+    fun `get meldekortdetaljer returns 401-Unauthorized with invalid JWT`() = testApplication {
         val id: Long = 1
         val meldekortdetaljer = Meldekortdetaljer(
             id = "1",
@@ -231,8 +236,10 @@ class MeldekortKtTest {
 
         coEvery { arenaOrdsService.hentMeldekortdetaljer(any()) } returns (meldekortdetaljer)
 
-        withTestApplication({
-            (environment.config as MapApplicationConfig).setOidcConfig()
+        environment {
+            config = setOidcConfig()
+        }
+        application {
             mainModule(
                 env = env,
                 mockDBService = dbService,
@@ -241,24 +248,26 @@ class MeldekortKtTest {
                 dokarkivService = dokarkivService,
                 mockFlywayConfig = flywayConfig
             )
-        }) {
-            handleRequest(HttpMethod.Get, "/meldekortservice/api/meldekort?meldekortId=${id}") {
-                addHeader(HttpHeaders.Authorization, "Bearer Token AD")
-            }.apply {
-                response.status() shouldBe HttpStatusCode.Unauthorized
-            }
         }
+
+        val response = client.get("/meldekortservice/api/meldekort?meldekortId=${id}") {
+            header(HttpHeaders.Authorization, "Bearer Token AD")
+        }
+
+        assertEquals(HttpStatusCode.Unauthorized, response.status)
     }
 
     @Test
-    fun `get korrigert meldekortid returns OK with valid JWT with sub`() {
+    fun `get korrigert meldekortid returns OK with valid JWT with sub`() = testApplication {
         val id: Long = 1
         val nyId: Long = 123
 
         coEvery { arenaOrdsService.kopierMeldekort(any()) } returns (nyId)
 
-        withTestApplication({
-            (environment.config as MapApplicationConfig).setOidcConfig()
+        environment {
+            config = setOidcConfig()
+        }
+        application {
             mainModule(
                 env = env,
                 mockDBService = dbService,
@@ -267,27 +276,29 @@ class MeldekortKtTest {
                 dokarkivService = dokarkivService,
                 mockFlywayConfig = flywayConfig
             )
-        }) {
-            handleRequest(HttpMethod.Get, "/meldekortservice/api/meldekort/korrigering?meldekortId=${id}") {
-                addHeader(HttpHeaders.Authorization, "Bearer ${issueTokenWithSub()}")
-            }.apply {
-                assertNotNull(response.content)
-                val responseObject = defaultObjectMapper.readValue<Long>(response.content!!)
-                response.status() shouldBe HttpStatusCode.OK
-                assertEquals(nyId, responseObject)
-            }
         }
+
+        val response = client.get("/meldekortservice/api/meldekort/korrigering?meldekortId=${id}") {
+            header(HttpHeaders.Authorization, "Bearer ${issueTokenWithSub()}")
+        }
+
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertNotNull(response.bodyAsText())
+        val responseObject = defaultObjectMapper.readValue<Long>(response.bodyAsText())
+        assertEquals(nyId, responseObject)
     }
 
     @Test
-    fun `get korrigert meldekortid returns OK with valid JWT with pid`() {
+    fun `get korrigert meldekortid returns OK with valid JWT with pid`() = testApplication {
         val id: Long = 1
         val nyId: Long = 123
 
         coEvery { arenaOrdsService.kopierMeldekort(any()) } returns (nyId)
 
-        withTestApplication({
-            (environment.config as MapApplicationConfig).setOidcConfig()
+        environment {
+            config = setOidcConfig()
+        }
+        application {
             mainModule(
                 env = env,
                 mockDBService = dbService,
@@ -296,15 +307,15 @@ class MeldekortKtTest {
                 dokarkivService = dokarkivService,
                 mockFlywayConfig = flywayConfig
             )
-        }) {
-            handleRequest(HttpMethod.Get, "/meldekortservice/api/meldekort/korrigering?meldekortId=${id}") {
-                addHeader(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")
-            }.apply {
-                assertNotNull(response.content)
-                val responseObject = defaultObjectMapper.readValue<Long>(response.content!!)
-                response.status() shouldBe HttpStatusCode.OK
-                assertEquals(nyId, responseObject)
-            }
         }
+
+        val response = client.get("/meldekortservice/api/meldekort/korrigering?meldekortId=${id}") {
+            header(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")
+        }
+
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertNotNull(response.bodyAsText())
+        val responseObject = defaultObjectMapper.readValue<Long>(response.bodyAsText())
+        assertEquals(nyId, responseObject)
     }
 }
