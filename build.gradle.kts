@@ -21,7 +21,6 @@ val navCommonCacheVersion = "2.2020.03.18_12.19-ac82e907ebc9"
 val navCommonVersion = "2.2022.07.01_07.12-6a0864fa6938"
 val ojdbc8Version = "19.3.0.0"
 val postgresVersion = "42.4.0"
-val slf4jVersion = "1.7.36"
 // OBS! Etter SwaggerUI 4.1.2 kan man ikke sende "url"-parameteren gjennom query string uten å sette queryConfigEnabled=true
 // Uten "url"-parameteren åpnes SwaggerUI med dummy Petstore swagger.json
 // Jeg kan ikke finne ut hvordan queryConfigEnabled=true kan settes siden vi bruker allerede prekompilerte webjars
@@ -119,7 +118,6 @@ dependencies {
     implementation("org.flywaydb:flyway-core:$flywayVersion")
     implementation("org.glassfish.jaxb:jaxb-runtime:$jaxbRuntimeVersion")
     implementation("org.postgresql:postgresql:$postgresVersion")
-    implementation("org.slf4j:slf4j-api:$slf4jVersion")
     implementation("org.webjars:swagger-ui:$swaggerVersion")
     implementation("no.nav:vault-jdbc:$vaultJdbcVersion")
 
