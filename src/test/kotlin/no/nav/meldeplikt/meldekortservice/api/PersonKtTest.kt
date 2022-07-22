@@ -6,11 +6,9 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.server.config.*
 import io.ktor.server.locations.*
 import io.ktor.server.testing.*
 import io.mockk.*
-import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.config.mainModule
 import no.nav.meldeplikt.meldekortservice.database.hentMidlertidigLagredeJournalposter
 import no.nav.meldeplikt.meldekortservice.model.MeldekortKontrollertType
@@ -24,19 +22,9 @@ import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Sporsmal
 import no.nav.meldeplikt.meldekortservice.model.response.OrdsStringResponse
-import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
-import no.nav.meldeplikt.meldekortservice.service.DBService
-import no.nav.meldeplikt.meldekortservice.service.DokarkivService
-import no.nav.meldeplikt.meldekortservice.service.KontrollService
 import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
 import no.nav.meldeplikt.meldekortservice.utils.defaultXmlMapper
-import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
-import no.nav.security.mock.oauth2.MockOAuth2Server
-import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback
-import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.output.MigrateResult
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import java.sql.SQLException
 import java.time.LocalDate
@@ -45,54 +33,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 @KtorExperimentalLocationsAPI
-class PersonKtTest {
-
-    private fun setOidcConfig(): MapApplicationConfig {
-        return MapApplicationConfig(
-            "ktor.environment" to "test",
-            "no.nav.security.jwt.issuers.size" to "1",
-            "no.nav.security.jwt.issuers.0.issuer_name" to ISSUER_ID,
-            "no.nav.security.jwt.issuers.0.discoveryurl" to mockOAuth2Server.wellKnownUrl(ISSUER_ID).toString(),
-            "no.nav.security.jwt.issuers.0.accepted_audience" to REQUIRED_AUDIENCE,
-            "ktor.environment" to "local"
-        )
-    }
-
-    private fun issueToken(): String =
-        mockOAuth2Server.issueToken(
-            ISSUER_ID,
-            "myclient",
-            DefaultOAuth2TokenCallback(audience = listOf(REQUIRED_AUDIENCE), claims = mapOf("pid" to "01020312345"))
-        ).serialize()
-
-    companion object {
-        private const val ISSUER_ID = "default"
-        private const val REQUIRED_AUDIENCE = "default"
-
-        private val mockOAuth2Server = MockOAuth2Server()
-
-        private val env = Environment(dokarkivResendInterval = 0L)
-
-        private var dbService = mockk<DBService>()
-        private var arenaOrdsService = mockk<ArenaOrdsService>()
-        private var kontrollService = mockk<KontrollService>()
-        private var dokarkivService = mockk<DokarkivService>()
-
-        @BeforeAll
-        @JvmStatic
-        fun setup() {
-            mockOAuth2Server.start(8091)
-
-            mockkStatic(::isCurrentlyRunningOnNais)
-            every { isCurrentlyRunningOnNais() } returns true
-        }
-
-        @AfterAll
-        @JvmStatic
-        fun cleanup() {
-            mockOAuth2Server.shutdown()
-        }
-    }
+class PersonKtTest : TestBase() {
 
     @Test
     fun `get historiske meldekort returns ok with valid JWT`() = testApplication {
@@ -101,8 +42,6 @@ class PersonKtTest {
         val person = Person(1L, "Bob", "Kåre", "No", "Papp", listOf(), 10, listOf())
 
         coEvery { arenaOrdsService.hentHistoriskeMeldekort(fnr, period) } returns (person)
-
-        val flywayConfig = mockk<Flyway>()
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         environment {
@@ -120,7 +59,7 @@ class PersonKtTest {
         }
 
         val response = client.get("/meldekortservice/api/person/historiskemeldekort?antallMeldeperioder=${period}") {
-            header(HttpHeaders.Authorization, "Bearer ${issueToken()}")
+            header(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")
         }
 
         assertEquals(HttpStatusCode.OK, response.status)
@@ -136,8 +75,6 @@ class PersonKtTest {
         val person = Person(1L, "Bob", "Kåre", "No", "Papp", listOf(), 10, listOf())
 
         coEvery { arenaOrdsService.hentHistoriskeMeldekort(fnr, period) } returns (person)
-
-        val flywayConfig = mockk<Flyway>()
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         environment {
@@ -203,8 +140,6 @@ class PersonKtTest {
         coEvery { arenaOrdsService.hentMeldekort(any()) } returns (ordsStringResponse)
         coEvery { dbService.hentInnsendtMeldekort(1L) } returns (InnsendtMeldekort(meldekortId = 1L))
         coEvery { dbService.hentInnsendtMeldekort(2L) } throws SQLException("Found no rows")
-
-        val flywayConfig = mockk<Flyway>()
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         environment {
@@ -222,7 +157,7 @@ class PersonKtTest {
         }
 
         val response = client.get("/meldekortservice/api/person/meldekort") {
-            header(HttpHeaders.Authorization, "Bearer ${issueToken()}")
+            header(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")
         }
 
         assertEquals(HttpStatusCode.OK, response.status)
@@ -237,8 +172,6 @@ class PersonKtTest {
         val ordsStringResponse = OrdsStringResponse(status = HttpStatusCode.BadRequest, content = "")
 
         coEvery { arenaOrdsService.hentMeldekort(any()) } returns (ordsStringResponse)
-
-        val flywayConfig = mockk<Flyway>()
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         environment {
@@ -256,7 +189,7 @@ class PersonKtTest {
         }
 
         val response = client.get("/meldekortservice/api/person/meldekort") {
-            header(HttpHeaders.Authorization, "Bearer ${issueToken()}")
+            header(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")
         }
 
         assertEquals(HttpStatusCode.NoContent, response.status)
@@ -279,8 +212,6 @@ class PersonKtTest {
 
         coEvery { dbService.settInnInnsendtMeldekort(any()) } just Runs
         coEvery { kontrollService.kontroller(any()) } returns meldekortKontrollertType
-
-        val flywayConfig = mockk<Flyway>()
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         environment {
@@ -298,7 +229,7 @@ class PersonKtTest {
         }
 
         val response = client.post("/meldekortservice/api/person/meldekort") {
-            header(HttpHeaders.Authorization, "Bearer ${issueToken()}")
+            header(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")
             header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             setBody(ObjectMapper().writeValueAsString(meldekortdetaljer))
         }
@@ -325,8 +256,6 @@ class PersonKtTest {
 
         coEvery { dbService.settInnInnsendtMeldekort(any()) } just Runs
         coEvery { kontrollService.kontroller(any()) } throws RuntimeException("Feil i meldekortkontroll-api")
-
-        val flywayConfig = mockk<Flyway>()
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         environment {
@@ -344,7 +273,7 @@ class PersonKtTest {
         }
 
         val response = client.post("/meldekortservice/api/person/meldekort") {
-            header(HttpHeaders.Authorization, "Bearer ${issueToken()}")
+            header(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")
             header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             setBody(ObjectMapper().writeValueAsString(meldekortdetaljer))
         }
@@ -369,8 +298,6 @@ class PersonKtTest {
 
         coEvery { dokarkivService.createJournalpost(any()) } returns journalpostResponse
         every { dbService.lagreJournalpostData(any(), any(), any()) } just Runs
-
-        val flywayConfig = mockk<Flyway>()
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         environment {
@@ -388,7 +315,7 @@ class PersonKtTest {
         }
 
         val response = client.post("/meldekortservice/api/person/opprettJournalpost") {
-            header(HttpHeaders.Authorization, "Bearer ${issueToken()}")
+            header(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")
             header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             setBody(this::class.java.getResource("/journalpost.json")!!.readText())
         }
@@ -406,8 +333,6 @@ class PersonKtTest {
         coEvery { dokarkivService.createJournalpost(any()) } throws Exception()
         every { dbService.lagreJournalpostMidlertidig(any()) } just Runs
         every { dbService.getConnection().hentMidlertidigLagredeJournalposter() } returns emptyList()
-
-        val flywayConfig = mockk<Flyway>()
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         environment {
@@ -425,7 +350,7 @@ class PersonKtTest {
         }
 
         val response = client.post("/meldekortservice/api/person/opprettJournalpost") {
-            header(HttpHeaders.Authorization, "Bearer ${issueToken()}")
+            header(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")
             header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             setBody(journalpost!!.readText())
         }
