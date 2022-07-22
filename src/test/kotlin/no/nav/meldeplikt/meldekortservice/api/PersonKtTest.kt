@@ -77,13 +77,11 @@ class PersonKtTest {
         private var arenaOrdsService = mockk<ArenaOrdsService>()
         private var kontrollService = mockk<KontrollService>()
         private var dokarkivService = mockk<DokarkivService>()
-        private var flywayConfig = mockk<Flyway>()
 
         @BeforeAll
         @JvmStatic
         fun setup() {
             mockOAuth2Server.start(8091)
-            every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
             mockkStatic(::isCurrentlyRunningOnNais)
             every { isCurrentlyRunningOnNais() } returns true
@@ -103,6 +101,9 @@ class PersonKtTest {
         val person = Person(1L, "Bob", "Kåre", "No", "Papp", listOf(), 10, listOf())
 
         coEvery { arenaOrdsService.hentHistoriskeMeldekort(fnr, period) } returns (person)
+
+        val flywayConfig = mockk<Flyway>()
+        every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         environment {
             config = setOidcConfig()
@@ -135,6 +136,9 @@ class PersonKtTest {
         val person = Person(1L, "Bob", "Kåre", "No", "Papp", listOf(), 10, listOf())
 
         coEvery { arenaOrdsService.hentHistoriskeMeldekort(fnr, period) } returns (person)
+
+        val flywayConfig = mockk<Flyway>()
+        every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         environment {
             config = setOidcConfig()
@@ -191,12 +195,17 @@ class PersonKtTest {
             10,
             listOf()
         )
-        val ordsStringResponse =
-            OrdsStringResponse(status = HttpStatusCode.OK, content = defaultXmlMapper.writeValueAsString(person))
+        val ordsStringResponse = OrdsStringResponse(
+            status = HttpStatusCode.OK,
+            content = defaultXmlMapper.writeValueAsString(person)
+        )
 
         coEvery { arenaOrdsService.hentMeldekort(any()) } returns (ordsStringResponse)
         coEvery { dbService.hentInnsendtMeldekort(1L) } returns (InnsendtMeldekort(meldekortId = 1L))
         coEvery { dbService.hentInnsendtMeldekort(2L) } throws SQLException("Found no rows")
+
+        val flywayConfig = mockk<Flyway>()
+        every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         environment {
             config = setOidcConfig()
@@ -228,6 +237,9 @@ class PersonKtTest {
         val ordsStringResponse = OrdsStringResponse(status = HttpStatusCode.BadRequest, content = "")
 
         coEvery { arenaOrdsService.hentMeldekort(any()) } returns (ordsStringResponse)
+
+        val flywayConfig = mockk<Flyway>()
+        every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         environment {
             config = setOidcConfig()
@@ -267,6 +279,9 @@ class PersonKtTest {
 
         coEvery { dbService.settInnInnsendtMeldekort(any()) } just Runs
         coEvery { kontrollService.kontroller(any()) } returns meldekortKontrollertType
+
+        val flywayConfig = mockk<Flyway>()
+        every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         environment {
             config = setOidcConfig()
@@ -311,6 +326,9 @@ class PersonKtTest {
         coEvery { dbService.settInnInnsendtMeldekort(any()) } just Runs
         coEvery { kontrollService.kontroller(any()) } throws RuntimeException("Feil i meldekortkontroll-api")
 
+        val flywayConfig = mockk<Flyway>()
+        every { flywayConfig.migrate() } returns MigrateResult("", "", "")
+
         environment {
             config = setOidcConfig()
         }
@@ -352,6 +370,9 @@ class PersonKtTest {
         coEvery { dokarkivService.createJournalpost(any()) } returns journalpostResponse
         every { dbService.lagreJournalpostData(any(), any(), any()) } just Runs
 
+        val flywayConfig = mockk<Flyway>()
+        every { flywayConfig.migrate() } returns MigrateResult("", "", "")
+
         environment {
             config = setOidcConfig()
         }
@@ -385,6 +406,9 @@ class PersonKtTest {
         coEvery { dokarkivService.createJournalpost(any()) } throws Exception()
         every { dbService.lagreJournalpostMidlertidig(any()) } just Runs
         every { dbService.getConnection().hentMidlertidigLagredeJournalposter() } returns emptyList()
+
+        val flywayConfig = mockk<Flyway>()
+        every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         environment {
             config = setOidcConfig()
