@@ -8,11 +8,13 @@ import io.ktor.server.locations.*
 import io.ktor.server.testing.*
 import io.mockk.coEvery
 import io.mockk.every
+import io.mockk.mockk
 import no.nav.meldeplikt.meldekortservice.config.mainModule
 import no.nav.meldeplikt.meldekortservice.model.enum.KortType
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.utils.ErrorMessage
 import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
+import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.output.MigrateResult
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -31,6 +33,7 @@ class MeldekortKtTest : TestBase() {
         )
 
         coEvery { arenaOrdsService.hentMeldekortdetaljer(any()) } returns (meldekortdetaljer)
+        val flywayConfig = mockk<Flyway>()
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         environment {
@@ -67,6 +70,7 @@ class MeldekortKtTest : TestBase() {
         )
 
         coEvery { arenaOrdsService.hentMeldekortdetaljer(any()) } returns (meldekortdetaljer)
+        val flywayConfig = mockk<Flyway>()
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         environment {
@@ -105,6 +109,7 @@ class MeldekortKtTest : TestBase() {
         )
 
         coEvery { arenaOrdsService.hentMeldekortdetaljer(any()) } returns (meldekortdetaljer)
+        val flywayConfig = mockk<Flyway>()
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         environment {
@@ -132,6 +137,7 @@ class MeldekortKtTest : TestBase() {
         val nyId: Long = 123
 
         coEvery { arenaOrdsService.kopierMeldekort(any()) } returns (nyId)
+        val flywayConfig = mockk<Flyway>()
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         environment {
@@ -165,6 +171,7 @@ class MeldekortKtTest : TestBase() {
         )
 
         coEvery { arenaOrdsService.hentMeldekortdetaljer(any()) } returns (meldekortdetaljer)
+        val flywayConfig = mockk<Flyway>()
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         environment {
@@ -194,6 +201,7 @@ class MeldekortKtTest : TestBase() {
         val nyId: Long = 123
 
         coEvery { arenaOrdsService.kopierMeldekort(any()) } returns (nyId)
+        val flywayConfig = mockk<Flyway>()
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         environment {
@@ -226,6 +234,7 @@ class MeldekortKtTest : TestBase() {
         val nyId: Long = 123
 
         coEvery { arenaOrdsService.kopierMeldekort(any()) } returns (nyId)
+        val flywayConfig = mockk<Flyway>()
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         environment {

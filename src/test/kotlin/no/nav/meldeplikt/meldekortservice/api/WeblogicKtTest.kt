@@ -14,6 +14,7 @@ import no.nav.meldeplikt.meldekortservice.config.mainModule
 import no.nav.meldeplikt.meldekortservice.model.WeblogicPing
 import no.nav.meldeplikt.meldekortservice.service.SoapServiceImpl
 import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
+import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.output.MigrateResult
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -27,6 +28,7 @@ class WeblogicKtTest : TestBase() {
 
     @Test
     fun `test weblogic returns true when Arena is up`() = testApplication {
+        val flywayConfig = mockk<Flyway>()
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         mockkObject(SoapConfig)
@@ -54,6 +56,7 @@ class WeblogicKtTest : TestBase() {
 
     @Test
     fun `test weblogic returns false when Arena is not up`() = testApplication {
+        val flywayConfig = mockk<Flyway>()
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         mockkObject(SoapConfig)

@@ -24,6 +24,7 @@ import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Sporsmal
 import no.nav.meldeplikt.meldekortservice.model.response.OrdsStringResponse
 import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
 import no.nav.meldeplikt.meldekortservice.utils.defaultXmlMapper
+import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.output.MigrateResult
 import org.junit.jupiter.api.Test
 import java.sql.SQLException
@@ -42,6 +43,7 @@ class PersonKtTest : TestBase() {
         val person = Person(1L, "Bob", "Kåre", "No", "Papp", listOf(), 10, listOf())
 
         coEvery { arenaOrdsService.hentHistoriskeMeldekort(fnr, period) } returns (person)
+        val flywayConfig = mockk<Flyway>()
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         environment {
@@ -75,6 +77,7 @@ class PersonKtTest : TestBase() {
         val person = Person(1L, "Bob", "Kåre", "No", "Papp", listOf(), 10, listOf())
 
         coEvery { arenaOrdsService.hentHistoriskeMeldekort(fnr, period) } returns (person)
+        val flywayConfig = mockk<Flyway>()
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         environment {
@@ -140,6 +143,7 @@ class PersonKtTest : TestBase() {
         coEvery { arenaOrdsService.hentMeldekort(any()) } returns (ordsStringResponse)
         coEvery { dbService.hentInnsendtMeldekort(1L) } returns (InnsendtMeldekort(meldekortId = 1L))
         coEvery { dbService.hentInnsendtMeldekort(2L) } throws SQLException("Found no rows")
+        val flywayConfig = mockk<Flyway>()
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         environment {
@@ -172,6 +176,7 @@ class PersonKtTest : TestBase() {
         val ordsStringResponse = OrdsStringResponse(status = HttpStatusCode.BadRequest, content = "")
 
         coEvery { arenaOrdsService.hentMeldekort(any()) } returns (ordsStringResponse)
+        val flywayConfig = mockk<Flyway>()
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         environment {
@@ -212,6 +217,7 @@ class PersonKtTest : TestBase() {
 
         coEvery { dbService.settInnInnsendtMeldekort(any()) } just Runs
         coEvery { kontrollService.kontroller(any()) } returns meldekortKontrollertType
+        val flywayConfig = mockk<Flyway>()
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         environment {
@@ -256,6 +262,7 @@ class PersonKtTest : TestBase() {
 
         coEvery { dbService.settInnInnsendtMeldekort(any()) } just Runs
         coEvery { kontrollService.kontroller(any()) } throws RuntimeException("Feil i meldekortkontroll-api")
+        val flywayConfig = mockk<Flyway>()
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         environment {
@@ -298,6 +305,7 @@ class PersonKtTest : TestBase() {
 
         coEvery { dokarkivService.createJournalpost(any()) } returns journalpostResponse
         every { dbService.lagreJournalpostData(any(), any(), any()) } just Runs
+        val flywayConfig = mockk<Flyway>()
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         environment {
@@ -333,6 +341,7 @@ class PersonKtTest : TestBase() {
         coEvery { dokarkivService.createJournalpost(any()) } throws Exception()
         every { dbService.lagreJournalpostMidlertidig(any()) } just Runs
         every { dbService.getConnection().hentMidlertidigLagredeJournalposter() } returns emptyList()
+        val flywayConfig = mockk<Flyway>()
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         environment {

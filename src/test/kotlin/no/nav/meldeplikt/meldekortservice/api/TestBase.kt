@@ -30,7 +30,6 @@ open class TestBase {
         var arenaOrdsService = mockk<ArenaOrdsService>()
         var kontrollService = mockk<KontrollService>()
         var dokarkivService = mockk<DokarkivService>()
-        val flywayConfig = mockk<Flyway>()
 
         @BeforeAll
         @JvmStatic

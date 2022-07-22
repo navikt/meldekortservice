@@ -8,6 +8,7 @@ import io.ktor.server.testing.*
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.meldeplikt.meldekortservice.config.mainModule
+import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.output.MigrateResult
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -17,6 +18,7 @@ class InternalKtTest : TestBase() {
 
     @Test
     fun testInternal() = testApplication {
+        val flywayConfig = mockk<Flyway>()
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
         environment {
