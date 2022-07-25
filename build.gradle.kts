@@ -81,7 +81,7 @@ dependencies {
         exclude(group = "com.sun.xml.ws", module = "policy")
     }
     */
-    implementation("jakarta.jws:jakarta.jws-api:3.0.0")
+    implementation("jakarta.jws:jakarta.jws-api:2.1.0")
     implementation("io.github.microutils:kotlin-logging:$kotlinLoggerVersion")
     implementation("io.ktor:ktor-client-apache:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
