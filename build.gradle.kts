@@ -21,10 +21,7 @@ val navCommonCacheVersion = "2.2020.03.18_12.19-ac82e907ebc9"
 val navCommonVersion = "2.2022.07.01_07.12-6a0864fa6938"
 val ojdbc8Version = "19.3.0.0"
 val postgresVersion = "42.4.0"
-// OBS! Etter SwaggerUI 4.1.2 kan man ikke sende "url"-parameteren gjennom query string uten å sette queryConfigEnabled=true
-// Uten "url"-parameteren åpnes SwaggerUI med dummy Petstore swagger.json
-// Jeg kan ikke finne ut hvordan queryConfigEnabled=true kan settes siden vi bruker allerede prekompilerte webjars
-val swaggerVersion = "4.1.2" // Husk å endre versjonen også i SwaggerUi.kt
+val swaggerVersion = "4.11.1" // Husk å endre versjonen også i SwaggerUi.kt
 val tjenestespecVersion = "1.2019.09.25-00.21-49b69f0625e0"
 val tokenValidationVersion = "2.1.2"
 val vaultJdbcVersion = "1.3.9"

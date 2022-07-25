@@ -60,7 +60,7 @@ private const val cacheAntallMinutter = 55
 private const val cacheTimeout: Long = cacheAntallMinutter.toLong() * 60 * 1000 * 2
 val CACHE: Cache<String, AccessToken> = CacheUtils.buildCache(CacheConfig.DEFAULT.withTimeToLiveMillis(cacheTimeout))
 
-const val SWAGGER_URL_V1 = "/meldekortservice/internal/apidocs/index.html?url=swagger.json"
+const val SWAGGER_URL_V1 = "/meldekortservice/internal/apidocs/index.html"
 
 @KtorExperimentalLocationsAPI
 fun Application.mainModule(

@@ -23,7 +23,7 @@ val ordsClientId: String = getEnvVar("CLIENT_ID", "%CLIENT_ID_FRA_VAULT%"),
 val ordsClientSecret: String = getEnvVar("CLIENT_SECRET", "%CLIENT_SECRET_FRA_VAULT%"),
 ```
 Appen starter på http://localhost:8090. Sjekk for eksempel at ping svarer på http://localhost:8090/meldekortservice/internal/ping.  
-Swagger er tilgjengelig på http://localhost:8090/meldekortservice/internal/apidocs/index.html?url=swagger.json
+Swagger er tilgjengelig på http://localhost:8090/meldekortservice/internal/apidocs/index.html
 
 ## Feilsøking
 For å være sikker på at man får en ny tom database, kan man kjøre kommandoen: `docker-compose down -v`.
