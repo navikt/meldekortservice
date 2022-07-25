@@ -23,7 +23,7 @@ val navCommonVersion = "2.2022.07.01_07.12-6a0864fa6938"
 val ojdbc8Version = "19.3.0.0"
 val postgresVersion = "42.4.0"
 val swaggerVersion = "4.11.1" // Husk å endre versjonen også i SwaggerUi.kt
-val tjenestespecVersion = "1.2019.09.25-00.21-49b69f0625e0"
+val tjenestespecVersion = "2589.e85bf84"
 val tokenValidationVersion = "2.1.2"
 val vaultJdbcVersion = "1.3.9"
 val vaultVersion = "5.1.0"
@@ -35,6 +35,7 @@ project.setProperty("mainClassName", "io.ktor.server.netty.EngineMain")
 repositories {
     mavenCentral()
     maven("https://plugins.gradle.org/m2/")
+    maven("https://jitpack.io")
 }
 
 plugins {
@@ -76,12 +77,6 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonVersion")
     implementation("com.oracle.ojdbc:ojdbc8:$ojdbc8Version")
-    /*
-    implementation("com.sun.xml.ws:jaxws-tools:$jaxwsToolsVersion") {
-        exclude(group = "com.sun.xml.ws", module = "policy")
-    }
-    */
-    implementation("jakarta.jws:jakarta.jws-api:2.1.0")
     implementation("io.github.microutils:kotlin-logging:$kotlinLoggerVersion")
     implementation("io.ktor:ktor-client-apache:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
@@ -107,7 +102,7 @@ dependencies {
     implementation("no.nav.common:cxf:$navCommonVersion")
     implementation("no.nav.security:token-client-spring:$tokenValidationVersion")
     implementation("no.nav.security:token-validation-ktor-v2:$tokenValidationVersion")
-    implementation("no.nav.tjenestespesifikasjoner:arena-sakOgAktivitet_v1:$tjenestespecVersion")
+    implementation("com.github.navikt.tjenestespesifikasjoner:arena-sakogaktivitet_v1:$tjenestespecVersion")
     implementation("org.apache.cxf:cxf-core:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-bindings-soap:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
