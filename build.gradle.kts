@@ -15,6 +15,7 @@ val kotlinLoggerVersion = "2.1.23"
 val ktorVersion = "2.0.3"
 val logbackVersion = "1.2.11"
 val logstashVersion = "7.2"
+val micrometerVersion = "1.9.2"
 val mockOauthVersion = "0.5.1"
 val mockkVersion = "1.12.4"
 val navCommonCacheVersion = "2.2020.03.18_12.19-ac82e907ebc9"
@@ -80,6 +81,7 @@ dependencies {
         exclude(group = "com.sun.xml.ws", module = "policy")
     }
     */
+    implementation("jakarta.jws:jakarta.jws-api:3.0.0")
     implementation("io.github.microutils:kotlin-logging:$kotlinLoggerVersion")
     implementation("io.ktor:ktor-client-apache:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
@@ -95,7 +97,7 @@ dependencies {
     implementation("io.ktor:ktor-server-locations:$ktorVersion")
     implementation("io.ktor:ktor-server-metrics-micrometer:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
-    implementation("io.micrometer:micrometer-registry-prometheus:1.9.2")
+    implementation("io.micrometer:micrometer-registry-prometheus:$micrometerVersion")
     implementation("javax.activation:activation:$javaxActivationVersion")
     implementation("javax.annotation:javax.annotation-api:$javaxAnnotationApiVersion")
     implementation("javax.xml.bind:jaxb-api:$jaxbApiVersion")
