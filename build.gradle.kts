@@ -27,7 +27,6 @@ val tjenestespecVersion = "2589.e85bf84"
 val tokenValidationVersion = "2.1.2"
 val vaultJdbcVersion = "1.3.9"
 val vaultVersion = "5.1.0"
-val cxfVersion = "3.5.3"
 
 
 project.setProperty("mainClassName", "io.ktor.server.netty.EngineMain")
@@ -77,6 +76,9 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonVersion")
     implementation("com.oracle.ojdbc:ojdbc8:$ojdbc8Version")
+    implementation("com.sun.xml.ws:jaxws-tools:$jaxwsToolsVersion") {
+        exclude(group = "com.sun.xml.ws", module = "policy")
+    }
     implementation("io.github.microutils:kotlin-logging:$kotlinLoggerVersion")
     implementation("io.ktor:ktor-client-apache:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
@@ -103,14 +105,6 @@ dependencies {
     implementation("no.nav.security:token-client-spring:$tokenValidationVersion")
     implementation("no.nav.security:token-validation-ktor-v2:$tokenValidationVersion")
     implementation("com.github.navikt.tjenestespesifikasjoner:arena-sakogaktivitet_v1:$tjenestespecVersion")
-    implementation("org.apache.cxf:cxf-core:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-bindings-soap:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-frontend-simple:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-ws-policy:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
     implementation("org.flywaydb:flyway-core:$flywayVersion")
     implementation("org.glassfish.jaxb:jaxb-runtime:$jaxbRuntimeVersion")
     implementation("org.postgresql:postgresql:$postgresVersion")
