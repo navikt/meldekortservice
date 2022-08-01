@@ -1,7 +1,6 @@
 package no.nav.meldeplikt.meldekortservice.model.enum
 
 import com.fasterxml.jackson.annotation.JsonCreator
-import java.util.*
 
 enum class KortType constructor(val code: String) {
     ORDINAER("01"),

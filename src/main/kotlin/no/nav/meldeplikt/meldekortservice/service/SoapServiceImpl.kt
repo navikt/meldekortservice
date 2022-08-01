@@ -3,7 +3,10 @@ package no.nav.meldeplikt.meldekortservice.service
 import no.nav.common.cxf.StsConfig
 import no.nav.meldeplikt.meldekortservice.config.SoapConfig
 import no.nav.meldeplikt.meldekortservice.model.WeblogicPing
-import no.nav.meldeplikt.meldekortservice.utils.*
+import no.nav.meldeplikt.meldekortservice.utils.SOAP_STS_URL_KEY
+import no.nav.meldeplikt.meldekortservice.utils.SOAP_SYSTEMUSER_PASSWORD
+import no.nav.meldeplikt.meldekortservice.utils.SOAP_SYSTEMUSER_USERNAME
+import no.nav.meldeplikt.meldekortservice.utils.defaultLog
 import no.nav.tjeneste.virksomhet.sakogaktivitet.v1.SakOgAktivitetV1
 import java.lang.System.getProperty
 
