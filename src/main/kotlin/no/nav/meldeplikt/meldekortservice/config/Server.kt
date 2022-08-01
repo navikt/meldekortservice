@@ -90,7 +90,7 @@ fun Application.mainModule(
     install(DefaultHeaders)
 
     install(ContentNegotiation) {
-        jackson { objectMapper }
+        jackson { defaultObjectMapper }
     }
 
     val conf = this.environment.config

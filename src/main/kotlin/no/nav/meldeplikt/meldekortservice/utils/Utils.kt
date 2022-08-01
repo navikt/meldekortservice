@@ -8,7 +8,6 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinFeature
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
 import io.ktor.http.*
@@ -98,9 +97,7 @@ val defaultXmlMapper: ObjectMapper = XmlMapper().registerModule(
         .build()
 )
 
-val defaultObjectMapper = jacksonObjectMapper()
-
-val objectMapper: ObjectMapper = ObjectMapper()
+val defaultObjectMapper: ObjectMapper = ObjectMapper()
     .registerKotlinModule()
     .registerModule(JavaTimeModule())
     .registerModule(ParameterNamesModule())

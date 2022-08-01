@@ -20,7 +20,7 @@ import java.util.*
 class DokarkivService(
     private val httpClient: HttpClient = HttpClient(Apache) {
         install(ContentNegotiation) {
-            register(ContentType.Application.Json, JacksonConverter(objectMapper))
+            register(ContentType.Application.Json, JacksonConverter(defaultObjectMapper))
         }
         install(HttpTimeout) {
             // max time periods

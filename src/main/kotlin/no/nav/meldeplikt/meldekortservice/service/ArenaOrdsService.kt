@@ -27,7 +27,7 @@ import java.util.*
 class ArenaOrdsService(
     private val ordsClient: HttpClient = HttpClient {
         install(ContentNegotiation) {
-            register(ContentType.Application.Json, JacksonConverter(objectMapper))
+            register(ContentType.Application.Json, JacksonConverter(defaultObjectMapper))
         }
     },
     private val env: Environment = Environment()

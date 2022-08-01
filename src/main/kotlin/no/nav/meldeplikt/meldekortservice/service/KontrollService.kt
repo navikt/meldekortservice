@@ -13,7 +13,7 @@ import no.nav.meldeplikt.meldekortservice.model.MeldekortKontrollertType
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.Meldekortkontroll
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.response.KontrollResponse
 import no.nav.meldeplikt.meldekortservice.utils.KONTROLL_KONTROLL
-import no.nav.meldeplikt.meldekortservice.utils.objectMapper
+import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
 
 class KontrollService(
     private val env: Environment = Environment(),
@@ -21,7 +21,7 @@ class KontrollService(
     private val aadService: AadService = AadService(AadServiceConfiguration()),
     private val kontrollClient: HttpClient = HttpClient {
         install(ContentNegotiation) {
-            register(ContentType.Application.Json, JacksonConverter(objectMapper))
+            register(ContentType.Application.Json, JacksonConverter(defaultObjectMapper))
         }
     }
 ) {

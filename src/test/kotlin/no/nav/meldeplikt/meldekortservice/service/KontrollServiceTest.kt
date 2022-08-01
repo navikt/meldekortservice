@@ -13,7 +13,6 @@ import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.Melde
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.response.KontrollFeil
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.response.KontrollResponse
 import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
-import no.nav.meldeplikt.meldekortservice.utils.objectMapper
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -71,7 +70,7 @@ class KontrollServiceTest {
             install(ContentNegotiation) {
                 register(
                     ContentType.Application.Json,
-                    JacksonConverter(objectMapper)
+                    JacksonConverter(defaultObjectMapper)
                 )
             }
 
