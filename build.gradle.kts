@@ -103,7 +103,6 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashVersion")
     implementation("no.nav.common:cache:$navCommonCacheVersion")
     implementation("no.nav.common:cxf:$navCommonVersion")
-    implementation("no.nav.security:token-client-spring:$tokenValidationVersion")
     implementation("no.nav.security:token-validation-ktor-v2:$tokenValidationVersion")
     implementation("com.github.navikt.tjenestespesifikasjoner:arena-sakogaktivitet_v1:$tjenestespecVersion")
     implementation("org.apache.cxf:cxf-core:$cxfVersion")
