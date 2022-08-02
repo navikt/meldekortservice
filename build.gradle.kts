@@ -177,4 +177,14 @@ tasks {
         mainClass.set(project.property("mainClassName").toString())
         classpath = sourceSets["main"].runtimeClasspath
     }
+
+    register("runServerTest", JavaExec::class) {
+        systemProperties["IDPORTEN_WELL_KNOWN_URL"] = "idporten.dev.nav.no"
+        systemProperties["IDPORTEN_ACCEPTED_AUDIENCE"] = "nav.no"
+        systemProperties["TOKEN_X_WELL_KNOWN_URL"] = "tokenx.dev.nav.no"
+        systemProperties["TOKEN_X_ACCEPTED_AUDIENCE"] = "nav.no"
+
+        mainClass.set(project.property("mainClassName").toString())
+        classpath = sourceSets["main"].runtimeClasspath
+    }
 }

@@ -3,12 +3,18 @@
 Microservice / proxy som henter data fra meldekort ORDS (Arena DB).
 
 ## Kom i gang
-1. Bygg meldekortservice ved å kjøre `./gradlew clean build`. Dette vil også kjøre testene. Det er også mulig å kjøre `gradle clean build`, men da må man ha en riktig versjon av gradle installert (som støtter Java 17)
-2. Start lokal instans av Postgres ved å kjøre `docker-compose up -d`.
-3. For å være sikker på at man får en ny tom database, kan man kjøre kommandoen: `docker-compose down -v`.
+Bygg meldekortservice ved å kjøre `./gradlew clean build`. Dette vil også kjøre testene.
+Det er også mulig å kjøre `gradle clean build`, men da må man ha en riktig versjon av gradle installert (som støtter Java 17)
 
 ## Lokal kjøring
-Start appen ved å kjøre Server.kt sin main-metode eller kjør `gradle runServer`.  
+0. Ikke nødvendig: for å være sikker på at man får en ny tom database, kan man kjøre kommandoen: `docker-compose down -v`.
+1. Start lokal instans av Postgres ved å kjøre `docker-compose up -d`.
+2. Start appen ved å kjøre `./gradlew runServerTest`.
+Det er også mulig å kjøre Server.kt sin main-metode eller `./gradlew runServer`, men da må man sette miljøvariablene:
+IDPORTEN_WELL_KNOWN_URL
+IDPORTEN_ACCEPTED_AUDIENCE
+TOKEN_X_WELL_KNOWN_URL
+TOKEN_X_ACCEPTED_AUDIENCE
 For å kjøre mot f.eks Q1 kan man enten sette riktige miljøvariabler (manuelt eller ved hjelp av bat/bash script) eller midlertidig skrive disse inn i Environment.kt i stedet for defaultValue'er.  
 For eksempel, for å bruke ORDS i Q1 må man erstatte
 ```
