@@ -142,8 +142,15 @@ fun ResultSet.tilInnsendtMeldekort(): InnsendtMeldekort {
 // It would be better to convert an object to a string and then string to array of chars
 // But because of some interceptor that converts FNR into * in test-environment, we have to convert objects to bytes first
 private fun bytesToChars(bytes: ByteArray?): CharArray {
-    val charBuffer: CharBuffer = StandardCharsets.UTF_8.decode(ByteBuffer.wrap(bytes))
-    return Arrays.copyOf(charBuffer.array(), charBuffer.limit())
+    val byteBuffer = ByteBuffer.wrap(bytes)
+    val charBuffer: CharBuffer = StandardCharsets.UTF_8.decode(byteBuffer)
+
+    val charArray = Arrays.copyOf(charBuffer.array(), charBuffer.limit())
+
+    charBuffer.clear()
+    byteBuffer.clear()
+
+    return charArray
 }
 
 // Generic solution for Oracle Clob and PostgreSQL Text
