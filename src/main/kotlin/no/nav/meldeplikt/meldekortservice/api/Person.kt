@@ -109,6 +109,7 @@ fun Routing.kontrollerMeldekort(kontrollService: KontrollService, dbService: DBS
         )
     ) { _: MeldekortInput, meldekort: Meldekortdetaljer ->
         try {
+            defaultLog.info("Kontroller meldekort med meldekortId " + meldekort.meldekortId)
             val kontrollResponse = kontrollService.kontroller(
                 meldekort = meldekortkontrollMapper.mapMeldekortTilMeldekortkontroll(meldekort)
             )
@@ -132,7 +133,7 @@ fun Routing.kontrollerMeldekort(kontrollService: KontrollService, dbService: DBS
             )
         } catch (e: Exception) {
             val errorMessage =
-                ErrorMessage("Meldekort med id ${meldekort.meldekortId} ble ikke sendt inn. ${e.message}")
+                ErrorMessage("Meldekort med meldekortId ${meldekort.meldekortId} ble ikke sendt inn. ${e.message}")
             defaultLog.warn(errorMessage.error, e)
             defaultLog.info("Exception fra meldekortkontroll for meldekort: "
                     + defaultObjectMapper.writeValueAsString(meldekort))
