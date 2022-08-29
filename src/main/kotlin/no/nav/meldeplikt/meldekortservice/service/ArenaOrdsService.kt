@@ -69,12 +69,8 @@ class ArenaOrdsService(
         val responseMedNyMeldekortId = ordsClient.post<String>("${env.ordsUrl}$ARENA_ORDS_KOPIER_MELDEKORT") {
             setupOrdsRequest(meldekortId)
         }
-        if (mapFraXml(responseMedNyMeldekortId, KopierMeldekortResponse::class.java).meldekortId != null)
-        {
-            defaultLog.info("Meldekort med id " + mapFraXml(responseMedNyMeldekortId, KopierMeldekortResponse::class.java).meldekortId + " er opprettet for korrigering. Kopiert fra meldekort med id " + meldekortId)
-        } else {
-            defaultLog.warn("Feil ved opprettelse av meldekort for korrigering! Meldekort med id " + meldekortId + " har ikke blitt kopiert.")
-        }
+        defaultLog.info("Meldekort med id " + mapFraXml(responseMedNyMeldekortId, KopierMeldekortResponse::class.java).meldekortId + " er opprettet for korrigering. Kopiert fra meldekort med id " + meldekortId)
+        
         return mapFraXml(responseMedNyMeldekortId, KopierMeldekortResponse::class.java).meldekortId
     }
 
