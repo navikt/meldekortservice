@@ -66,16 +66,20 @@ class ArenaOrdsService(
     }
 
     suspend fun kopierMeldekort(meldekortId: Long): Long {
-        val nyMeldekortId = ordsClient.post<String>("${env.ordsUrl}$ARENA_ORDS_KOPIER_MELDEKORT") {
-            setupOrdsRequest(meldekortId)
+        try {
+            val responseMedNyMeldekortId = ordsClient.post<String>("${env.ordsUrl}$ARENA_ORDS_KOPIER_MELDEKORT") {
+                setupOrdsRequest(meldekortId)
+            }
+
+            val nyMeldekortId = mapFraXml(responseMedNyMeldekortId, KopierMeldekortResponse::class.java).meldekortId
+            defaultLog.info("Meldekort med id $nyMeldekortId er opprettet for korrigering. Kopiert fra meldekort med id $meldekortId")
+            return nyMeldekortId
+
+        } catch (e: Exception) {
+            defaultLog.warn("Feil ved opprettelse av meldekort for korrigering! Meldekort med id $meldekortId har ikke blitt kopiert.", e)
         }
-        if (nyMeldekortId != null)
-        {
-            defaultLog.info("Meldekort med id " + mapFraXml(nyMeldekortId, KopierMeldekortResponse::class.java).meldekortId + " er opprettet for korrigering. Kopiert fra meldekort med id " + meldekortId)
-        } else {
-            defaultLog.warn("Feil ved opprettelse av meldekort for korrigering! Meldekort med id " + meldekortId + " har ikke blitt kopiert.")
-        }
-        return mapFraXml(nyMeldekortId, KopierMeldekortResponse::class.java).meldekortId
+
+        return 0
     }
 
     private fun HttpRequestBuilder.setupOrdsRequest(meldekortId: Long? = null) {
