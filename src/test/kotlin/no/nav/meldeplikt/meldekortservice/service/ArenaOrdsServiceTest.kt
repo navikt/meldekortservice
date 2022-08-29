@@ -189,4 +189,32 @@ class ArenaOrdsServiceTest {
         }
     }
 
+    @Test
+    fun `test kopierMeldekort returns 0 hvis ikke OK`() {
+        val xmlString = """NOT XML STRING"""
+        val client = HttpClient(MockEngine) {
+            engine {
+                addHandler { request ->
+                    assertEquals(HttpMethod.Post, request.method)
+                    assertEquals("Bearer $DUMMY_TOKEN", request.headers["Authorization"])
+                    assertEquals("123", request.headers["meldekortId"])
+                    assertEquals(
+                        "https://dummyurl.nav.no/api/v1/meldeplikt/meldekort/kopi",
+                        request.url.toString()
+                    )
+
+                    respondOk(
+                        xmlString
+                    )
+                }
+            }
+        }
+        val arenaOrdsService = ArenaOrdsService(client)
+
+        runBlocking {
+            val actualResponse = arenaOrdsService.kopierMeldekort(123)
+
+            assertEquals(0, actualResponse)
+        }
+    }
 }
