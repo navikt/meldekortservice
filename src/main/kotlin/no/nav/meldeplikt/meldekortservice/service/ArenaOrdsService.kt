@@ -81,13 +81,6 @@ class ArenaOrdsService(
 
         return 0
     }
-        val responseMedNyMeldekortId = ordsClient.post<String>("${env.ordsUrl}$ARENA_ORDS_KOPIER_MELDEKORT") {
-            setupOrdsRequest(meldekortId)
-        }
-        defaultLog.info("Meldekort med id " + mapFraXml(responseMedNyMeldekortId, KopierMeldekortResponse::class.java).meldekortId + " er opprettet for korrigering. Kopiert fra meldekort med id " + meldekortId)
-        
-        return mapFraXml(responseMedNyMeldekortId, KopierMeldekortResponse::class.java).meldekortId
-    }
 
     private fun HttpRequestBuilder.setupOrdsRequest(meldekortId: Long? = null) {
         headers.append("Accept", "application/xml; charset=UTF-8")
