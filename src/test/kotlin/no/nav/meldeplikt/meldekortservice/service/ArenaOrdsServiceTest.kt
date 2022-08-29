@@ -208,5 +208,4 @@ class ArenaOrdsServiceTest {
             assertEquals(0, actualResponse)
         }
     }
-
 }
