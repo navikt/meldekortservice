@@ -1,13 +1,14 @@
 package no.nav.meldeplikt.meldekortservice.mapper
 
+import io.mockk.every
+import io.mockk.mockk
+import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
 import no.nav.meldeplikt.meldekortservice.model.enum.KortType
 import no.nav.meldeplikt.meldekortservice.model.meldekort.FravaerType
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Meldekort
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.service.DBService
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.mock
 import java.sql.SQLException
 import java.time.LocalDate
 
@@ -15,8 +16,10 @@ class MeldekortMapperTest {
 
     @Test
     fun testMeldekortMapper() {
-        val mockMeldekortService = mock(DBService::class.java)
-        `when`(mockMeldekortService.hentInnsendtMeldekort(2L)).thenAnswer { throw SQLException("Found no rows") }
+        val mockDBService = mockk<DBService>()
+        every { mockDBService.hentInnsendtMeldekort(1) } returns InnsendtMeldekort(1)
+        every { mockDBService.hentInnsendtMeldekort(2) } throws SQLException("Found no rows")
+
         val meldekort1 = Meldekort(
             1L,
             KortType.MASKINELT_OPPDATERT.code,
@@ -44,7 +47,7 @@ class MeldekortMapperTest {
         val meldekortListe = listOf(meldekort1, meldekort2)
         val fravaerListe = listOf<FravaerType>()
         val person = Person(1L, "Bob", "Kåre", "No", "Papp", meldekortListe, 10, fravaerListe)
-        val filtrert = MeldekortMapper.filtrerMeldekortliste(person, mockMeldekortService)
+        val filtrert = MeldekortMapper.filtrerMeldekortliste(person, mockDBService)
 
         assert(filtrert.meldekortListe?.size == 1)
     }

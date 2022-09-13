@@ -14,6 +14,9 @@ spec:
           - "azp_name"
   image: {{image}}
   port: 8090
+  prometheus:
+    enabled: true
+    path: /meldekortservice/internal/metrics
   secureLogs:
     enabled: true
   ingresses:
@@ -46,7 +49,7 @@ spec:
   webproxy: true
   resources:
     limits:
-      cpu: '1'
+      cpu: 1000m
       memory: 1500Mi
     requests:
       cpu: 500m

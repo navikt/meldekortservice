@@ -1,7 +1,5 @@
 package no.nav.meldeplikt.meldekortservice.utils.swagger
 
-import io.ktor.application.*
-import io.ktor.auth.*
 import io.ktor.http.*
 import io.ktor.http.HttpStatusCode.Companion.BadRequest
 import io.ktor.http.HttpStatusCode.Companion.InternalServerError
@@ -9,22 +7,16 @@ import io.ktor.http.HttpStatusCode.Companion.NoContent
 import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.http.HttpStatusCode.Companion.ServiceUnavailable
 import io.ktor.http.HttpStatusCode.Companion.Unauthorized
-import io.ktor.locations.*
-import io.ktor.request.*
-import io.ktor.routing.Route
+import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.locations.*
+import io.ktor.server.request.*
+import io.ktor.server.routing.Route
 import io.ktor.util.pipeline.*
 import no.nav.meldeplikt.meldekortservice.config.swagger
 import no.nav.meldeplikt.meldekortservice.utils.defaultLog
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import java.util.*
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.collections.emptyList
-import kotlin.collections.forEach
-import kotlin.collections.getOrPut
-import kotlin.collections.listOf
-import kotlin.collections.mapOf
-import kotlin.collections.mutableMapOf
 import kotlin.collections.set
 import kotlin.reflect.KClass
 
@@ -67,6 +59,7 @@ inline fun <reified LOCATION : Any, reified ENTITY_TYPE : Any> Metadata.apply(me
     applyOperations(location, tags, method, LOCATION::class, ENTITY_TYPE::class)
 }
 
+@KtorExperimentalLocationsAPI
 fun Metadata.applyResponseDefinitions() =
     responses.values.forEach { addDefinition(it) }
 
@@ -81,6 +74,10 @@ fun <LOCATION : Any, BODY_TYPE : Any> Metadata.applyOperations(
     swagger.paths
         .getOrPut(location.path) { mutableMapOf() }[method.value.lowercase(Locale.getDefault())] =
         Operation(this, location, group, locationType, entityType, method)
+
+    if (group != null && swagger.tags.find { tag -> tag.name == group.name } == null) {
+        swagger.tags.add(Tag(group.name, group.description))
+    }
 }
 
 fun String.responds(vararg pairs: Pair<HttpStatusCode, KClass<*>>): Metadata =

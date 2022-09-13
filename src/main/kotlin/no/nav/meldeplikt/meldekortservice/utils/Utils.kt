@@ -6,11 +6,13 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.*
+import com.fasterxml.jackson.module.kotlin.KotlinFeature
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
-import io.ktor.application.*
 import io.ktor.http.*
-import io.ktor.response.*
+import io.ktor.server.application.*
+import io.ktor.server.response.*
 import io.ktor.util.pipeline.*
 import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 
@@ -22,7 +24,6 @@ internal const val INTERNAL_PATH = "$BASE_PATH/internal"
 internal const val MELDEKORT_PATH = "$API_PATH/meldekort"
 internal const val PERSON_PATH = "$API_PATH/person"
 internal const val WEBLOGIC_PING_PATH = "$API_PATH/weblogic"
-internal const val TEKST_PATH = "$API_PATH/tekst"
 
 internal const val KONTROLL_KONTROLL = "/api/v1/kontroll"
 
@@ -46,8 +47,9 @@ internal const val STS_PATH = "/rest/v1/sts/token"
 internal const val JOURNALPOSTAPI_PATH = "/rest/journalpostapi/v1"
 internal const val JOURNALPOST_PATH = "$JOURNALPOSTAPI_PATH/journalpost"
 
-const val vaultUrl = "https://vault.adeo.no"
-const val vaultTokenPath = "/var/run/secrets/nais.io/vault/vault_token"
+internal const val SOAP_STS_URL_KEY = "no.nav.modig.security.sts.url"
+internal const val SOAP_SYSTEMUSER_USERNAME = "no.nav.modig.security.systemuser.username"
+internal const val SOAP_SYSTEMUSER_PASSWORD = "no.nav.modig.security.systemuser.password"
 
 internal val HTTP_STATUS_CODES_2XX = IntRange(200, 299)
 
@@ -95,9 +97,7 @@ val defaultXmlMapper: ObjectMapper = XmlMapper().registerModule(
         .build()
 )
 
-val defaultObjectMapper = jacksonObjectMapper()
-
-val objectMapper: ObjectMapper = ObjectMapper()
+val defaultObjectMapper: ObjectMapper = ObjectMapper()
     .registerKotlinModule()
     .registerModule(JavaTimeModule())
     .registerModule(ParameterNamesModule())

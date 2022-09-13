@@ -5,12 +5,10 @@ import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.database.*
 import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Journalpost
-import org.amshove.kluent.`with message`
-import org.amshove.kluent.invoking
-import org.amshove.kluent.shouldThrow
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.sql.SQLException
 
 class DBServiceTest {
@@ -37,11 +35,12 @@ class DBServiceTest {
     fun `skal kaste Exception hvis henter ikke eksisterende innsendt meldekort`() {
         val dbService = DBService(database)
 
-        invoking {
+        val exception = assertThrows<SQLException> {
             runBlocking {
                 dbService.hentInnsendtMeldekort(2L)
             }
-        } shouldThrow SQLException::class `with message` "Found no rows"
+        }
+        assertEquals("Found no rows", exception.localizedMessage)
     }
 
     @Test
@@ -54,8 +53,10 @@ class DBServiceTest {
             journalpostJson,
             Journalpost::class.java
         )
-        val journalpost1 = journalpost.copy(eksternReferanseId = "11")
-        val journalpost2 = journalpost.copy(eksternReferanseId = "22")
+        val id1 = "123456789012345678901234567890123456"
+        val id2 = "223456789012345678901234567890123456"
+        val journalpost1 = journalpost.copy(eksternReferanseId = id1)
+        val journalpost2 = journalpost.copy(eksternReferanseId = id2)
 
         runBlocking {
             // Lagre
@@ -65,19 +66,19 @@ class DBServiceTest {
             // Hente
             var journalpostData = connection.hentMidlertidigLagredeJournalposter()
             assertEquals(2, journalpostData.size)
-            assertEquals(1, journalpostData.filter { it.first == "11" }.size)
-            assertEquals(1, journalpostData.filter { it.first == "22" }.size)
+            assertEquals(1, journalpostData.filter { it.first == id1 }.size)
+            assertEquals(1, journalpostData.filter { it.first == id2 }.size)
 
             // Slette
-            connection.sletteMidlertidigLagretJournalpost("11")
+            connection.sletteMidlertidigLagretJournalpost(id1)
 
             // Oppdater
-            connection.oppdaterMidlertidigLagretJournalpost("22", 5)
+            connection.oppdaterMidlertidigLagretJournalpost(id2, 5)
 
             // Hente
             journalpostData = connection.hentMidlertidigLagredeJournalposter()
             assertEquals(1, journalpostData.size)
-            val data = journalpostData.first { it.first == "22" }
+            val data = journalpostData.first { it.first == id2 }
             assertEquals(5, data.third)
         }
     }

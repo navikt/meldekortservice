@@ -1,12 +1,10 @@
 package no.nav.meldeplikt.meldekortservice.service
 
-import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNotBe
-import io.kotest.matchers.string.shouldStartWith
 import io.ktor.client.*
 import io.ktor.client.engine.mock.*
-import io.ktor.client.features.json.*
+import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.http.*
+import io.ktor.serialization.jackson.*
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
@@ -15,7 +13,6 @@ import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.Melde
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.response.KontrollFeil
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.response.KontrollResponse
 import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
-import no.nav.meldeplikt.meldekortservice.utils.objectMapper
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -70,17 +67,19 @@ class KontrollServiceTest {
         )
 
         val client = HttpClient(MockEngine) {
-            install(JsonFeature) {
-                serializer = JacksonSerializer { objectMapper }
+            install(ContentNegotiation) {
+                register(
+                    ContentType.Application.Json,
+                    JacksonConverter(defaultObjectMapper)
+                )
             }
 
             engine {
                 addHandler { request ->
-                    request.method shouldBe HttpMethod.Post
-                    request.headers["Authorization"] shouldNotBe null
-                    request.headers["Authorization"] shouldStartWith "Bearer token"
-                    request.body.contentType.toString() shouldBe "application/json"
-                    request.url.toString() shouldBe "https://dummyurl.nav.no/api/v1/kontroll"
+                    assertEquals(HttpMethod.Post, request.method)
+                    assertEquals("Bearer token", request.headers["Authorization"])
+                    assertEquals(ContentType.Application.Json, request.body.contentType)
+                    assertEquals("https://dummyurl.nav.no/api/v1/kontroll", request.url.toString())
                     respond(
                         defaultObjectMapper.writeValueAsString(kontrollResponse),
                         HttpStatusCode.OK,
