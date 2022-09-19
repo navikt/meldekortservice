@@ -184,7 +184,7 @@ fun Routing.opprettJournalpost(
 
             dbService.lagreJournalpostMidlertidig(journalpost)
 
-            // Vi sender OK tilbake for å gi mulighet å gå videre go vise kvittering
+            // Vi sender OK tilbake for å gi mulighet å gå videre og vise kvittering
             // Meldekort har jo blitt sendt, mens journalpost kan opprettes senere
             call.respond(status = HttpStatusCode.OK, message = errorMessage)
         }

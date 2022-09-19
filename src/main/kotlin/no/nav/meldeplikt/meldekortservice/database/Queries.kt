@@ -3,16 +3,15 @@ package no.nav.meldeplikt.meldekortservice.database
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
+import no.nav.meldeplikt.meldekortservice.model.database.KallLogg
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Journalpost
 import java.io.Reader
 import java.io.Writer
 import java.nio.ByteBuffer
 import java.nio.CharBuffer
 import java.nio.charset.StandardCharsets
-import java.sql.Clob
-import java.sql.Connection
-import java.sql.DatabaseMetaData
-import java.sql.ResultSet
+import java.sql.*
+import java.time.Instant
 import java.util.*
 import javax.sql.rowset.serial.SerialClob
 
@@ -137,6 +136,152 @@ fun ResultSet.tilInnsendtMeldekort(): InnsendtMeldekort {
     return InnsendtMeldekort(
         meldekortId = getLong("meldekortId")
     )
+}
+
+fun Connection.lagreRequest(kallLogg: KallLogg) {
+    val metaData: DatabaseMetaData = this.metaData
+    val productName = metaData.databaseProductName
+
+    prepareStatement(
+        "INSERT INTO kall_logg " +
+                "(korrelasjon_id, type, tidspunkt, kall_retning, method, operation, status, kalltid, request, response, logginfo) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    )
+        .use {
+            val requestClob: Clob
+            val responseClob: Clob?
+            val logginfoClob: Clob
+
+            if (productName == "PostgreSQL" || productName == "H2") {
+                requestClob = SerialClob(kallLogg.request.toCharArray())
+
+                responseClob = if (kallLogg.response != null) {
+                    SerialClob(kallLogg.response.toCharArray())
+                } else {
+                    null
+                }
+
+                logginfoClob = SerialClob(kallLogg.logginfo.toCharArray())
+            } else {
+                requestClob = this.createClob()
+                val requestWriter: Writer = requestClob.setCharacterStream(1L)
+                requestWriter.write(kallLogg.request)
+                requestWriter.flush()
+                requestWriter.close()
+
+                if (kallLogg.response != null) {
+                    responseClob = this.createClob()
+                    val responseWriter: Writer = responseClob.setCharacterStream(1L)
+                    responseWriter.write(kallLogg.response)
+                    responseWriter.flush()
+                    responseWriter.close()
+                } else {
+                    responseClob = null
+                }
+
+
+                logginfoClob = this.createClob()
+                val logginfoWriter: Writer = logginfoClob.setCharacterStream(1L)
+                logginfoWriter.write(kallLogg.logginfo)
+                logginfoWriter.flush()
+                logginfoWriter.close()
+            }
+
+            it.setString(1, kallLogg.korrelasjonId)
+            it.setString(2, kallLogg.type)
+            it.setTimestamp(3, Timestamp.valueOf(kallLogg.tidspunkt))
+            it.setString(4, kallLogg.kallRetning)
+            it.setString(5, kallLogg.method)
+            it.setString(6, kallLogg.operation)
+            it.setInt(7, kallLogg.status)
+            it.setLong(8, kallLogg.kallTid)
+            it.setClob(9, requestClob)
+            it.setClob(10, responseClob)
+            it.setClob(11, logginfoClob)
+
+            it.executeUpdate()
+        }
+}
+
+fun Connection.lagreResponse(korrelasjonId: String, status: Int, response: String) {
+    val metaData: DatabaseMetaData = this.metaData
+    val productName = metaData.databaseProductName
+
+    prepareStatement(
+        "UPDATE kall_logg SET response = ?, status = ?, kalltid = (? - kalltid) " +
+                "WHERE korrelasjon_id = ? AND response IS NULL"
+    )
+        .use {
+            val responseClob: Clob
+
+            if (productName == "PostgreSQL" || productName == "H2") {
+                responseClob = SerialClob(response.toCharArray())
+            } else {
+                responseClob = this.createClob()
+                val responseWriter: Writer = responseClob.setCharacterStream(1L)
+                responseWriter.write(response)
+                responseWriter.flush()
+                responseWriter.close()
+            }
+
+            it.setClob(1, responseClob)
+            it.setInt(2, status)
+            it.setLong(3, Instant.now().toEpochMilli())
+            it.setString(4, korrelasjonId)
+
+            it.executeUpdate()
+        }
+}
+
+fun Connection.hentKallLoggFelterListeByKorrelasjonId(korrelasjonId: String): List<KallLogg> {
+    val metaData: DatabaseMetaData = this.metaData
+    val productName = metaData.databaseProductName
+
+    // Oracle default
+    var query = "SELECT " +
+            "kall_logg_id, korrelasjon_id, tidspunkt, type, kall_retning, method, operation, status, kalltid, " +
+            "request, " +
+            "response, " +
+            "logginfo " +
+            "FROM kall_logg " +
+            "WHERE korrelasjon_id = ?"
+    if (productName == "PostgreSQL") {
+        query = "SELECT " +
+                "kall_logg_id, korrelasjon_id, tidspunkt, type, kall_retning, method, operation, status, kalltid, " +
+                "convert_from(lo_get(request::oid), 'UTF8') as request," +
+                "convert_from(lo_get(response::oid), 'UTF8') as response," +
+                "convert_from(lo_get(logginfo::oid), 'UTF8') as logginfo " +
+                "FROM kall_logg " +
+                "WHERE korrelasjon_id = ?"
+    }
+
+    val list = mutableListOf<KallLogg>()
+    this.prepareStatement(query)
+        .use { preparedStatement ->
+            preparedStatement.setString(1, korrelasjonId)
+            preparedStatement.executeQuery()
+                .use { resultSet ->
+                    while (resultSet.next()) {
+                        list.add(
+                            KallLogg(
+                                korrelasjonId = resultSet.getString("korrelasjon_id"),
+                                tidspunkt = resultSet.getTimestamp("tidspunkt").toLocalDateTime(),
+                                type = resultSet.getString("type"),
+                                kallRetning = resultSet.getString("kall_retning"),
+                                method = resultSet.getString("method"),
+                                operation = resultSet.getString("operation"),
+                                status = resultSet.getInt("status"),
+                                kallTid = resultSet.getLong("kalltid"),
+                                request = clobToString(resultSet.getCharacterStream("request")),
+                                response = clobToString(resultSet.getCharacterStream("response")),
+                                logginfo = clobToString(resultSet.getCharacterStream("logginfo"))
+                            )
+                        )
+                    }
+                }
+        }
+
+    return list
 }
 
 // It would be better to convert an object to a string and then string to array of chars

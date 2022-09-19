@@ -1,14 +1,15 @@
 package no.nav.meldeplikt.meldekortservice.config
 
+import io.ktor.http.*
 import io.ktor.serialization.jackson.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.locations.*
 import io.ktor.server.metrics.micrometer.*
-import io.ktor.server.plugins.callloging.*
+import io.ktor.server.plugins.callid.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.defaultheaders.*
-import io.ktor.server.request.*
+import io.ktor.server.plugins.doublereceive.*
 import io.ktor.server.routing.*
 import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics
@@ -36,6 +37,7 @@ import no.nav.meldeplikt.meldekortservice.utils.swagger.Contact
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Information
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Swagger
 import no.nav.security.token.support.v2.tokenValidationSupport
+import java.util.*
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -114,8 +116,32 @@ fun Application.mainModule(
         personApi(arenaOrdsService, dbService, kontrollService, dokarkivService)
     }
 
+    install(DoubleReceive) {
+    }
+
+    install(CallId) {
+        // Retrieve the callId from a headerName
+        // Automatically updates the response with the callId in the specified headerName
+        header(HttpHeaders.XRequestId)
+
+        // If can't retrieve a callId from the ApplicationCall, it will try the generate-blocks coalescing until one of them is not null.
+        generate { "meldekort-call-id-${UUID.randomUUID()}" }
+
+        // Once a callId is generated, this optional function is called to verify if the retrieved or generated callId String is valid.
+        verify { callId: String ->
+            callId.isNotEmpty()
+        }
+    }
+
+    /*
     install(CallLogging) {
-        filter { call -> call.request.path().startsWith("/api") }
+        filter { call -> call.request.path().startsWith(API_PATH) }
+    }
+    */
+
+    install(IncomingCallDatabaseLoggingPlugin) {
+        dbs = dbService
+        mock = mockDBService != null
     }
 
     flywayConfig.migrate()

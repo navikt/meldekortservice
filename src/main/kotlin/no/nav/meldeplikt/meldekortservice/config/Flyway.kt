@@ -6,14 +6,10 @@ import no.nav.meldeplikt.meldekortservice.database.PostgreSqlDatabase
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.configuration.FluentConfiguration
+import java.sql.DatabaseMetaData
 import javax.sql.DataSource
 
 object Flyway {
-
-    fun runFlywayMigrations(env: Environment) {
-        val flyway = configure(env).load()
-        flyway.migrate()
-    }
 
     fun configure(env: Environment): FluentConfiguration {
         val dataSource = createCorrectAdminDatasourceForEnvironment(env)
@@ -29,10 +25,13 @@ object Flyway {
         val oracleMigrationFiles = "classpath:db/migration/oracle"
         val postgreSqlMigrationFiles = "classpath:db/migration/postgresql"
 
-        if (isCurrentlyRunningOnNais()) {
-            configBuilder.locations(commonMigrationFiles, oracleMigrationFiles)
-        } else {
+        val metaData: DatabaseMetaData = dataSource.connection.metaData
+        val productName = metaData.databaseProductName
+
+        if (productName == "PostgreSQL" || productName == "H2") {
             configBuilder.locations(commonMigrationFiles, postgreSqlMigrationFiles)
+        } else {
+            configBuilder.locations(commonMigrationFiles, oracleMigrationFiles)
         }
 
         return configBuilder
