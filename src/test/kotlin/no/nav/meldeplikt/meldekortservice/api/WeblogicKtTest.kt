@@ -40,10 +40,12 @@ class WeblogicKtTest : TestBase() {
         }
         application {
             mainModule(
-                arenaOrdsService = mockk(),
-                kontrollService = mockk(),
-                mockDBService = mockk(),
-                mockFlywayConfig = flywayConfig
+                env = env,
+                mockDBService = dbService,
+                mockFlywayConfig = flywayConfig,
+                mockArenaOrdsService = arenaOrdsService,
+                mockKontrollService = kontrollService,
+                mockDokarkivService = dokarkivService
             )
         }
 
@@ -68,10 +70,12 @@ class WeblogicKtTest : TestBase() {
         }
         application {
             mainModule(
-                arenaOrdsService = mockk(),
-                kontrollService = mockk(),
-                mockDBService = mockk(),
-                mockFlywayConfig = flywayConfig
+                env = env,
+                mockDBService = dbService,
+                mockFlywayConfig = flywayConfig,
+                mockArenaOrdsService = arenaOrdsService,
+                mockKontrollService = kontrollService,
+                mockDokarkivService = dokarkivService
             )
         }
 

@@ -43,10 +43,10 @@ class MeldekortKtTest : TestBase() {
             mainModule(
                 env = env,
                 mockDBService = dbService,
-                arenaOrdsService = arenaOrdsService,
-                kontrollService = kontrollService,
-                dokarkivService = dokarkivService,
-                mockFlywayConfig = flywayConfig
+                mockFlywayConfig = flywayConfig,
+                mockArenaOrdsService = arenaOrdsService,
+                mockKontrollService = kontrollService,
+                mockDokarkivService = dokarkivService
             )
         }
 
@@ -80,10 +80,10 @@ class MeldekortKtTest : TestBase() {
             mainModule(
                 env = env,
                 mockDBService = dbService,
-                arenaOrdsService = arenaOrdsService,
-                kontrollService = kontrollService,
-                dokarkivService = dokarkivService,
-                mockFlywayConfig = flywayConfig
+                mockFlywayConfig = flywayConfig,
+                mockArenaOrdsService = arenaOrdsService,
+                mockKontrollService = kontrollService,
+                mockDokarkivService = dokarkivService
             )
         }
 
@@ -119,10 +119,10 @@ class MeldekortKtTest : TestBase() {
             mainModule(
                 env = env,
                 mockDBService = dbService,
-                arenaOrdsService = arenaOrdsService,
-                kontrollService = kontrollService,
-                dokarkivService = dokarkivService,
-                mockFlywayConfig = flywayConfig
+                mockFlywayConfig = flywayConfig,
+                mockArenaOrdsService = arenaOrdsService,
+                mockKontrollService = kontrollService,
+                mockDokarkivService = dokarkivService
             )
         }
 
@@ -147,10 +147,10 @@ class MeldekortKtTest : TestBase() {
             mainModule(
                 env = env,
                 mockDBService = dbService,
-                arenaOrdsService = arenaOrdsService,
-                kontrollService = kontrollService,
-                dokarkivService = dokarkivService,
-                mockFlywayConfig = flywayConfig
+                mockFlywayConfig = flywayConfig,
+                mockArenaOrdsService = arenaOrdsService,
+                mockKontrollService = kontrollService,
+                mockDokarkivService = dokarkivService
             )
         }
 
@@ -181,10 +181,10 @@ class MeldekortKtTest : TestBase() {
             mainModule(
                 env = env,
                 mockDBService = dbService,
-                arenaOrdsService = arenaOrdsService,
-                kontrollService = kontrollService,
-                dokarkivService = dokarkivService,
-                mockFlywayConfig = flywayConfig
+                mockFlywayConfig = flywayConfig,
+                mockArenaOrdsService = arenaOrdsService,
+                mockKontrollService = kontrollService,
+                mockDokarkivService = dokarkivService
             )
         }
 
@@ -211,10 +211,10 @@ class MeldekortKtTest : TestBase() {
             mainModule(
                 env = env,
                 mockDBService = dbService,
-                arenaOrdsService = arenaOrdsService,
-                kontrollService = kontrollService,
-                dokarkivService = dokarkivService,
-                mockFlywayConfig = flywayConfig
+                mockFlywayConfig = flywayConfig,
+                mockArenaOrdsService = arenaOrdsService,
+                mockKontrollService = kontrollService,
+                mockDokarkivService = dokarkivService
             )
         }
 
@@ -244,10 +244,10 @@ class MeldekortKtTest : TestBase() {
             mainModule(
                 env = env,
                 mockDBService = dbService,
-                arenaOrdsService = arenaOrdsService,
-                kontrollService = kontrollService,
-                dokarkivService = dokarkivService,
-                mockFlywayConfig = flywayConfig
+                mockFlywayConfig = flywayConfig,
+                mockArenaOrdsService = arenaOrdsService,
+                mockKontrollService = kontrollService,
+                mockDokarkivService = dokarkivService
             )
         }
 

@@ -12,15 +12,15 @@ import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.model.database.KallLogg
 import no.nav.meldeplikt.meldekortservice.service.DBService
 import no.nav.meldeplikt.meldekortservice.utils.API_PATH
+import no.nav.meldeplikt.meldekortservice.utils.headersToString
 import java.time.Instant
 import java.time.LocalDateTime
 import kotlin.coroutines.CoroutineContext
 
-val IncomingCallDatabaseLoggingPlugin: ApplicationPlugin<IncomingCallDatabaseLoggingPluginConfig> =
-    createApplicationPlugin("IncomingCallDatabaseLoggingPlugin", ::IncomingCallDatabaseLoggingPluginConfig) {
+val IncomingCallLoggingPlugin: ApplicationPlugin<ICDLPConfig> =
+    createApplicationPlugin("IncomingCallLoggingPlugin", ::ICDLPConfig) {
 
         val dbService: DBService = pluginConfig.dbs
-        val mock: Boolean = pluginConfig.mock
         val korrelasjonIdAttr = AttributeKey<String>("korrelasjonId")
 
         onCall { call ->
@@ -39,7 +39,7 @@ val IncomingCallDatabaseLoggingPlugin: ApplicationPlugin<IncomingCallDatabaseLog
                 appendLine("${request.httpMethod.value} ${request.host()}:${request.port()}${request.uri} ${request.httpVersion}")
 
                 request.headers.forEach { header, values ->
-                    appendLine("$header: ${values.joinToString(",", "[", "]")}")
+                    appendLine("$header: ${headersToString(values)}")
                 }
 
                 // empty line before body as in HTTP request
@@ -54,22 +54,20 @@ val IncomingCallDatabaseLoggingPlugin: ApplicationPlugin<IncomingCallDatabaseLog
             }.toString()
 
             val kallLogg = KallLogg(
-                korrelasjonId,
-                LocalDateTime.now(),
-                "REST",
-                "INN",
-                call.request.httpMethod.value,
-                call.request.uri,
-                0,
-                Instant.now().toEpochMilli(),
-                request,
-                null,
-                ""
+                korrelasjonId = korrelasjonId,
+                tidspunkt = LocalDateTime.now(),
+                type = "REST",
+                kallRetning = "INN",
+                method = call.request.httpMethod.value,
+                operation = call.request.uri,
+                status = 0,
+                kallTid = Instant.now().toEpochMilli(),
+                request = request,
+                response = null,
+                logginfo = ""
             )
 
-            if (!mock) {
-                dbService.lagreRequest(kallLogg)
-            }
+            dbService.lagreRequest(kallLogg)
         }
 
         on(ResponseBodyReadyForSend) { call, content ->
@@ -86,7 +84,7 @@ val IncomingCallDatabaseLoggingPlugin: ApplicationPlugin<IncomingCallDatabaseLog
                 appendLine("${response.status()?.value} ${response.status()?.description}")
 
                 response.headers.allValues().forEach { header, values ->
-                    appendLine("$header: ${values.joinToString(",", "[", "]")}")
+                    appendLine("$header: ${headersToString(values)}")
                 }
 
                 // empty line before body as in HTTP response
@@ -100,23 +98,20 @@ val IncomingCallDatabaseLoggingPlugin: ApplicationPlugin<IncomingCallDatabaseLog
                 appendLine()
             }.toString()
 
-            if (!mock) {
-                dbService.lagreResponse(korrelasjonId, call.response.status()?.value ?: 0, response)
-            }
+            dbService.lagreResponse(korrelasjonId, call.response.status()?.value ?: 0, response)
         }
     }
 
-class IncomingCallDatabaseLoggingPluginConfig {
+class ICDLPConfig {
     lateinit var dbs: DBService
-    var mock: Boolean = false
 }
 
-private fun readBody(callContext: CoroutineContext, subject: Any): String = when (subject) {
+private fun readBody(coroutineContext: CoroutineContext, subject: Any): String = when (subject) {
     is TextContent -> subject.text
     is OutputStreamContent -> {
         val channel = ByteChannel(true)
         runBlocking {
-            GlobalScope.writer(callContext, autoFlush = true) {
+            GlobalScope.writer(coroutineContext, autoFlush = true) {
                 subject.writeTo(channel)
             }
             val buffer = StringBuilder()

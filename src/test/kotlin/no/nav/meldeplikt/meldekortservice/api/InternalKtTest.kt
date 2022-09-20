@@ -26,10 +26,11 @@ class InternalKtTest : TestBase() {
         }
         application {
             mainModule(
-                arenaOrdsService = mockk(),
-                kontrollService = mockk(),
-                mockDBService = mockk(),
-                mockFlywayConfig = flywayConfig
+                mockDBService = dbService,
+                mockFlywayConfig = flywayConfig,
+                mockArenaOrdsService = mockk(),
+                mockKontrollService = mockk(),
+                mockDokarkivService = mockk()
             )
         }
 

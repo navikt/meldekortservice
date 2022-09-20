@@ -5,6 +5,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.util.pipeline.*
 import no.nav.meldeplikt.meldekortservice.utils.defaultLog
+import org.slf4j.MDC
 
 fun PipelineContext<Unit, ApplicationCall>.extractIdentFromToken(): String {
     val authTokenHeader = getTokenFromHeader()
@@ -23,7 +24,7 @@ val PipelineContext<Unit, ApplicationCall>.userIdent get() = extractIdentFromTok
 
 private fun verifyThatATokenWasFound(authToken: String?) {
     if (authToken == null) {
-        val melding = "Token ble ikke funnet. Dette skal ikke kunne skje."
+        val melding = "Token ble ikke funnet. Dette skal ikke kunne skje. callId = ${MDC.get("callId")}"
         defaultLog.error(melding)
         throw Exception(melding)
     }
@@ -35,7 +36,7 @@ private fun verifyThatIdentIsConsistent(authTokenHeader: String?, authTokenCooki
         val cookieIdent = extractSubject(authTokenCookie)
 
         if (headerIdent != cookieIdent) {
-            val melding = "Ident i header er ulik ident i cookie. Dette skal ikke kunne skje."
+            val melding = "Ident i header er ulik ident i cookie. Dette skal ikke kunne skje. callId = ${MDC.get("callId")}"
             defaultLog.error(melding)
             throw Exception(melding)
         }

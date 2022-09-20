@@ -292,7 +292,7 @@ private fun bytesToChars(bytes: ByteArray?): CharArray {
 }
 
 // Generic solution for Oracle Clob and PostgreSQL Text
-private fun clobToString(reader: Reader?): String {
+fun clobToString(reader: Reader?): String {
     if (reader == null) {
         return ""
     }

@@ -10,16 +10,39 @@ import com.fasterxml.jackson.module.kotlin.KotlinFeature
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
+import io.ktor.client.*
+import io.ktor.client.engine.apache.*
+import io.ktor.client.plugins.*
+import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.http.*
+import io.ktor.serialization.jackson.*
 import io.ktor.server.application.*
+import io.ktor.server.locations.*
 import io.ktor.server.response.*
 import io.ktor.util.pipeline.*
+import no.nav.cache.Cache
+import no.nav.cache.CacheConfig
+import no.nav.cache.CacheUtils
+import no.nav.meldeplikt.meldekortservice.config.OutgoingCallLoggingPlugin
+import no.nav.meldeplikt.meldekortservice.config.defaultDbService
+import no.nav.meldeplikt.meldekortservice.model.AccessToken
 import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
+import no.nav.meldeplikt.meldekortservice.utils.swagger.Contact
+import no.nav.meldeplikt.meldekortservice.utils.swagger.Information
+import no.nav.meldeplikt.meldekortservice.utils.swagger.Swagger
+import org.apache.http.impl.conn.SystemDefaultRoutePlanner
+import java.net.ProxySelector
+
+internal const val CACHE_ANTALL_MINUTTER = 55
+// Årsaken til å multiplisere med 2 er at cache-implementasjonen dividerer timeout-verdien med 2...
+internal const val CACHE_TIMEOUT: Long = CACHE_ANTALL_MINUTTER.toLong() * 60 * 1000 * 2
+internal var CACHE: Cache<String, AccessToken> = CacheUtils.buildCache(CacheConfig.DEFAULT.withTimeToLiveMillis(CACHE_TIMEOUT))
 
 internal const val BASE_PATH = "/meldekortservice"
 
 internal const val API_PATH = "$BASE_PATH/api"
 internal const val INTERNAL_PATH = "$BASE_PATH/internal"
+internal const val SWAGGER_URL_V1 = "$INTERNAL_PATH/apidocs/index.html"
 
 internal const val MELDEKORT_PATH = "$API_PATH/meldekort"
 internal const val PERSON_PATH = "$API_PATH/person"
@@ -86,6 +109,28 @@ fun <T> mapFraXml(xml: String, responseKlasse: Class<T>): T {
     return XmlMapper().readValue(xml, responseKlasse)
 }
 
+fun headersToString(headers: List<String>): String {
+    if (headers.size == 1) {
+        return headers[0]
+    }
+
+    return headers.joinToString(",", "[", "]")
+}
+
+@KtorExperimentalLocationsAPI
+val swagger = Swagger(
+    info = Information(
+        version = "1",
+        title = "Meldekortservice",
+        description = "Proxy-api for meldekort-applikasjonen (front-end). Api'et benyttes mot Arena og meldekortkontroll-api  \n" +
+                "GitHub repo: [https://github.com/navikt/meldekortservice](https://github.com/navikt/meldekortservice)  \n" +
+                "Slack: [#team-meldeplikt](https://nav-it.slack.com/archives/CQ61EHWP9)",
+        contact = Contact(
+            email = "meldeplikt@nav.no"
+        )
+    )
+)
+
 val defaultXmlMapper: ObjectMapper = XmlMapper().registerModule(
     KotlinModule.Builder()
         .withReflectionCacheSize(512)
@@ -105,3 +150,35 @@ val defaultObjectMapper: ObjectMapper = ObjectMapper()
     .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
     .setSerializationInclusion(JsonInclude.Include.NON_NULL)
     .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+
+fun HttpClientConfig<*>.defaultHttpClientConfig() {
+    install(ContentNegotiation) {
+        register(
+            ContentType.Application.Json,
+            JacksonConverter(
+                defaultObjectMapper
+                    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                    .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+            )
+        )
+    }
+    install(HttpTimeout) {
+        // max time periods
+        connectTimeoutMillis = 5000 // required to establish a connection with a server
+        requestTimeoutMillis = 8000 // required for an HTTP call: from sending a request to receiving a response
+        socketTimeoutMillis = 5000 //  of inactivity between two data packets when exchanging data with a server
+    }
+    install(OutgoingCallLoggingPlugin) {
+        dbs = defaultDbService
+    }
+    expectSuccess = false
+}
+
+fun defaultHttpClient(): HttpClient {
+    return HttpClient(Apache) {
+        defaultHttpClientConfig()
+        engine {
+            customizeClient { setRoutePlanner(SystemDefaultRoutePlanner(ProxySelector.getDefault())) }
+        }
+    }
+}

@@ -13,9 +13,9 @@ import io.ktor.server.locations.*
 import io.ktor.server.request.*
 import io.ktor.server.routing.Route
 import io.ktor.util.pipeline.*
-import no.nav.meldeplikt.meldekortservice.config.swagger
 import no.nav.meldeplikt.meldekortservice.utils.defaultLog
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
+import no.nav.meldeplikt.meldekortservice.utils.swagger
 import java.util.*
 import kotlin.collections.set
 import kotlin.reflect.KClass

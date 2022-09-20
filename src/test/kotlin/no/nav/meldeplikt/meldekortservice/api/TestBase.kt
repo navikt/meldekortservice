@@ -1,9 +1,7 @@
 package no.nav.meldeplikt.meldekortservice.api
 
 import io.ktor.server.config.*
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.mockkStatic
+import io.mockk.*
 import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
 import no.nav.meldeplikt.meldekortservice.service.DBService
@@ -35,6 +33,9 @@ open class TestBase {
         fun setup() {
             mockOAuth2Server = MockOAuth2Server()
             mockOAuth2Server.start(8091)
+
+            every { dbService.lagreRequest(any()) } just Runs
+            every { dbService.lagreResponse(any(), any(), any()) } just Runs
 
             mockkStatic(::isCurrentlyRunningOnNais)
             every { isCurrentlyRunningOnNais() } returns true
