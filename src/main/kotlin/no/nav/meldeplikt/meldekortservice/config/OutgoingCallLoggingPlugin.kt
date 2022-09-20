@@ -16,6 +16,7 @@ import no.nav.meldeplikt.meldekortservice.utils.headersToString
 import org.slf4j.MDC
 import java.time.Instant
 import java.time.LocalDateTime
+import java.util.*
 import kotlin.coroutines.CoroutineContext
 
 class OutgoingCallLoggingPlugin(config: OCDLPConfig) {
@@ -56,6 +57,11 @@ class OutgoingCallLoggingPlugin(config: OCDLPConfig) {
                 scope.responsePipeline.intercept(HttpResponsePipeline.State)
                 */
 
+            println("install")
+            // Det er mulig at vi sender request før vi får noe request fra meldekort-api
+            // F.eks for å hente noe config eller lignende
+            // Det betyr at vi kkke har noe callId ennå og da må vi generere den
+            val callId = MDC.get("callId") ?: "meldekort-call-id-${UUID.randomUUID()}"
             var startTime = LocalDateTime.now()
             var kallTid = Instant.now().toEpochMilli()
             var responseBody = ""
@@ -63,7 +69,7 @@ class OutgoingCallLoggingPlugin(config: OCDLPConfig) {
             scope.requestPipeline.intercept(HttpRequestPipeline.State) {
                 startTime = LocalDateTime.now()
                 kallTid = Instant.now().toEpochMilli()
-                context.headers.append(HttpHeaders.XRequestId, MDC.get("callId"))
+                context.headers.append(HttpHeaders.XRequestId, callId)
             }
 
             scope.responsePipeline.intercept(HttpResponsePipeline.Receive) { (type, content) ->
@@ -84,7 +90,7 @@ class OutgoingCallLoggingPlugin(config: OCDLPConfig) {
 
                 plugin.dbService.lagreRequest(
                     KallLogg(
-                        korrelasjonId = MDC.get("callId"),
+                        korrelasjonId = callId,
                         tidspunkt = startTime,
                         type = "REST",
                         kallRetning = "UT",
