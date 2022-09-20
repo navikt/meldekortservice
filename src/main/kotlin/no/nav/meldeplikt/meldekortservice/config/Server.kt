@@ -51,11 +51,11 @@ fun Application.mainModule(
     defaultDbService = mockDBService ?: initializeInnsendtMeldekortServiceApi(env)
 
     val flywayConfig: org.flywaydb.core.Flyway = mockFlywayConfig ?: initializeFlyway(env)
+    flywayConfig.migrate()
+
     val arenaOrdsService = mockArenaOrdsService ?: ArenaOrdsService()
     val kontrollService = mockKontrollService ?: KontrollService()
     val dokarkivService = mockDokarkivService ?: DokarkivService()
-
-    flywayConfig.migrate()
 
     val appMicrometerRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
     install(MicrometerMetrics) {
