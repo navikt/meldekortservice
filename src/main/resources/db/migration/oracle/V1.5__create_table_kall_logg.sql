@@ -24,7 +24,7 @@ CREATE INDEX kalo_1 ON kall_logg (operation, kall_retning);
 
 CREATE INDEX kalo_2 ON kall_logg (korrelasjon_id);
 
-CREATE INDEX kalo_3 ON kall_logg (status) LOCAL;
+CREATE INDEX kalo_3 ON kall_logg (status);
 
 -- Constraints
 ALTER TABLE kall_logg
