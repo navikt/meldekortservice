@@ -55,6 +55,8 @@ fun Application.mainModule(
     val kontrollService = mockKontrollService ?: KontrollService()
     val dokarkivService = mockDokarkivService ?: DokarkivService()
 
+    flywayConfig.migrate()
+
     val appMicrometerRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
     install(MicrometerMetrics) {
         registry = appMicrometerRegistry
@@ -117,8 +119,6 @@ fun Application.mainModule(
     install(IncomingCallLoggingPlugin) {
         dbs = defaultDbService
     }
-
-    flywayConfig.migrate()
 
     if (env.dokarkivResendInterval > 0L) {
         SendJournalposterPaaNytt(defaultDbService, dokarkivService, env.dokarkivResendInterval, 0).start()
