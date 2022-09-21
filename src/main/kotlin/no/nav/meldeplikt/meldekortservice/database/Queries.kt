@@ -215,7 +215,7 @@ fun Connection.lagreRequest(kallLogg: KallLogg): Long {
             var kallLoggId = 0L
             it.generatedKeys.use { keys ->
                 if(keys.next()) {
-                    kallLoggId = keys.getLong("kall_logg_id")
+                    kallLoggId = keys.getLong(1) // Can't refer to the returned keys by name in Oracle
                 }
             }
 
