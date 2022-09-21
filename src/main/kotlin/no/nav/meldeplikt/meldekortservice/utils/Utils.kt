@@ -32,6 +32,7 @@ import no.nav.meldeplikt.meldekortservice.utils.swagger.Information
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Swagger
 import org.apache.http.impl.conn.SystemDefaultRoutePlanner
 import java.net.ProxySelector
+import java.util.*
 
 internal const val CACHE_ANTALL_MINUTTER = 55
 // Årsaken til å multiplisere med 2 er at cache-implementasjonen dividerer timeout-verdien med 2...
@@ -181,4 +182,8 @@ fun defaultHttpClient(): HttpClient {
             customizeClient { setRoutePlanner(SystemDefaultRoutePlanner(ProxySelector.getDefault())) }
         }
     }
+}
+
+fun generateCallId(): String {
+    return "meldekortservice-${UUID.randomUUID()}"
 }

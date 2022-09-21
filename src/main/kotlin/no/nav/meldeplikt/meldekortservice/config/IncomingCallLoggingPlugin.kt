@@ -12,9 +12,11 @@ import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.model.database.KallLogg
 import no.nav.meldeplikt.meldekortservice.service.DBService
 import no.nav.meldeplikt.meldekortservice.utils.API_PATH
+import no.nav.meldeplikt.meldekortservice.utils.generateCallId
 import no.nav.meldeplikt.meldekortservice.utils.headersToString
 import java.time.Instant
 import java.time.LocalDateTime
+import java.util.*
 import kotlin.coroutines.CoroutineContext
 
 val IncomingCallLoggingPlugin: ApplicationPlugin<ICDLPConfig> =
@@ -29,7 +31,8 @@ val IncomingCallLoggingPlugin: ApplicationPlugin<ICDLPConfig> =
                 return@onCall
             }
 
-            val korrelasjonId = call.callId ?: ""
+            currentCallId = call.callId ?: generateCallId()
+            val korrelasjonId = currentCallId
             call.attributes.put(korrelasjonIdAttr, korrelasjonId)
 
             val request = StringBuilder().apply {

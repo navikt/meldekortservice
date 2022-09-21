@@ -7,7 +7,6 @@ import io.ktor.server.auth.*
 import io.ktor.server.locations.*
 import io.ktor.server.metrics.micrometer.*
 import io.ktor.server.plugins.callid.*
-import io.ktor.server.plugins.callloging.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.defaultheaders.*
 import io.ktor.server.plugins.doublereceive.*
@@ -31,9 +30,9 @@ import no.nav.meldeplikt.meldekortservice.service.DokarkivService
 import no.nav.meldeplikt.meldekortservice.service.KontrollService
 import no.nav.meldeplikt.meldekortservice.utils.*
 import no.nav.security.token.support.v2.tokenValidationSupport
-import java.util.*
 
 lateinit var defaultDbService: DBService
+var currentCallId = ""
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -104,16 +103,12 @@ fun Application.mainModule(
         header(HttpHeaders.XRequestId)
 
         // If can't retrieve a callId from the ApplicationCall, it will try the generate-blocks coalescing until one of them is not null.
-        generate { "meldekortservice-${UUID.randomUUID()}" }
+        generate { generateCallId() }
 
         // Once a callId is generated, this optional function is called to verify if the retrieved or generated callId String is valid.
         verify { callId: String ->
             callId.isNotEmpty()
         }
-    }
-
-    install(CallLogging) {
-        callIdMdc("callId")
     }
 
     install(IncomingCallLoggingPlugin) {

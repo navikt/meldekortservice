@@ -10,6 +10,7 @@ import kotlinx.coroutines.runBlocking
 import no.nav.cache.CacheConfig
 import no.nav.cache.CacheUtils
 import no.nav.meldeplikt.meldekortservice.config.Environment
+import no.nav.meldeplikt.meldekortservice.config.currentCallId
 import no.nav.meldeplikt.meldekortservice.config.defaultDbService
 import no.nav.meldeplikt.meldekortservice.database.Database
 import no.nav.meldeplikt.meldekortservice.database.H2Database
@@ -20,7 +21,6 @@ import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Journalpost
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.JournalpostResponse
 import no.nav.meldeplikt.meldekortservice.utils.*
 import org.junit.jupiter.api.Test
-import org.slf4j.MDC
 import java.util.*
 import kotlin.test.assertEquals
 
@@ -56,8 +56,7 @@ class DokarkivServiceTest {
 
             defaultDbService = DBService(database)
 
-            val callId = "meldekort-call-id-${UUID.randomUUID()}"
-            MDC.put("callId", callId)
+            currentCallId = generateCallId()
 
             val journalpostFile = this::class.java.getResource("/journalpost.json")
             val journalpost = defaultObjectMapper.readValue(
@@ -67,7 +66,7 @@ class DokarkivServiceTest {
             val journalpostRequest = "Sent request:\n" +
                     "POST ${env.dokarkivUrl}:443$JOURNALPOST_PATH?forsoekFerdigstill=true\n" +
                     "Authorization: Bearer dG9rZW4=\n" +
-                    "X-Request-ID: $callId\n" +
+                    "X-Request-ID: $currentCallId\n" +
                     "Accept: application/json\n" +
                     "Accept-Charset: UTF-8\n" +
                     "\n" +
@@ -95,7 +94,7 @@ class DokarkivServiceTest {
             val tokenRequest = "Sent request:\n" +
                     "POST ${env.stsNaisUrl}:443$STS_PATH?grant_type=client_credentials&scope=openid\n" +
                     "Authorization: $authHederValue\n" +
-                    "X-Request-ID: $callId\n" +
+                    "X-Request-ID: $currentCallId\n" +
                     "Accept: application/json\n" +
                     "Accept-Charset: UTF-8\n" +
                     "\n" +
@@ -112,7 +111,6 @@ class DokarkivServiceTest {
 
                 engine {
                     addHandler { request ->
-                        println(request.headers)
                         if (
                             request.method == HttpMethod.Post
                             && request.url.protocol.name + "://" + request.url.host == env.dokarkivUrl
