@@ -145,13 +145,11 @@ fun Connection.lagreRequest(kallLogg: KallLogg): Long {
     var sql = "INSERT INTO kall_logg " +
             "(korrelasjon_id, type, tidspunkt, kall_retning, method, operation, status, kalltid, request, response, logginfo) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
-    /*
     sql += if (productName == "PostgreSQL" || productName == "H2") {
         ""
     } else {
         "RETURNING kall_log_id INTO :id"
     }
-    */
 
     prepareStatement(
         sql,
@@ -214,7 +212,7 @@ fun Connection.lagreRequest(kallLogg: KallLogg): Long {
             var kallLoggId = 0L
             it.generatedKeys.use { keys ->
                 if(keys.next()) {
-                    kallLoggId = keys.getLong(1)
+                    kallLoggId = keys.getLong(1) //
                 }
             }
 
