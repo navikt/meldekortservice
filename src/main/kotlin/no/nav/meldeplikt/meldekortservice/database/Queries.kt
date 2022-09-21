@@ -148,13 +148,16 @@ fun Connection.lagreRequest(kallLogg: KallLogg): Long {
     sql += if (productName == "PostgreSQL" || productName == "H2") {
         ""
     } else {
-        "RETURNING kall_log_id INTO :id"
+        "" // ""RETURNING kall_log_id INTO ?"
     }
 
+    prepareStatement(sql,  arrayOf("kall_logg_id"))
+    /*
     prepareStatement(
         sql,
         Statement.RETURN_GENERATED_KEYS
     )
+            */
         .use {
             val requestClob: Clob
             val responseClob: Clob?
@@ -212,7 +215,7 @@ fun Connection.lagreRequest(kallLogg: KallLogg): Long {
             var kallLoggId = 0L
             it.generatedKeys.use { keys ->
                 if(keys.next()) {
-                    kallLoggId = keys.getLong(1) //
+                    kallLoggId = keys.getLong("kall_logg_id")
                 }
             }
 
