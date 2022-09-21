@@ -138,14 +138,24 @@ fun ResultSet.tilInnsendtMeldekort(): InnsendtMeldekort {
     )
 }
 
-fun Connection.lagreRequest(kallLogg: KallLogg) {
+fun Connection.lagreRequest(kallLogg: KallLogg): Long {
     val metaData: DatabaseMetaData = this.metaData
     val productName = metaData.databaseProductName
 
+    var sql = "INSERT INTO kall_logg " +
+            "(korrelasjon_id, type, tidspunkt, kall_retning, method, operation, status, kalltid, request, response, logginfo) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+    /*
+    sql += if (productName == "PostgreSQL" || productName == "H2") {
+        ""
+    } else {
+        "RETURNING kall_log_id INTO :id"
+    }
+    */
+
     prepareStatement(
-        "INSERT INTO kall_logg " +
-                "(korrelasjon_id, type, tidspunkt, kall_retning, method, operation, status, kalltid, request, response, logginfo) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+        sql,
+        Statement.RETURN_GENERATED_KEYS
     )
         .use {
             val requestClob: Clob
@@ -200,16 +210,25 @@ fun Connection.lagreRequest(kallLogg: KallLogg) {
             it.setClob(11, logginfoClob)
 
             it.executeUpdate()
+
+            var kallLoggId = 0L
+            it.generatedKeys.use { keys ->
+                if(keys.next()) {
+                    kallLoggId = keys.getLong(1)
+                }
+            }
+
+            return kallLoggId
         }
 }
 
-fun Connection.lagreResponse(korrelasjonId: String, status: Int, response: String) {
+fun Connection.lagreResponse(kallLoggId: Long, status: Int, response: String) {
     val metaData: DatabaseMetaData = this.metaData
     val productName = metaData.databaseProductName
 
     prepareStatement(
         "UPDATE kall_logg SET response = ?, status = ?, kalltid = (? - kalltid) " +
-                "WHERE korrelasjon_id = ? AND response IS NULL"
+                "WHERE kall_logg_id = ?"
     )
         .use {
             val responseClob: Clob
@@ -227,7 +246,7 @@ fun Connection.lagreResponse(korrelasjonId: String, status: Int, response: Strin
             it.setClob(1, responseClob)
             it.setInt(2, status)
             it.setLong(3, Instant.now().toEpochMilli())
-            it.setString(4, korrelasjonId)
+            it.setLong(4, kallLoggId)
 
             it.executeUpdate()
         }

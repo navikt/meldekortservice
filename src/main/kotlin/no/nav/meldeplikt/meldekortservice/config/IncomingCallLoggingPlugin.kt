@@ -16,14 +16,13 @@ import no.nav.meldeplikt.meldekortservice.utils.generateCallId
 import no.nav.meldeplikt.meldekortservice.utils.headersToString
 import java.time.Instant
 import java.time.LocalDateTime
-import java.util.*
 import kotlin.coroutines.CoroutineContext
 
 val IncomingCallLoggingPlugin: ApplicationPlugin<ICDLPConfig> =
     createApplicationPlugin("IncomingCallLoggingPlugin", ::ICDLPConfig) {
 
         val dbService: DBService = pluginConfig.dbs
-        val korrelasjonIdAttr = AttributeKey<String>("korrelasjonId")
+        val kallLoggIdAttr = AttributeKey<Long>("kallLoggId")
 
         onCall { call ->
 
@@ -32,8 +31,6 @@ val IncomingCallLoggingPlugin: ApplicationPlugin<ICDLPConfig> =
             }
 
             currentCallId = call.callId ?: generateCallId()
-            val korrelasjonId = currentCallId
-            call.attributes.put(korrelasjonIdAttr, korrelasjonId)
 
             val request = StringBuilder().apply {
                 val request = call.request
@@ -56,21 +53,22 @@ val IncomingCallLoggingPlugin: ApplicationPlugin<ICDLPConfig> =
                 appendLine()
             }.toString()
 
-            val kallLogg = KallLogg(
-                korrelasjonId = korrelasjonId,
-                tidspunkt = LocalDateTime.now(),
-                type = "REST",
-                kallRetning = "INN",
-                method = call.request.httpMethod.value,
-                operation = call.request.uri,
-                status = 0,
-                kallTid = Instant.now().toEpochMilli(),
-                request = request,
-                response = null,
-                logginfo = ""
+            val kallLoggId = dbService.lagreRequest(
+                KallLogg(
+                    korrelasjonId = currentCallId,
+                    tidspunkt = LocalDateTime.now(),
+                    type = "REST",
+                    kallRetning = "INN",
+                    method = call.request.httpMethod.value,
+                    operation = call.request.uri,
+                    status = 0,
+                    kallTid = Instant.now().toEpochMilli(),
+                    request = request,
+                    response = null,
+                    logginfo = ""
+                )
             )
-
-            dbService.lagreRequest(kallLogg)
+            call.attributes.put(kallLoggIdAttr, kallLoggId)
         }
 
         on(ResponseBodyReadyForSend) { call, content ->
@@ -78,7 +76,7 @@ val IncomingCallLoggingPlugin: ApplicationPlugin<ICDLPConfig> =
                 return@on
             }
 
-            val korrelasjonId = call.attributes[korrelasjonIdAttr]
+            val kallLoggId = call.attributes[kallLoggIdAttr]
 
             val response = StringBuilder().apply {
                 val response = call.response
@@ -101,7 +99,7 @@ val IncomingCallLoggingPlugin: ApplicationPlugin<ICDLPConfig> =
                 appendLine()
             }.toString()
 
-            dbService.lagreResponse(korrelasjonId, call.response.status()?.value ?: 0, response)
+            dbService.lagreResponse(kallLoggId, call.response.status()?.value ?: 0, response)
         }
     }
 

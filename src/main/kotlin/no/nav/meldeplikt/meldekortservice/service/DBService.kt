@@ -44,21 +44,18 @@ class DBService(private val database: Database) {
         }
     }
 
-    fun lagreRequest(kallLogg: KallLogg) {
-        database.translateExternalExceptionsToInternalOnes {
-            runBlocking {
-                database.dbQuery {
-                    lagreRequest(kallLogg)
-                }
+    fun lagreRequest(kallLogg: KallLogg): Long =
+        runBlocking {
+            database.dbQuery {
+                lagreRequest(kallLogg)
             }
         }
-    }
 
-    fun lagreResponse(korrelasjonId: String, status: Int, response: String) {
+    fun lagreResponse(kallLoggId: Long, status: Int, response: String) {
         database.translateExternalExceptionsToInternalOnes {
             runBlocking {
                 database.dbQuery {
-                    lagreResponse(korrelasjonId, status, response)
+                    lagreResponse(kallLoggId, status, response)
                 }
             }
         }

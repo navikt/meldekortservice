@@ -21,6 +21,7 @@ import kotlin.coroutines.CoroutineContext
 class OutgoingCallLoggingPlugin(config: OCDLPConfig) {
 
     val dbService: DBService = config.dbs
+    val kallLoggIdAttr = AttributeKey<Long>("kallLoggId")
 
     class OCDLPConfig {
         lateinit var dbs: DBService
@@ -86,7 +87,7 @@ class OutgoingCallLoggingPlugin(config: OCDLPConfig) {
                 val request = context.request
                 val response = context.response
 
-                plugin.dbService.lagreRequest(
+                val kallLoggId = plugin.dbService.lagreRequest(
                     KallLogg(
                         korrelasjonId = callId,
                         tidspunkt = startTime,
@@ -101,6 +102,7 @@ class OutgoingCallLoggingPlugin(config: OCDLPConfig) {
                         logginfo = ""
                     )
                 )
+                response.call.attributes.put(plugin.kallLoggIdAttr, kallLoggId)
             }
         }
 
