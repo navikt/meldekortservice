@@ -104,7 +104,7 @@ fun Application.mainModule(
         header(HttpHeaders.XRequestId)
 
         // If can't retrieve a callId from the ApplicationCall, it will try the generate-blocks coalescing until one of them is not null.
-        generate { "meldekort-call-id-${UUID.randomUUID()}" }
+        generate { "meldekortservice-${UUID.randomUUID()}" }
 
         // Once a callId is generated, this optional function is called to verify if the retrieved or generated callId String is valid.
         verify { callId: String ->

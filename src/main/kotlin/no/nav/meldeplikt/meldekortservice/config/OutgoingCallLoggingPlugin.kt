@@ -61,7 +61,7 @@ class OutgoingCallLoggingPlugin(config: OCDLPConfig) {
             // Det er mulig at vi sender request før vi får noe request fra meldekort-api
             // F.eks for å hente noe config eller lignende
             // Det betyr at vi kkke har noe callId ennå og da må vi generere den
-            val callId = MDC.get("callId") ?: "meldekort-call-id-${UUID.randomUUID()}"
+            val callId = MDC.get("callId") ?: "meldekortservice-${UUID.randomUUID()}"
             var startTime = LocalDateTime.now()
             var kallTid = Instant.now().toEpochMilli()
             var responseBody = ""
