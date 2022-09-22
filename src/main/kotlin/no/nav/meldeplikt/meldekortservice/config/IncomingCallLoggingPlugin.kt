@@ -3,7 +3,6 @@ package no.nav.meldeplikt.meldekortservice.config
 import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.application.hooks.*
-import io.ktor.server.plugins.callid.*
 import io.ktor.server.request.*
 import io.ktor.util.*
 import io.ktor.utils.io.*
@@ -12,8 +11,8 @@ import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.model.database.KallLogg
 import no.nav.meldeplikt.meldekortservice.service.DBService
 import no.nav.meldeplikt.meldekortservice.utils.API_PATH
-import no.nav.meldeplikt.meldekortservice.utils.StaticVars.Companion.currentCallId
 import no.nav.meldeplikt.meldekortservice.utils.generateCallId
+import no.nav.meldeplikt.meldekortservice.utils.getCallId
 import no.nav.meldeplikt.meldekortservice.utils.headersToString
 import java.time.Instant
 import java.time.LocalDateTime
@@ -30,8 +29,6 @@ val IncomingCallLoggingPlugin: ApplicationPlugin<ICDLPConfig> =
             if (!call.request.path().startsWith(API_PATH)) {
                 return@onCall
             }
-
-            currentCallId = call.callId ?: generateCallId()
 
             val request = StringBuilder().apply {
                 val request = call.request
@@ -56,7 +53,7 @@ val IncomingCallLoggingPlugin: ApplicationPlugin<ICDLPConfig> =
 
             val kallLoggId = dbService.lagreRequest(
                 KallLogg(
-                    korrelasjonId = currentCallId,
+                    korrelasjonId = getCallId() ?: generateCallId(),
                     tidspunkt = LocalDateTime.now(),
                     type = "REST",
                     kallRetning = "INN",

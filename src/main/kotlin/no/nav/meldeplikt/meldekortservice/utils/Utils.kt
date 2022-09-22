@@ -24,14 +24,14 @@ import no.nav.cache.Cache
 import no.nav.cache.CacheConfig
 import no.nav.cache.CacheUtils
 import no.nav.meldeplikt.meldekortservice.config.OutgoingCallLoggingPlugin
+import no.nav.meldeplikt.meldekortservice.config.defaultDbService
 import no.nav.meldeplikt.meldekortservice.model.AccessToken
 import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
-import no.nav.meldeplikt.meldekortservice.service.DBService
-import no.nav.meldeplikt.meldekortservice.utils.StaticVars.Companion.defaultDbService
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Contact
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Information
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Swagger
 import org.apache.http.impl.conn.SystemDefaultRoutePlanner
+import org.slf4j.MDC
 import java.net.ProxySelector
 import java.util.*
 
@@ -77,6 +77,8 @@ internal const val SOAP_SYSTEMUSER_USERNAME = "no.nav.modig.security.systemuser.
 internal const val SOAP_SYSTEMUSER_PASSWORD = "no.nav.modig.security.systemuser.password"
 
 internal val HTTP_STATUS_CODES_2XX = IntRange(200, 299)
+
+internal const val MDC_CORRELATION_ID = "correlationId"
 
 internal data class ErrorMessage(val error: String)
 
@@ -189,10 +191,6 @@ fun generateCallId(): String {
     return "meldekortservice-${UUID.randomUUID()}"
 }
 
-class StaticVars {
-
-    companion object {
-        lateinit var defaultDbService: DBService
-        var currentCallId = ""
-    }
+fun getCallId(): String? {
+    return MDC.get(MDC_CORRELATION_ID)
 }

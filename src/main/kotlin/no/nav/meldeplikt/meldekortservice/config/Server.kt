@@ -7,6 +7,7 @@ import io.ktor.server.auth.*
 import io.ktor.server.locations.*
 import io.ktor.server.metrics.micrometer.*
 import io.ktor.server.plugins.callid.*
+import io.ktor.server.plugins.callloging.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.defaultheaders.*
 import io.ktor.server.plugins.doublereceive.*
@@ -29,8 +30,9 @@ import no.nav.meldeplikt.meldekortservice.service.DBService
 import no.nav.meldeplikt.meldekortservice.service.DokarkivService
 import no.nav.meldeplikt.meldekortservice.service.KontrollService
 import no.nav.meldeplikt.meldekortservice.utils.*
-import no.nav.meldeplikt.meldekortservice.utils.StaticVars.Companion.defaultDbService
 import no.nav.security.token.support.v2.tokenValidationSupport
+
+lateinit var defaultDbService: DBService
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -107,6 +109,10 @@ fun Application.mainModule(
         verify { callId: String ->
             callId.isNotEmpty()
         }
+    }
+
+    install(CallLogging) {
+        callIdMdc(MDC_CORRELATION_ID)
     }
 
     install(IncomingCallLoggingPlugin) {
