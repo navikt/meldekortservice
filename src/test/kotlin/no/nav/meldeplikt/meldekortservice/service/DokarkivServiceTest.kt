@@ -56,7 +56,8 @@ class DokarkivServiceTest {
 
             defaultDbService = DBService(database)
 
-            MDC.put(MDC_CORRELATION_ID, generateCallId())
+            val callId = generateCallId()
+            MDC.put(MDC_CORRELATION_ID, callId)
 
             val journalpostFile = this::class.java.getResource("/journalpost.json")
             val journalpost = defaultObjectMapper.readValue(
@@ -66,7 +67,7 @@ class DokarkivServiceTest {
             val journalpostRequest = "Sent request:\n" +
                     "POST ${env.dokarkivUrl}:443$JOURNALPOST_PATH?forsoekFerdigstill=true\n" +
                     "Authorization: Bearer dG9rZW4=\n" +
-                    "X-Request-ID: ${getCallId()}\n" +
+                    "X-Request-ID: $callId\n" +
                     "Accept: application/json\n" +
                     "Accept-Charset: UTF-8\n" +
                     "\n" +
@@ -94,7 +95,7 @@ class DokarkivServiceTest {
             val tokenRequest = "Sent request:\n" +
                     "POST ${env.stsNaisUrl}:443$STS_PATH?grant_type=client_credentials&scope=openid\n" +
                     "Authorization: $authHederValue\n" +
-                    "X-Request-ID: ${getCallId()}\n" +
+                    "X-Request-ID: $callId\n" +
                     "Accept: application/json\n" +
                     "Accept-Charset: UTF-8\n" +
                     "\n" +

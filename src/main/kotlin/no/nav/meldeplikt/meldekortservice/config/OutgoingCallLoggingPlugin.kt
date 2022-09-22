@@ -58,15 +58,15 @@ class OutgoingCallLoggingPlugin(config: OCDLPConfig) {
                 scope.responsePipeline.intercept(HttpResponsePipeline.State)
                 */
 
-            // Det er mulig at vi sender request før vi får noe request fra meldekort-api
-            // F.eks for å hente noe config eller lignende
-            // Det betyr at vi kkke har noe callId ennå og da må vi generere den
-            val callId = getCallId() ?: generateCallId()
             var startTime = LocalDateTime.now()
             var kallTid = Instant.now().toEpochMilli()
             var responseBody = ""
 
             scope.requestPipeline.intercept(HttpRequestPipeline.State) {
+                // Det er mulig at vi sender request før vi får noe request fra meldekort-api
+                // F.eks for å hente noe config eller lignende
+                // Det betyr at vi kkke har noe callId ennå og da må vi generere den
+                val callId = getCallId() ?: generateCallId()
                 startTime = LocalDateTime.now()
                 kallTid = Instant.now().toEpochMilli()
                 context.headers.append(HttpHeaders.XRequestId, callId)
@@ -85,6 +85,7 @@ class OutgoingCallLoggingPlugin(config: OCDLPConfig) {
             }
 
             scope.responsePipeline.intercept(HttpResponsePipeline.After) {
+                val callId = getCallId() ?: generateCallId()
                 val request = context.request
                 val response = context.response
 
