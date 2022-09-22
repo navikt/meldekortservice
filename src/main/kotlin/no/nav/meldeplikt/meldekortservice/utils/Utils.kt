@@ -84,6 +84,40 @@ internal data class ErrorMessage(val error: String)
 
 internal class Error
 
+@KtorExperimentalLocationsAPI
+val swagger = Swagger(
+    info = Information(
+        version = "1",
+        title = "Meldekortservice",
+        description = "Proxy-api for meldekort-applikasjonen (front-end). Api'et benyttes mot Arena og meldekortkontroll-api  \n" +
+                "GitHub repo: [https://github.com/navikt/meldekortservice](https://github.com/navikt/meldekortservice)  \n" +
+                "Slack: [#team-meldeplikt](https://nav-it.slack.com/archives/CQ61EHWP9)",
+        contact = Contact(
+            email = "meldeplikt@nav.no"
+        )
+    )
+)
+
+val defaultXmlMapper: ObjectMapper = XmlMapper().registerModule(
+    KotlinModule.Builder()
+        .withReflectionCacheSize(512)
+        .configure(KotlinFeature.NullToEmptyCollection, false)
+        .configure(KotlinFeature.NullToEmptyMap, false)
+        .configure(KotlinFeature.NullIsSameAsDefault, false)
+        .configure(KotlinFeature.SingletonSupport, false)
+        .configure(KotlinFeature.StrictNullChecks, false)
+        .build()
+)
+
+val defaultObjectMapper: ObjectMapper = ObjectMapper()
+    .registerKotlinModule()
+    .registerModule(JavaTimeModule())
+    .registerModule(ParameterNamesModule())
+    .enable(SerializationFeature.INDENT_OUTPUT)
+    .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+    .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+
 internal suspend fun PipelineContext<Unit, ApplicationCall>.respondOrError(block: suspend () -> Any) =
     try {
         val res = block()
@@ -120,40 +154,6 @@ fun headersToString(headers: List<String>): String {
 
     return headers.joinToString(",", "[", "]")
 }
-
-@KtorExperimentalLocationsAPI
-val swagger = Swagger(
-    info = Information(
-        version = "1",
-        title = "Meldekortservice",
-        description = "Proxy-api for meldekort-applikasjonen (front-end). Api'et benyttes mot Arena og meldekortkontroll-api  \n" +
-                "GitHub repo: [https://github.com/navikt/meldekortservice](https://github.com/navikt/meldekortservice)  \n" +
-                "Slack: [#team-meldeplikt](https://nav-it.slack.com/archives/CQ61EHWP9)",
-        contact = Contact(
-            email = "meldeplikt@nav.no"
-        )
-    )
-)
-
-val defaultXmlMapper: ObjectMapper = XmlMapper().registerModule(
-    KotlinModule.Builder()
-        .withReflectionCacheSize(512)
-        .configure(KotlinFeature.NullToEmptyCollection, false)
-        .configure(KotlinFeature.NullToEmptyMap, false)
-        .configure(KotlinFeature.NullIsSameAsDefault, false)
-        .configure(KotlinFeature.SingletonSupport, false)
-        .configure(KotlinFeature.StrictNullChecks, false)
-        .build()
-)
-
-val defaultObjectMapper: ObjectMapper = ObjectMapper()
-    .registerKotlinModule()
-    .registerModule(JavaTimeModule())
-    .registerModule(ParameterNamesModule())
-    .enable(SerializationFeature.INDENT_OUTPUT)
-    .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-    .setSerializationInclusion(JsonInclude.Include.NON_NULL)
-    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
 fun HttpClientConfig<*>.defaultHttpClientConfig() {
     install(ContentNegotiation) {
