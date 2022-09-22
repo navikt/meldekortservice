@@ -24,9 +24,10 @@ import no.nav.cache.Cache
 import no.nav.cache.CacheConfig
 import no.nav.cache.CacheUtils
 import no.nav.meldeplikt.meldekortservice.config.OutgoingCallLoggingPlugin
-import no.nav.meldeplikt.meldekortservice.config.defaultDbService
 import no.nav.meldeplikt.meldekortservice.model.AccessToken
 import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
+import no.nav.meldeplikt.meldekortservice.service.DBService
+import no.nav.meldeplikt.meldekortservice.utils.StaticVars.Companion.defaultDbService
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Contact
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Information
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Swagger
@@ -186,4 +187,12 @@ fun defaultHttpClient(): HttpClient {
 
 fun generateCallId(): String {
     return "meldekortservice-${UUID.randomUUID()}"
+}
+
+class StaticVars {
+
+    companion object {
+        lateinit var defaultDbService: DBService
+        var currentCallId = ""
+    }
 }

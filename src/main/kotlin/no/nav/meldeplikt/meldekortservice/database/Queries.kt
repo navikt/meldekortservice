@@ -142,22 +142,11 @@ fun Connection.lagreRequest(kallLogg: KallLogg): Long {
     val metaData: DatabaseMetaData = this.metaData
     val productName = metaData.databaseProductName
 
-    var sql = "INSERT INTO kall_logg " +
+    val sql = "INSERT INTO kall_logg " +
             "(korrelasjon_id, type, tidspunkt, kall_retning, method, operation, status, kalltid, request, response, logginfo) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
-    sql += if (productName == "PostgreSQL" || productName == "H2") {
-        ""
-    } else {
-        "" // ""RETURNING kall_log_id INTO ?"
-    }
 
     prepareStatement(sql,  arrayOf("kall_logg_id"))
-    /*
-    prepareStatement(
-        sql,
-        Statement.RETURN_GENERATED_KEYS
-    )
-            */
         .use {
             val requestClob: Clob
             val responseClob: Clob?

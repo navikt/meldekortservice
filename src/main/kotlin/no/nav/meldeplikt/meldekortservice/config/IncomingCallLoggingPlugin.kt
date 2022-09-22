@@ -12,6 +12,7 @@ import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.model.database.KallLogg
 import no.nav.meldeplikt.meldekortservice.service.DBService
 import no.nav.meldeplikt.meldekortservice.utils.API_PATH
+import no.nav.meldeplikt.meldekortservice.utils.StaticVars.Companion.currentCallId
 import no.nav.meldeplikt.meldekortservice.utils.generateCallId
 import no.nav.meldeplikt.meldekortservice.utils.headersToString
 import java.time.Instant

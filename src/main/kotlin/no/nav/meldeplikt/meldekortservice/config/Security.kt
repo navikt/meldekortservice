@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.util.pipeline.*
+import no.nav.meldeplikt.meldekortservice.utils.StaticVars.Companion.currentCallId
 import no.nav.meldeplikt.meldekortservice.utils.defaultLog
 
 fun PipelineContext<Unit, ApplicationCall>.extractIdentFromToken(): String {

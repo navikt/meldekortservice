@@ -29,10 +29,8 @@ import no.nav.meldeplikt.meldekortservice.service.DBService
 import no.nav.meldeplikt.meldekortservice.service.DokarkivService
 import no.nav.meldeplikt.meldekortservice.service.KontrollService
 import no.nav.meldeplikt.meldekortservice.utils.*
+import no.nav.meldeplikt.meldekortservice.utils.StaticVars.Companion.defaultDbService
 import no.nav.security.token.support.v2.tokenValidationSupport
-
-lateinit var defaultDbService: DBService
-var currentCallId = ""
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
