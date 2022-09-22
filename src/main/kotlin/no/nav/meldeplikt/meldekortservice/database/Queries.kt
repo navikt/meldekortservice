@@ -1,10 +1,10 @@
 package no.nav.meldeplikt.meldekortservice.database
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
 import no.nav.meldeplikt.meldekortservice.model.database.KallLogg
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Journalpost
+import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
 import java.io.Reader
 import java.io.Writer
 import java.nio.ByteBuffer
@@ -57,7 +57,7 @@ fun Connection.lagreJournalpostData(journalpostId: Long, dokumentInfoId: Long, m
 fun Connection.lagreJournalpostMidlertidig(journalpost: Journalpost): Int =
     prepareStatement("INSERT INTO midlertidig_lagrede_journalposter (id, journalpost, retries) VALUES (?, ?, ?)")
         .use {
-            val journalpostBytes = bytesToChars(ObjectMapper().writeValueAsBytes(journalpost))
+            val journalpostBytes = bytesToChars(defaultObjectMapper.writeValueAsBytes(journalpost))
 
             val metaData: DatabaseMetaData = this.metaData
             val productName = metaData.databaseProductName

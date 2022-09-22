@@ -1,6 +1,5 @@
 package no.nav.meldeplikt.meldekortservice.api
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.client.request.*
@@ -237,7 +236,7 @@ class PersonKtTest : TestBase() {
         val response = client.post("/meldekortservice/api/person/meldekort") {
             header(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")
             header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            setBody(ObjectMapper().writeValueAsString(meldekortdetaljer))
+            setBody(defaultObjectMapper.writeValueAsString(meldekortdetaljer))
         }
 
         assertEquals(HttpStatusCode.OK, response.status)
@@ -282,7 +281,7 @@ class PersonKtTest : TestBase() {
         val response = client.post("/meldekortservice/api/person/meldekort") {
             header(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")
             header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            setBody(ObjectMapper().writeValueAsString(meldekortdetaljer))
+            setBody(defaultObjectMapper.writeValueAsString(meldekortdetaljer))
         }
 
         assertEquals(HttpStatusCode.ServiceUnavailable, response.status)

@@ -1,6 +1,5 @@
 package no.nav.meldeplikt.meldekortservice.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.client.*
 import io.ktor.client.engine.mock.*
@@ -37,7 +36,7 @@ class ArenaOrdsServiceTest {
                         && request.url.host.contains("dummyurl.nav.no")
                     ) {
                         respond(
-                            ObjectMapper().writeValueAsString(response),
+                            defaultObjectMapper.writeValueAsString(response),
                             headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                         )
                     } else {
