@@ -138,7 +138,7 @@ fun ResultSet.tilInnsendtMeldekort(): InnsendtMeldekort {
     )
 }
 
-fun Connection.lagreRequest(kallLogg: KallLogg): Long {
+fun Connection.lagreKallLogg(kallLogg: KallLogg): Long {
     val metaData: DatabaseMetaData = this.metaData
     val productName = metaData.databaseProductName
 

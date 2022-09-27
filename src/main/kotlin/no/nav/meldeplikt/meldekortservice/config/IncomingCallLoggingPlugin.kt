@@ -51,7 +51,7 @@ val IncomingCallLoggingPlugin: ApplicationPlugin<ICDLPConfig> =
                 appendLine()
             }.toString()
 
-            val kallLoggId = dbService.lagreRequest(
+            val kallLoggId = dbService.lagreKallLogg(
                 KallLogg(
                     korrelasjonId = getCallId() ?: generateCallId(),
                     tidspunkt = LocalDateTime.now(),

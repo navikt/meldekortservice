@@ -89,7 +89,7 @@ class OutgoingCallLoggingPlugin(config: OCDLPConfig) {
                 val request = context.request
                 val response = context.response
 
-                val kallLoggId = plugin.dbService.lagreRequest(
+                val kallLoggId = plugin.dbService.lagreKallLogg(
                     KallLogg(
                         korrelasjonId = callId,
                         tidspunkt = startTime,

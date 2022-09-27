@@ -34,7 +34,7 @@ open class TestBase {
             mockOAuth2Server = MockOAuth2Server()
             mockOAuth2Server.start(8091)
 
-            every { dbService.lagreRequest(any()) } returns 1L
+            every { dbService.lagreKallLogg(any()) } returns 1L
             every { dbService.lagreResponse(any(), any(), any()) } just Runs
 
             mockkStatic(::isCurrentlyRunningOnNais)

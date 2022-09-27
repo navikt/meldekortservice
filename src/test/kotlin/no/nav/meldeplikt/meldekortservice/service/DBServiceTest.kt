@@ -125,7 +125,7 @@ class DBServiceTest {
                 "test"
             )
 
-            val kallLoggId = dbService.lagreRequest(kallLogg)
+            val kallLoggId = dbService.lagreKallLogg(kallLogg)
             checkKallLogg(dbService, kallLogg, 0, "", 0)
 
             val response = "pong"

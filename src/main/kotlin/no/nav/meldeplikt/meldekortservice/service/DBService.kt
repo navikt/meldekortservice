@@ -44,10 +44,10 @@ class DBService(private val database: Database) {
         }
     }
 
-    fun lagreRequest(kallLogg: KallLogg): Long =
+    fun lagreKallLogg(kallLogg: KallLogg): Long =
         runBlocking {
             database.dbQuery {
-                lagreRequest(kallLogg)
+                lagreKallLogg(kallLogg)
             }
         }
 

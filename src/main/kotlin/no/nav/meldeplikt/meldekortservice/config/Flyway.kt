@@ -6,7 +6,6 @@ import no.nav.meldeplikt.meldekortservice.database.PostgreSqlDatabase
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.configuration.FluentConfiguration
-import java.sql.DatabaseMetaData
 import javax.sql.DataSource
 
 object Flyway {
@@ -25,8 +24,7 @@ object Flyway {
         val oracleMigrationFiles = "classpath:db/migration/oracle"
         val postgreSqlMigrationFiles = "classpath:db/migration/postgresql"
 
-        val metaData: DatabaseMetaData = dataSource.connection.metaData
-        val productName = metaData.databaseProductName
+        val productName = dataSource.connection.metaData.databaseProductName
 
         if (productName == "PostgreSQL" || productName == "H2") {
             configBuilder.locations(commonMigrationFiles, postgreSqlMigrationFiles)
