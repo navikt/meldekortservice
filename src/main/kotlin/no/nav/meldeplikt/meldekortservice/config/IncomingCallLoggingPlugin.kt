@@ -44,11 +44,7 @@ val IncomingCallLoggingPlugin: ApplicationPlugin<ICDLPConfig> =
                 appendLine()
 
                 // body
-                append(call.receiveText())
-
-                // new line after body because in the log there might be additional info after "log message"
-                // and we don't want it to be mixed with logged body
-                appendLine()
+                appendLine(call.receiveText())
             }.toString()
 
             val kallLoggId = dbService.lagreKallLogg(
@@ -90,11 +86,7 @@ val IncomingCallLoggingPlugin: ApplicationPlugin<ICDLPConfig> =
                 appendLine()
 
                 // body
-                append(readBody(call.application.coroutineContext, content))
-
-                // new line after body because in the log there might be additional info after "log message"
-                // and we don't want it to be mixed with logged body
-                appendLine()
+                appendLine(readBody(call.application.coroutineContext, content))
             }.toString()
 
             dbService.lagreResponse(kallLoggId, call.response.status()?.value ?: 0, response)

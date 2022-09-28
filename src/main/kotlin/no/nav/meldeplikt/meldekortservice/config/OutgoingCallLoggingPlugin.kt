@@ -143,16 +143,12 @@ class OutgoingCallLoggingPlugin(config: OCDLPConfig) {
                             }
                         }
 
-                        append(buffer.toString())
+                        appendLine(buffer.toString())
                     }
                     else -> {
-                        append(request.content)
+                        appendLine(request.content)
                     }
                 }
-
-                // new line after body because in the log there might be additional info after "log message"
-                // and we don't want it to be mixed with logged body
-                appendLine()
             }.toString()
         }
 
@@ -168,11 +164,7 @@ class OutgoingCallLoggingPlugin(config: OCDLPConfig) {
                 // empty line before body as in HTTP response
                 appendLine()
 
-                append(responseBody)
-
-                // new line after body because in the log there might be additional info after "log message"
-                // and we don't want it to be mixed with logged body
-                appendLine()
+                appendLine(responseBody)
             }.toString()
         }
     }
