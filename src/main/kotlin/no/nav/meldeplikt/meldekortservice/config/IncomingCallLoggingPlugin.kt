@@ -10,10 +10,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.model.database.KallLogg
 import no.nav.meldeplikt.meldekortservice.service.DBService
-import no.nav.meldeplikt.meldekortservice.utils.API_PATH
-import no.nav.meldeplikt.meldekortservice.utils.generateCallId
-import no.nav.meldeplikt.meldekortservice.utils.getCallId
-import no.nav.meldeplikt.meldekortservice.utils.headersToString
+import no.nav.meldeplikt.meldekortservice.utils.*
 import java.time.Instant
 import java.time.LocalDateTime
 import kotlin.coroutines.CoroutineContext
@@ -47,22 +44,26 @@ val IncomingCallLoggingPlugin: ApplicationPlugin<ICDLPConfig> =
                 appendLine(call.receiveText())
             }.toString()
 
-            val kallLoggId = dbService.lagreKallLogg(
-                KallLogg(
-                    korrelasjonId = getCallId() ?: generateCallId(),
-                    tidspunkt = LocalDateTime.now(),
-                    type = "REST",
-                    kallRetning = "INN",
-                    method = call.request.httpMethod.value,
-                    operation = call.request.path(),
-                    status = 0,
-                    kallTid = Instant.now().toEpochMilli(),
-                    request = request,
-                    response = null,
-                    logginfo = ""
+            try {
+                val kallLoggId = dbService.lagreKallLogg(
+                    KallLogg(
+                        korrelasjonId = getCallId() ?: generateCallId(),
+                        tidspunkt = LocalDateTime.now(),
+                        type = "REST",
+                        kallRetning = "INN",
+                        method = call.request.httpMethod.value,
+                        operation = call.request.path(),
+                        status = 0,
+                        kallTid = Instant.now().toEpochMilli(),
+                        request = request,
+                        response = null,
+                        logginfo = ""
+                    )
                 )
-            )
-            call.attributes.put(kallLoggIdAttr, kallLoggId)
+                call.attributes.put(kallLoggIdAttr, kallLoggId)
+            } catch (e: Exception) {
+                defaultLog.error("Kunne ikke llagre kall logg", e)
+            }
         }
 
         on(ResponseBodyReadyForSend) { call, content ->

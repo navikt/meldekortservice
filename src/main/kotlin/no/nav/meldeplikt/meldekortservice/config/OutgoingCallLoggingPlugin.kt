@@ -12,6 +12,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.model.database.KallLogg
 import no.nav.meldeplikt.meldekortservice.service.DBService
+import no.nav.meldeplikt.meldekortservice.utils.defaultLog
 import no.nav.meldeplikt.meldekortservice.utils.generateCallId
 import no.nav.meldeplikt.meldekortservice.utils.getCallId
 import no.nav.meldeplikt.meldekortservice.utils.headersToString
@@ -89,22 +90,26 @@ class OutgoingCallLoggingPlugin(config: OCDLPConfig) {
                 val request = context.request
                 val response = context.response
 
-                val kallLoggId = plugin.dbService.lagreKallLogg(
-                    KallLogg(
-                        korrelasjonId = callId,
-                        tidspunkt = startTime,
-                        type = "REST",
-                        kallRetning = "UT",
-                        method = request.method.value,
-                        operation = request.url.encodedPath,
-                        status = response.status.value,
-                        kallTid = Instant.now().toEpochMilli() - kallTid,
-                        request = buildRequest(context.coroutineContext, request),
-                        response = buildResponse(response, responseBody),
-                        logginfo = ""
+                try {
+                    val kallLoggId = plugin.dbService.lagreKallLogg(
+                        KallLogg(
+                            korrelasjonId = callId,
+                            tidspunkt = startTime,
+                            type = "REST",
+                            kallRetning = "UT",
+                            method = request.method.value,
+                            operation = request.url.encodedPath,
+                            status = response.status.value,
+                            kallTid = Instant.now().toEpochMilli() - kallTid,
+                            request = buildRequest(context.coroutineContext, request),
+                            response = buildResponse(response, responseBody),
+                            logginfo = ""
+                        )
                     )
-                )
-                response.call.attributes.put(plugin.kallLoggIdAttr, kallLoggId)
+                    response.call.attributes.put(plugin.kallLoggIdAttr, kallLoggId)
+                } catch (e: Exception) {
+                    defaultLog.error("Kunne ikke llagre kall logg", e)
+                }
             }
         }
 
