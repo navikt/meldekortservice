@@ -1,8 +1,11 @@
 package no.nav.meldeplikt.meldekortservice.api
 
 import io.ktor.server.config.*
+import io.ktor.server.locations.*
+import io.ktor.server.testing.*
 import io.mockk.*
 import no.nav.meldeplikt.meldekortservice.config.Environment
+import no.nav.meldeplikt.meldekortservice.config.mainModule
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
 import no.nav.meldeplikt.meldekortservice.service.DBService
 import no.nav.meldeplikt.meldekortservice.service.DokarkivService
@@ -10,9 +13,12 @@ import no.nav.meldeplikt.meldekortservice.service.KontrollService
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import no.nav.security.mock.oauth2.MockOAuth2Server
 import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback
+import org.flywaydb.core.Flyway
+import org.flywaydb.core.api.output.MigrateResult
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 
+@KtorExperimentalLocationsAPI
 open class TestBase {
 
     companion object {
@@ -45,6 +51,29 @@ open class TestBase {
         @JvmStatic
         fun cleanup() {
             mockOAuth2Server.shutdown()
+        }
+    }
+
+    fun setUpTestApplication(block: suspend ApplicationTestBuilder.() -> Unit) {
+        testApplication {
+            val flywayConfig = mockk<Flyway>()
+            every { flywayConfig.migrate() } returns MigrateResult("", "", "")
+
+            environment {
+                config = setOidcConfig()
+            }
+            application {
+                mainModule(
+                    env = env,
+                    mockDBService = dbService,
+                    mockFlywayConfig = flywayConfig,
+                    mockArenaOrdsService = arenaOrdsService,
+                    mockKontrollService = kontrollService,
+                    mockDokarkivService = dokarkivService
+                )
+            }
+
+            block()
         }
     }
 

@@ -4,12 +4,6 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.locations.*
-import io.ktor.server.testing.*
-import io.mockk.every
-import io.mockk.mockk
-import no.nav.meldeplikt.meldekortservice.config.mainModule
-import org.flywaydb.core.Flyway
-import org.flywaydb.core.api.output.MigrateResult
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
@@ -17,22 +11,7 @@ import kotlin.test.assertEquals
 class InternalKtTest : TestBase() {
 
     @Test
-    fun testInternal() = testApplication {
-        val flywayConfig = mockk<Flyway>()
-        every { flywayConfig.migrate() } returns MigrateResult("", "", "")
-
-        environment {
-            config = setOidcConfig()
-        }
-        application {
-            mainModule(
-                mockDBService = dbService,
-                mockFlywayConfig = flywayConfig,
-                mockArenaOrdsService = mockk(),
-                mockKontrollService = mockk(),
-                mockDokarkivService = mockk()
-            )
-        }
+    fun testInternal() = setUpTestApplication {
 
         val response1 = client.get("/meldekortservice/internal/isReady")
         assertEquals(HttpStatusCode.OK, response1.status)

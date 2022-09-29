@@ -39,25 +39,6 @@ class OutgoingCallLoggingPlugin(config: OCDLPConfig) {
         }
 
         override fun install(plugin: OutgoingCallLoggingPlugin, scope: HttpClient) {
-            /*
-                scope.requestPipeline.intercept(HttpRequestPipeline.Before)
-                scope.requestPipeline.intercept(HttpRequestPipeline.State)
-                scope.requestPipeline.intercept(HttpRequestPipeline.Transform)
-                scope.requestPipeline.intercept(HttpRequestPipeline.Render)
-                scope.sendPipeline.intercept(HttpSendPipeline.Before)
-                scope.sendPipeline.intercept(HttpSendPipeline.State)
-                scope.sendPipeline.intercept(HttpSendPipeline.Monitoring)
-                scope.sendPipeline.intercept(HttpSendPipeline.Engine)
-                scope.receivePipeline.intercept(HttpReceivePipeline.Before)
-                scope.receivePipeline.intercept(HttpReceivePipeline.State)
-                scope.receivePipeline.intercept(HttpReceivePipeline.After)
-                scope.sendPipeline.intercept(HttpSendPipeline.Receive)
-                scope.requestPipeline.intercept(HttpRequestPipeline.Send)
-                scope.responsePipeline.intercept(HttpResponsePipeline.Receive)
-                scope.responsePipeline.intercept(HttpResponsePipeline.Parse)
-                scope.responsePipeline.intercept(HttpResponsePipeline.Transform)
-                scope.responsePipeline.intercept(HttpResponsePipeline.State)
-                */
 
             var startTime = LocalDateTime.now()
             var kallTid = Instant.now().toEpochMilli()

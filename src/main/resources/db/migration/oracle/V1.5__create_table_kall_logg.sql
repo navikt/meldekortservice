@@ -37,7 +37,7 @@ ALTER TABLE kall_logg
 ALTER TABLE kall_logg
     MODIFY
         PARTITION BY RANGE (tidspunkt)
-        INTERVAL (NUMTOYMINTERVAL(1, 'MONTH'))
+        INTERVAL (NUMTOYMINTERVAL(1, 'DAY'))
         (PARTITION kall_logg_data_p1 VALUES LESS THAN ( DATE '2022-04-01' ));
 
 -- Tabell og kolonnekommentarer
