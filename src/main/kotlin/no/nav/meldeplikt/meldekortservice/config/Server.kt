@@ -31,6 +31,7 @@ import no.nav.meldeplikt.meldekortservice.service.DokarkivService
 import no.nav.meldeplikt.meldekortservice.service.KontrollService
 import no.nav.meldeplikt.meldekortservice.utils.*
 import no.nav.security.token.support.v2.tokenValidationSupport
+import org.slf4j.event.Level
 
 lateinit var defaultDbService: DBService
 
@@ -112,6 +113,13 @@ fun Application.mainModule(
     }
 
     install(CallLogging) {
+        // Specifies what level will messages from this plugin have, we set DEBUG to get rid of them during normal work
+        level = Level.DEBUG
+
+        // By default, this plugin tries to have console colors (ANSI escape codes) in its messages. Turn it off
+        disableDefaultColors()
+
+        // Put callId into MDC
         callIdMdc(MDC_CORRELATION_ID)
     }
 
