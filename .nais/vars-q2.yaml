@@ -1,5 +1,5 @@
 dashEnv: -q2
-dbEnv: _q0
+dbEnv: _q2
 slackAlertChannel: team-meldeplikt-alerts-dev
 vaultKvEnv: preprod/fss
 vaultServiceuserEnv: dev
