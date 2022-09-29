@@ -1,9 +1,9 @@
-dashEnv: -q0
+dashEnv: -q2
 dbEnv: _q0
 slackAlertChannel: team-meldeplikt-alerts-dev
 vaultKvEnv: preprod/fss
 vaultServiceuserEnv: dev
 ingresses:
-  - "https://meldekortservice-q0.dev-fss-pub.nais.io"
+  - "https://meldekortservice-q2.dev-fss-pub.nais.io"
 idportenAcceptedAudience: https://nav.no
-tokenxAcceptedAudience: dev-gcp:meldekort:meldekort-api-q0
+tokenxAcceptedAudience: dev-gcp:meldekort:meldekort-api-q2
