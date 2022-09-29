@@ -61,6 +61,16 @@ class DBService(private val database: Database) {
         }
     }
 
+    fun oppdaterStatus(kallLoggId: Long, status: Int) {
+        database.translateExternalExceptionsToInternalOnes {
+            runBlocking {
+                database.dbQuery {
+                    oppdaterStatus(kallLoggId, status)
+                }
+            }
+        }
+    }
+
     fun hentKallLoggFelterListeByKorrelasjonId(korrelasjonId: String): List<KallLogg> =
         runBlocking {
             database.dbQuery { hentKallLoggFelterListeByKorrelasjonId(korrelasjonId) }

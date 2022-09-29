@@ -146,7 +146,7 @@ fun Connection.lagreKallLogg(kallLogg: KallLogg): Long {
             "(korrelasjon_id, type, tidspunkt, kall_retning, method, operation, status, kalltid, request, response, logginfo) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
 
-    prepareStatement(sql,  arrayOf("kall_logg_id"))
+    prepareStatement(sql, arrayOf("kall_logg_id"))
         .use {
             val requestClob: Clob
             val responseClob: Clob?
@@ -203,7 +203,7 @@ fun Connection.lagreKallLogg(kallLogg: KallLogg): Long {
 
             var kallLoggId = 0L
             it.generatedKeys.use { keys ->
-                if(keys.next()) {
+                if (keys.next()) {
                     kallLoggId = keys.getLong(1) // Can't refer to the returned keys by name in Oracle
                 }
             }
@@ -217,7 +217,8 @@ fun Connection.lagreResponse(kallLoggId: Long, status: Int, response: String) {
     val productName = metaData.databaseProductName
 
     prepareStatement(
-        "UPDATE kall_logg SET response = ?, status = ?, kalltid = (? - kalltid) " +
+        "UPDATE kall_logg " +
+                "SET response = ?, status = ?, kalltid = (? - kalltid) " +
                 "WHERE kall_logg_id = ?"
     )
         .use {
@@ -237,6 +238,21 @@ fun Connection.lagreResponse(kallLoggId: Long, status: Int, response: String) {
             it.setInt(2, status)
             it.setLong(3, Instant.now().toEpochMilli())
             it.setLong(4, kallLoggId)
+
+            it.executeUpdate()
+        }
+}
+
+fun Connection.oppdaterStatus(kallLoggId: Long, status: Int) {
+
+    prepareStatement(
+        "UPDATE kall_logg " +
+                "SET status = ? " +
+                "WHERE kall_logg_id = ?"
+    )
+        .use {
+            it.setInt(1, status)
+            it.setLong(2, kallLoggId)
 
             it.executeUpdate()
         }

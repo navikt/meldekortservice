@@ -13,7 +13,6 @@ import no.nav.meldeplikt.meldekortservice.service.DBService
 import no.nav.meldeplikt.meldekortservice.utils.*
 import java.time.Instant
 import java.time.LocalDateTime
-import kotlin.coroutines.CoroutineContext
 
 val IncomingCallLoggingPlugin: ApplicationPlugin<ICDLPConfig> =
     createApplicationPlugin("IncomingCallLoggingPlugin", ::ICDLPConfig) {
@@ -27,7 +26,7 @@ val IncomingCallLoggingPlugin: ApplicationPlugin<ICDLPConfig> =
                 return@onCall
             }
 
-            val request = StringBuilder().apply {
+            val requestData = StringBuilder().apply {
                 val request = call.request
 
                 appendLine("Received request:")
@@ -55,7 +54,7 @@ val IncomingCallLoggingPlugin: ApplicationPlugin<ICDLPConfig> =
                         operation = call.request.path(),
                         status = 0,
                         kallTid = Instant.now().toEpochMilli(),
-                        request = request,
+                        request = requestData,
                         response = null,
                         logginfo = ""
                     )
@@ -73,7 +72,7 @@ val IncomingCallLoggingPlugin: ApplicationPlugin<ICDLPConfig> =
 
             val kallLoggId = call.attributes[kallLoggIdAttr]
 
-            val response = StringBuilder().apply {
+            val responseData = StringBuilder().apply {
                 val response = call.response
 
                 appendLine("Sent response:")
@@ -87,10 +86,20 @@ val IncomingCallLoggingPlugin: ApplicationPlugin<ICDLPConfig> =
                 appendLine()
 
                 // body
-                appendLine(readBody(call.application.coroutineContext, content))
+                appendLine(readBody(content))
             }.toString()
 
-            dbService.lagreResponse(kallLoggId, call.response.status()?.value ?: 0, response)
+            dbService.lagreResponse(kallLoggId, call.response.status()?.value ?: 0, responseData)
+        }
+
+        on(ResponseSent) { call ->
+            if (!call.request.path().startsWith(API_PATH)) {
+                return@on
+            }
+
+            val kallLoggId = call.attributes[kallLoggIdAttr]
+
+            dbService.oppdaterStatus(kallLoggId, call.response.status()?.value ?: 0)
         }
     }
 
@@ -98,7 +107,7 @@ class ICDLPConfig {
     lateinit var dbs: DBService
 }
 
-private fun readBody(coroutineContext: CoroutineContext, subject: Any): String = when (subject) {
+private fun readBody(subject: Any): String = when (subject) {
     is TextContent -> subject.text
     is OutputStreamContent -> {
         val channel = ByteChannel(true)
