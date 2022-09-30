@@ -13,7 +13,6 @@ import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.model.database.KallLogg
 import no.nav.meldeplikt.meldekortservice.service.DBService
 import no.nav.meldeplikt.meldekortservice.utils.defaultLog
-import no.nav.meldeplikt.meldekortservice.utils.generateCallId
 import no.nav.meldeplikt.meldekortservice.utils.getCallId
 import no.nav.meldeplikt.meldekortservice.utils.headersToString
 import java.time.Instant
@@ -48,7 +47,7 @@ class OutgoingCallLoggingPlugin(config: OCDLPConfig) {
                 // Det er mulig at vi sender request før vi får noe request fra meldekort-api
                 // F.eks for å hente noe config eller lignende
                 // Det betyr at vi kkke har noe callId ennå og da må vi generere den
-                val callId = getCallId() ?: generateCallId()
+                val callId = getCallId()
                 startTime = LocalDateTime.now()
                 kallTid = Instant.now().toEpochMilli()
                 context.headers.append(HttpHeaders.XRequestId, callId)
@@ -67,7 +66,7 @@ class OutgoingCallLoggingPlugin(config: OCDLPConfig) {
             }
 
             scope.responsePipeline.intercept(HttpResponsePipeline.After) {
-                val callId = getCallId() ?: generateCallId()
+                val callId = getCallId()
                 val request = context.request
                 val response = context.response
 

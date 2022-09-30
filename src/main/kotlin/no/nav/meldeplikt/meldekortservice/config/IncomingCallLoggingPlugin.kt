@@ -10,7 +10,10 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.model.database.KallLogg
 import no.nav.meldeplikt.meldekortservice.service.DBService
-import no.nav.meldeplikt.meldekortservice.utils.*
+import no.nav.meldeplikt.meldekortservice.utils.API_PATH
+import no.nav.meldeplikt.meldekortservice.utils.defaultLog
+import no.nav.meldeplikt.meldekortservice.utils.getCallId
+import no.nav.meldeplikt.meldekortservice.utils.headersToString
 import java.time.Instant
 import java.time.LocalDateTime
 
@@ -46,7 +49,7 @@ val IncomingCallLoggingPlugin: ApplicationPlugin<ICDLPConfig> =
             try {
                 val kallLoggId = dbService.lagreKallLogg(
                     KallLogg(
-                        korrelasjonId = getCallId() ?: generateCallId(),
+                        korrelasjonId = getCallId(),
                         tidspunkt = LocalDateTime.now(),
                         type = "REST",
                         kallRetning = "INN",

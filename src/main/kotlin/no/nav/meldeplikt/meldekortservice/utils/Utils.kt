@@ -193,11 +193,16 @@ fun generateCallId(): String {
     return "meldekortservice-${UUID.randomUUID()}"
 }
 
-fun getCallId(): String? {
+fun getCallId(): String {
     var korrelasjonId = MDC.get(MDC_CORRELATION_ID)
 
+    if (korrelasjonId == null || korrelasjonId.isBlank()) {
+        korrelasjonId = generateCallId()
+        MDC.put(MDC_CORRELATION_ID, korrelasjonId)
+    }
+
     // DB has max 54 signs in the korrelasjon_id field, so we must not have more otherwise we will get SQL error
-    if (korrelasjonId != null && korrelasjonId.length > 54) {
+    if (korrelasjonId.length > 54) {
         korrelasjonId = korrelasjonId.substring(0, 54)
     }
 
