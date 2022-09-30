@@ -36,9 +36,11 @@ import java.net.ProxySelector
 import java.util.*
 
 internal const val CACHE_ANTALL_MINUTTER = 55
+
 // Årsaken til å multiplisere med 2 er at cache-implementasjonen dividerer timeout-verdien med 2...
 internal const val CACHE_TIMEOUT: Long = CACHE_ANTALL_MINUTTER.toLong() * 60 * 1000 * 2
-internal var CACHE: Cache<String, AccessToken> = CacheUtils.buildCache(CacheConfig.DEFAULT.withTimeToLiveMillis(CACHE_TIMEOUT))
+internal var CACHE: Cache<String, AccessToken> =
+    CacheUtils.buildCache(CacheConfig.DEFAULT.withTimeToLiveMillis(CACHE_TIMEOUT))
 
 internal const val BASE_PATH = "/meldekortservice"
 
@@ -192,5 +194,12 @@ fun generateCallId(): String {
 }
 
 fun getCallId(): String? {
-    return MDC.get(MDC_CORRELATION_ID)?.substring(0, 54)
+    val korrelasjonId = MDC.get(MDC_CORRELATION_ID)
+
+    // DB has max 54 signs in the korrelasjon_id field, so we must not have more otherwise we will get SQL error
+    if (korrelasjonId != null && korrelasjonId.length > 54) {
+        korrelasjonId.substring(0, 54)
+    }
+
+    return korrelasjonId
 }
