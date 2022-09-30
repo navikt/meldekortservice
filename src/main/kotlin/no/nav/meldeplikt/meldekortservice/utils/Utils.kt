@@ -194,11 +194,11 @@ fun generateCallId(): String {
 }
 
 fun getCallId(): String? {
-    val korrelasjonId = MDC.get(MDC_CORRELATION_ID)
+    var korrelasjonId = MDC.get(MDC_CORRELATION_ID)
 
     // DB has max 54 signs in the korrelasjon_id field, so we must not have more otherwise we will get SQL error
     if (korrelasjonId != null && korrelasjonId.length > 54) {
-        korrelasjonId.substring(0, 54)
+        korrelasjonId = korrelasjonId.substring(0, 54)
     }
 
     return korrelasjonId
