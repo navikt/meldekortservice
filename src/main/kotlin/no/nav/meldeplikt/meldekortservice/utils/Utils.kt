@@ -192,5 +192,5 @@ fun generateCallId(): String {
 }
 
 fun getCallId(): String? {
-    return MDC.get(MDC_CORRELATION_ID)
+    return MDC.get(MDC_CORRELATION_ID)?.substring(0, 54)
 }
