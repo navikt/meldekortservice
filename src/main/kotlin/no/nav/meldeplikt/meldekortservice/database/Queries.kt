@@ -243,21 +243,6 @@ fun Connection.lagreResponse(kallLoggId: Long, status: Int, response: String) {
         }
 }
 
-fun Connection.oppdaterStatus(kallLoggId: Long, status: Int) {
-
-    prepareStatement(
-        "UPDATE kall_logg " +
-                "SET status = ? " +
-                "WHERE kall_logg_id = ?"
-    )
-        .use {
-            it.setInt(1, status)
-            it.setLong(2, kallLoggId)
-
-            it.executeUpdate()
-        }
-}
-
 fun Connection.hentKallLoggFelterListeByKorrelasjonId(korrelasjonId: String): List<KallLogg> {
     val metaData: DatabaseMetaData = this.metaData
     val productName = metaData.databaseProductName

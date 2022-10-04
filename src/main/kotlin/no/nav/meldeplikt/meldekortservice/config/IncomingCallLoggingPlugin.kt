@@ -22,6 +22,7 @@ val IncomingCallLoggingPlugin: ApplicationPlugin<ICDLPConfig> =
 
         val dbService: DBService = pluginConfig.dbs
         val kallLoggIdAttr = AttributeKey<Long>("kallLoggId")
+        var body = ""
 
         onCall { call ->
 
@@ -73,6 +74,14 @@ val IncomingCallLoggingPlugin: ApplicationPlugin<ICDLPConfig> =
                 return@on
             }
 
+            body = readBody(content)
+        }
+
+        on(ResponseSent) { call ->
+            if (!call.request.path().startsWith(API_PATH)) {
+                return@on
+            }
+
             val kallLoggId = call.attributes[kallLoggIdAttr]
 
             val responseData = StringBuilder().apply {
@@ -89,20 +98,10 @@ val IncomingCallLoggingPlugin: ApplicationPlugin<ICDLPConfig> =
                 appendLine()
 
                 // body
-                appendLine(readBody(content))
+                appendLine(body)
             }.toString()
 
             dbService.lagreResponse(kallLoggId, call.response.status()?.value ?: 0, responseData)
-        }
-
-        on(ResponseSent) { call ->
-            if (!call.request.path().startsWith(API_PATH)) {
-                return@on
-            }
-
-            val kallLoggId = call.attributes[kallLoggIdAttr]
-
-            dbService.oppdaterStatus(kallLoggId, call.response.status()?.value ?: 0)
         }
     }
 

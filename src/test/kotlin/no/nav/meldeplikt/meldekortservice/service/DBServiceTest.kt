@@ -129,10 +129,7 @@ class DBServiceTest {
             checkKallLogg(dbService, kallLogg, 0, "", 0)
 
             val response = "pong"
-            dbService.lagreResponse(kallLoggId, 100, response)
-            checkKallLogg(dbService, kallLogg, 100, response, kallTid)
-
-            dbService.oppdaterStatus(kallLoggId, 200)
+            dbService.lagreResponse(kallLoggId, 200, response)
             checkKallLogg(dbService, kallLogg, 200, response, kallTid)
         }
     }

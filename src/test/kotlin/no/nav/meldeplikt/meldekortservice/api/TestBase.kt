@@ -42,7 +42,6 @@ open class TestBase {
 
             every { dbService.lagreKallLogg(any()) } returns 1L
             every { dbService.lagreResponse(any(), any(), any()) } just Runs
-            every { dbService.oppdaterStatus(any(), any()) } just Runs
 
             mockkStatic(::isCurrentlyRunningOnNais)
             every { isCurrentlyRunningOnNais() } returns true

@@ -100,6 +100,8 @@ class CallLoggingPluginTest : TestBase() {
                 "X-Request-ID: $callId\n"
         val expectedInnResponseEnd = "" +
                 "Server: Ktor/2.0.3\n" +
+                "Transfer-Encoding: chunked\n" +
+                "Content-Type: application/json; charset=UTF-8\n" +
                 "\n" +
                 "$json\n"
         val expectedUtRequest = "" +
