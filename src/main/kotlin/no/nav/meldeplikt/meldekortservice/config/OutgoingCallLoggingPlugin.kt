@@ -88,7 +88,7 @@ class OutgoingCallLoggingPlugin(config: OCDLPConfig) {
                     )
                     response.call.attributes.put(plugin.kallLoggIdAttr, kallLoggId)
                 } catch (e: Exception) {
-                    defaultLog.error("Kunne ikke llagre kall logg", e)
+                    defaultLog.error("Kunne ikke lagre kall logg", e)
                 }
             }
         }
