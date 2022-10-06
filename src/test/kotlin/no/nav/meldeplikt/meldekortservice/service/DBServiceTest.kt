@@ -121,7 +121,7 @@ class DBServiceTest {
                 0,
                 kallTid,
                 "ping",
-                null,
+                "",
                 "test"
             )
 

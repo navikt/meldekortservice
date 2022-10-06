@@ -4,6 +4,7 @@ import io.ktor.server.config.*
 import io.ktor.server.locations.*
 import io.ktor.server.testing.*
 import io.mockk.*
+import no.nav.meldeplikt.meldekortservice.config.DUMMY_FNR
 import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.config.mainModule
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
@@ -93,7 +94,7 @@ open class TestBase {
         "myclient",
         DefaultOAuth2TokenCallback(
             audience = listOf(REQUIRED_AUDIENCE),
-            claims = mapOf("sub" to "01020312345")
+            claims = mapOf("sub" to DUMMY_FNR)
         )
     ).serialize()
 
@@ -102,7 +103,7 @@ open class TestBase {
         "myclient",
         DefaultOAuth2TokenCallback(
             audience = listOf(REQUIRED_AUDIENCE),
-            claims = mapOf("pid" to "01020312345")
+            claims = mapOf("pid" to DUMMY_FNR)
         )
     ).serialize()
 }

@@ -1,5 +1,6 @@
 package no.nav.meldeplikt.meldekortservice.config
 
+import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.application.hooks.*
@@ -10,10 +11,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.model.database.KallLogg
 import no.nav.meldeplikt.meldekortservice.service.DBService
+import no.nav.meldeplikt.meldekortservice.utils.*
 import no.nav.meldeplikt.meldekortservice.utils.API_PATH
-import no.nav.meldeplikt.meldekortservice.utils.defaultLog
-import no.nav.meldeplikt.meldekortservice.utils.getCallId
-import no.nav.meldeplikt.meldekortservice.utils.headersToString
 import java.time.Instant
 import java.time.LocalDateTime
 
@@ -29,6 +28,9 @@ val IncomingCallLoggingPlugin: ApplicationPlugin<ICDLPConfig> =
             if (!call.request.path().startsWith(API_PATH)) {
                 return@onCall
             }
+
+            val token = call.request.headers[HttpHeaders.Authorization]?.replace("Bearer ", "")
+            val fnr = extractSubject(token)
 
             val requestData = StringBuilder().apply {
                 val request = call.request
@@ -59,8 +61,8 @@ val IncomingCallLoggingPlugin: ApplicationPlugin<ICDLPConfig> =
                         status = 0,
                         kallTid = Instant.now().toEpochMilli(),
                         request = requestData,
-                        response = null,
-                        logginfo = ""
+                        response = "",
+                        logginfo = fnr
                     )
                 )
                 call.attributes.put(kallLoggIdAttr, kallLoggId)

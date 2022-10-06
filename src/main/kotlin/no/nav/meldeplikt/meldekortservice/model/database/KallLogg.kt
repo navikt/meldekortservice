@@ -12,6 +12,6 @@ data class KallLogg(
     val status: Int,
     val kallTid: Long,
     val request: String,
-    val response: String?,
+    val response: String,
     val logginfo: String
 )

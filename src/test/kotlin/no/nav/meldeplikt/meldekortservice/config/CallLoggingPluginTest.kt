@@ -23,7 +23,7 @@ import org.flywaydb.core.api.output.MigrateResult
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.util.UUID
+import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -62,7 +62,7 @@ class CallLoggingPluginTest : TestBase() {
             |<Meldekort>
             |    <Hode>
             |        <PersonId><Verdi>1</Verdi></PersonId>
-            |        <Fodselsnr><Verdi>01020312345</Verdi></Fodselsnr>
+            |        <Fodselsnr><Verdi>$DUMMY_FNR</Verdi></Fodselsnr>
             |        <MeldekortId><Verdi>1</Verdi></MeldekortId>
             |        <Meldeperiode>2</Meldeperiode>
             |        <Arkivnokkel>test</Arkivnokkel>
@@ -173,9 +173,9 @@ class CallLoggingPluginTest : TestBase() {
         assertEquals(MELDEKORT_PATH, kall1.operation)
         assertEquals(200, kall1.status)
         assertEquals(expectedInnRequest, kall1.request)
-        assertTrue(kall1.response?.startsWith(expectedInnResponseStart) == true)
-        assertTrue(kall1.response?.replace("NULL", "")?.endsWith(expectedInnResponseEnd) == true)
-        assertEquals("", kall1.logginfo)
+        assertTrue(kall1.response.startsWith(expectedInnResponseStart))
+        assertTrue(kall1.response.replace("NULL", "").endsWith(expectedInnResponseEnd))
+        assertEquals(DUMMY_FNR, kall1.logginfo)
 
         val kall2 = kallLoggListe[1]
         assertEquals(callId, kall2.korrelasjonId)

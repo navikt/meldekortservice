@@ -7,6 +7,7 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.locations.*
 import io.mockk.*
+import no.nav.meldeplikt.meldekortservice.config.DUMMY_FNR
 import no.nav.meldeplikt.meldekortservice.database.hentMidlertidigLagredeJournalposter
 import no.nav.meldeplikt.meldekortservice.model.MeldekortKontrollertType
 import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
@@ -34,10 +35,9 @@ class PersonKtTest : TestBase() {
     @Test
     fun `get historiske meldekort returns ok with valid JWT`() = setUpTestApplication {
         val period = 1
-        val fnr = "01020312345"
         val person = Person(1L, "Bob", "Kåre", "No", "Papp", listOf(), 10, listOf())
 
-        coEvery { arenaOrdsService.hentHistoriskeMeldekort(fnr, period) } returns (person)
+        coEvery { arenaOrdsService.hentHistoriskeMeldekort(DUMMY_FNR, period) } returns (person)
 
         val response = client.get("/meldekortservice/api/person/historiskemeldekort?antallMeldeperioder=${period}") {
             header(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")
@@ -52,10 +52,9 @@ class PersonKtTest : TestBase() {
     @Test
     fun `get historiske meldekort returns 401-Unauthorized with missing JWT`() = setUpTestApplication {
         val period = 1
-        val fnr = "01020312345"
         val person = Person(1L, "Bob", "Kåre", "No", "Papp", listOf(), 10, listOf())
 
-        coEvery { arenaOrdsService.hentHistoriskeMeldekort(fnr, period) } returns (person)
+        coEvery { arenaOrdsService.hentHistoriskeMeldekort(DUMMY_FNR, period) } returns (person)
 
         val response = client.get("/meldekortservice/api/person/historiskemeldekort?antallMeldeperioder=${period}")
 
@@ -135,7 +134,7 @@ class PersonKtTest : TestBase() {
     fun `Kontroll or innsending of meldekort returns OK`() = setUpTestApplication {
         val meldekortdetaljer = Meldekortdetaljer(
             id = "1",
-            fodselsnr = "01020312345",
+            fodselsnr = DUMMY_FNR,
             kortType = KortType.AAP,
             meldeperiode = "20200105",
             sporsmal = Sporsmal(meldekortDager = listOf())
@@ -165,7 +164,7 @@ class PersonKtTest : TestBase() {
     fun `Kontroll of meldekort returns ServiceUnavailable`() = setUpTestApplication {
         val meldekortdetaljer = Meldekortdetaljer(
             id = "1",
-            fodselsnr = "01020312345",
+            fodselsnr = DUMMY_FNR,
             kortType = KortType.AAP,
             meldeperiode = "20200105",
             sporsmal = Sporsmal(meldekortDager = listOf())

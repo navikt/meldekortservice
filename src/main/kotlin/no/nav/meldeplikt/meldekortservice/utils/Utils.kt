@@ -1,5 +1,7 @@
 package no.nav.meldeplikt.meldekortservice.utils
 
+import com.auth0.jwt.JWT
+import com.auth0.jwt.exceptions.JWTDecodeException
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -207,4 +209,27 @@ fun getCallId(): String {
     }
 
     return korrelasjonId
+}
+
+fun extractSubject(authToken: String?): String {
+    if (authToken == null) {
+        return "token er null"
+    }
+
+    try {
+        val jwt = JWT.decode(authToken)
+
+        val pid = jwt.getClaim("pid")
+        val sub = jwt.getClaim("sub")
+
+        if (!pid.isNull) {
+            return pid.asString()
+        } else if (!sub.isNull) {
+            return sub.asString()
+        }
+
+        return "subject (ident) ikke funnet"
+    } catch (exception: JWTDecodeException) {
+        return "feil token"
+    }
 }

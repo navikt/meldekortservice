@@ -6,6 +6,7 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.locations.*
 import io.mockk.coEvery
+import no.nav.meldeplikt.meldekortservice.config.DUMMY_FNR
 import no.nav.meldeplikt.meldekortservice.model.enum.KortType
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.utils.ErrorMessage
@@ -22,7 +23,7 @@ class MeldekortKtTest : TestBase() {
         val id: Long = 1
         val meldekortdetaljer = Meldekortdetaljer(
             id = "1",
-            fodselsnr = "01020312345",
+            fodselsnr = DUMMY_FNR,
             kortType = KortType.AAP
         )
 
@@ -67,7 +68,7 @@ class MeldekortKtTest : TestBase() {
         val id: Long = 1
         val meldekortdetaljer = Meldekortdetaljer(
             id = "1",
-            fodselsnr = "01020312345",
+            fodselsnr = DUMMY_FNR,
             kortType = KortType.AAP
         )
 
@@ -97,7 +98,7 @@ class MeldekortKtTest : TestBase() {
         val id: Long = 1
         val meldekortdetaljer = Meldekortdetaljer(
             id = "1",
-            fodselsnr = "01020312345",
+            fodselsnr = DUMMY_FNR,
             kortType = KortType.AAP
         )
 
