@@ -173,8 +173,8 @@ fun HttpClientConfig<*>.defaultHttpClientConfig() {
     install(HttpTimeout) {
         // max time periods
         connectTimeoutMillis = 5000 // required to establish a connection with a server
-        requestTimeoutMillis = 8000 // required for an HTTP call: from sending a request to receiving a response
-        socketTimeoutMillis = 5000 //  of inactivity between two data packets when exchanging data with a server
+        requestTimeoutMillis = 10000 // required for an HTTP call: from sending a request to receiving a response
+        socketTimeoutMillis = 10000 //  of inactivity between two data packets when exchanging data with a server
     }
     install(OutgoingCallLoggingPlugin) {
         dbs = defaultDbService
