@@ -2,13 +2,9 @@ package no.nav.meldeplikt.meldekortservice.service
 
 import io.ktor.client.*
 import io.ktor.client.call.*
-import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
-import io.ktor.http.*
-import io.ktor.serialization.jackson.*
 import kotlinx.coroutines.runBlocking
-import no.nav.meldeplikt.meldekortservice.config.CACHE
 import no.nav.meldeplikt.meldekortservice.config.DUMMY_TOKEN
 import no.nav.meldeplikt.meldekortservice.config.DUMMY_URL
 import no.nav.meldeplikt.meldekortservice.config.Environment
@@ -25,11 +21,7 @@ import java.net.URL
 import java.util.*
 
 class ArenaOrdsService(
-    private val ordsClient: HttpClient = HttpClient {
-        install(ContentNegotiation) {
-            register(ContentType.Application.Json, JacksonConverter(defaultObjectMapper))
-        }
-    },
+    private val ordsClient: HttpClient = defaultHttpClient(),
     private val env: Environment = Environment()
 ) {
 

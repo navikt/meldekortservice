@@ -135,11 +135,10 @@ fun Routing.kontrollerMeldekort(kontrollService: KontrollService, dbService: DBS
                 contentType = ContentType.Application.Json
             )
         } catch (e: Exception) {
-            val errorMessage =
-                ErrorMessage("Meldekort med meldekortId ${meldekort.meldekortId} ble ikke sendt inn. ${e.message}")
+            val errorMessage = ErrorMessage(
+                "Meldekort med meldekortId ${meldekort.meldekortId} ble ikke sendt inn. ${e.message}"
+            )
             defaultLog.warn(errorMessage.error, e)
-            defaultLog.info("Exception fra meldekortkontroll for meldekort: "
-                    + defaultObjectMapper.writeValueAsString(meldekort))
             call.respond(status = HttpStatusCode.ServiceUnavailable, message = errorMessage)
         }
     }
@@ -184,7 +183,7 @@ fun Routing.opprettJournalpost(
 
             dbService.lagreJournalpostMidlertidig(journalpost)
 
-            // Vi sender OK tilbake for å gi mulighet å gå videre go vise kvittering
+            // Vi sender OK tilbake for å gi mulighet å gå videre og vise kvittering
             // Meldekort har jo blitt sendt, mens journalpost kan opprettes senere
             call.respond(status = HttpStatusCode.OK, message = errorMessage)
         }

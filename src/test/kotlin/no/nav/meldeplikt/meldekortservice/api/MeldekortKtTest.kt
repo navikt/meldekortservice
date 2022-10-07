@@ -5,17 +5,12 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.locations.*
-import io.ktor.server.testing.*
 import io.mockk.coEvery
-import io.mockk.every
-import io.mockk.mockk
-import no.nav.meldeplikt.meldekortservice.config.mainModule
+import no.nav.meldeplikt.meldekortservice.config.DUMMY_FNR
 import no.nav.meldeplikt.meldekortservice.model.enum.KortType
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.utils.ErrorMessage
 import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
-import org.flywaydb.core.Flyway
-import org.flywaydb.core.api.output.MigrateResult
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -24,31 +19,16 @@ import kotlin.test.assertNotNull
 class MeldekortKtTest : TestBase() {
 
     @Test
-    fun `get meldekortdetaljer returns ok with valid JWT`() = testApplication {
+    fun `get meldekortdetaljer returns ok with valid JWT`() = setUpTestApplication {
         val id: Long = 1
         val meldekortdetaljer = Meldekortdetaljer(
             id = "1",
-            fodselsnr = "01020312345",
+            fodselsnr = DUMMY_FNR,
             kortType = KortType.AAP
         )
 
         coEvery { arenaOrdsService.hentMeldekortdetaljer(any()) } returns (meldekortdetaljer)
-        val flywayConfig = mockk<Flyway>()
-        every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
-        environment {
-            config = setOidcConfig()
-        }
-        application {
-            mainModule(
-                env = env,
-                mockDBService = dbService,
-                arenaOrdsService = arenaOrdsService,
-                kontrollService = kontrollService,
-                dokarkivService = dokarkivService,
-                mockFlywayConfig = flywayConfig
-            )
-        }
 
         val response = client.get("/meldekortservice/api/meldekort?meldekortId=${id}") {
             header(HttpHeaders.Authorization, "Bearer ${issueTokenWithSub()}")
@@ -61,7 +41,7 @@ class MeldekortKtTest : TestBase() {
     }
 
     @Test
-    fun `get meldekortdetaljer returns Bad request with invalid fnr`() = testApplication {
+    fun `get meldekortdetaljer returns Bad request with invalid fnr`() = setUpTestApplication {
         val id: Long = 1
         val meldekortdetaljer = Meldekortdetaljer(
             id = "1",
@@ -70,22 +50,6 @@ class MeldekortKtTest : TestBase() {
         )
 
         coEvery { arenaOrdsService.hentMeldekortdetaljer(any()) } returns (meldekortdetaljer)
-        val flywayConfig = mockk<Flyway>()
-        every { flywayConfig.migrate() } returns MigrateResult("", "", "")
-
-        environment {
-            config = setOidcConfig()
-        }
-        application {
-            mainModule(
-                env = env,
-                mockDBService = dbService,
-                arenaOrdsService = arenaOrdsService,
-                kontrollService = kontrollService,
-                dokarkivService = dokarkivService,
-                mockFlywayConfig = flywayConfig
-            )
-        }
 
         val response = client.get("/meldekortservice/api/meldekort?meldekortId=${id}") {
             header(HttpHeaders.Authorization, "Bearer ${issueTokenWithSub()}")
@@ -100,31 +64,15 @@ class MeldekortKtTest : TestBase() {
     }
 
     @Test
-    fun `get meldekortdetaljer returns 401-Unauthorized with missing JWT`() = testApplication {
+    fun `get meldekortdetaljer returns 401-Unauthorized with missing JWT`() = setUpTestApplication {
         val id: Long = 1
         val meldekortdetaljer = Meldekortdetaljer(
             id = "1",
-            fodselsnr = "01020312345",
+            fodselsnr = DUMMY_FNR,
             kortType = KortType.AAP
         )
 
         coEvery { arenaOrdsService.hentMeldekortdetaljer(any()) } returns (meldekortdetaljer)
-        val flywayConfig = mockk<Flyway>()
-        every { flywayConfig.migrate() } returns MigrateResult("", "", "")
-
-        environment {
-            config = setOidcConfig()
-        }
-        application {
-            mainModule(
-                env = env,
-                mockDBService = dbService,
-                arenaOrdsService = arenaOrdsService,
-                kontrollService = kontrollService,
-                dokarkivService = dokarkivService,
-                mockFlywayConfig = flywayConfig
-            )
-        }
 
         val response = client.get("/meldekortservice/api/meldekort?meldekortId=${id}")
 
@@ -132,27 +80,11 @@ class MeldekortKtTest : TestBase() {
     }
 
     @Test
-    fun `get korrigert meldekortid returns 401-Unauthorized with invalid JWT`() = testApplication {
+    fun `get korrigert meldekortid returns 401-Unauthorized with invalid JWT`() = setUpTestApplication {
         val id: Long = 1
         val nyId: Long = 123
 
         coEvery { arenaOrdsService.kopierMeldekort(any()) } returns (nyId)
-        val flywayConfig = mockk<Flyway>()
-        every { flywayConfig.migrate() } returns MigrateResult("", "", "")
-
-        environment {
-            config = setOidcConfig()
-        }
-        application {
-            mainModule(
-                env = env,
-                mockDBService = dbService,
-                arenaOrdsService = arenaOrdsService,
-                kontrollService = kontrollService,
-                dokarkivService = dokarkivService,
-                mockFlywayConfig = flywayConfig
-            )
-        }
 
         val response = client.get("/meldekortservice/api/meldekort/korrigering?meldekortId=${id}") {
             header(HttpHeaders.Authorization, "Bearer Token AD")
@@ -162,31 +94,15 @@ class MeldekortKtTest : TestBase() {
     }
 
     @Test
-    fun `get meldekortdetaljer returns 401-Unauthorized with invalid JWT`() = testApplication {
+    fun `get meldekortdetaljer returns 401-Unauthorized with invalid JWT`() = setUpTestApplication {
         val id: Long = 1
         val meldekortdetaljer = Meldekortdetaljer(
             id = "1",
-            fodselsnr = "01020312345",
+            fodselsnr = DUMMY_FNR,
             kortType = KortType.AAP
         )
 
         coEvery { arenaOrdsService.hentMeldekortdetaljer(any()) } returns (meldekortdetaljer)
-        val flywayConfig = mockk<Flyway>()
-        every { flywayConfig.migrate() } returns MigrateResult("", "", "")
-
-        environment {
-            config = setOidcConfig()
-        }
-        application {
-            mainModule(
-                env = env,
-                mockDBService = dbService,
-                arenaOrdsService = arenaOrdsService,
-                kontrollService = kontrollService,
-                dokarkivService = dokarkivService,
-                mockFlywayConfig = flywayConfig
-            )
-        }
 
         val response = client.get("/meldekortservice/api/meldekort?meldekortId=${id}") {
             header(HttpHeaders.Authorization, "Bearer Token AD")
@@ -196,27 +112,11 @@ class MeldekortKtTest : TestBase() {
     }
 
     @Test
-    fun `get korrigert meldekortid returns OK with valid JWT with sub`() = testApplication {
+    fun `get korrigert meldekortid returns OK with valid JWT with sub`() = setUpTestApplication {
         val id: Long = 1
         val nyId: Long = 123
 
         coEvery { arenaOrdsService.kopierMeldekort(any()) } returns (nyId)
-        val flywayConfig = mockk<Flyway>()
-        every { flywayConfig.migrate() } returns MigrateResult("", "", "")
-
-        environment {
-            config = setOidcConfig()
-        }
-        application {
-            mainModule(
-                env = env,
-                mockDBService = dbService,
-                arenaOrdsService = arenaOrdsService,
-                kontrollService = kontrollService,
-                dokarkivService = dokarkivService,
-                mockFlywayConfig = flywayConfig
-            )
-        }
 
         val response = client.get("/meldekortservice/api/meldekort/korrigering?meldekortId=${id}") {
             header(HttpHeaders.Authorization, "Bearer ${issueTokenWithSub()}")
@@ -229,27 +129,11 @@ class MeldekortKtTest : TestBase() {
     }
 
     @Test
-    fun `get korrigert meldekortid returns OK with valid JWT with pid`() = testApplication {
+    fun `get korrigert meldekortid returns OK with valid JWT with pid`() = setUpTestApplication {
         val id: Long = 1
         val nyId: Long = 123
 
         coEvery { arenaOrdsService.kopierMeldekort(any()) } returns (nyId)
-        val flywayConfig = mockk<Flyway>()
-        every { flywayConfig.migrate() } returns MigrateResult("", "", "")
-
-        environment {
-            config = setOidcConfig()
-        }
-        application {
-            mainModule(
-                env = env,
-                mockDBService = dbService,
-                arenaOrdsService = arenaOrdsService,
-                kontrollService = kontrollService,
-                dokarkivService = dokarkivService,
-                mockFlywayConfig = flywayConfig
-            )
-        }
 
         val response = client.get("/meldekortservice/api/meldekort/korrigering?meldekortId=${id}") {
             header(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")

@@ -3,7 +3,6 @@ package no.nav.meldeplikt.meldekortservice.database
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
 import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.sql.SQLException
@@ -57,6 +56,6 @@ class DatabaseTest {
                 database.dbQuery { hentInnsendtMeldekort(123L) }
             }
         }
-        Assertions.assertEquals("Found no rows", exception.localizedMessage)
+        assertEquals("Found no rows", exception.localizedMessage)
     }
 }

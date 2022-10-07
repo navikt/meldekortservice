@@ -12,33 +12,21 @@ import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Journalpost
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.JournalpostResponse
 import no.nav.meldeplikt.meldekortservice.service.DBService
 import no.nav.meldeplikt.meldekortservice.service.DokarkivService
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class SendJournalposterPaaNyttTest {
-    private lateinit var database: H2Database
-    private lateinit var dbService: DBService
     private val journalpostJson = this::class.java.getResource("/journalpost.json")!!.readText()
     private val journalpost = jacksonObjectMapper().readValue(
         journalpostJson,
         Journalpost::class.java
     )
 
-    @BeforeEach
-    fun setUp() {
-        database = H2Database("journalposttest")
-        dbService = DBService(database)
-    }
-
-    @AfterEach
-    fun tearDown() {
-        database.closeConnection()
-    }
-
     @Test
     fun `skal sende journalpost, lagre journalpost data og slette midlertidig journalpost naar OK`() {
+        val database = H2Database("journalposttest1")
+        val dbService = DBService(database)
+
         val journalpostId = 123456780L
         val dokumentInfoId = 123456781L
         val journalpostResponse = JournalpostResponse(
@@ -96,10 +84,15 @@ class SendJournalposterPaaNyttTest {
             assertEquals(dokumentInfoId, result[0].second)
             assertEquals(1011121315, result[0].third) // MeldekortId kommer fra journalpost.json
         }
+
+        database.closeConnection()
     }
 
     @Test
     fun `skal sende journalpost, lagre journalpost data og slette midlertidig journalpost naar allerede eksisterer`() {
+        val database = H2Database("journalposttest2")
+        val dbService = DBService(database)
+
         val journalpostId = 123456782L
         val dokumentInfoId = 123456783L
         val meldekortId = 1011121315L // MeldekortId kommer fra journalpost.json
@@ -149,10 +142,15 @@ class SendJournalposterPaaNyttTest {
             assertEquals(dokumentInfoId, result[0].second)
             assertEquals(meldekortId, result[0].third)
         }
+
+        database.closeConnection()
     }
 
     @Test
     fun `skal ikke slette midlertidig journalpost naar det er feil i journalpost data`() {
+        val database = H2Database("journalposttest3")
+        val dbService = DBService(database)
+
         val journalpostId = 123456782L
         val dokumentInfoId = 123456783L
         val annendokumentInfoId = 123456784L
@@ -203,10 +201,15 @@ class SendJournalposterPaaNyttTest {
             assertEquals(annendokumentInfoId, result[0].second)
             assertEquals(meldekortId, result[0].third)
         }
+
+        database.closeConnection()
     }
 
     @Test
     fun `skal sende journalpost og ikke slette midlertidig journalpost naar ikke OK`() {
+        val database = H2Database("journalposttest4")
+        val dbService = DBService(database)
+
         val dokarkivService = mockk<DokarkivService>()
         coEvery { dokarkivService.createJournalpost(any()) } throws Exception()
 
@@ -238,5 +241,7 @@ class SendJournalposterPaaNyttTest {
             assertEquals(1, journalpostData.size)
             assertEquals(1, journalpostData[0].second) // Retries
         }
+
+        database.closeConnection()
     }
 }

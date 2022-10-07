@@ -1,14 +1,16 @@
 package no.nav.meldeplikt.meldekortservice.config
 
+import io.ktor.http.*
 import io.ktor.serialization.jackson.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.locations.*
 import io.ktor.server.metrics.micrometer.*
+import io.ktor.server.plugins.callid.*
 import io.ktor.server.plugins.callloging.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.defaultheaders.*
-import io.ktor.server.request.*
+import io.ktor.server.plugins.doublereceive.*
 import io.ktor.server.routing.*
 import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics
@@ -16,9 +18,6 @@ import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics
 import io.micrometer.prometheus.PrometheusConfig
 import io.micrometer.prometheus.PrometheusMeterRegistry
-import no.nav.cache.Cache
-import no.nav.cache.CacheConfig
-import no.nav.cache.CacheUtils
 import no.nav.common.utils.EnvironmentUtils.Type.PUBLIC
 import no.nav.common.utils.EnvironmentUtils.Type.SECRET
 import no.nav.common.utils.EnvironmentUtils.setProperty
@@ -26,55 +25,37 @@ import no.nav.meldeplikt.meldekortservice.api.*
 import no.nav.meldeplikt.meldekortservice.coroutine.SendJournalposterPaaNytt
 import no.nav.meldeplikt.meldekortservice.database.OracleDatabase
 import no.nav.meldeplikt.meldekortservice.database.PostgreSqlDatabase
-import no.nav.meldeplikt.meldekortservice.model.AccessToken
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
 import no.nav.meldeplikt.meldekortservice.service.DBService
 import no.nav.meldeplikt.meldekortservice.service.DokarkivService
 import no.nav.meldeplikt.meldekortservice.service.KontrollService
 import no.nav.meldeplikt.meldekortservice.utils.*
-import no.nav.meldeplikt.meldekortservice.utils.swagger.Contact
-import no.nav.meldeplikt.meldekortservice.utils.swagger.Information
-import no.nav.meldeplikt.meldekortservice.utils.swagger.Swagger
 import no.nav.security.token.support.v2.tokenValidationSupport
+import org.slf4j.event.Level
+
+lateinit var defaultDbService: DBService
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
-
-@KtorExperimentalLocationsAPI
-val swagger = Swagger(
-    info = Information(
-        version = "1",
-        title = "Meldekortservice",
-        description = "Proxy-api for meldekort-applikasjonen (front-end). Api'et benyttes mot Arena og meldekortkontroll-api  \n" +
-                "GitHub repo: [https://github.com/navikt/meldekortservice](https://github.com/navikt/meldekortservice)  \n" +
-                "Slack: [#team-meldeplikt](https://nav-it.slack.com/archives/CQ61EHWP9)",
-        contact = Contact(
-            email = "meldeplikt@nav.no"
-        )
-    )
-)
-
-
-private const val cacheAntallMinutter = 55
-
-// Årsaken til å multiplisere med 2 er at cache-implementasjonen dividerer timeout-verdien med 2...
-private const val cacheTimeout: Long = cacheAntallMinutter.toLong() * 60 * 1000 * 2
-val CACHE: Cache<String, AccessToken> = CacheUtils.buildCache(CacheConfig.DEFAULT.withTimeToLiveMillis(cacheTimeout))
-
-const val SWAGGER_URL_V1 = "/meldekortservice/internal/apidocs/index.html"
 
 @KtorExperimentalLocationsAPI
 fun Application.mainModule(
     env: Environment = Environment(),
     mockDBService: DBService? = null,
-    arenaOrdsService: ArenaOrdsService = ArenaOrdsService(),
-    kontrollService: KontrollService = KontrollService(),
-    dokarkivService: DokarkivService = DokarkivService(),
-    mockFlywayConfig: org.flywaydb.core.Flyway? = null
+    mockFlywayConfig: org.flywaydb.core.Flyway? = null,
+    mockArenaOrdsService: ArenaOrdsService? = null,
+    mockKontrollService: KontrollService? = null,
+    mockDokarkivService: DokarkivService? = null
 ) {
     setAppProperties(env)
 
-    val dbService: DBService = mockDBService ?: initializeInnsendtMeldekortServiceApi(env)
+    defaultDbService = mockDBService ?: initializeInnsendtMeldekortServiceApi(env)
+
     val flywayConfig: org.flywaydb.core.Flyway = mockFlywayConfig ?: initializeFlyway(env)
+    flywayConfig.migrate()
+
+    val arenaOrdsService = mockArenaOrdsService ?: ArenaOrdsService()
+    val kontrollService = mockKontrollService ?: KontrollService()
+    val dokarkivService = mockDokarkivService ?: DokarkivService()
 
     val appMicrometerRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
     install(MicrometerMetrics) {
@@ -111,17 +92,43 @@ fun Application.mainModule(
         swaggerRoutes()
         weblogicApi()
         meldekortApi(arenaOrdsService)
-        personApi(arenaOrdsService, dbService, kontrollService, dokarkivService)
+        personApi(arenaOrdsService, defaultDbService, kontrollService, dokarkivService)
+    }
+
+    install(DoubleReceive) {
+    }
+
+    install(CallId) {
+        // Retrieve the callId from a headerName
+        // Automatically updates the response with the callId in the specified headerName
+        header(HttpHeaders.XRequestId)
+
+        // If can't retrieve a callId from the ApplicationCall, it will try the generate-blocks coalescing until one of them is not null.
+        generate { generateCallId() }
+
+        // Once a callId is generated, this optional function is called to verify if the retrieved or generated callId String is valid.
+        verify { callId: String ->
+            callId.isNotEmpty()
+        }
     }
 
     install(CallLogging) {
-        filter { call -> call.request.path().startsWith("/api") }
+        // Specifies what level will messages from this plugin have, we set DEBUG to get rid of them during normal work
+        level = Level.DEBUG
+
+        // By default, this plugin tries to have console colors (ANSI escape codes) in its messages. Turn it off
+        disableDefaultColors()
+
+        // Put callId into MDC
+        callIdMdc(MDC_CORRELATION_ID)
     }
 
-    flywayConfig.migrate()
+    install(IncomingCallLoggingPlugin) {
+        dbs = defaultDbService
+    }
 
     if (env.dokarkivResendInterval > 0L) {
-        SendJournalposterPaaNytt(dbService, dokarkivService, env.dokarkivResendInterval, 0).start()
+        SendJournalposterPaaNytt(defaultDbService, dokarkivService, env.dokarkivResendInterval, 0).start()
     }
 }
 

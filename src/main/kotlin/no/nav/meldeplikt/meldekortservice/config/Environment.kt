@@ -4,9 +4,10 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import java.net.URL
 
-const val DUMMY_URL: String = "https://dummyurl.nav.no"
-var DUMMY_TOKEN: String = JWT.create()
-    .withClaim("pid", "01020312345")
+const val DUMMY_URL = "https://dummyurl.nav.no"
+const val DUMMY_FNR = "01020312345"
+val DUMMY_TOKEN = JWT.create()
+    .withClaim("pid", DUMMY_FNR)
     .withClaim("name", "Test Testesen")
     .withClaim("iat", 1616239022)
     .sign(Algorithm.none())

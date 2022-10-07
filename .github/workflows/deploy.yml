@@ -25,9 +25,9 @@ jobs:
     steps:
       - name: Check if correct branch
         if: github.ref != env.MAIN_BRANCH
-        run: | 
+        run: |
           echo "Jobben skal kun kjøres fra master branch!"
-          exit 1        
+          exit 1
 
       - name: Set vars
         id: setVars

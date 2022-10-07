@@ -10,11 +10,6 @@ import javax.sql.DataSource
 
 object Flyway {
 
-    fun runFlywayMigrations(env: Environment) {
-        val flyway = configure(env).load()
-        flyway.migrate()
-    }
-
     fun configure(env: Environment): FluentConfiguration {
         val dataSource = createCorrectAdminDatasourceForEnvironment(env)
 
@@ -29,10 +24,12 @@ object Flyway {
         val oracleMigrationFiles = "classpath:db/migration/oracle"
         val postgreSqlMigrationFiles = "classpath:db/migration/postgresql"
 
-        if (isCurrentlyRunningOnNais()) {
-            configBuilder.locations(commonMigrationFiles, oracleMigrationFiles)
-        } else {
+        val productName = dataSource.connection.metaData.databaseProductName
+
+        if (productName == "PostgreSQL" || productName == "H2") {
             configBuilder.locations(commonMigrationFiles, postgreSqlMigrationFiles)
+        } else {
+            configBuilder.locations(commonMigrationFiles, oracleMigrationFiles)
         }
 
         return configBuilder
