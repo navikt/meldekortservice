@@ -135,11 +135,10 @@ fun Routing.kontrollerMeldekort(kontrollService: KontrollService, dbService: DBS
                 contentType = ContentType.Application.Json
             )
         } catch (e: Exception) {
-            val errorMessage =
-                ErrorMessage("Meldekort med meldekortId ${meldekort.meldekortId} ble ikke sendt inn. ${e.message}")
+            val errorMessage = ErrorMessage(
+                "Meldekort med meldekortId ${meldekort.meldekortId} ble ikke sendt inn. ${e.message}"
+            )
             defaultLog.warn(errorMessage.error, e)
-            defaultLog.info("Exception fra meldekortkontroll for meldekort: "
-                    + defaultObjectMapper.writeValueAsString(meldekort))
             call.respond(status = HttpStatusCode.ServiceUnavailable, message = errorMessage)
         }
     }
