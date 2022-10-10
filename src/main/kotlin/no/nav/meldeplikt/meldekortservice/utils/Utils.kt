@@ -52,6 +52,9 @@ internal const val SWAGGER_URL_V1 = "$INTERNAL_PATH/apidocs/index.html"
 
 internal const val MELDEKORT_PATH = "$API_PATH/meldekort"
 internal const val PERSON_PATH = "$API_PATH/person"
+internal const val HISTORISKE_MELDEKORT_PATH = "$PERSON_PATH/historiskemeldekort"
+internal const val PERSON_MELDEKORT_PATH = "$PERSON_PATH/meldekort"
+internal const val OPPRETT_JOURNALPOST_PATH = "$PERSON_PATH/opprettJournalpost"
 internal const val WEBLOGIC_PING_PATH = "$API_PATH/weblogic"
 
 internal const val KONTROLL_KONTROLL = "/api/v1/kontroll"
