@@ -178,7 +178,7 @@ class DokarkivServiceTest {
             assertEquals(JOURNALPOST_PATH, kall2.operation)
             assertEquals(status.value, kall2.status)
             assertEquals(journalpostRequest, kall2.request)
-            assertEquals(journalpostResponse, kall2.response)
+            assertEquals(journalpostResponse, kall2.response.replace("\r", ""))
             assertEquals("", kall2.logginfo)
         }
     }
