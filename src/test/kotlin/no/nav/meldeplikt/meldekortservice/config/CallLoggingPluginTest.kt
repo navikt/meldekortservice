@@ -292,7 +292,7 @@ class CallLoggingPluginTest : TestBase() {
                 "X-Request-ID: $callId\n" +
                 "Accept-Charset: UTF-8\n" +
                 "Accept: */*\n" +
-                "Content-Length: 537\n" +
+                "Content-Length: ${defaultObjectMapper.writeValueAsString(journalpost).length}\n" +
                 "Content-Type: application/json\n" +
                 "\n" +
                 "JOURNALPOST\n"
