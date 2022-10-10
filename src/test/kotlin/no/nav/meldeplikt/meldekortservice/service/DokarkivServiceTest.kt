@@ -71,8 +71,7 @@ class DokarkivServiceTest {
                     "Accept: application/json\n" +
                     "Accept-Charset: UTF-8\n" +
                     "\n" +
-                    defaultObjectMapper.disable(SerializationFeature.INDENT_OUTPUT).writeValueAsString(journalpost) +
-                    "\n"
+                    "JOURNALPOST\n"
             val jpRespObject = JournalpostResponse(
                 journalpostId = 1234567890,
                 journalstatus = "M",
