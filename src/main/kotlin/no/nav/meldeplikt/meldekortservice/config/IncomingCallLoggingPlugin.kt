@@ -46,7 +46,11 @@ val IncomingCallLoggingPlugin: ApplicationPlugin<ICDLPConfig> =
                 appendLine()
 
                 // body
-                appendLine(call.receiveText())
+                if (request.path() == OPPRETT_JOURNALPOST_PATH) {
+                    appendLine("JOURNALPOST")
+                } else {
+                    appendLine(call.receiveText())
+                }
             }.toString()
 
             try {

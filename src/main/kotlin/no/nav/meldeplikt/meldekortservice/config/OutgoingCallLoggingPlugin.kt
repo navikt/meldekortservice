@@ -12,9 +12,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.model.database.KallLogg
 import no.nav.meldeplikt.meldekortservice.service.DBService
-import no.nav.meldeplikt.meldekortservice.utils.defaultLog
-import no.nav.meldeplikt.meldekortservice.utils.getCallId
-import no.nav.meldeplikt.meldekortservice.utils.headersToString
+import no.nav.meldeplikt.meldekortservice.utils.*
 import java.time.Instant
 import java.time.LocalDateTime
 import kotlin.coroutines.CoroutineContext
@@ -105,33 +103,37 @@ class OutgoingCallLoggingPlugin(config: OCDLPConfig) {
                 // empty line before body as in HTTP request
                 appendLine()
 
-                when (request.content) {
-                    is OutgoingContent.ByteArrayContent -> {
-                        append(
-                            String(
-                                (request.content as OutgoingContent.ByteArrayContent).bytes(),
-                                Charsets.UTF_8
+                if (request.url.encodedPath == JOURNALPOST_PATH) {
+                    appendLine("JOURNALPOST")
+                } else {
+                    when (request.content) {
+                        is OutgoingContent.ByteArrayContent -> {
+                            append(
+                                String(
+                                    (request.content as OutgoingContent.ByteArrayContent).bytes(),
+                                    Charsets.UTF_8
+                                )
                             )
-                        )
-                    }
-                    is OutgoingContent.WriteChannelContent -> {
-                        val buffer = StringBuilder()
-                        val channel = ByteChannel(true)
-
-                        runBlocking {
-                            GlobalScope.writer(coroutineContext, autoFlush = true) {
-                                (request.content as OutgoingContent.WriteChannelContent).writeTo(channel)
-                            }
-
-                            while (!channel.isClosedForRead) {
-                                channel.readUTF8LineTo(buffer)
-                            }
                         }
+                        is OutgoingContent.WriteChannelContent -> {
+                            val buffer = StringBuilder()
+                            val channel = ByteChannel(true)
 
-                        appendLine(buffer.toString())
-                    }
-                    else -> {
-                        appendLine(request.content)
+                            runBlocking {
+                                GlobalScope.writer(coroutineContext, autoFlush = true) {
+                                    (request.content as OutgoingContent.WriteChannelContent).writeTo(channel)
+                                }
+
+                                while (!channel.isClosedForRead) {
+                                    channel.readUTF8LineTo(buffer)
+                                }
+                            }
+
+                            appendLine(buffer.toString())
+                        }
+                        else -> {
+                            appendLine(request.content)
+                        }
                     }
                 }
             }.toString()

@@ -71,8 +71,7 @@ class DokarkivServiceTest {
                     "Accept: application/json\n" +
                     "Accept-Charset: UTF-8\n" +
                     "\n" +
-                    defaultObjectMapper.disable(SerializationFeature.INDENT_OUTPUT).writeValueAsString(journalpost) +
-                    "\n"
+                    "JOURNALPOST\n"
             val jpRespObject = JournalpostResponse(
                 journalpostId = 1234567890,
                 journalstatus = "M",
@@ -90,11 +89,11 @@ class DokarkivServiceTest {
                     "\n"
 
             val base = "${env.srvMeldekortservice.username}:${env.srvMeldekortservice.password}"
-            val authHederValue = "Basic ${Base64.getEncoder().encodeToString(base.toByteArray())}"
+            val authHeaderValue = "Basic ${Base64.getEncoder().encodeToString(base.toByteArray())}"
             val token = AccessToken("dG9rZW4=", "Bearer", 3600)
             val tokenRequest = "Sent request:\n" +
                     "POST ${env.stsNaisUrl}:443$STS_PATH?grant_type=client_credentials&scope=openid\n" +
-                    "Authorization: $authHederValue\n" +
+                    "Authorization: $authHeaderValue\n" +
                     "X-Request-ID: $callId\n" +
                     "Accept: application/json\n" +
                     "Accept-Charset: UTF-8\n" +
@@ -130,7 +129,7 @@ class DokarkivServiceTest {
                             && request.url.encodedPath == STS_PATH
                             && request.url.parameters.contains("grant_type", "client_credentials")
                             && request.url.parameters.contains("scope", "openid")
-                            && request.headers.contains(HttpHeaders.Authorization, authHederValue)
+                            && request.headers.contains(HttpHeaders.Authorization, authHeaderValue)
                         ) {
                             respond(
                                 defaultObjectMapper.writeValueAsString(token),

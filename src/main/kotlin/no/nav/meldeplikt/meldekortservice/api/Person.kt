@@ -47,7 +47,7 @@ private val meldekortkontrollMapper = MeldekortkontrollMapper()
 private const val personGroup = "Person"
 
 @Group(personGroup)
-@Location("$PERSON_PATH/historiskemeldekort")
+@Location(HISTORISKE_MELDEKORT_PATH)
 @KtorExperimentalLocationsAPI
 data class HistoriskeMeldekortInput(val antallMeldeperioder: Int)
 
@@ -71,7 +71,7 @@ fun Routing.getHistoriskeMeldekort(arenaOrdsService: ArenaOrdsService) =
     }
 
 @Group(personGroup)
-@Location("$PERSON_PATH/meldekort")
+@Location(PERSON_MELDEKORT_PATH)
 @KtorExperimentalLocationsAPI
 class MeldekortInput
 
@@ -144,7 +144,7 @@ fun Routing.kontrollerMeldekort(kontrollService: KontrollService, dbService: DBS
     }
 
 @Group(personGroup)
-@Location("$PERSON_PATH/opprettJournalpost")
+@Location(OPPRETT_JOURNALPOST_PATH)
 @KtorExperimentalLocationsAPI
 class JournalpostInput
 
@@ -174,7 +174,7 @@ fun Routing.opprettJournalpost(
                 meldekortId.toLong()
             )
 
-            call.respond(status = HttpStatusCode.OK, message = "Journalpost opprettet")
+            call.respondText("Journalpost opprettet")
         } catch (e: Exception) {
             val errorMessage = ErrorMessage(
                 "Kan ikke opprette journalpost i dokumentarkiv med eksternReferanseId ${journalpost.eksternReferanseId} for meldekort med id $meldekortId"

@@ -33,13 +33,6 @@ ALTER TABLE kall_logg
 ALTER TABLE kall_logg
     ADD CONSTRAINT kall_retning_ck1 CHECK ( kall_retning IN ('INN', 'UT') );
 
--- Partisjonering
-ALTER TABLE kall_logg
-    MODIFY
-        PARTITION BY RANGE (tidspunkt)
-        INTERVAL (NUMTODSINTERVAL(1, 'DAY'))
-        (PARTITION kall_logg_data_p1 VALUES LESS THAN ( DATE '2022-04-01' ));
-
 -- Tabell og kolonnekommentarer
 COMMENT ON TABLE kall_logg IS 'Loggtabell for API-kall og Kafka hendelser.';
 
