@@ -93,7 +93,6 @@ class OutgoingCallLoggingPlugin(config: OCDLPConfig) {
 
         private fun buildRequest(coroutineContext: CoroutineContext, request: HttpRequest): String {
             return StringBuilder().apply {
-                appendLine("Sent request:")
                 appendLine("${request.method.value} ${request.url.protocol.name}://${request.url.hostWithPort}${request.url.fullPath}")
 
                 request.headers.forEach { header, values ->
@@ -141,7 +140,6 @@ class OutgoingCallLoggingPlugin(config: OCDLPConfig) {
 
         private fun buildResponse(response: HttpResponse, responseBody: String): String {
             return StringBuilder().apply {
-                appendLine("Received response:")
                 appendLine("${response.version} ${response.status.value} ${response.status.description}")
 
                 response.headers.forEach { header, values ->

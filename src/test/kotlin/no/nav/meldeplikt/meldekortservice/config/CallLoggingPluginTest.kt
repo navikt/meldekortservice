@@ -78,7 +78,6 @@ class CallLoggingPluginTest : TestBase() {
         val meldekortdetaljer = MeldekortdetaljerMapper.mapOrdsMeldekortTilMeldekortdetaljer(meldekort)
         val json = defaultObjectMapper.disable(SerializationFeature.INDENT_OUTPUT).writeValueAsString(meldekortdetaljer)
         val expectedInnRequest = "" +
-                "Received request:\n" +
                 "GET localhost:80$MELDEKORT_PATH?meldekortId=${id} HTTP/1.1\n" +
                 "Authorization: Bearer $token\n" +
                 "X-Request-ID: $callId\n" +
@@ -88,7 +87,6 @@ class CallLoggingPluginTest : TestBase() {
                 "\n" +
                 "\n"
         val expectedInnResponseStart = "" +
-                "Sent response:\n" +
                 "200 OK\n" +
                 "X-Request-ID: $callId\n"
         val expectedInnResponseEnd = "" +
@@ -98,7 +96,6 @@ class CallLoggingPluginTest : TestBase() {
                 "\n" +
                 "$json\n"
         val expectedUtRequest = "" +
-                "Sent request:\n" +
                 "GET https://dummyurl.nav.no:443/api/v1/meldeplikt/meldekort/detaljer?meldekortId=1\n" +
                 "Accept: [application/xml; charset=UTF-8,application/json]\n" +
                 "Authorization: Bearer $DUMMY_TOKEN\n" +
@@ -107,7 +104,6 @@ class CallLoggingPluginTest : TestBase() {
                 "\n" +
                 "EmptyContent\n"
         val expectedUtResponse = "" +
-                "Received response:\n" +
                 "HTTP/1.1 200 OK\n" +
                 "Content-Type: application/xml\n" +
                 "\n" +
@@ -286,7 +282,6 @@ class CallLoggingPluginTest : TestBase() {
         val dokarkivService = DokarkivService(httpClient)
 
         val expectedInnRequest = "" +
-                "Received request:\n" +
                 "POST localhost:80$OPPRETT_JOURNALPOST_PATH HTTP/1.1\n" +
                 "Authorization: Bearer $innToken\n" +
                 "X-Request-ID: $callId\n" +
@@ -297,7 +292,6 @@ class CallLoggingPluginTest : TestBase() {
                 "\n" +
                 "JOURNALPOST\n"
         val expectedInnResponseStart = "" +
-                "Sent response:\n" +
                 "200 OK\n" +
                 "X-Request-ID: $callId\n"
         val expectedInnResponseEnd = "" +
@@ -307,7 +301,6 @@ class CallLoggingPluginTest : TestBase() {
                 "\n" +
                 "Journalpost opprettet\n"
         val expectedStsUtRequest = "" +
-                "Sent request:\n" +
                 "POST ${env.stsNaisUrl}:443$STS_PATH?grant_type=client_credentials&scope=openid\n" +
                 "Authorization: $authHeaderValue\n" +
                 "X-Request-ID: $callId\n" +
@@ -316,7 +309,6 @@ class CallLoggingPluginTest : TestBase() {
                 "\n" +
                 "EmptyContent\n"
         val expectedStsUtResponse = "" +
-                "Received response:\n" +
                 "HTTP/1.1 200 OK\n" +
                 "Content-Type: application/json\n" +
                 "\n" +
@@ -326,7 +318,6 @@ class CallLoggingPluginTest : TestBase() {
                 "  \"expires_in\" : 3600\n" +
                 "}\n"
         val expectedUtRequest = "" +
-                "Sent request:\n" +
                 "POST ${env.dokarkivUrl}:443$JOURNALPOST_PATH?forsoekFerdigstill=true\n" +
                 "Authorization: Bearer $aceessTokenContent\n" +
                 "X-Request-ID: $callId\n" +
@@ -335,7 +326,6 @@ class CallLoggingPluginTest : TestBase() {
                 "\n" +
                 "JOURNALPOST\n"
         val expectedUtResponse = "" +
-                "Received response:\n" +
                 "HTTP/1.1 200 OK\n" +
                 "Content-Type: application/json\n" +
                 "\n" +

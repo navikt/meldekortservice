@@ -64,7 +64,7 @@ class DokarkivServiceTest {
                 journalpostFile,
                 Journalpost::class.java
             )
-            val journalpostRequest = "Sent request:\n" +
+            val journalpostRequest = "" +
                     "POST ${env.dokarkivUrl}:443$JOURNALPOST_PATH?forsoekFerdigstill=true\n" +
                     "Authorization: Bearer dG9rZW4=\n" +
                     "X-Request-ID: $callId\n" +
@@ -81,7 +81,7 @@ class DokarkivServiceTest {
                     DokumentInfo(1234567891)
                 )
             )
-            val journalpostResponse = "Received response:\n" +
+            val journalpostResponse = "" +
                     "HTTP/1.1 ${status.value} ${status.description}\n" +
                     "Content-Type: application/json\n" +
                     "\n" +
@@ -91,7 +91,7 @@ class DokarkivServiceTest {
             val base = "${env.srvMeldekortservice.username}:${env.srvMeldekortservice.password}"
             val authHeaderValue = "Basic ${Base64.getEncoder().encodeToString(base.toByteArray())}"
             val token = AccessToken("dG9rZW4=", "Bearer", 3600)
-            val tokenRequest = "Sent request:\n" +
+            val tokenRequest = "" +
                     "POST ${env.stsNaisUrl}:443$STS_PATH?grant_type=client_credentials&scope=openid\n" +
                     "Authorization: $authHeaderValue\n" +
                     "X-Request-ID: $callId\n" +
@@ -99,7 +99,7 @@ class DokarkivServiceTest {
                     "Accept-Charset: UTF-8\n" +
                     "\n" +
                     "EmptyContent\n"
-            val tokenResponse = "Received response:\n" +
+            val tokenResponse = "" +
                     "HTTP/1.1 200 OK\n" +
                     "Content-Type: application/json\n" +
                     "\n" +
