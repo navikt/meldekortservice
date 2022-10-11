@@ -155,11 +155,7 @@ fun Connection.lagreKallLogg(kallLogg: KallLogg): Long {
             if (productName == "PostgreSQL" || productName == "H2") {
                 requestClob = SerialClob(kallLogg.request.toCharArray())
 
-                responseClob = if (kallLogg.response != null) {
-                    SerialClob(kallLogg.response.toCharArray())
-                } else {
-                    null
-                }
+                responseClob = SerialClob(kallLogg.response.toCharArray())
 
                 logginfoClob = SerialClob(kallLogg.logginfo.toCharArray())
             } else {
@@ -169,15 +165,11 @@ fun Connection.lagreKallLogg(kallLogg: KallLogg): Long {
                 requestWriter.flush()
                 requestWriter.close()
 
-                if (kallLogg.response != null) {
-                    responseClob = this.createClob()
-                    val responseWriter: Writer = responseClob.setCharacterStream(1L)
-                    responseWriter.write(kallLogg.response)
-                    responseWriter.flush()
-                    responseWriter.close()
-                } else {
-                    responseClob = null
-                }
+                responseClob = this.createClob()
+                val responseWriter: Writer = responseClob.setCharacterStream(1L)
+                responseWriter.write(kallLogg.response)
+                responseWriter.flush()
+                responseWriter.close()
 
 
                 logginfoClob = this.createClob()
