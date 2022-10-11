@@ -1,6 +1,5 @@
 dashEnv: ""
 dbEnv: ""
-slackAlertChannel: team-meldeplikt-alerts
 vaultKvEnv: prod/fss
 vaultServiceuserEnv: prod
 ingresses:
