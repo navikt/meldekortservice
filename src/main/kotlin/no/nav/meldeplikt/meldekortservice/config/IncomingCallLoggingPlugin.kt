@@ -35,7 +35,6 @@ val IncomingCallLoggingPlugin: ApplicationPlugin<ICDLPConfig> =
             val requestData = StringBuilder().apply {
                 val request = call.request
 
-                appendLine("Received request:")
                 appendLine("${request.httpMethod.value} ${request.host()}:${request.port()}${request.uri} ${request.httpVersion}")
 
                 request.headers.forEach { header, values ->
@@ -93,7 +92,6 @@ val IncomingCallLoggingPlugin: ApplicationPlugin<ICDLPConfig> =
             val responseData = StringBuilder().apply {
                 val response = call.response
 
-                appendLine("Sent response:")
                 appendLine("${response.status()?.value} ${response.status()?.description}")
 
                 response.headers.allValues().forEach { header, values ->
