@@ -18,13 +18,12 @@ CREATE TABLE kall_logg
     logginfo       TEXT
 
 );
---     PARTITION BY RANGE (tidspunkt)
---     INTERVAL (NUMTODSINTERVAL(1, 'day'))
--- (
---     PARTITION P_INITIAL VALUES LESS THAN (TO_DATE('2022-10-01', 'YYYY-MM-DD'))
--- );
--- Det er mulig å ha partisjoner i PostgreSQL, men da må man ha egne migrasjoner for H2
--- Det er ikke så viktig å ha partisjoner i PosgreSQL siden den brukes kun når appen kjører lokalt
+-- Det er mulig å ha partisjoner i PostgreSQL:
+-- PARTITION BY RANGE (tidspunkt)
+--
+-- Men alt må gjøres manuelt som ikke egner seg for prod.
+-- Men dette er ikke så viktig å ha partisjoner i PosgreSQL siden den brukes kun når appen kjører lokalt
+--
 
 -- Indekser
 CREATE INDEX kalo_1 ON kall_logg (operation, kall_retning);

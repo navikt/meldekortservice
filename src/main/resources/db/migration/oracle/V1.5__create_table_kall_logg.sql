@@ -24,7 +24,6 @@ CREATE TABLE kall_logg
     PARTITION P_INITIAL VALUES LESS THAN (TO_DATE('2022-10-01', 'YYYY-MM-DD'))
 );
 -- INTERVAL PARTITION skal oprette partisjoner automatisk når det er nødvendig
---
 
 -- Indekser
 CREATE INDEX kalo_1 ON kall_logg (operation, kall_retning);
