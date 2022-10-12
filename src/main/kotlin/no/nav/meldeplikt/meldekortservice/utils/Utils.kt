@@ -32,7 +32,9 @@ import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Contact
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Information
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Swagger
+import org.apache.http.impl.conn.SystemDefaultRoutePlanner
 import org.slf4j.MDC
+import java.net.ProxySelector
 import java.util.*
 
 internal const val CACHE_ANTALL_MINUTTER = 55
@@ -186,6 +188,9 @@ fun HttpClientConfig<*>.defaultHttpClientConfig() {
 fun defaultHttpClient(): HttpClient {
     return HttpClient(Apache) {
         defaultHttpClientConfig()
+        engine {
+            customizeClient { setRoutePlanner(SystemDefaultRoutePlanner(ProxySelector.getDefault())) }
+        }
     }
 }
 

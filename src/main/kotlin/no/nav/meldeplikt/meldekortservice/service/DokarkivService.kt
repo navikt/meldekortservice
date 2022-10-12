@@ -2,6 +2,7 @@ package no.nav.meldeplikt.meldekortservice.service
 
 import io.ktor.client.*
 import io.ktor.client.call.*
+import io.ktor.client.engine.apache.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
@@ -13,7 +14,9 @@ import no.nav.meldeplikt.meldekortservice.utils.*
 import java.util.*
 
 class DokarkivService(
-    private val httpClient: HttpClient = defaultHttpClient(),
+    private val httpClient: HttpClient = HttpClient(Apache) {
+        defaultHttpClientConfig()
+    },
     private val env: Environment = Environment()
 ) {
 

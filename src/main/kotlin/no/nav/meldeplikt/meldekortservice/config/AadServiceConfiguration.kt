@@ -6,10 +6,8 @@ import io.ktor.client.call.*
 import io.ktor.client.engine.apache.*
 import io.ktor.client.request.*
 import kotlinx.coroutines.runBlocking
-import no.nav.meldeplikt.meldekortservice.utils.defaultHttpClientConfig
+import no.nav.meldeplikt.meldekortservice.utils.defaultHttpClient
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
-import org.apache.http.impl.conn.SystemDefaultRoutePlanner
-import java.net.ProxySelector
 
 data class AadServiceConfiguration(
     val azureAd: AzureAd = AzureAd()
@@ -21,14 +19,7 @@ data class AadServiceConfiguration(
         val authorityEndpoint: String = Environment().oauthEndpoint.removeSuffix("/"),
         val openIdConfiguration: AzureAdOpenIdConfiguration = if (isCurrentlyRunningOnNais()) {
             runBlocking {
-                val httpClient = HttpClient(Apache) {
-                    defaultHttpClientConfig()
-                    engine {
-                        customizeClient { setRoutePlanner(SystemDefaultRoutePlanner(ProxySelector.getDefault())) }
-                    }
-                }
-
-                httpClient.get("$authorityEndpoint/$tenant/v2.0/.well-known/openid-configuration").body()
+                defaultHttpClient().get("$authorityEndpoint/$tenant/v2.0/.well-known/openid-configuration").body()
             }
         } else {
             AzureAdOpenIdConfiguration("test", "test", "test", "test")
