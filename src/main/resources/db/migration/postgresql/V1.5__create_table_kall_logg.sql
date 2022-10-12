@@ -18,10 +18,10 @@ CREATE TABLE kall_logg
     logginfo       TEXT
 
 );
--- Det er mulig å ha partisjoner i PostgreSQL:
+-- Det er mulig å ha partisjonerte tabeller i PostgreSQL:
 -- PARTITION BY RANGE (tidspunkt)
 --
--- Men alt må gjøres manuelt som ikke egner seg for prod.
+-- Men selve partisjonene må opprettes manuelt. Dette er ikke egnet for prod.
 -- Men dette er ikke så viktig å ha partisjoner i PosgreSQL siden den brukes kun når appen kjører lokalt
 --
 

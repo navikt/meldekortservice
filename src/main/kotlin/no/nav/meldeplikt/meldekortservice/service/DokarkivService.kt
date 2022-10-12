@@ -16,6 +16,7 @@ import java.util.*
 class DokarkivService(
     private val httpClient: HttpClient = HttpClient(Apache) {
         defaultHttpClientConfig()
+        // Fungerer ikke med proxy
     },
     private val env: Environment = Environment()
 ) {

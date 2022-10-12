@@ -1,9 +1,7 @@
 package no.nav.meldeplikt.meldekortservice.config
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import io.ktor.client.*
 import io.ktor.client.call.*
-import io.ktor.client.engine.apache.*
 import io.ktor.client.request.*
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.utils.defaultHttpClient
