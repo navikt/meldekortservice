@@ -83,6 +83,7 @@ class CallLoggingPluginTest : TestBase() {
                 "X-Request-ID: $callId\n" +
                 "Accept-Charset: UTF-8\n" +
                 "Accept: */*\n" +
+                "User-Agent: Ktor client\n" +
                 "Content-Length: 0\n" +
                 "\n" +
                 "\n"
@@ -90,7 +91,6 @@ class CallLoggingPluginTest : TestBase() {
                 "200 OK\n" +
                 "X-Request-ID: $callId\n"
         val expectedInnResponseEnd = "" +
-                "Server: Ktor/2.0.3\n" +
                 "Transfer-Encoding: chunked\n" +
                 "Content-Type: application/json; charset=UTF-8\n" +
                 "\n" +
@@ -287,15 +287,15 @@ class CallLoggingPluginTest : TestBase() {
                 "X-Request-ID: $callId\n" +
                 "Accept-Charset: UTF-8\n" +
                 "Accept: */*\n" +
-                "Content-Length: ${defaultObjectMapper.writeValueAsString(journalpost).length}\n" +
+                "User-Agent: Ktor client\n" +
                 "Content-Type: application/json\n" +
+                "Content-Length: ${defaultObjectMapper.writeValueAsString(journalpost).length}\n" +
                 "\n" +
                 "JOURNALPOST\n"
         val expectedInnResponseStart = "" +
                 "200 OK\n" +
                 "X-Request-ID: $callId\n"
         val expectedInnResponseEnd = "" +
-                "Server: Ktor/2.0.3\n" +
                 "Content-Length: 21\n" +
                 "Content-Type: text/plain; charset=UTF-8\n" +
                 "\n" +

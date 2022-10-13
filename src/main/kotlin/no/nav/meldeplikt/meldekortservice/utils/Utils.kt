@@ -185,13 +185,18 @@ fun HttpClientConfig<*>.defaultHttpClientConfig() {
     expectSuccess = false
 }
 
+lateinit var httpClient: HttpClient
 fun defaultHttpClient(): HttpClient {
-    return HttpClient(Apache) {
-        defaultHttpClientConfig()
-        engine {
-            customizeClient { setRoutePlanner(SystemDefaultRoutePlanner(ProxySelector.getDefault())) }
+    if(!::httpClient.isInitialized) {
+        httpClient = HttpClient(Apache) {
+            defaultHttpClientConfig()
+            engine {
+                customizeClient { setRoutePlanner(SystemDefaultRoutePlanner(ProxySelector.getDefault())) }
+            }
         }
     }
+
+    return httpClient
 }
 
 fun generateCallId(): String {

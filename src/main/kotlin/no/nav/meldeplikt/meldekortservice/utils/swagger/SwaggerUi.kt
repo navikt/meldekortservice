@@ -18,7 +18,7 @@ class SwaggerUi {
             in notFound -> return
             null -> return
             else -> {
-                val resource = this::class.java.getResource("/META-INF/resources/webjars/swagger-ui/4.11.1/$filename")
+                val resource = this::class.java.getResource("/META-INF/resources/webjars/swagger-ui/4.14.2/$filename")
                 if (resource == null) {
                     notFound.add(filename)
                     return
@@ -29,7 +29,7 @@ class SwaggerUi {
                 // Jeg kan ikke finne ut hvordan queryConfigEnabled=true kan settes siden vi bruker allerede ferdige JS-filer fra prekompilerte webjars
                 // Derfor må vi endre configen "post factum" i JS, dvs. erstatte dummy Petstore URL med vår swagger.json
                 if (filename == "swagger-initializer.js") {
-                    val originalBody = resource.readText();
+                    val originalBody = resource.readText()
                     val newBody = originalBody.replace(
                         "https://petstore.swagger.io/v2/swagger.json",
                         "swagger.json"
