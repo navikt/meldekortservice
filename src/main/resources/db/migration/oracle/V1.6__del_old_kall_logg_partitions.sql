@@ -1,4 +1,5 @@
-CREATE OR REPLACE PROCEDURE del_old_kall_logg_partitions IS
+CREATE OR REPLACE PROCEDURE del_old_kall_logg_partitions
+IS
     CURSOR kall_logg_partitions IS
         SELECT partition_name, high_value
         FROM USER_TAB_PARTITIONS
@@ -11,7 +12,7 @@ BEGIN
             END IF;
         END LOOP;
 END;
-
+/
 BEGIN
     DBMS_SCHEDULER.CREATE_JOB (
             job_name           =>  'delete_old_kall_logg_partitions',
