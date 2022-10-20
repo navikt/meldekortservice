@@ -9,7 +9,6 @@ import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.mapper.KontrollertTypeMapper
 import no.nav.meldeplikt.meldekortservice.model.MeldekortKontrollertType
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.Meldekortkontroll
-import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.response.KontrollResponse
 import no.nav.meldeplikt.meldekortservice.utils.KONTROLL_KONTROLL
 import no.nav.meldeplikt.meldekortservice.utils.defaultHttpClient
 
@@ -19,12 +18,18 @@ class KontrollService(
     private val aadService: AadService = AadService(AadServiceConfiguration()),
     private val kontrollClient: HttpClient = defaultHttpClient()
 ) {
+
     suspend fun kontroller(meldekort: Meldekortkontroll): MeldekortKontrollertType {
-        val message: KontrollResponse = kontrollClient.post("${env.meldekortKontrollUrl}$KONTROLL_KONTROLL") {
+        val response = kontrollClient.post("${env.meldekortKontrollUrl}$KONTROLL_KONTROLL") {
             contentType(ContentType.Application.Json)
             header("Authorization", "Bearer " + aadService.fetchAadToken())
             setBody(meldekort)
-        }.body()
-        return responseMapper.mapKontrollResponseToKontrollertType(message)
+        }
+
+        if (response.status.value != 200) {
+            throw Exception("Meldekortkontroll returnerte status " + response.status.value)
+        }
+
+        return responseMapper.mapKontrollResponseToKontrollertType(response.body())
     }
 }
