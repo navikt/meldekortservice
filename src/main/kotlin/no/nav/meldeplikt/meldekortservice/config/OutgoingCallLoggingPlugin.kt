@@ -24,24 +24,23 @@ class OutgoingCallLoggingPlugin(val dbService: DBService) {
 
     fun intercept(httpClient: HttpClient) {
         httpClient.plugin(HttpSend).intercept { requestBuilder ->
+            // Prepare
+            val callId = getCallId()
+            val startTime = LocalDateTime.now()
+            val kallTid = Instant.now().toEpochMilli()
+
+            requestBuilder.headers.append(HttpHeaders.XRequestId, callId)
+
+            // Execute call
+            val originalCall = execute(requestBuilder)
+
+            // Save data
+            val request = originalCall.request
+            val response = originalCall.response
+
+            val responseBody = response.bodyAsText(Charsets.UTF_8)
+
             try {
-                // Prepare
-                val callId = getCallId()
-                val startTime = LocalDateTime.now()
-                val kallTid = Instant.now().toEpochMilli()
-
-                requestBuilder.headers.append(HttpHeaders.XRequestId, callId)
-
-                // Execute call
-                val originalCall = execute(requestBuilder)
-
-                // Save data
-                val request = originalCall.request
-                val response = originalCall.response
-
-                val responseBody = response.bodyAsText(Charsets.UTF_8)
-
-
                 defaultDbService.lagreKallLogg(
                     KallLogg(
                         korrelasjonId = callId,
@@ -52,18 +51,17 @@ class OutgoingCallLoggingPlugin(val dbService: DBService) {
                         operation = request.url.encodedPath,
                         status = response.status.value,
                         kallTid = Instant.now().toEpochMilli() - kallTid,
-                        request = buildRequest(originalCall.coroutineContext, request),
+                        request = buildRequest(requestBuilder.executionContext, request),
                         response = buildResponse(response, responseBody),
                         logginfo = ""
                     )
                 )
-
-                // Response content can be read only once. Wrap the call with the content we have read
-                originalCall.wrapWithContent(ByteReadChannel(responseBody.toByteArray()))
             } catch (e: Exception) {
                 defaultLog.error("Kunne ikke lagre kall logg", e)
-                execute(requestBuilder)
             }
+
+            // Response content can be read only once. Wrap the call with the content we have read
+            originalCall.wrapWithContent(ByteReadChannel(responseBody.toByteArray()))
         }
     }
 
