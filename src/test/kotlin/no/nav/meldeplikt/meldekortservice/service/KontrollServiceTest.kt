@@ -21,7 +21,7 @@ import kotlin.test.assertEquals
 
 class KontrollServiceTest {
 
-    val meldekortkontroll = Meldekortkontroll(
+    private val meldekortkontroll = Meldekortkontroll(
         meldekortId = 123,
         fnr = "11111111111",
         personId = 335,
@@ -77,7 +77,7 @@ class KontrollServiceTest {
             }
 
             engine {
-                addHandler { request ->
+                addHandler {
                     respond(
                         "",
                         HttpStatusCode.InternalServerError,

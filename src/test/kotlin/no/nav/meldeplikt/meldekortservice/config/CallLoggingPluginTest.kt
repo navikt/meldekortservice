@@ -99,8 +99,8 @@ class CallLoggingPluginTest : TestBase() {
                 "GET https://dummyurl.nav.no:443/api/v1/meldeplikt/meldekort/detaljer?meldekortId=1\n" +
                 "Accept: [application/xml; charset=UTF-8,application/json]\n" +
                 "Authorization: Bearer $DUMMY_TOKEN\n" +
-                "X-Request-ID: $callId\n" +
                 "Accept-Charset: UTF-8\n" +
+                "X-Request-ID: $callId\n" +
                 "\n" +
                 "EmptyContent\n"
         val expectedUtResponse = "" +
@@ -181,11 +181,83 @@ class CallLoggingPluginTest : TestBase() {
     }
 
     @Test
-    fun `skal ikke lagre request og response content for opprettJournalpost`() = testApplication {
+    fun `skal lagre request og response naar feil`() = testApplication {
         //
         // Prepare
         //
         database = H2Database("IncomingCallLoggingPluginTest2")
+        dbService = DBService(database)
+
+        defaultDbService = dbService
+        val flywayConfig = mockk<Flyway>()
+        every { flywayConfig.migrate() } returns MigrateResult("", "", "")
+
+        val callId = getCallId()
+
+        val expectedRequest = "POST https://dummyurl.nav.no:443/api/v1/kontroll\n" +
+                "Authorization: Bearer $DUMMY_TOKEN\n" +
+                "Accept: application/json\n" +
+                "Accept-Charset: UTF-8\n" +
+                "X-Request-ID: $callId\n" +
+                "\n"
+        val expectedResponse = "HTTP/1.1 500 Internal Server Error\n" +
+                "Content-Type: application/json\n" +
+                "\n" +
+                "{\"status\": 500}\n"
+
+        environment {
+            config = setOidcConfig()
+        }
+
+        val kontrollClient = HttpClient(MockEngine) {
+            defaultHttpClientConfig()
+
+            engine {
+                addHandler {
+                    respond(
+                        "{\"status\": 500}",
+                        HttpStatusCode.InternalServerError,
+                        headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    )
+                }
+            }
+        }
+
+        //
+        // Run
+        //
+        kontrollClient.post("${env.meldekortKontrollUrl}$KONTROLL_KONTROLL") {
+            contentType(ContentType.Application.Json)
+            header("Authorization", "Bearer $DUMMY_TOKEN")
+            setBody("")
+        }
+
+        //
+        // Check
+        //
+        val kallLoggListe = database.dbQuery { hentAlleKallLogg() }
+        assertEquals(1, kallLoggListe.size)
+
+        val kall1 = kallLoggListe[0]
+        assertEquals(callId, kall1.korrelasjonId)
+        assertEquals("REST", kall1.type)
+        assertEquals("UT", kall1.kallRetning)
+        assertEquals("POST", kall1.method)
+        assertEquals(KONTROLL_KONTROLL, kall1.operation)
+        assertEquals(500, kall1.status)
+        assertEquals(expectedRequest, kall1.request)
+        assertEquals(expectedResponse, kall1.response)
+        assertEquals("", kall1.logginfo)
+
+        database.closeConnection()
+    }
+
+    @Test
+    fun `skal ikke lagre request og response content for opprettJournalpost`() = testApplication {
+        //
+        // Prepare
+        //
+        database = H2Database("IncomingCallLoggingPluginTest3")
         dbService = DBService(database)
         defaultDbService = dbService
         val flywayConfig = mockk<Flyway>()
@@ -303,9 +375,9 @@ class CallLoggingPluginTest : TestBase() {
         val expectedStsUtRequest = "" +
                 "POST ${env.stsNaisUrl}:443$STS_PATH?grant_type=client_credentials&scope=openid\n" +
                 "Authorization: $authHeaderValue\n" +
-                "X-Request-ID: $callId\n" +
                 "Accept: application/json\n" +
                 "Accept-Charset: UTF-8\n" +
+                "X-Request-ID: $callId\n" +
                 "\n" +
                 "EmptyContent\n"
         val expectedStsUtResponse = "" +
@@ -320,9 +392,9 @@ class CallLoggingPluginTest : TestBase() {
         val expectedUtRequest = "" +
                 "POST ${env.dokarkivUrl}:443$JOURNALPOST_PATH?forsoekFerdigstill=true\n" +
                 "Authorization: Bearer $aceessTokenContent\n" +
-                "X-Request-ID: $callId\n" +
                 "Accept: application/json\n" +
                 "Accept-Charset: UTF-8\n" +
+                "X-Request-ID: $callId\n" +
                 "\n" +
                 "JOURNALPOST\n"
         val expectedUtResponse = "" +

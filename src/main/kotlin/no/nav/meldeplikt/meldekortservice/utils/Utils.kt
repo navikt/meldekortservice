@@ -179,8 +179,8 @@ fun HttpClientConfig<*>.defaultHttpClientConfig() {
         requestTimeoutMillis = 10000 // required for an HTTP call: from sending a request to receiving a response
         socketTimeoutMillis = 10000 //  of inactivity between two data packets when exchanging data with a server
     }
-    install(OutgoingCallLoggingPlugin) {
-        dbs = defaultDbService
+    install("OutgoingCallInterceptor") {
+        OutgoingCallLoggingPlugin(defaultDbService).intercept(this)
     }
     expectSuccess = false
 }

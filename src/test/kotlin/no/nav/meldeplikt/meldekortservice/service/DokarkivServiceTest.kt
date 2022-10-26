@@ -67,9 +67,9 @@ class DokarkivServiceTest {
             val journalpostRequest = "" +
                     "POST ${env.dokarkivUrl}:443$JOURNALPOST_PATH?forsoekFerdigstill=true\n" +
                     "Authorization: Bearer dG9rZW4=\n" +
-                    "X-Request-ID: $callId\n" +
                     "Accept: application/json\n" +
                     "Accept-Charset: UTF-8\n" +
+                    "X-Request-ID: $callId\n" +
                     "\n" +
                     "JOURNALPOST\n"
             val jpRespObject = JournalpostResponse(
@@ -94,9 +94,9 @@ class DokarkivServiceTest {
             val tokenRequest = "" +
                     "POST ${env.stsNaisUrl}:443$STS_PATH?grant_type=client_credentials&scope=openid\n" +
                     "Authorization: $authHeaderValue\n" +
-                    "X-Request-ID: $callId\n" +
                     "Accept: application/json\n" +
                     "Accept-Charset: UTF-8\n" +
+                    "X-Request-ID: $callId\n" +
                     "\n" +
                     "EmptyContent\n"
             val tokenResponse = "" +
