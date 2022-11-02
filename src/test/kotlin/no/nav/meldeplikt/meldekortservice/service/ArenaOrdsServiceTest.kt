@@ -32,9 +32,17 @@ class ArenaOrdsServiceTest {
         val client = HttpClient(MockEngine) {
             engine {
                 addHandler { request ->
-                    if (request.url.encodedPath.contains("/api/v1/meldeplikt/meldekort")
+                    if (request.url.encodedPath.contains("/api/v2/meldeplikt/meldekort")
                         && request.url.host.contains("dummyurl.nav.no")
                     ) {
+                        assertEquals(HttpMethod.Get, request.method)
+                        assertEquals("Bearer $DUMMY_TOKEN", request.headers["Authorization"])
+                        assertEquals(fnr, request.headers["fnr"])
+                        assertEquals(
+                            "https://dummyurl.nav.no/api/v2/meldeplikt/meldekort",
+                            request.url.toString()
+                        )
+
                         respond(
                             defaultObjectMapper.writeValueAsString(response),
                             headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
@@ -61,7 +69,7 @@ class ArenaOrdsServiceTest {
         val client = HttpClient(MockEngine) {
             engine {
                 addHandler { request ->
-                    if (request.url.encodedPath.contains("/api/v1/meldeplikt/meldekort/12345678")
+                    if (request.url.encodedPath.contains("/api/v2/meldeplikt/meldekort/12345678")
                         && request.url.host.contains("dummyurl.nav.no")
                     ) {
                         respond(
@@ -91,8 +99,9 @@ class ArenaOrdsServiceTest {
                 addHandler { request ->
                     assertEquals(HttpMethod.Get, request.method)
                     assertEquals("Bearer $DUMMY_TOKEN", request.headers["Authorization"])
+                    assertEquals(fnr, request.headers["fnr"])
                     assertEquals(
-                        "https://dummyurl.nav.no/api/v1/meldeplikt/meldekort/historiske?fnr=1234&antMeldeperioder=10",
+                        "https://dummyurl.nav.no/api/v2/meldeplikt/meldekort/historiske?antMeldeperioder=10",
                         request.url.toString()
                     )
 
@@ -105,7 +114,7 @@ class ArenaOrdsServiceTest {
         val arenaOrdsService = ArenaOrdsService(client)
 
         runBlocking {
-            val actualResponse = arenaOrdsService.hentHistoriskeMeldekort("1234", 10)
+            val actualResponse = arenaOrdsService.hentHistoriskeMeldekort(fnr, 10)
 
             assertEquals(1, actualResponse.personId)
         }
@@ -141,7 +150,7 @@ class ArenaOrdsServiceTest {
                     assertEquals(HttpMethod.Get, request.method)
                     assertEquals("Bearer $DUMMY_TOKEN", request.headers["Authorization"])
                     assertEquals(
-                        "https://dummyurl.nav.no/api/v1/meldeplikt/meldekort/detaljer?meldekortId=1",
+                        "https://dummyurl.nav.no/api/v2/meldeplikt/meldekort/detaljer?meldekortId=1",
                         request.url.toString()
                     )
 
@@ -169,7 +178,7 @@ class ArenaOrdsServiceTest {
                     assertEquals("Bearer $DUMMY_TOKEN", request.headers["Authorization"])
                     assertEquals("123", request.headers["meldekortId"])
                     assertEquals(
-                        "https://dummyurl.nav.no/api/v1/meldeplikt/meldekort/kopi",
+                        "https://dummyurl.nav.no/api/v2/meldeplikt/meldekort/kopi",
                         request.url.toString()
                     )
 
@@ -198,7 +207,7 @@ class ArenaOrdsServiceTest {
                     assertEquals("Bearer $DUMMY_TOKEN", request.headers["Authorization"])
                     assertEquals("123", request.headers["meldekortId"])
                     assertEquals(
-                        "https://dummyurl.nav.no/api/v1/meldeplikt/meldekort/kopi",
+                        "https://dummyurl.nav.no/api/v2/meldeplikt/meldekort/kopi",
                         request.url.toString()
                     )
 
