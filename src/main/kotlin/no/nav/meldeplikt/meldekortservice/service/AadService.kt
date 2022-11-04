@@ -9,7 +9,8 @@ import no.nav.meldeplikt.meldekortservice.model.AccessToken
 import no.nav.meldeplikt.meldekortservice.utils.defaultHttpClient
 import no.nav.meldeplikt.meldekortservice.utils.defaultLog
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
-import java.time.LocalDateTime
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 
 class AadService(
     private val config: AadServiceConfiguration
@@ -17,7 +18,7 @@ class AadService(
     private val env = Environment()
     private val cacheSafetyMarginSeconds = 100
     private var aadToken: String = ""
-    private var aadTokenExpires: LocalDateTime = LocalDateTime.now()
+    private var aadTokenExpires = Instant.now() // UTC, no DST
 
     private val meldekortKontrollResource: Resource = Resource(
         ClientId(env.meldekortKontrollClientid),
@@ -29,16 +30,16 @@ class AadService(
      * som returneres.
      */
     suspend fun fetchAadToken(): String {
-        if (aadTokenExpires.isBefore(LocalDateTime.now())) {
+        if (aadTokenExpires.isBefore(Instant.now())) {
             if (isCurrentlyRunningOnNais()) {
                 defaultLog.debug("Henter nytt token fra AAD")
                 val token = getAccessTokenForResource(meldekortKontrollResource)
                 aadToken = token.accessToken!!
-                aadTokenExpires = LocalDateTime.now().plusSeconds((token.expiresIn?.toLong() ?: 0) - cacheSafetyMarginSeconds)
+                aadTokenExpires = Instant.now().plusSeconds((token.expiresIn?.toLong() ?: 0) - cacheSafetyMarginSeconds)
             } else {
                 defaultLog.info("Henter ikke token da appen kjører lokalt")
                 aadToken = "Lokalt"
-                aadTokenExpires = LocalDateTime.now().plusYears(1L)
+                aadTokenExpires = Instant.now().plus(1, ChronoUnit.YEARS)
             }
         }
         return aadToken
