@@ -26,6 +26,7 @@ class KontrollertTypeMapper {
             val item = ArsakskodeType()
             item.kode = it.kode
             item.tekst = it.tekst
+            item.params = it.params
             uttrekk.arsakskode.add(item)
         }
         return uttrekk
