@@ -85,7 +85,8 @@ class ArenaOrdsServiceTest {
 
     @Test
     fun `test hent historiskeMeldekort returns OK status`() {
-        val xmlString = """<Person><personId>1</personId><Etternavn>test</Etternavn><Fornavn>test</Fornavn><Maalformkode>test</Maalformkode><Meldeform>test</Meldeform><meldekortListe/><antallGjenstaaendeFeriedager>10</antallGjenstaaendeFeriedager><fravaerListe/></Person>"""
+        val xmlString =
+            """<Person><personId>1</personId><Etternavn>test</Etternavn><Fornavn>test</Fornavn><Maalformkode>test</Maalformkode><Meldeform>test</Meldeform><meldekortListe/><antallGjenstaaendeFeriedager>10</antallGjenstaaendeFeriedager><fravaerListe/></Person>"""
         val client = HttpClient(MockEngine) {
             engine {
                 addHandler { request ->
@@ -216,4 +217,62 @@ class ArenaOrdsServiceTest {
             assertEquals(0, actualResponse)
         }
     }
+
+    @Test
+    fun `test hente lesemodus returns OK status`() {
+        val response = OrdsStringResponse(HttpStatusCode.OK, "test")
+        val client = HttpClient(MockEngine) {
+            engine {
+                addHandler { request ->
+                    if (request.url.encodedPath.contains("/api/v1/app/lesemodus")
+                        && request.url.host.contains("dummyurl.nav.no")
+                    ) {
+                        respond(
+                            defaultObjectMapper.writeValueAsString(response),
+                            headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                        )
+                    } else {
+                        respondError(HttpStatusCode.BadRequest)
+                    }
+                }
+            }
+        }
+        val arenaOrdsService = ArenaOrdsService(client)
+
+        runBlocking {
+            val actualResponse = arenaOrdsService.hentLesemodus()
+            val ordsResponse: OrdsStringResponse = defaultObjectMapper.readValue(actualResponse.content)
+
+            assertEquals(HttpStatusCode.OK, actualResponse.status)
+            assertEquals(response.content, ordsResponse.content)
+        }
+    }
+
+    @Test
+    fun `test hente lesemodus throws Exception`() {
+        val client = HttpClient(MockEngine) {
+            engine {
+                addHandler { request ->
+                    if (request.url.encodedPath.contains("/api/v1/app/lesemodus")
+                        && request.url.host.contains("dummyurl.nav.no")
+                    ) {
+                        respond(
+                            "",
+                            HttpStatusCode.InternalServerError
+                        )
+                    } else {
+                        respondError(HttpStatusCode.BadRequest)
+                    }
+                }
+            }
+        }
+        val arenaOrdsService = ArenaOrdsService(client)
+        val exception = assertThrows<OrdsException> {
+            runBlocking {
+                arenaOrdsService.hentLesemodus()
+            }
+        }
+        assertEquals("Kunne ikke hente lesemodus fra Arena Ords.", exception.localizedMessage)
+    }
+
 }

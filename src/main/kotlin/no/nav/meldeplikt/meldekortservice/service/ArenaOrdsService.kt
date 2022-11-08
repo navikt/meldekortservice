@@ -76,6 +76,21 @@ class ArenaOrdsService(
         return 0
     }
 
+    suspend fun hentLesemodus(): OrdsStringResponse {
+        val execResult: Result<HttpResponse> = runCatching {
+            ordsClient.request("${env.ordsUrl}$ARENA_ORDS_HENT_LESEMODUS") {
+                setupOrdsRequest()
+            }
+        }
+
+        val lesemodus = execResult.getOrNull()
+        if (execResult.isFailure || !HTTP_STATUS_CODES_2XX.contains(lesemodus!!.status.value)) {
+            throw OrdsException("Kunne ikke hente lesemodus fra Arena Ords.")
+        }
+
+        return OrdsStringResponse(lesemodus.status, lesemodus.body())
+    }
+
     private fun HttpRequestBuilder.setupOrdsRequest(meldekortId: Long? = null) {
         headers.append("Accept", "application/xml; charset=UTF-8")
         headers.append("Authorization", "Bearer ${hentToken().accessToken}")
