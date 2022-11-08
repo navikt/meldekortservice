@@ -32,16 +32,10 @@ class ArenaOrdsServiceTest {
         val client = HttpClient(MockEngine) {
             engine {
                 addHandler { request ->
-                    if (request.url.encodedPath.contains("/api/v2/meldeplikt/meldekort")
-                        && request.url.host.contains("dummyurl.nav.no")
-                    ) {
+                    if (request.url.toString() == "https://dummyurl.nav.no/api/v2/meldeplikt/meldekort") {
                         assertEquals(HttpMethod.Get, request.method)
                         assertEquals("Bearer $DUMMY_TOKEN", request.headers["Authorization"])
                         assertEquals(fnr, request.headers["fnr"])
-                        assertEquals(
-                            "https://dummyurl.nav.no/api/v2/meldeplikt/meldekort",
-                            request.url.toString()
-                        )
 
                         respond(
                             defaultObjectMapper.writeValueAsString(response),
@@ -93,7 +87,8 @@ class ArenaOrdsServiceTest {
 
     @Test
     fun `test hent historiskeMeldekort returns OK status`() {
-        val xmlString = """<Person><personId>1</personId><Etternavn>test</Etternavn><Fornavn>test</Fornavn><Maalformkode>test</Maalformkode><Meldeform>test</Meldeform><meldekortListe/><antallGjenstaaendeFeriedager>10</antallGjenstaaendeFeriedager><fravaerListe/></Person>"""
+        val xmlString =
+            """<Person><personId>1</personId><Etternavn>test</Etternavn><Fornavn>test</Fornavn><Maalformkode>test</Maalformkode><Meldeform>test</Meldeform><meldekortListe/><antallGjenstaaendeFeriedager>10</antallGjenstaaendeFeriedager><fravaerListe/></Person>"""
         val client = HttpClient(MockEngine) {
             engine {
                 addHandler { request ->
