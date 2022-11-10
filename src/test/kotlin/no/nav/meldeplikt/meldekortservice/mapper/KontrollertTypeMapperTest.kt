@@ -26,7 +26,7 @@ class KontrollertTypeMapperTest {
     fun mapKontrollResponseToKontrollertTypeSkalReturnereFeil() {
         val feilListe = mutableListOf<KontrollFeil>()
         val feil1 = KontrollFeil("X05", "Set sail for fail", 1)
-        val feil2 = KontrollFeil("S09", "On the failboat", 3)
+        val feil2 = KontrollFeil("S09", "On the failboat", 3, arrayOf("param 1", "param 2"))
         feilListe.add(feil1)
         feilListe.add(feil2)
 
@@ -41,7 +41,9 @@ class KontrollertTypeMapperTest {
         assert(til.arsakskoder.arsakskode.size == fra.feilListe.size)
         assert(til.arsakskoder.arsakskode[0].kode == feil1.kode)
         assert(til.arsakskoder.arsakskode[0].tekst == feil1.tekst)
+        assert(til.arsakskoder.arsakskode[0].params == null)
         assert(til.arsakskoder.arsakskode[1].kode == feil2.kode)
         assert(til.arsakskoder.arsakskode[1].tekst == feil2.tekst)
+        assert(til.arsakskoder.arsakskode[1].params.contentEquals(feil2.params))
     }
 }
