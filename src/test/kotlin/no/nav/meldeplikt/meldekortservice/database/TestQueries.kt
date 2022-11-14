@@ -4,17 +4,6 @@ import no.nav.meldeplikt.meldekortservice.model.database.KallLogg
 import java.sql.Connection
 import java.sql.DatabaseMetaData
 
-fun Connection.slettAlleInnsendteMeldekort() =
-    prepareStatement("TRUNCATE TABLE innsendt_meldekort")
-        .use { it.execute() }
-
-fun Connection.slettInnsendtMeldekort(meldekortId: Long) =
-    prepareStatement("DELETE FROM innsendt_meldekort WHERE meldekortId = ?")
-        .use {
-            it.setLong(1, meldekortId)
-            it.execute()
-        }
-
 fun Connection.hentJournalpostData(): List<Triple<Long, Long, Long>> =
     prepareStatement("SELECT journalpostId, dokumentInfoId, meldekortId FROM opprettede_journalposter")
         .use {

@@ -46,7 +46,7 @@ fun Application.mainModule(
 ) {
     setAppProperties(env)
 
-    defaultDbService = mockDBService ?: initializeInnsendtMeldekortServiceApi(env)
+    defaultDbService = mockDBService ?: initializeDbService(env)
 
     val flywayConfig: org.flywaydb.core.Flyway = mockFlywayConfig ?: initializeFlyway(env)
     flywayConfig.migrate()
@@ -140,7 +140,7 @@ private fun setAppProperties(environment: Environment) {
     setProperty(DB_ORACLE_CONF, environment.dbConfOracle.jdbcUrl, PUBLIC)
 }
 
-private fun initializeInnsendtMeldekortServiceApi(env: Environment): DBService {
+private fun initializeDbService(env: Environment): DBService {
     return DBService(
         when (isCurrentlyRunningOnNais()) {
             true -> OracleDatabase()
