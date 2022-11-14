@@ -49,13 +49,7 @@ data class Environment(
         getEnvVar("SERVICEUSER_MELDEKORTSERVICE_USERNAME", "username"),
         getEnvVar("SERVICEUSER_MELDEKORTSERVICE_PASSWORD", "password")
     ),
-    val srvSblArbeid: VaultCredentials = VaultCredentials(
-        getEnvVar("SERVICEUSER_SBLARBEID_USERNAME", "username"),
-        getEnvVar("SERVICEUSER_SBLARBEID_PASSWORD", "password")
-    ),
 
-    // Brukes av SoapService
-    val stsUrl: String = getEnvVar("SECURITYTOKENSERVICE", "https://ststest.nav.no/"), // URL må ha / på slutten
     // Brukes av DokarkiveService
     val stsNaisUrl: String = removeTrailingSlash(getEnvVar("SECURITYTOKENSERVICE_NAIS", "https://ststest.nav.no/")),
 

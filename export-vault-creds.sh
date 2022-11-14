@@ -15,17 +15,6 @@ if [ -f $SERVICEUSER_MELDEKORTSERVICE_PATH/password ]; then
     export SERVICEUSER_MELDEKORTSERVICE_PASSWORD=$(cat $SERVICEUSER_MELDEKORTSERVICE_PATH/password)
 fi
 
-# Serviceuser srvsblarbeid
-SERVICEUSER_SBLARBEID_PATH=/secrets/serviceuser/srvsblarbeid
-
-if [ -f $SERVICEUSER_SBLARBEID_PATH/username ]; then
-    export SERVICEUSER_SBLARBEID_USERNAME=$(cat $SERVICEUSER_SBLARBEID_PATH/username)
-fi
-
-if [ -f $SERVICEUSER_SBLARBEID_PATH/password ]; then
-    export SERVICEUSER_SBLARBEID_PASSWORD=$(cat $SERVICEUSER_SBLARBEID_PATH/password)
-fi
-
 # DB-user meldekortservice
 DB_USER_MELDEKORTSERVICE_PATH=/secrets/dbuser/meldekortservicedbuser
 

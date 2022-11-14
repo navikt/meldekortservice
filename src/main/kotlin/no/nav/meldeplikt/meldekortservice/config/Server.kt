@@ -91,7 +91,6 @@ fun Application.mainModule(
         healthApi(appMicrometerRegistry)
         swaggerRoutes()
         lesemodusApi(arenaOrdsService)
-        weblogicApi()
         meldekortApi(arenaOrdsService)
         personApi(arenaOrdsService, defaultDbService, kontrollService, dokarkivService)
     }
@@ -134,11 +133,6 @@ fun Application.mainModule(
 }
 
 private fun setAppProperties(environment: Environment) {
-    setProperty(SOAP_STS_URL_KEY, environment.stsUrl, PUBLIC)
-    setProperty(SOAP_SYSTEMUSER_USERNAME, environment.srvMeldekortservice.username, PUBLIC)
-    setProperty(SOAP_SYSTEMUSER_PASSWORD, environment.srvMeldekortservice.password, SECRET)
-    setProperty(SBL_ARBEID_USERNAME, environment.srvSblArbeid.username, PUBLIC)
-    setProperty(SBL_ARBEID_PASSWORD, environment.srvSblArbeid.password, SECRET)
     setProperty(DB_ORACLE_USERNAME, environment.dbUserOracle.username, PUBLIC)
     setProperty(DB_ORACLE_PASSWORD, environment.dbUserOracle.password, SECRET)
     setProperty(DB_ORACLE_CONF, environment.dbConfOracle.jdbcUrl, PUBLIC)

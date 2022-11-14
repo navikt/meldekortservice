@@ -38,8 +38,6 @@ spec:
         mountPath: /secrets/dbconf/meldekortservicedbconf
       - kvPath: serviceuser/data/{{ vaultServiceuserEnv }}/srvmeldekortservice
         mountPath: /secrets/serviceuser/srvmeldekortservice
-      - kvPath: serviceuser/data/{{ vaultServiceuserEnv }}/srvsblarbeid
-        mountPath: /secrets/serviceuser/srvsblarbeid
       - kvPath: kv/{{ vaultKvEnv }}/{{ appName }}{{ dashEnv }}/meldekort
         mountPath: /var/run/secrets/nais.io/vault
   replicas:

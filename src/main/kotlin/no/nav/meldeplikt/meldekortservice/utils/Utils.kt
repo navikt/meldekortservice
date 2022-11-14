@@ -56,7 +56,6 @@ internal const val HISTORISKE_MELDEKORT_PATH = "$PERSON_PATH/historiskemeldekort
 internal const val PERSON_MELDEKORT_PATH = "$PERSON_PATH/meldekort"
 internal const val OPPRETT_JOURNALPOST_PATH = "$PERSON_PATH/opprettJournalpost"
 internal const val LESEMODUS_PATH = "$API_PATH/lesemodus"
-internal const val WEBLOGIC_PING_PATH = "$API_PATH/weblogic"
 
 internal const val KONTROLL_KONTROLL = "/api/v1/kontroll"
 
@@ -70,9 +69,6 @@ internal const val ARENA_ORDS_MELDEPERIODER_PARAM = "antMeldeperioder="
 internal const val ARENA_ORDS_HENT_MELDEKORTDETALJER = "$ARENA_ORDS_API_V2_MELDEPLIKT/meldekort/detaljer?meldekortId="
 internal const val ARENA_ORDS_KOPIER_MELDEKORT = "$ARENA_ORDS_API_V2_MELDEPLIKT/meldekort/kopi"
 
-internal const val SBL_ARBEID_USERNAME = "srvSBLArbeid.username"
-internal const val SBL_ARBEID_PASSWORD = "srvSBLArbeid.password"
-
 internal const val DB_ORACLE_USERNAME = "oracleDbUser.username"
 internal const val DB_ORACLE_PASSWORD = "oracleDbUser.password"
 internal const val DB_ORACLE_CONF = "oracleDbConf.jdbcUrl"
@@ -81,10 +77,6 @@ internal const val STS_PATH = "/rest/v1/sts/token"
 
 internal const val JOURNALPOSTAPI_PATH = "/rest/journalpostapi/v1"
 internal const val JOURNALPOST_PATH = "$JOURNALPOSTAPI_PATH/journalpost"
-
-internal const val SOAP_STS_URL_KEY = "no.nav.modig.security.sts.url"
-internal const val SOAP_SYSTEMUSER_USERNAME = "no.nav.modig.security.systemuser.username"
-internal const val SOAP_SYSTEMUSER_PASSWORD = "no.nav.modig.security.systemuser.password"
 
 internal val HTTP_STATUS_CODES_2XX = IntRange(200, 299)
 
