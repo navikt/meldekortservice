@@ -3,5 +3,6 @@ package no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.kontroll.resp
 data class KontrollFeil constructor(
     var kode: String? = null,
     var tekst: String? = null,
-    var dag: Int? = null
+    var dag: Int? = null,
+    var params: Array<String>? = null
 )

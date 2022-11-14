@@ -96,7 +96,7 @@ class CallLoggingPluginTest : TestBase() {
                 "\n" +
                 "$json\n"
         val expectedUtRequest = "" +
-                "GET https://dummyurl.nav.no:443/api/v1/meldeplikt/meldekort/detaljer?meldekortId=1\n" +
+                "GET https://dummyurl.nav.no:443/api/v2/meldeplikt/meldekort/detaljer?meldekortId=1\n" +
                 "Accept: [application/xml; charset=UTF-8,application/json]\n" +
                 "Authorization: Bearer $DUMMY_TOKEN\n" +
                 "Accept-Charset: UTF-8\n" +
