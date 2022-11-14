@@ -1,6 +1,5 @@
 package no.nav.meldeplikt.meldekortservice.database
 
-import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
 import no.nav.meldeplikt.meldekortservice.model.database.KallLogg
 import java.sql.Connection
 import java.sql.DatabaseMetaData
@@ -14,14 +13,6 @@ fun Connection.slettInnsendtMeldekort(meldekortId: Long) =
         .use {
             it.setLong(1, meldekortId)
             it.execute()
-        }
-
-fun Connection.hentAlleInnsendteMeldekort(): List<InnsendtMeldekort> =
-    prepareStatement("SELECT * FROM innsendt_meldekort")
-        .use {
-            it.executeQuery().list {
-                tilInnsendtMeldekort()
-            }
         }
 
 fun Connection.hentJournalpostData(): List<Triple<Long, Long, Long>> =

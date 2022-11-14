@@ -57,8 +57,6 @@ internal const val PERSON_MELDEKORT_PATH = "$PERSON_PATH/meldekort"
 internal const val OPPRETT_JOURNALPOST_PATH = "$PERSON_PATH/opprettJournalpost"
 internal const val WEBLOGIC_PING_PATH = "$API_PATH/weblogic"
 
-internal const val KONTROLL_KONTROLL = "/api/v1/kontroll"
-
 internal const val ARENA_ORDS_API_MELDEPLIKT_V2 = "/api/v2/meldeplikt"
 internal const val ARENA_ORDS_TOKEN_PATH = "/api/oauth/token"
 internal const val ARENA_ORDS_HENT_MELDEKORT = "$ARENA_ORDS_API_MELDEPLIKT_V2/meldekort"
@@ -96,7 +94,7 @@ val swagger = Swagger(
     info = Information(
         version = "1",
         title = "Meldekortservice",
-        description = "Proxy-api for meldekort-applikasjonen (front-end). Api'et benyttes mot Arena og meldekortkontroll-api  \n" +
+        description = "Proxy-api for meldekort-applikasjonen (front-end). Api'et benyttes mot Arena  \n" +
                 "GitHub repo: [https://github.com/navikt/meldekortservice](https://github.com/navikt/meldekortservice)  \n" +
                 "Slack: [#team-meldeplikt](https://nav-it.slack.com/archives/CQ61EHWP9)",
         contact = Contact(

@@ -28,7 +28,6 @@ import no.nav.meldeplikt.meldekortservice.database.PostgreSqlDatabase
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
 import no.nav.meldeplikt.meldekortservice.service.DBService
 import no.nav.meldeplikt.meldekortservice.service.DokarkivService
-import no.nav.meldeplikt.meldekortservice.service.KontrollService
 import no.nav.meldeplikt.meldekortservice.utils.*
 import no.nav.security.token.support.v2.tokenValidationSupport
 import org.slf4j.event.Level
@@ -43,7 +42,6 @@ fun Application.mainModule(
     mockDBService: DBService? = null,
     mockFlywayConfig: org.flywaydb.core.Flyway? = null,
     mockArenaOrdsService: ArenaOrdsService? = null,
-    mockKontrollService: KontrollService? = null,
     mockDokarkivService: DokarkivService? = null
 ) {
     setAppProperties(env)
@@ -54,7 +52,6 @@ fun Application.mainModule(
     flywayConfig.migrate()
 
     val arenaOrdsService = mockArenaOrdsService ?: ArenaOrdsService()
-    val kontrollService = mockKontrollService ?: KontrollService()
     val dokarkivService = mockDokarkivService ?: DokarkivService()
 
     val appMicrometerRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
@@ -92,7 +89,7 @@ fun Application.mainModule(
         swaggerRoutes()
         weblogicApi()
         meldekortApi(arenaOrdsService)
-        personApi(arenaOrdsService, defaultDbService, kontrollService, dokarkivService)
+        personApi(arenaOrdsService, defaultDbService, dokarkivService)
     }
 
     install(DoubleReceive) {

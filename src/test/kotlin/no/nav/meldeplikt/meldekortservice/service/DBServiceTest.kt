@@ -3,13 +3,10 @@ package no.nav.meldeplikt.meldekortservice.service
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.database.*
-import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
 import no.nav.meldeplikt.meldekortservice.model.database.KallLogg
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Journalpost
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
-import java.sql.SQLException
 import java.time.Instant
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
@@ -17,34 +14,10 @@ import kotlin.test.assertTrue
 
 class DBServiceTest {
     private val database = H2Database("dbservicetest")
-    private val innsendtMeldekort1 = InnsendtMeldekort(1L)
 
     @AfterAll
     fun tearDown() {
         database.closeConnection()
-    }
-
-    @Test
-    fun `skal lagre og hente innsendt meldekort `() {
-        val dbService = DBService(database)
-
-        runBlocking {
-            dbService.settInnInnsendtMeldekort(innsendtMeldekort1)
-            val actualMeldekort = dbService.hentInnsendtMeldekort(1L)
-            assertEquals(innsendtMeldekort1.meldekortId, actualMeldekort.meldekortId)
-        }
-    }
-
-    @Test
-    fun `skal kaste Exception hvis henter ikke eksisterende innsendt meldekort`() {
-        val dbService = DBService(database)
-
-        val exception = assertThrows<SQLException> {
-            runBlocking {
-                dbService.hentInnsendtMeldekort(2L)
-            }
-        }
-        assertEquals("Found no rows", exception.localizedMessage)
     }
 
     @Test

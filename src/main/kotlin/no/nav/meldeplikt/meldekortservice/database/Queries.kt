@@ -1,7 +1,6 @@
 package no.nav.meldeplikt.meldekortservice.database
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
 import no.nav.meldeplikt.meldekortservice.model.database.KallLogg
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Journalpost
 import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
@@ -10,27 +9,14 @@ import java.io.Writer
 import java.nio.ByteBuffer
 import java.nio.CharBuffer
 import java.nio.charset.StandardCharsets
-import java.sql.*
+import java.sql.Clob
+import java.sql.Connection
+import java.sql.DatabaseMetaData
+import java.sql.Timestamp
 import java.time.Instant
 import java.util.*
 import javax.sql.rowset.serial.SerialClob
 
-
-fun Connection.hentInnsendtMeldekort(meldekortId: Long): InnsendtMeldekort =
-    prepareStatement("SELECT * FROM innsendt_meldekort WHERE meldekortId = ?")
-        .use {
-            it.setLong(1, meldekortId)
-            it.executeQuery().singleResult {
-                tilInnsendtMeldekort()
-            }
-        }
-
-fun Connection.opprettInnsendtMeldekort(innsendtMeldekort: InnsendtMeldekort): Int =
-    prepareStatement("INSERT INTO innsendt_meldekort (meldekortId) VALUES (?)")
-        .use {
-            it.setLong(1, innsendtMeldekort.meldekortId)
-            it.executeUpdate()
-        }
 
 fun Connection.hentJournalpostData(journalpostId: Long): List<Triple<Long, Long, Long>> =
     prepareStatement("SELECT journalpostId, dokumentInfoId, meldekortId FROM opprettede_journalposter WHERE journalpostId = ?")
@@ -131,12 +117,6 @@ fun Connection.oppdaterMidlertidigLagretJournalpost(id: String, retries: Int) =
             it.setString(2, id)
             it.executeUpdate()
         }
-
-fun ResultSet.tilInnsendtMeldekort(): InnsendtMeldekort {
-    return InnsendtMeldekort(
-        meldekortId = getLong("meldekortId")
-    )
-}
 
 fun Connection.lagreKallLogg(kallLogg: KallLogg): Long {
     val metaData: DatabaseMetaData = this.metaData

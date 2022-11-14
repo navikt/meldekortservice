@@ -9,21 +9,16 @@ import io.ktor.server.locations.*
 import io.mockk.*
 import no.nav.meldeplikt.meldekortservice.config.DUMMY_FNR
 import no.nav.meldeplikt.meldekortservice.database.hentMidlertidigLagredeJournalposter
-import no.nav.meldeplikt.meldekortservice.model.MeldekortKontrollertType
-import no.nav.meldeplikt.meldekortservice.model.database.InnsendtMeldekort
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.DokumentInfo
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Journalpost
 import no.nav.meldeplikt.meldekortservice.model.dokarkiv.JournalpostResponse
 import no.nav.meldeplikt.meldekortservice.model.enum.KortType
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Meldekort
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
-import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
-import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Sporsmal
 import no.nav.meldeplikt.meldekortservice.model.response.OrdsStringResponse
 import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
 import no.nav.meldeplikt.meldekortservice.utils.defaultXmlMapper
 import org.junit.jupiter.api.Test
-import java.sql.SQLException
 import java.time.LocalDate
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -103,8 +98,6 @@ class PersonKtTest : TestBase() {
         )
 
         coEvery { arenaOrdsService.hentMeldekort(any()) } returns (ordsStringResponse)
-        coEvery { dbService.hentInnsendtMeldekort(1L) } returns (InnsendtMeldekort(meldekortId = 1L))
-        coEvery { dbService.hentInnsendtMeldekort(2L) } throws SQLException("Found no rows")
 
         val response = client.get("/meldekortservice/api/person/meldekort") {
             header(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")
@@ -114,7 +107,7 @@ class PersonKtTest : TestBase() {
         assertNotNull(response.bodyAsText())
         val responseObject = defaultObjectMapper.readValue<Person>(response.bodyAsText())
         assertEquals(person.personId, responseObject.personId)
-        assertEquals(1, responseObject.meldekortListe?.size)
+        assertEquals(2, responseObject.meldekortListe?.size)
     }
 
     @Test
@@ -128,62 +121,6 @@ class PersonKtTest : TestBase() {
         }
 
         assertEquals(HttpStatusCode.NoContent, response.status)
-    }
-
-    @Test
-    fun `Kontroll or innsending of meldekort returns OK`() = setUpTestApplication {
-        val meldekortdetaljer = Meldekortdetaljer(
-            id = "1",
-            fodselsnr = DUMMY_FNR,
-            kortType = KortType.AAP,
-            meldeperiode = "20200105",
-            sporsmal = Sporsmal(meldekortDager = listOf())
-        )
-
-        val meldekortKontrollertType = MeldekortKontrollertType()
-        meldekortKontrollertType.meldekortId = 1L
-        meldekortKontrollertType.status = "OK"
-        meldekortKontrollertType.arsakskoder = MeldekortKontrollertType.Arsakskoder()
-
-        coEvery { dbService.settInnInnsendtMeldekort(any()) } just Runs
-        coEvery { kontrollService.kontroller(any()) } returns meldekortKontrollertType
-
-        val response = client.post("/meldekortservice/api/person/meldekort") {
-            header(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            setBody(defaultObjectMapper.writeValueAsString(meldekortdetaljer))
-        }
-
-        assertEquals(HttpStatusCode.OK, response.status)
-        assertNotNull(response.bodyAsText())
-        val responseObject = defaultObjectMapper.readValue<MeldekortKontrollertType>(response.bodyAsText())
-        assertEquals(meldekortKontrollertType.meldekortId, responseObject.meldekortId)
-    }
-
-    @Test
-    fun `Kontroll of meldekort returns ServiceUnavailable`() = setUpTestApplication {
-        val meldekortdetaljer = Meldekortdetaljer(
-            id = "1",
-            fodselsnr = DUMMY_FNR,
-            kortType = KortType.AAP,
-            meldeperiode = "20200105",
-            sporsmal = Sporsmal(meldekortDager = listOf())
-        )
-        val meldekortKontrollertType = MeldekortKontrollertType()
-        meldekortKontrollertType.meldekortId = 1L
-        meldekortKontrollertType.status = "OK"
-        meldekortKontrollertType.arsakskoder = MeldekortKontrollertType.Arsakskoder()
-
-        coEvery { dbService.settInnInnsendtMeldekort(any()) } just Runs
-        coEvery { kontrollService.kontroller(any()) } throws RuntimeException("Feil i meldekortkontroll-api")
-
-        val response = client.post("/meldekortservice/api/person/meldekort") {
-            header(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            setBody(defaultObjectMapper.writeValueAsString(meldekortdetaljer))
-        }
-
-        assertEquals(HttpStatusCode.ServiceUnavailable, response.status)
     }
 
     @Test

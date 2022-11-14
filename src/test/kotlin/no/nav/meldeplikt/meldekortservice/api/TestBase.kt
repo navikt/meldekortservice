@@ -10,7 +10,6 @@ import no.nav.meldeplikt.meldekortservice.config.mainModule
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
 import no.nav.meldeplikt.meldekortservice.service.DBService
 import no.nav.meldeplikt.meldekortservice.service.DokarkivService
-import no.nav.meldeplikt.meldekortservice.service.KontrollService
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import no.nav.security.mock.oauth2.MockOAuth2Server
 import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback
@@ -32,7 +31,6 @@ open class TestBase {
 
         var dbService = mockk<DBService>()
         var arenaOrdsService = mockk<ArenaOrdsService>()
-        var kontrollService = mockk<KontrollService>()
         var dokarkivService = mockk<DokarkivService>()
 
         @BeforeAll
@@ -69,7 +67,6 @@ open class TestBase {
                     mockDBService = dbService,
                     mockFlywayConfig = flywayConfig,
                     mockArenaOrdsService = arenaOrdsService,
-                    mockKontrollService = kontrollService,
                     mockDokarkivService = dokarkivService
                 )
             }

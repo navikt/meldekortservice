@@ -132,7 +132,6 @@ class CallLoggingPluginTest : TestBase() {
                 mockDBService = dbService,
                 mockFlywayConfig = flywayConfig,
                 mockArenaOrdsService = arenaOrdsService,
-                mockKontrollService = kontrollService,
                 mockDokarkivService = dokarkivService
             )
         }
@@ -185,6 +184,8 @@ class CallLoggingPluginTest : TestBase() {
         //
         // Prepare
         //
+        val id: Long = 1
+
         database = H2Database("IncomingCallLoggingPluginTest2")
         dbService = DBService(database)
 
@@ -192,62 +193,132 @@ class CallLoggingPluginTest : TestBase() {
         val flywayConfig = mockk<Flyway>()
         every { flywayConfig.migrate() } returns MigrateResult("", "", "")
 
-        val callId = getCallId()
+        val callId = UUID.randomUUID().toString()
+        val token = issueTokenWithSub()
 
-        val expectedRequest = "POST https://dummyurl.nav.no:443/api/v1/kontroll\n" +
+        val xml = """
+            |<Meldekort>
+            |    <Hode>
+            |        <PersonId><Verdi>1</Verdi></PersonId>
+            |        <Fodselsnr><Verdi>01020312346</Verdi></Fodselsnr>
+            |        <MeldekortId><Verdi>1</Verdi></MeldekortId>
+            |        <Meldeperiode>2</Meldeperiode>
+            |        <Arkivnokkel>test</Arkivnokkel>
+            |        <KortType>03</KortType>
+            |        <Kommentar>test</Kommentar>
+            |    </Hode>
+            |    <Spm>
+            |        <Arbeidssoker><SvarJa><Verdi>false</Verdi></SvarJa><SvarNei><Verdi>false</Verdi></SvarNei></Arbeidssoker>
+            |        <Arbeidet><SvarJa><Verdi>false</Verdi></SvarJa><SvarNei><Verdi>false</Verdi></SvarNei></Arbeidet>
+            |        <Syk><SvarJa><Verdi>false</Verdi></SvarJa><SvarNei><Verdi>false</Verdi></SvarNei></Syk>
+            |        <AnnetFravaer><SvarJa><Verdi>false</Verdi></SvarJa><SvarNei><Verdi>false</Verdi></SvarNei></AnnetFravaer>
+            |        <Kurs><SvarJa><Verdi>false</Verdi></SvarJa><SvarNei><Verdi>false</Verdi></SvarNei></Kurs>
+            |        <Forskudd><Verdi>false</Verdi></Forskudd>
+            |        <MeldekortDager/>
+            |        <Signatur><Verdi>false</Verdi></Signatur>
+            |    </Spm>
+            |</Meldekort>""".trimMargin()
+
+        val json = "{\"error\":\"Personidentifikator matcher ikke. Bruker kan derfor ikke hente ut meldekortdetaljer.\"}"
+
+        val expectedInnRequest = "" +
+                "GET localhost:80$MELDEKORT_PATH?meldekortId=${id} HTTP/1.1\n" +
+                "Authorization: Bearer $token\n" +
+                "X-Request-ID: $callId\n" +
+                "Accept-Charset: UTF-8\n" +
+                "Accept: */*\n" +
+                "User-Agent: Ktor client\n" +
+                "Content-Length: 0\n" +
+                "\n" +
+                "\n"
+        val expectedInnResponseStart = "" +
+                "400 Bad Request\n" +
+                "X-Request-ID: $callId\n"
+        val expectedInnResponseEnd = "" +
+                "Transfer-Encoding: chunked\n" +
+                "Content-Type: application/json; charset=UTF-8\n" +
+                "\n" +
+                "$json\n"
+        val expectedUtRequest = "" +
+                "GET https://dummyurl.nav.no:443/api/v2/meldeplikt/meldekort/detaljer?meldekortId=1\n" +
+                "Accept: [application/xml; charset=UTF-8,application/json]\n" +
                 "Authorization: Bearer $DUMMY_TOKEN\n" +
-                "Accept: application/json\n" +
                 "Accept-Charset: UTF-8\n" +
                 "X-Request-ID: $callId\n" +
-                "\n"
-        val expectedResponse = "HTTP/1.1 500 Internal Server Error\n" +
-                "Content-Type: application/json\n" +
                 "\n" +
-                "{\"status\": 500}\n"
+                "EmptyContent\n"
+        val expectedUtResponse = "" +
+                "HTTP/1.1 200 OK\n" +
+                "Content-Type: application/xml\n" +
+                "\n" +
+                xml + "\n"
 
-        environment {
-            config = setOidcConfig()
-        }
-
-        val kontrollClient = HttpClient(MockEngine) {
+        val arenaOrdsClient = HttpClient(MockEngine) {
             defaultHttpClientConfig()
 
             engine {
                 addHandler {
                     respond(
-                        "{\"status\": 500}",
-                        HttpStatusCode.InternalServerError,
-                        headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                        xml,
+                        headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Xml.toString())
                     )
                 }
             }
+        }
+        val arenaOrdsService = ArenaOrdsService(arenaOrdsClient)
+
+        environment {
+            config = setOidcConfig()
+        }
+        application {
+            mainModule(
+                env = env,
+                mockDBService = dbService,
+                mockFlywayConfig = flywayConfig,
+                mockArenaOrdsService = arenaOrdsService,
+                mockDokarkivService = dokarkivService
+            )
         }
 
         //
         // Run
         //
-        kontrollClient.post("${env.meldekortKontrollUrl}$KONTROLL_KONTROLL") {
-            contentType(ContentType.Application.Json)
-            header("Authorization", "Bearer $DUMMY_TOKEN")
-            setBody("")
+        val response = client.get("$MELDEKORT_PATH?meldekortId=${id}") {
+            header(HttpHeaders.Authorization, "Bearer $token")
+            header(HttpHeaders.XRequestId, callId)
         }
 
         //
         // Check
         //
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+        assertEquals(json, response.bodyAsText())
+
         val kallLoggListe = database.dbQuery { hentAlleKallLogg() }
-        assertEquals(1, kallLoggListe.size)
+        assertEquals(2, kallLoggListe.size)
 
         val kall1 = kallLoggListe[0]
         assertEquals(callId, kall1.korrelasjonId)
         assertEquals("REST", kall1.type)
-        assertEquals("UT", kall1.kallRetning)
-        assertEquals("POST", kall1.method)
-        assertEquals(KONTROLL_KONTROLL, kall1.operation)
-        assertEquals(500, kall1.status)
-        assertEquals(expectedRequest, kall1.request)
-        assertEquals(expectedResponse, kall1.response)
-        assertEquals("", kall1.logginfo)
+        assertEquals("INN", kall1.kallRetning)
+        assertEquals("GET", kall1.method)
+        assertEquals(MELDEKORT_PATH, kall1.operation)
+        assertEquals(400, kall1.status)
+        assertEquals(expectedInnRequest, kall1.request)
+        assertTrue(kall1.response.startsWith(expectedInnResponseStart))
+        assertTrue(kall1.response.replace("NULL", "").endsWith(expectedInnResponseEnd))
+        assertEquals(DUMMY_FNR, kall1.logginfo)
+
+        val kall2 = kallLoggListe[1]
+        assertEquals(callId, kall2.korrelasjonId)
+        assertEquals("REST", kall2.type)
+        assertEquals("UT", kall2.kallRetning)
+        assertEquals("GET", kall2.method)
+        assertEquals(ARENA_ORDS_HENT_MELDEKORTDETALJER.replace("?meldekortId=", ""), kall2.operation)
+        assertEquals(200, kall2.status)
+        assertEquals(expectedUtRequest, kall2.request)
+        assertEquals(expectedUtResponse, kall2.response)
+        assertEquals("", kall2.logginfo)
 
         database.closeConnection()
     }
@@ -420,7 +491,6 @@ class CallLoggingPluginTest : TestBase() {
                 mockDBService = dbService,
                 mockFlywayConfig = flywayConfig,
                 mockArenaOrdsService = arenaOrdsService,
-                mockKontrollService = kontrollService,
                 mockDokarkivService = dokarkivService
             )
         }
