@@ -27,8 +27,8 @@ class ArenaOrdsService(
 
     suspend fun hentMeldekort(fnr: String): OrdsStringResponse {
         val execResult: Result<HttpResponse> = runCatching {
-            ordsClient.request("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORT$fnr") {
-                setupOrdsRequest()
+            ordsClient.request("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORT") {
+                setupOrdsRequestFnr(fnr)
             }
         }
 
@@ -42,10 +42,10 @@ class ArenaOrdsService(
 
     suspend fun hentHistoriskeMeldekort(fnr: String, antallMeldeperioder: Int): Person {
         val person: String = ordsClient.get(
-            "${env.ordsUrl}$ARENA_ORDS_HENT_HISTORISKE_MELDEKORT$fnr" +
+            "${env.ordsUrl}$ARENA_ORDS_HENT_HISTORISKE_MELDEKORT" +
                     "$ARENA_ORDS_MELDEPERIODER_PARAM$antallMeldeperioder"
         ) {
-            setupOrdsRequest()
+            setupOrdsRequestFnr(fnr)
         }.body()
 
         return mapFraXml(person, Person::class.java)
@@ -91,11 +91,18 @@ class ArenaOrdsService(
         return OrdsStringResponse(lesemodus.status, lesemodus.body())
     }
 
-    private fun HttpRequestBuilder.setupOrdsRequest(meldekortId: Long? = null) {
+    private fun HttpRequestBuilder.setupOrdsRequestFnr(fnr: String? = null) {
+        return setupOrdsRequest(null, fnr)
+    }
+
+    private fun HttpRequestBuilder.setupOrdsRequest(meldekortId: Long? = null, fnr: String? = null) {
         headers.append("Accept", "application/xml; charset=UTF-8")
         headers.append("Authorization", "Bearer ${hentToken().accessToken}")
         if (meldekortId != null) {
             headers.append("meldekortId", meldekortId.toString())
+        }
+        if (fnr != null) {
+            headers.append("fnr", fnr)
         }
     }
 
