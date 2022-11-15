@@ -26,7 +26,6 @@ import no.nav.cache.Cache
 import no.nav.cache.CacheConfig
 import no.nav.cache.CacheUtils
 import no.nav.meldeplikt.meldekortservice.config.OutgoingCallLoggingPlugin
-import no.nav.meldeplikt.meldekortservice.config.defaultDbService
 import no.nav.meldeplikt.meldekortservice.model.AccessToken
 import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Contact
@@ -178,7 +177,7 @@ fun HttpClientConfig<*>.defaultHttpClientConfig() {
         socketTimeoutMillis = 10000 //  of inactivity between two data packets when exchanging data with a server
     }
     install("OutgoingCallInterceptor") {
-        OutgoingCallLoggingPlugin(defaultDbService).intercept(this)
+        OutgoingCallLoggingPlugin().intercept(this)
     }
     expectSuccess = false
 }
