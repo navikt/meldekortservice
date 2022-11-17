@@ -14,12 +14,9 @@ import no.nav.meldeplikt.meldekortservice.api.TestBase
 import no.nav.meldeplikt.meldekortservice.database.H2Database
 import no.nav.meldeplikt.meldekortservice.database.hentAlleKallLogg
 import no.nav.meldeplikt.meldekortservice.mapper.MeldekortdetaljerMapper
-import no.nav.meldeplikt.meldekortservice.model.AccessToken
-import no.nav.meldeplikt.meldekortservice.model.dokarkiv.*
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.arena.Meldekort
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
 import no.nav.meldeplikt.meldekortservice.service.DBService
-import no.nav.meldeplikt.meldekortservice.service.DokarkivService
 import no.nav.meldeplikt.meldekortservice.utils.*
 import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.output.MigrateResult
@@ -131,8 +128,7 @@ class CallLoggingPluginTest : TestBase() {
                 env = env,
                 mockDBService = dbService,
                 mockFlywayConfig = flywayConfig,
-                mockArenaOrdsService = arenaOrdsService,
-                mockDokarkivService = dokarkivService
+                mockArenaOrdsService = arenaOrdsService
             )
         }
 
@@ -275,8 +271,7 @@ class CallLoggingPluginTest : TestBase() {
                 env = env,
                 mockDBService = dbService,
                 mockFlywayConfig = flywayConfig,
-                mockArenaOrdsService = arenaOrdsService,
-                mockDokarkivService = dokarkivService
+                mockArenaOrdsService = arenaOrdsService
             )
         }
 
@@ -319,234 +314,6 @@ class CallLoggingPluginTest : TestBase() {
         assertEquals(expectedUtRequest, kall2.request)
         assertEquals(expectedUtResponse, kall2.response)
         assertEquals("", kall2.logginfo)
-
-        database.closeConnection()
-    }
-
-    @Test
-    fun `skal ikke lagre request og response content for opprettJournalpost`() = testApplication {
-        //
-        // Prepare
-        //
-        database = H2Database("IncomingCallLoggingPluginTest3")
-        dbService = DBService(database)
-        defaultDbService = dbService
-        val flywayConfig = mockk<Flyway>()
-        every { flywayConfig.migrate() } returns MigrateResult("", "", "")
-
-        val meldekortId = "123456779"
-        val journalpostId = 123456780L
-        val dokumentInfoId = 123456781L
-
-        val journalpost = Journalpost(
-            journalposttype = Journalposttype.INNGAAENDE,
-            avsenderMottaker = AvsenderMottaker(
-                id = DUMMY_FNR,
-                idType = AvsenderIdType.FNR,
-                navn = "Test Testesen"
-            ),
-            bruker = Bruker(
-                id = DUMMY_FNR,
-                idType = BrukerIdType.FNR
-            ),
-            tema = Tema.AAP,
-            tittel = "Test",
-            kanal = "NAV_NO",
-            journalfoerendeEnhet = "9999",
-            eksternReferanseId = "1",
-            datoMottatt = "2022-10-07",
-            tilleggsopplysninger = listOf(Tilleggsopplysning("meldekortId", meldekortId)),
-            sak = Sak(
-                sakstype = Sakstype.GENERELL_SAK
-            ),
-            dokumenter = null
-        )
-
-        val journalpostResponse = JournalpostResponse(
-            journalpostId = journalpostId,
-            journalstatus = "M",
-            melding = "MELDING FRA DOKARKIV",
-            journalpostferdigstilt = true,
-            dokumenter = listOf(
-                DokumentInfo(dokumentInfoId)
-            )
-        )
-
-        val callId = UUID.randomUUID().toString()
-        val innToken = issueTokenWithSub()
-        val base = "${env.srvMeldekortservice.username}:${env.srvMeldekortservice.password}"
-        val authHeaderValue = "Basic ${Base64.getEncoder().encodeToString(base.toByteArray())}"
-        val aceessTokenContent = "dG9rZW4="
-        val accessToken = AccessToken(aceessTokenContent, "Bearer", 3600)
-
-        val httpClient = HttpClient(MockEngine) {
-            defaultHttpClientConfig()
-
-            engine {
-                addHandler { request ->
-                    if (
-                        request.method == HttpMethod.Post
-                        && request.url.protocol.name + "://" + request.url.host == env.dokarkivUrl
-                        && request.url.encodedPath == JOURNALPOST_PATH
-                        && request.url.parameters.contains("forsoekFerdigstill", "true")
-                        && request.headers.contains(HttpHeaders.Authorization, "Bearer " + accessToken.accessToken)
-                    ) {
-                        respond(
-                            defaultObjectMapper.writeValueAsString(journalpostResponse),
-                            status = HttpStatusCode.OK,
-                            headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                        )
-                    } else if (
-                        request.method == HttpMethod.Post
-                        && request.url.protocol.name + "://" + request.url.host == env.stsNaisUrl
-                        && request.url.encodedPath == STS_PATH
-                        && request.url.parameters.contains("grant_type", "client_credentials")
-                        && request.url.parameters.contains("scope", "openid")
-                        && request.headers.contains(HttpHeaders.Authorization, authHeaderValue)
-                    ) {
-                        respond(
-                            defaultObjectMapper.writeValueAsString(accessToken),
-                            headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                        )
-                    } else {
-                        respondError(HttpStatusCode.BadRequest)
-                    }
-                }
-
-
-                addHandler {
-                    respond(
-                        defaultObjectMapper.writeValueAsString(journalpostResponse),
-                        headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                    )
-                }
-            }
-        }
-        val dokarkivService = DokarkivService(httpClient)
-
-        val expectedInnRequest = "" +
-                "POST localhost:80$OPPRETT_JOURNALPOST_PATH HTTP/1.1\n" +
-                "Authorization: Bearer $innToken\n" +
-                "X-Request-ID: $callId\n" +
-                "Accept-Charset: UTF-8\n" +
-                "Accept: */*\n" +
-                "User-Agent: Ktor client\n" +
-                "Content-Type: application/json\n" +
-                "Content-Length: ${defaultObjectMapper.writeValueAsString(journalpost).length}\n" +
-                "\n" +
-                "JOURNALPOST\n"
-        val expectedInnResponseStart = "" +
-                "200 OK\n" +
-                "X-Request-ID: $callId\n"
-        val expectedInnResponseEnd = "" +
-                "Content-Length: 21\n" +
-                "Content-Type: text/plain; charset=UTF-8\n" +
-                "\n" +
-                "Journalpost opprettet\n"
-        val expectedStsUtRequest = "" +
-                "POST ${env.stsNaisUrl}:443$STS_PATH?grant_type=client_credentials&scope=openid\n" +
-                "Authorization: $authHeaderValue\n" +
-                "Accept: application/json\n" +
-                "Accept-Charset: UTF-8\n" +
-                "X-Request-ID: $callId\n" +
-                "\n" +
-                "EmptyContent\n"
-        val expectedStsUtResponse = "" +
-                "HTTP/1.1 200 OK\n" +
-                "Content-Type: application/json\n" +
-                "\n" +
-                "{\n" +
-                "  \"access_token\" : \"$aceessTokenContent\",\n" +
-                "  \"token_type\" : \"Bearer\",\n" +
-                "  \"expires_in\" : 3600\n" +
-                "}\n"
-        val expectedUtRequest = "" +
-                "POST ${env.dokarkivUrl}:443$JOURNALPOST_PATH?forsoekFerdigstill=true\n" +
-                "Authorization: Bearer $aceessTokenContent\n" +
-                "Accept: application/json\n" +
-                "Accept-Charset: UTF-8\n" +
-                "X-Request-ID: $callId\n" +
-                "\n" +
-                "JOURNALPOST\n"
-        val expectedUtResponse = "" +
-                "HTTP/1.1 200 OK\n" +
-                "Content-Type: application/json\n" +
-                "\n" +
-                "{\n" +
-                "  \"journalpostId\" : $journalpostId,\n" +
-                "  \"journalstatus\" : \"M\",\n" +
-                "  \"melding\" : \"MELDING FRA DOKARKIV\",\n" +
-                "  \"journalpostferdigstilt\" : true,\n" +
-                "  \"dokumenter\" : [ {\n" +
-                "    \"dokumentInfoId\" : $dokumentInfoId\n" +
-                "  } ]\n" +
-                "}\n"
-
-        environment {
-            config = setOidcConfig()
-        }
-        application {
-            mainModule(
-                env = env,
-                mockDBService = dbService,
-                mockFlywayConfig = flywayConfig,
-                mockArenaOrdsService = arenaOrdsService,
-                mockDokarkivService = dokarkivService
-            )
-        }
-
-        //
-        // Run
-        //
-        val response = client.post(OPPRETT_JOURNALPOST_PATH) {
-            header(HttpHeaders.Authorization, "Bearer $innToken")
-            header(HttpHeaders.XRequestId, callId)
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            setBody(defaultObjectMapper.writeValueAsString(journalpost))
-        }
-
-        //
-        // Check
-        //
-        assertEquals(HttpStatusCode.OK, response.status)
-        assertEquals("Journalpost opprettet", response.bodyAsText())
-
-        val kallLoggListe = database.dbQuery { hentAlleKallLogg() }
-        assertEquals(3, kallLoggListe.size)
-
-        val kall1 = kallLoggListe[0]
-        assertEquals(callId, kall1.korrelasjonId)
-        assertEquals("REST", kall1.type)
-        assertEquals("INN", kall1.kallRetning)
-        assertEquals("POST", kall1.method)
-        assertEquals(OPPRETT_JOURNALPOST_PATH, kall1.operation)
-        assertEquals(200, kall1.status)
-        assertEquals(expectedInnRequest, kall1.request)
-        assertTrue(kall1.response.startsWith(expectedInnResponseStart))
-        assertTrue(kall1.response.endsWith(expectedInnResponseEnd))
-        assertEquals(DUMMY_FNR, kall1.logginfo)
-
-        val kall2 = kallLoggListe[1]
-        assertEquals(callId, kall2.korrelasjonId)
-        assertEquals("REST", kall2.type)
-        assertEquals("UT", kall2.kallRetning)
-        assertEquals("POST", kall2.method)
-        assertEquals(STS_PATH, kall2.operation)
-        assertEquals(200, kall2.status)
-        assertEquals(expectedStsUtRequest, kall2.request)
-        assertEquals(expectedStsUtResponse, kall2.response.replace("\r", ""))
-        assertEquals("", kall2.logginfo)
-
-        val kall3 = kallLoggListe[2]
-        assertEquals(callId, kall3.korrelasjonId)
-        assertEquals("REST", kall3.type)
-        assertEquals("UT", kall3.kallRetning)
-        assertEquals("POST", kall3.method)
-        assertEquals(JOURNALPOST_PATH, kall3.operation)
-        assertEquals(200, kall3.status)
-        assertEquals(expectedUtRequest, kall3.request)
-        assertEquals(expectedUtResponse, kall3.response.replace("\r", ""))
-        assertEquals("", kall3.logginfo)
 
         database.closeConnection()
     }

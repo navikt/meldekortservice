@@ -12,7 +12,6 @@ import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.model.database.KallLogg
 import no.nav.meldeplikt.meldekortservice.service.DBService
 import no.nav.meldeplikt.meldekortservice.utils.*
-import no.nav.meldeplikt.meldekortservice.utils.API_PATH
 import java.time.Instant
 import java.time.LocalDateTime
 
@@ -45,11 +44,7 @@ val IncomingCallLoggingPlugin: ApplicationPlugin<ICDLPConfig> =
                 appendLine()
 
                 // body
-                if (request.path() == OPPRETT_JOURNALPOST_PATH) {
-                    appendLine("JOURNALPOST")
-                } else {
-                    appendLine(call.receiveText())
-                }
+                appendLine(call.receiveText())
             }.toString()
 
             try {

@@ -1,17 +1,12 @@
 package no.nav.meldeplikt.meldekortservice.api
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.locations.*
-import io.mockk.*
+import io.mockk.coEvery
 import no.nav.meldeplikt.meldekortservice.config.DUMMY_FNR
-import no.nav.meldeplikt.meldekortservice.database.hentMidlertidigLagredeJournalposter
-import no.nav.meldeplikt.meldekortservice.model.dokarkiv.DokumentInfo
-import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Journalpost
-import no.nav.meldeplikt.meldekortservice.model.dokarkiv.JournalpostResponse
 import no.nav.meldeplikt.meldekortservice.model.enum.KortType
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Meldekort
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
@@ -22,7 +17,6 @@ import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 
 @KtorExperimentalLocationsAPI
 class PersonKtTest : TestBase() {
@@ -121,67 +115,5 @@ class PersonKtTest : TestBase() {
         }
 
         assertEquals(HttpStatusCode.NoContent, response.status)
-    }
-
-    @Test
-    fun `OpprettJournalpost returnerer OK hvis DokarkivService er ok`() = setUpTestApplication {
-        val journalpostId = 123456780L
-        val dokumentInfoId = 123456781L
-
-        val journalpostResponse = JournalpostResponse(
-            journalpostId = journalpostId,
-            journalstatus = "M",
-            melding = "MELDING FRA DOKARKIV",
-            journalpostferdigstilt = true,
-            dokumenter = listOf(
-                DokumentInfo(dokumentInfoId)
-            )
-        )
-
-        coEvery { dokarkivService.createJournalpost(any()) } returns journalpostResponse
-        every { dbService.lagreJournalpostData(any(), any(), any()) } just Runs
-
-        val response = client.post("/meldekortservice/api/person/opprettJournalpost") {
-            header(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            setBody(this::class.java.getResource("/journalpost.json")!!.readText())
-        }
-
-        assertEquals(HttpStatusCode.OK, response.status)
-
-        // MeldekortId kommer fra tilleggsopplysninger i journalpost.json
-        verify { dbService.lagreJournalpostData(journalpostId, dokumentInfoId, 1011121315) }
-    }
-
-    @Test
-    fun `OpprettJournalpost returnerer ServiceUnavailable hvis DokarkivService ikke er ok`() = setUpTestApplication {
-        val journalpost = this::class.java.getResource("/journalpost.json")
-
-        coEvery { dokarkivService.createJournalpost(any()) } throws Exception()
-        every { dbService.lagreJournalpostMidlertidig(any()) } just Runs
-        every { dbService.getConnection().hentMidlertidigLagredeJournalposter() } returns emptyList()
-
-        val response = client.post("/meldekortservice/api/person/opprettJournalpost") {
-            header(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            setBody(journalpost!!.readText())
-        }
-
-        assertEquals(HttpStatusCode.OK, response.status)
-        assertTrue(
-            response.bodyAsText()
-                .startsWith("{\"error\":\"Kan ikke opprette journalpost i dokumentarkiv med eksternReferanseId ")
-        )
-        // MeldekortId kommer fra tilleggsopplysninger i journalpost.json
-        assertTrue(response.bodyAsText().endsWith("for meldekort med id 1011121315\"}"))
-
-        verify {
-            dbService.lagreJournalpostMidlertidig(
-                jacksonObjectMapper().readValue(
-                    journalpost,
-                    Journalpost::class.java
-                )
-            )
-        }
     }
 }

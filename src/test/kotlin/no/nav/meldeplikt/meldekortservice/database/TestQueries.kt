@@ -4,48 +4,6 @@ import no.nav.meldeplikt.meldekortservice.model.database.KallLogg
 import java.sql.Connection
 import java.sql.DatabaseMetaData
 
-fun Connection.hentJournalpostData(): List<Triple<Long, Long, Long>> =
-    prepareStatement("SELECT journalpostId, dokumentInfoId, meldekortId FROM opprettede_journalposter")
-        .use {
-            it.executeQuery().list {
-                Triple(
-                    this.getLong("journalpostId"),
-                    this.getLong("dokumentInfoId"),
-                    this.getLong("meldekortId")
-                )
-            }
-        }
-
-fun Connection.hentAlleMidlertidigLagredeJournalposter(): List<Pair<String, Int>> {
-    val list = mutableListOf<Pair<String, Int>>()
-
-    val metaData: DatabaseMetaData = this.metaData
-    val productName = metaData.databaseProductName
-
-    // Oracle and H2 by default
-    var query = "SELECT id, retries FROM midlertidig_lagrede_journalposter"
-    if (productName == "PostgreSQL") {
-        query = "SELECT id, retries FROM midlertidig_lagrede_journalposter"
-    }
-
-    this.prepareStatement(query)
-        .use { preparedStatement ->
-            preparedStatement.executeQuery()
-                .use { resultSet ->
-                    while (resultSet.next()) {
-                        list.add(
-                            Pair(
-                                resultSet.getString("id"),
-                                resultSet.getInt("retries")
-                            )
-                        )
-                    }
-                }
-        }
-
-    return list
-}
-
 fun Connection.hentAlleKallLogg(): List<KallLogg> {
     val metaData: DatabaseMetaData = this.metaData
     val productName = metaData.databaseProductName

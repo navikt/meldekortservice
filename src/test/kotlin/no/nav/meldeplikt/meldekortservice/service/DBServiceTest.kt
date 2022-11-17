@@ -1,10 +1,8 @@
 package no.nav.meldeplikt.meldekortservice.service
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import kotlinx.coroutines.runBlocking
-import no.nav.meldeplikt.meldekortservice.database.*
+import no.nav.meldeplikt.meldekortservice.database.H2Database
 import no.nav.meldeplikt.meldekortservice.model.database.KallLogg
-import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Journalpost
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
 import java.time.Instant
@@ -18,63 +16,6 @@ class DBServiceTest {
     @AfterAll
     fun tearDown() {
         database.closeConnection()
-    }
-
-    @Test
-    fun `skal lagre, hente, slette og oppdatere midlertidig lagrede journalposter`() {
-        val dbService = DBService(database)
-        val connection = dbService.getConnection()
-
-        val journalpostJson = this::class.java.getResource("/journalpost.json")!!.readText()
-        val journalpost = jacksonObjectMapper().readValue(
-            journalpostJson,
-            Journalpost::class.java
-        )
-        val id1 = "123456789012345678901234567890123456"
-        val id2 = "223456789012345678901234567890123456"
-        val journalpost1 = journalpost.copy(eksternReferanseId = id1)
-        val journalpost2 = journalpost.copy(eksternReferanseId = id2)
-
-        runBlocking {
-            // Lagre
-            dbService.lagreJournalpostMidlertidig(journalpost1)
-            dbService.lagreJournalpostMidlertidig(journalpost2)
-
-            // Hente
-            var journalpostData = connection.hentMidlertidigLagredeJournalposter()
-            assertEquals(2, journalpostData.size)
-            assertEquals(1, journalpostData.filter { it.first == id1 }.size)
-            assertEquals(1, journalpostData.filter { it.first == id2 }.size)
-
-            // Slette
-            connection.sletteMidlertidigLagretJournalpost(id1)
-
-            // Oppdater
-            connection.oppdaterMidlertidigLagretJournalpost(id2, 5)
-
-            // Hente
-            journalpostData = connection.hentMidlertidigLagredeJournalposter()
-            assertEquals(1, journalpostData.size)
-            val data = journalpostData.first { it.first == id2 }
-            assertEquals(5, data.third)
-        }
-    }
-
-    @Test
-    fun `skal lagre journalpost data`() {
-        val dbService = DBService(database)
-
-        runBlocking {
-            val result = database.dbQuery { hentJournalpostData() }
-            assertEquals(0, result.size)
-        }
-
-        dbService.lagreJournalpostData(123L, 223L, 323L)
-
-        runBlocking {
-            val result = database.dbQuery { hentJournalpostData() }
-            assertEquals(1, result.size)
-        }
     }
 
     @Test

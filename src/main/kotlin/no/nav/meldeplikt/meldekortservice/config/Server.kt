@@ -22,12 +22,10 @@ import no.nav.common.utils.EnvironmentUtils.Type.PUBLIC
 import no.nav.common.utils.EnvironmentUtils.Type.SECRET
 import no.nav.common.utils.EnvironmentUtils.setProperty
 import no.nav.meldeplikt.meldekortservice.api.*
-import no.nav.meldeplikt.meldekortservice.coroutine.SendJournalposterPaaNytt
 import no.nav.meldeplikt.meldekortservice.database.OracleDatabase
 import no.nav.meldeplikt.meldekortservice.database.PostgreSqlDatabase
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
 import no.nav.meldeplikt.meldekortservice.service.DBService
-import no.nav.meldeplikt.meldekortservice.service.DokarkivService
 import no.nav.meldeplikt.meldekortservice.utils.*
 import no.nav.security.token.support.v2.tokenValidationSupport
 import org.slf4j.event.Level
@@ -41,8 +39,7 @@ fun Application.mainModule(
     env: Environment = Environment(),
     mockDBService: DBService? = null,
     mockFlywayConfig: org.flywaydb.core.Flyway? = null,
-    mockArenaOrdsService: ArenaOrdsService? = null,
-    mockDokarkivService: DokarkivService? = null
+    mockArenaOrdsService: ArenaOrdsService? = null
 ) {
     setAppProperties(env)
 
@@ -52,7 +49,6 @@ fun Application.mainModule(
     flywayConfig.migrate()
 
     val arenaOrdsService = mockArenaOrdsService ?: ArenaOrdsService()
-    val dokarkivService = mockDokarkivService ?: DokarkivService()
 
     val appMicrometerRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
     install(MicrometerMetrics) {
@@ -89,7 +85,7 @@ fun Application.mainModule(
         swaggerRoutes()
         weblogicApi()
         meldekortApi(arenaOrdsService)
-        personApi(arenaOrdsService, defaultDbService, dokarkivService)
+        personApi(arenaOrdsService)
     }
 
     install(DoubleReceive) {
@@ -122,10 +118,6 @@ fun Application.mainModule(
 
     install(IncomingCallLoggingPlugin) {
         dbs = defaultDbService
-    }
-
-    if (env.dokarkivResendInterval > 0L) {
-        SendJournalposterPaaNytt(defaultDbService, dokarkivService, env.dokarkivResendInterval, 0).start()
     }
 }
 

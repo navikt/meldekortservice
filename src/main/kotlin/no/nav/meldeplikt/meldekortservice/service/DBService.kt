@@ -1,32 +1,14 @@
 package no.nav.meldeplikt.meldekortservice.service
 
 import kotlinx.coroutines.runBlocking
-import no.nav.meldeplikt.meldekortservice.database.*
+import no.nav.meldeplikt.meldekortservice.database.Database
+import no.nav.meldeplikt.meldekortservice.database.hentKallLoggFelterListeByKorrelasjonId
+import no.nav.meldeplikt.meldekortservice.database.lagreKallLogg
+import no.nav.meldeplikt.meldekortservice.database.lagreResponse
 import no.nav.meldeplikt.meldekortservice.model.database.KallLogg
-import no.nav.meldeplikt.meldekortservice.model.dokarkiv.Journalpost
 import java.sql.Connection
 
 class DBService(private val database: Database) {
-
-    fun lagreJournalpostData(journalpostId: Long, dokumentInfoId: Long, meldekortId: Long) {
-        database.translateExternalExceptionsToInternalOnes {
-            runBlocking {
-                database.dbQuery {
-                    lagreJournalpostData(journalpostId, dokumentInfoId, meldekortId)
-                }
-            }
-        }
-    }
-
-    fun lagreJournalpostMidlertidig(journalpost: Journalpost) {
-        database.translateExternalExceptionsToInternalOnes {
-            runBlocking {
-                database.dbQuery {
-                    lagreJournalpostMidlertidig(journalpost)
-                }
-            }
-        }
-    }
 
     fun lagreKallLogg(kallLogg: KallLogg): Long =
         runBlocking {
