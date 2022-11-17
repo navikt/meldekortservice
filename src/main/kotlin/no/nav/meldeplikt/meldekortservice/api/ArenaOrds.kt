@@ -2,40 +2,38 @@ package no.nav.meldeplikt.meldekortservice.api
 
 import io.ktor.server.locations.*
 import io.ktor.server.routing.*
-import no.nav.meldeplikt.meldekortservice.config.userIdent
-import no.nav.meldeplikt.meldekortservice.model.ArenaOrdsLesemodus
-import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
+import no.nav.meldeplikt.meldekortservice.model.ArenaOrdsSkrivemodus
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
 import no.nav.meldeplikt.meldekortservice.utils.*
 import no.nav.meldeplikt.meldekortservice.utils.swagger.*
 
 /**
-REST-controller for meldekort-api som tilbyr operasjon for å sjekke om Arena ORDS er i lesemodus.
+REST-controller for meldekort-api som tilbyr operasjon for å sjekke om Arena ORDS er i skrivemodus.
  */
 @KtorExperimentalLocationsAPI
-fun Routing.lesemodusApi(arenaOrdsService: ArenaOrdsService) {
-    getLesemodus(arenaOrdsService)
+fun Routing.skrivemodusApi(arenaOrdsService: ArenaOrdsService) {
+    getSkrivemodus(arenaOrdsService)
 }
 
-private const val lesemodusGroup = "Lesemodus"
+private const val skrivemodusGroup = "Skrivemodus"
 
-@Group(lesemodusGroup)
-@Location(LESEMODUS_PATH)
+@Group(skrivemodusGroup)
+@Location(SKRIVEMODUS_PATH)
 @KtorExperimentalLocationsAPI
-class LesemodusInput
+class SkrivemodusInput
 
-// Hent lesemodus
+// Hent skrivemodus
 @KtorExperimentalLocationsAPI
-fun Routing.getLesemodus(arenaOrdsService: ArenaOrdsService) =
-    get<LesemodusInput>(
-        "Hent Arena ORDS lesemodus".securityAndResponse(
+fun Routing.getSkrivemodus(arenaOrdsService: ArenaOrdsService) =
+    get<SkrivemodusInput>(
+        "Hent Arena ORDS skrivemodus".securityAndResponse(
             BearerTokenSecurity(),
-            ok<ArenaOrdsLesemodus>(),
+            ok<ArenaOrdsSkrivemodus>(),
             serviceUnavailable<ErrorMessage>(),
             badRequest<ErrorMessage>(),
             unAuthorized<Error>()
         )
     ) { respondOrError {
-            arenaOrdsService.hentLesemodus()
+            arenaOrdsService.hentSkrivemodus()
         }
     }

@@ -222,12 +222,12 @@ class ArenaOrdsServiceTest {
     }
 
     @Test
-    fun `test hente lesemodus returns OK status`() {
+    fun `test hente skrivemodus returns OK status`() {
         val response = OrdsStringResponse(HttpStatusCode.OK, "test")
         val client = HttpClient(MockEngine) {
             engine {
                 addHandler { request ->
-                    if (request.url.encodedPath.contains("/api/v1/app/lesemodus")
+                    if (request.url.encodedPath.contains("/api/v1/app/skrivemodus")
                         && request.url.host.contains("dummyurl.nav.no")
                     ) {
                         respond(
@@ -243,7 +243,7 @@ class ArenaOrdsServiceTest {
         val arenaOrdsService = ArenaOrdsService(client)
 
         runBlocking {
-            val actualResponse = arenaOrdsService.hentLesemodus()
+            val actualResponse = arenaOrdsService.hentSkrivemodus()
             val ordsResponse: OrdsStringResponse = defaultObjectMapper.readValue(actualResponse.content)
 
             assertEquals(HttpStatusCode.OK, actualResponse.status)
@@ -252,11 +252,11 @@ class ArenaOrdsServiceTest {
     }
 
     @Test
-    fun `test hente lesemodus throws Exception`() {
+    fun `test hente skrivemodus throws Exception`() {
         val client = HttpClient(MockEngine) {
             engine {
                 addHandler { request ->
-                    if (request.url.encodedPath.contains("/api/v1/app/lesemodus")
+                    if (request.url.encodedPath.contains("/api/v1/app/skrivemodus")
                         && request.url.host.contains("dummyurl.nav.no")
                     ) {
                         respond(
@@ -272,10 +272,10 @@ class ArenaOrdsServiceTest {
         val arenaOrdsService = ArenaOrdsService(client)
         val exception = assertThrows<OrdsException> {
             runBlocking {
-                arenaOrdsService.hentLesemodus()
+                arenaOrdsService.hentSkrivemodus()
             }
         }
-        assertEquals("Kunne ikke hente lesemodus fra Arena Ords.", exception.localizedMessage)
+        assertEquals("Kunne ikke hente skrivemodus fra Arena Ords.", exception.localizedMessage)
     }
 
 }
