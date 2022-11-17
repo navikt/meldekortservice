@@ -25,7 +25,7 @@ val ojdbc8Version = "19.3.0.0"
 val postgresVersion = "42.5.0"
 val swaggerVersion = "4.15.5" // Husk å endre versjonen også i SwaggerUi.kt
 val tjenestespecVersion = "2606.1f6354e"
-val tokenValidationVersion = "2.1.6"
+val tokenValidationVersion = "2.1.8"
 val vaultJdbcVersion = "1.3.10"
 val vaultVersion = "5.1.0"
 
