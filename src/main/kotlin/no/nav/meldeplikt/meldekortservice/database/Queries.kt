@@ -3,15 +3,11 @@ package no.nav.meldeplikt.meldekortservice.database
 import no.nav.meldeplikt.meldekortservice.model.database.KallLogg
 import java.io.Reader
 import java.io.Writer
-import java.nio.ByteBuffer
-import java.nio.CharBuffer
-import java.nio.charset.StandardCharsets
 import java.sql.Clob
 import java.sql.Connection
 import java.sql.DatabaseMetaData
 import java.sql.Timestamp
 import java.time.Instant
-import java.util.*
 import javax.sql.rowset.serial.SerialClob
 
 
@@ -161,13 +157,6 @@ fun Connection.hentKallLoggFelterListeByKorrelasjonId(korrelasjonId: String): Li
         }
 
     return list
-}
-
-// It would be better to convert an object to a string and then string to array of chars
-// But because of some interceptor that converts FNR into * in test-environment, we have to convert objects to bytes first
-private fun bytesToChars(bytes: ByteArray?): CharArray {
-    val charBuffer: CharBuffer = StandardCharsets.UTF_8.decode(ByteBuffer.wrap(bytes))
-    return Arrays.copyOf(charBuffer.array(), charBuffer.limit())
 }
 
 // Generic solution for Oracle Clob and PostgreSQL Text
