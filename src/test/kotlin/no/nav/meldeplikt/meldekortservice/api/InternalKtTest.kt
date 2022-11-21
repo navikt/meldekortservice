@@ -33,8 +33,8 @@ class InternalKtTest : TestBase() {
         val response5 = client.get("$INTERNAL_PATH/apidocs/swagger.json")
         assertEquals(HttpStatusCode.OK, response5.status)
         assertEquals(
-            defaultObjectMapper.writeValueAsString(swagger).replace("\r\n", "").replace(" ", ""),
-            response5.bodyAsText().replace("\r\n", "").replace(" ", "")
+            defaultObjectMapper.writeValueAsString(swagger).replace("\n", "").replace("\r", "").replace(" ", ""),
+            response5.bodyAsText().replace("\n", "").replace("\r", "").replace(" ", "")
         )
 
         val response6 = client.get("$INTERNAL_PATH/isAlive")
