@@ -19,17 +19,6 @@ data class Environment(
     val ordsClientSecret: String = getEnvVar("CLIENT_SECRET", "cLiEnTsEcReT"),
     val sakOgAktivitetUrl: String = getEnvVar("SAKOGAKTIVITET_URI", DUMMY_URL),
 
-    // Meldekort-kontroll
-    val meldekortKontrollUrl: String = getEnvVar("KONTROLL_URI", DUMMY_URL),
-    val meldekortKontrollClientid: String = getEnvVar("KONTROLL_CLIENT_ID", "test"),
-    val oauthEndpoint: String = getEnvVar("KONTROLL_OAUTH_ENDPOINT", "test"),
-    val oauthTenant: String = getEnvVar("KONTROLL_OAUTH_TENANT_ID", "test"),
-
-    // Azure AD
-    val oauthClientId: String = getEnvVar("AZURE_APP_CLIENT_ID", "test"),
-    val oauthJwk: String = getEnvVar("AZURE_APP_JWK", "test"),
-    val oauthClientSecret: String = getEnvVar("AZURE_APP_CLIENT_SECRET", "test"),
-
     // PostgreSQL
     val dbHostPostgreSQL: String = getEnvVar("DB_HOST", "localhost:5432"),
     val dbNamePostgreSQL: String = getEnvVar("DB_NAME", "meldeplikt"),
@@ -56,11 +45,6 @@ data class Environment(
 
     // Brukes av SoapService
     val stsUrl: String = getEnvVar("SECURITYTOKENSERVICE", "https://ststest.nav.no/"), // URL må ha / på slutten
-    // Brukes av DokarkiveService
-    val stsNaisUrl: String = removeTrailingSlash(getEnvVar("SECURITYTOKENSERVICE_NAIS", "https://ststest.nav.no/")),
-
-    val dokarkivUrl: String = removeTrailingSlash(getEnvVar("DOKARKIV_URL", "https://dokarkivtest.nav.no/")),
-    val dokarkivResendInterval: Long = getEnvVar("DOKARKIV_RESEND_INTERVAL", "300000").toLong() // 5 minutes by default
 )
 
 fun getEnvVar(varName: String, defaultValue: String? = null): String {
