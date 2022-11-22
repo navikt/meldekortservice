@@ -28,7 +28,7 @@ class ArenaOrdsService(
     suspend fun hentMeldekort(fnr: String): OrdsStringResponse {
         val execResult: Result<HttpResponse> = runCatching {
             ordsClient.request("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORT") {
-                setupOrdsRequestFnr(fnr)
+                setupOrdsRequestFnr("15928898293")
             }
         }
 
@@ -70,7 +70,10 @@ class ArenaOrdsService(
             return nyMeldekortId
 
         } catch (e: Exception) {
-            defaultLog.warn("Feil ved opprettelse av meldekort for korrigering! Meldekort med id $meldekortId har ikke blitt kopiert.", e)
+            defaultLog.warn(
+                "Feil ved opprettelse av meldekort for korrigering! Meldekort med id $meldekortId har ikke blitt kopiert.",
+                e
+            )
         }
 
         return 0
@@ -90,6 +93,7 @@ class ArenaOrdsService(
 
         return OrdsStringResponse(skrivemodus.status, skrivemodus.body())
     }
+
 
     private fun HttpRequestBuilder.setupOrdsRequestFnr(fnr: String? = null) {
         return setupOrdsRequest(null, fnr)

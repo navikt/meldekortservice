@@ -34,4 +34,4 @@
 *.log
 
 ### misc ###
-run-local.*
+run-local*

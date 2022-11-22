@@ -33,7 +33,9 @@ fun Routing.getSkrivemodus(arenaOrdsService: ArenaOrdsService) =
             badRequest<ErrorMessage>(),
             unAuthorized<Error>()
         )
-    ) { respondOrError {
-            arenaOrdsService.hentSkrivemodus()
+    ) {
+        respondOrError {
+            val response = arenaOrdsService.hentSkrivemodus()
+            defaultObjectMapper.readValue(response.content, ArenaOrdsSkrivemodus::class.java)
         }
     }

@@ -31,9 +31,9 @@ data class Environment(
     val oauthClientSecret: String = getEnvVar("AZURE_APP_CLIENT_SECRET", "test"),
 
     // PostgreSQL
-    val dbHostPostgreSQL: String = getEnvVar("DB_HOST", "localhost:5432"),
-    val dbNamePostgreSQL: String = getEnvVar("DB_NAME", "meldeplikt"),
-    val dbUserPostgreSQL: String = getEnvVar("DB_NAME", "test") + "-user",
+    val dbHostPostgreSQL: String = getEnvVar("DB_HOST", "localhost:5434"),
+    val dbNamePostgreSQL: String = getEnvVar("DB_NAME", "meldekortservice-local"),
+    val dbUserPostgreSQL: String = getEnvVar("DB_USERNAME", "meldekortservice-local"),
     val dbUrlPostgreSQL: String = "jdbc:postgresql://$dbHostPostgreSQL/$dbNamePostgreSQL",
     val dbPasswordPostgreSQL: String = getEnvVar("DB_PASSWORD", "testpassword"),
 
