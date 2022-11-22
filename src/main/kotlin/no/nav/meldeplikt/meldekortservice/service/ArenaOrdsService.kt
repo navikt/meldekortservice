@@ -28,7 +28,7 @@ class ArenaOrdsService(
     suspend fun hentMeldekort(fnr: String): OrdsStringResponse {
         val execResult: Result<HttpResponse> = runCatching {
             ordsClient.request("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORT") {
-                setupOrdsRequestFnr("15928898293")
+                setupOrdsRequestFnr(fnr)
             }
         }
 
