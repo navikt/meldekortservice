@@ -86,23 +86,15 @@ class ArenaOrdsService(
                 setupOrdsRequest()
             }
         }
-//        if (execResult.isFailure || !HTTP_STATUS_CODES_2XX.contains(skrivemodus!!.status.value)) {
-//            throw OrdsException("Kunne ikke hente skrivemodus fra Arena Ords.")
-//        }
-//
-//        return OrdsStringResponse(skrivemodus.status, skrivemodus.body())
 
         val skrivemodus = execResult.getOrNull()
 
-//        if (execResult.isFailure || !HTTP_STATUS_CODES_2XX.contains(skrivemodus!!.status.value)) {
-            if (execResult.isFailure || HTTP_STATUS_CODES_2XX.contains(skrivemodus!!.status.value)) { // TEST
-//            throw OrdsException("Kunne ikke hente skrivemodus fra Arena Ords.")
-            return OrdsStringResponse(skrivemodus!!.status, ArenaOrdsSkrivemodus(skrivemodus = false).toString())
+        if (execResult.isFailure || !HTTP_STATUS_CODES_2XX.contains(skrivemodus!!.status.value)) {
+            throw OrdsException("Kunne ikke hente skrivemodus fra Arena Ords.")
         }
 
         return OrdsStringResponse(skrivemodus.status, skrivemodus.body())
     }
-
 
     private fun HttpRequestBuilder.setupOrdsRequestFnr(fnr: String? = null) {
         return setupOrdsRequest(null, fnr)
