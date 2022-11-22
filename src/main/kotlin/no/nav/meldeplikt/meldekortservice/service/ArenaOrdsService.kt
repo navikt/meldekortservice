@@ -10,6 +10,7 @@ import no.nav.meldeplikt.meldekortservice.config.DUMMY_URL
 import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.mapper.MeldekortdetaljerMapper
 import no.nav.meldeplikt.meldekortservice.model.AccessToken
+import no.nav.meldeplikt.meldekortservice.model.ArenaOrdsSkrivemodus
 import no.nav.meldeplikt.meldekortservice.model.feil.OrdsException
 import no.nav.meldeplikt.meldekortservice.model.korriger.KopierMeldekortResponse
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
@@ -85,10 +86,18 @@ class ArenaOrdsService(
                 setupOrdsRequest()
             }
         }
+//        if (execResult.isFailure || !HTTP_STATUS_CODES_2XX.contains(skrivemodus!!.status.value)) {
+//            throw OrdsException("Kunne ikke hente skrivemodus fra Arena Ords.")
+//        }
+//
+//        return OrdsStringResponse(skrivemodus.status, skrivemodus.body())
 
         val skrivemodus = execResult.getOrNull()
-        if (execResult.isFailure || !HTTP_STATUS_CODES_2XX.contains(skrivemodus!!.status.value)) {
-            throw OrdsException("Kunne ikke hente skrivemodus fra Arena Ords.")
+
+//        if (execResult.isFailure || !HTTP_STATUS_CODES_2XX.contains(skrivemodus!!.status.value)) {
+            if (execResult.isFailure || HTTP_STATUS_CODES_2XX.contains(skrivemodus!!.status.value)) { // TEST
+//            throw OrdsException("Kunne ikke hente skrivemodus fra Arena Ords.")
+            return OrdsStringResponse(skrivemodus!!.status, ArenaOrdsSkrivemodus(skrivemodus = false).toString())
         }
 
         return OrdsStringResponse(skrivemodus.status, skrivemodus.body())
