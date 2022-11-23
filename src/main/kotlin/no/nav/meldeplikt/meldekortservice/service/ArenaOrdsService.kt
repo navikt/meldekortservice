@@ -80,20 +80,23 @@ class ArenaOrdsService(
         return 0
     }
 
-    suspend fun hentSkrivemodus(): OrdsStringResponse {
+    suspend fun hentSkrivemodus(): ArenaOrdsSkrivemodus {
         val execResult: Result<HttpResponse> = runCatching {
             ordsClient.request("${env.ordsUrl}$ARENA_ORDS_HENT_SKRIVEMODUS") {
                 setupOrdsRequest()
             }
         }
 
-        val skrivemodus = execResult.getOrNull()
+        val response = execResult.getOrNull()
 
-        if (execResult.isFailure || !HTTP_STATUS_CODES_2XX.contains(skrivemodus!!.status.value)) {
-            throw OrdsException("Kunne ikke hente skrivemodus fra Arena Ords.")
+        if (execResult.isFailure || !HTTP_STATUS_CODES_2XX.contains(response!!.status.value)) {
+            return ArenaOrdsSkrivemodus(false)
         }
 
-        return OrdsStringResponse(skrivemodus.status, skrivemodus.body())
+        val content =
+            defaultObjectMapper.readValue(response.body<String>(), ArenaOrdsSkrivemodus::class.java)
+
+        return ArenaOrdsSkrivemodus(content.skrivemodus)
     }
 
     private fun HttpRequestBuilder.setupOrdsRequestFnr(fnr: String? = null) {

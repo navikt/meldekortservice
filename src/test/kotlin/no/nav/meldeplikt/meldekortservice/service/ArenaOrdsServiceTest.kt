@@ -8,6 +8,7 @@ import io.mockk.every
 import io.mockk.mockkStatic
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.config.DUMMY_TOKEN
+import no.nav.meldeplikt.meldekortservice.model.ArenaOrdsSkrivemodus
 import no.nav.meldeplikt.meldekortservice.model.feil.OrdsException
 import no.nav.meldeplikt.meldekortservice.model.response.OrdsStringResponse
 import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
@@ -222,14 +223,12 @@ class ArenaOrdsServiceTest {
     }
 
     @Test
-    fun `test hente skrivemodus returns OK status`() {
-        val response = OrdsStringResponse(HttpStatusCode.OK, "test")
+    fun `test hente skrivemodus når ORDS er i skrivemodus returns true`() {
+        val response = ArenaOrdsSkrivemodus(true)
         val client = HttpClient(MockEngine) {
             engine {
                 addHandler { request ->
-                    if (request.url.encodedPath.contains("/api/v1/app/skrivemodus")
-                        && request.url.host.contains("dummyurl.nav.no")
-                    ) {
+                    if (request.url.toString() == "https://dummyurl.nav.no/api/v1/app/skrivemodus") {
                         respond(
                             defaultObjectMapper.writeValueAsString(response),
                             headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
@@ -244,24 +243,19 @@ class ArenaOrdsServiceTest {
 
         runBlocking {
             val actualResponse = arenaOrdsService.hentSkrivemodus()
-            val ordsResponse: OrdsStringResponse = defaultObjectMapper.readValue(actualResponse.content)
 
-            assertEquals(HttpStatusCode.OK, actualResponse.status)
-            assertEquals(response.content, ordsResponse.content)
+            assertEquals(true, actualResponse.skrivemodus)
         }
     }
 
     @Test
-    fun `test hente skrivemodus throws Exception`() {
+    fun `test hente skrivemodus når ORDS er utilgjengelig returns false`() {
         val client = HttpClient(MockEngine) {
             engine {
                 addHandler { request ->
-                    if (request.url.encodedPath.contains("/api/v1/app/skrivemodus")
-                        && request.url.host.contains("dummyurl.nav.no")
-                    ) {
+                    if (request.url.toString() == "https://dummyurl.nav.no/api/v1/app/dummy") {
                         respond(
                             "",
-                            HttpStatusCode.InternalServerError
                         )
                     } else {
                         respondError(HttpStatusCode.BadRequest)
@@ -270,12 +264,12 @@ class ArenaOrdsServiceTest {
             }
         }
         val arenaOrdsService = ArenaOrdsService(client)
-        val exception = assertThrows<OrdsException> {
-            runBlocking {
-                arenaOrdsService.hentSkrivemodus()
-            }
+
+        runBlocking {
+            val actualResponse = arenaOrdsService.hentSkrivemodus()
+
+            assertEquals(false, actualResponse.skrivemodus)
         }
-        assertEquals("Kunne ikke hente skrivemodus fra Arena Ords.", exception.localizedMessage)
     }
 
 }

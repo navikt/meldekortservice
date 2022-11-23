@@ -35,7 +35,6 @@ fun Routing.getSkrivemodus(arenaOrdsService: ArenaOrdsService) =
         )
     ) {
         respondOrError {
-            val response = arenaOrdsService.hentSkrivemodus()
-            defaultObjectMapper.readValue(response.content, ArenaOrdsSkrivemodus::class.java)
+            arenaOrdsService.hentSkrivemodus()
         }
     }
