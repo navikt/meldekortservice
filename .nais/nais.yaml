@@ -25,11 +25,11 @@ spec:
   {{/each}}
   liveness:
     path: /meldekortservice/internal/isAlive
-    initialDelay: 10
+    initialDelay: 15
     timeout: 10
   readiness:
     path: /meldekortservice/internal/isReady
-    initialDelay: 10
+    initialDelay: 15
     timeout: 10
   vault:
     enabled: true
