@@ -17,18 +17,6 @@ data class Environment(
     val ordsUrl: URL = URL(getEnvVar("ORDS_URI", DUMMY_URL)),
     val ordsClientId: String = getEnvVar("CLIENT_ID", "cLiEnTiD"),
     val ordsClientSecret: String = getEnvVar("CLIENT_SECRET", "cLiEnTsEcReT"),
-    val sakOgAktivitetUrl: String = getEnvVar("SAKOGAKTIVITET_URI", DUMMY_URL),
-
-    // Meldekort-kontroll
-    val meldekortKontrollUrl: String = getEnvVar("KONTROLL_URI", DUMMY_URL),
-    val meldekortKontrollClientid: String = getEnvVar("KONTROLL_CLIENT_ID", "test"),
-    val oauthEndpoint: String = getEnvVar("KONTROLL_OAUTH_ENDPOINT", "test"),
-    val oauthTenant: String = getEnvVar("KONTROLL_OAUTH_TENANT_ID", "test"),
-
-    // Azure AD
-    val oauthClientId: String = getEnvVar("AZURE_APP_CLIENT_ID", "test"),
-    val oauthJwk: String = getEnvVar("AZURE_APP_JWK", "test"),
-    val oauthClientSecret: String = getEnvVar("AZURE_APP_CLIENT_SECRET", "test"),
 
     // PostgreSQL
     val dbHostPostgreSQL: String = getEnvVar("DB_HOST", "localhost:5434"),
@@ -43,31 +31,11 @@ data class Environment(
         getEnvVar("DB_USER_MELDEKORTSERVICE_PASSWORD", "password")
     ),
     val dbConfOracle: VaultDbConfig = VaultDbConfig(getEnvVar("DB_CONFIG_MELDEKORTSERVICE_JDBCURL", "jdbcUrl")),
-
-    // Serviceusers
-    val srvMeldekortservice: VaultCredentials = VaultCredentials(
-        getEnvVar("SERVICEUSER_MELDEKORTSERVICE_USERNAME", "username"),
-        getEnvVar("SERVICEUSER_MELDEKORTSERVICE_PASSWORD", "password")
-    ),
-
-    // Brukes av DokarkiveService
-    val stsNaisUrl: String = removeTrailingSlash(getEnvVar("SECURITYTOKENSERVICE_NAIS", "https://ststest.nav.no/")),
-
-    val dokarkivUrl: String = removeTrailingSlash(getEnvVar("DOKARKIV_URL", "https://dokarkivtest.nav.no/")),
-    val dokarkivResendInterval: Long = getEnvVar("DOKARKIV_RESEND_INTERVAL", "300000").toLong() // 5 minutes by default
 )
 
 fun getEnvVar(varName: String, defaultValue: String? = null): String {
     return System.getenv(varName) ?: defaultValue
     ?: throw IllegalArgumentException("Variabelen $varName kan ikke være tom")
-}
-
-fun removeTrailingSlash(s: String): String {
-    return if (s.endsWith("/")) {
-        s.substring(0, s.length - 1)
-    } else {
-        s
-    }
 }
 
 data class VaultCredentials(

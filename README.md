@@ -41,7 +41,6 @@ Spørsmål knyttet til koden eller prosjektet kan rettes mot https://github.com/
 Interne henvendelser kan sendes via Slack i kanalen #meldekort.
 
 ## Dokumentasjon
-Dokumentasjon finnes i [Confluence](https://confluence.adeo.no/display/TMP/Meldekort-api).
-Om Meldekort journalføring: https://confluence.adeo.no/pages/viewpage.action?pageId=431009242
+Dokumentasjon finnes i [Confluence](https://confluence.adeo.no/display/TMP/Meldekort-api)
 
 For å sjekke om det finnes nye versjoner av avhengigheter, kan man kjøre: `./gradlew dependencyUpdates`

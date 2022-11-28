@@ -2,28 +2,29 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
-val flywayVersion = "9.4.0"
+val cxfVersion = "3.5.4"
+val flywayVersion = "9.8.1"
 val h2Version = "2.1.214"
-val jacksonVersion = "2.13.4"
+val jacksonVersion = "2.14.0"
 val javaxActivationVersion = "1.1.1"
 val javaxAnnotationApiVersion = "1.3.2"
 val jaxbApiVersion = "2.4.0-b180830.0359"
-val jaxbRuntimeVersion = "4.0.0"
+val jaxbRuntimeVersion = "4.0.1"
 val jaxwsApiVersion = "2.3.1"
 val jaxwsToolsVersion = "2.3.5" // Senere versjoner har ikke javax.jws.WebService
-val kotlinLoggerVersion = "3.0.0"
+val kotlinLoggerVersion = "3.0.4"
 val ktorVersion = "2.1.2"
-val logbackVersion = "1.4.3"
+val logbackVersion = "1.4.4"
 val logstashVersion = "7.2"
-val micrometerVersion = "1.9.4"
-val mockOauthVersion = "0.5.4"
+val micrometerVersion = "1.10.1"
+val mockOauthVersion = "0.5.6"
 val mockkVersion = "1.13.2"
 val navCommonCacheVersion = "2.2020.03.18_12.19-ac82e907ebc9"
-val navCommonVersion = "2.2022.09.26_07.11-78a5190823bd"
+val navCommonVersion = "2.2022.11.16_15.18-421ec713e2a0"
 val ojdbc8Version = "19.3.0.0"
 val postgresVersion = "42.5.0"
-val swaggerVersion = "4.14.2" // Husk å endre versjonen også i SwaggerUi.kt
-val tjenestespecVersion = "2589.e85bf84"
+val swaggerVersion = "4.15.5" // Husk å endre versjonen også i SwaggerUi.kt
+val tjenestespecVersion = "2606.1f6354e"
 val tokenValidationVersion = "2.1.6"
 val vaultJdbcVersion = "1.3.10"
 val vaultVersion = "5.1.0"
@@ -46,11 +47,11 @@ plugins {
 
     id("com.github.johnrengelman.shadow") version "7.1.2"
 
-    id("org.flywaydb.flyway") version ("9.0.1")
+    id("org.flywaydb.flyway") version ("9.8.1")
 
-    id("org.sonarqube") version "3.4.0.2513"
+    id("org.sonarqube") version "3.5.0.2730"
 
-    id("com.github.ben-manes.versions") version "0.42.0"
+    id("com.github.ben-manes.versions") version "0.44.0"
 
     jacoco
 

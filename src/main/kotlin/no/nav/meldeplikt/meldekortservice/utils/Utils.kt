@@ -26,7 +26,6 @@ import no.nav.cache.Cache
 import no.nav.cache.CacheConfig
 import no.nav.cache.CacheUtils
 import no.nav.meldeplikt.meldekortservice.config.OutgoingCallLoggingPlugin
-import no.nav.meldeplikt.meldekortservice.config.defaultDbService
 import no.nav.meldeplikt.meldekortservice.model.AccessToken
 import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Contact
@@ -54,10 +53,7 @@ internal const val MELDEKORT_PATH = "$API_PATH/meldekort"
 internal const val PERSON_PATH = "$API_PATH/person"
 internal const val HISTORISKE_MELDEKORT_PATH = "$PERSON_PATH/historiskemeldekort"
 internal const val PERSON_MELDEKORT_PATH = "$PERSON_PATH/meldekort"
-internal const val OPPRETT_JOURNALPOST_PATH = "$PERSON_PATH/opprettJournalpost"
 internal const val SKRIVEMODUS_PATH = "$API_PATH/skrivemodus"
-
-internal const val KONTROLL_KONTROLL = "/api/v1/kontroll"
 
 internal const val ARENA_ORDS_API_V1_APP = "/api/v1/app"
 internal const val ARENA_ORDS_HENT_SKRIVEMODUS = "$ARENA_ORDS_API_V1_APP/skrivemodus"
@@ -73,11 +69,6 @@ internal const val DB_ORACLE_USERNAME = "oracleDbUser.username"
 internal const val DB_ORACLE_PASSWORD = "oracleDbUser.password"
 internal const val DB_ORACLE_CONF = "oracleDbConf.jdbcUrl"
 
-internal const val STS_PATH = "/rest/v1/sts/token"
-
-internal const val JOURNALPOSTAPI_PATH = "/rest/journalpostapi/v1"
-internal const val JOURNALPOST_PATH = "$JOURNALPOSTAPI_PATH/journalpost"
-
 internal val HTTP_STATUS_CODES_2XX = IntRange(200, 299)
 
 internal const val MDC_CORRELATION_ID = "correlationId"
@@ -91,7 +82,7 @@ val swagger = Swagger(
     info = Information(
         version = "1",
         title = "Meldekortservice",
-        description = "Proxy-api for meldekort-applikasjonen (front-end). Api'et benyttes mot Arena og meldekortkontroll-api  \n" +
+        description = "Proxy-api for meldekort-applikasjonen (front-end). Api'et benyttes mot Arena  \n" +
                 "GitHub repo: [https://github.com/navikt/meldekortservice](https://github.com/navikt/meldekortservice)  \n" +
                 "Slack: [#team-meldeplikt](https://nav-it.slack.com/archives/CQ61EHWP9)",
         contact = Contact(
@@ -175,14 +166,14 @@ fun HttpClientConfig<*>.defaultHttpClientConfig() {
         socketTimeoutMillis = 10000 //  of inactivity between two data packets when exchanging data with a server
     }
     install("OutgoingCallInterceptor") {
-        OutgoingCallLoggingPlugin(defaultDbService).intercept(this)
+        OutgoingCallLoggingPlugin().intercept(this)
     }
     expectSuccess = false
 }
 
 lateinit var httpClient: HttpClient
 fun defaultHttpClient(): HttpClient {
-    if(!::httpClient.isInitialized) {
+    if (!::httpClient.isInitialized) {
         httpClient = HttpClient(Apache) {
             defaultHttpClientConfig()
             engine {
