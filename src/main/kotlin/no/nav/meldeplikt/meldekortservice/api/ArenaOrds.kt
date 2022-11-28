@@ -15,9 +15,9 @@ fun Routing.skrivemodusApi(arenaOrdsService: ArenaOrdsService) {
     getSkrivemodus(arenaOrdsService)
 }
 
-private const val skrivemodusGroup = "Skrivemodus"
+private const val arenaOrdsGroup = "Arena ORDS"
 
-@Group(skrivemodusGroup)
+@Group(arenaOrdsGroup)
 @Location(SKRIVEMODUS_PATH)
 @KtorExperimentalLocationsAPI
 class SkrivemodusInput
