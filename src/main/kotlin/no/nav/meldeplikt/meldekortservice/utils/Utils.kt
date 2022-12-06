@@ -53,26 +53,21 @@ internal const val MELDEKORT_PATH = "$API_PATH/meldekort"
 internal const val PERSON_PATH = "$API_PATH/person"
 internal const val HISTORISKE_MELDEKORT_PATH = "$PERSON_PATH/historiskemeldekort"
 internal const val PERSON_MELDEKORT_PATH = "$PERSON_PATH/meldekort"
-internal const val WEBLOGIC_PING_PATH = "$API_PATH/weblogic"
+internal const val SKRIVEMODUS_PATH = "$API_PATH/skrivemodus"
 
-internal const val ARENA_ORDS_API_MELDEPLIKT_V2 = "/api/v2/meldeplikt"
+internal const val ARENA_ORDS_API_V1_APP = "/api/v1/app"
+internal const val ARENA_ORDS_HENT_SKRIVEMODUS = "$ARENA_ORDS_API_V1_APP/skrivemodus"
+internal const val ARENA_ORDS_API_V2_MELDEPLIKT = "/api/v2/meldeplikt"
 internal const val ARENA_ORDS_TOKEN_PATH = "/api/oauth/token"
-internal const val ARENA_ORDS_HENT_MELDEKORT = "$ARENA_ORDS_API_MELDEPLIKT_V2/meldekort"
-internal const val ARENA_ORDS_HENT_HISTORISKE_MELDEKORT = "$ARENA_ORDS_API_MELDEPLIKT_V2/meldekort/historiske?"
+internal const val ARENA_ORDS_HENT_MELDEKORT = "$ARENA_ORDS_API_V2_MELDEPLIKT/meldekort"
+internal const val ARENA_ORDS_HENT_HISTORISKE_MELDEKORT = "$ARENA_ORDS_API_V2_MELDEPLIKT/meldekort/historiske?"
 internal const val ARENA_ORDS_MELDEPERIODER_PARAM = "antMeldeperioder="
-internal const val ARENA_ORDS_HENT_MELDEKORTDETALJER = "$ARENA_ORDS_API_MELDEPLIKT_V2/meldekort/detaljer?meldekortId="
-internal const val ARENA_ORDS_KOPIER_MELDEKORT = "$ARENA_ORDS_API_MELDEPLIKT_V2/meldekort/kopi"
-
-internal const val SBL_ARBEID_USERNAME = "srvSBLArbeid.username"
-internal const val SBL_ARBEID_PASSWORD = "srvSBLArbeid.password"
+internal const val ARENA_ORDS_HENT_MELDEKORTDETALJER = "$ARENA_ORDS_API_V2_MELDEPLIKT/meldekort/detaljer?meldekortId="
+internal const val ARENA_ORDS_KOPIER_MELDEKORT = "$ARENA_ORDS_API_V2_MELDEPLIKT/meldekort/kopi"
 
 internal const val DB_ORACLE_USERNAME = "oracleDbUser.username"
 internal const val DB_ORACLE_PASSWORD = "oracleDbUser.password"
 internal const val DB_ORACLE_CONF = "oracleDbConf.jdbcUrl"
-
-internal const val SOAP_STS_URL_KEY = "no.nav.modig.security.sts.url"
-internal const val SOAP_SYSTEMUSER_USERNAME = "no.nav.modig.security.systemuser.username"
-internal const val SOAP_SYSTEMUSER_PASSWORD = "no.nav.modig.security.systemuser.password"
 
 internal val HTTP_STATUS_CODES_2XX = IntRange(200, 299)
 
@@ -178,7 +173,7 @@ fun HttpClientConfig<*>.defaultHttpClientConfig() {
 
 lateinit var httpClient: HttpClient
 fun defaultHttpClient(): HttpClient {
-    if(!::httpClient.isInitialized) {
+    if (!::httpClient.isInitialized) {
         httpClient = HttpClient(Apache) {
             defaultHttpClientConfig()
             engine {

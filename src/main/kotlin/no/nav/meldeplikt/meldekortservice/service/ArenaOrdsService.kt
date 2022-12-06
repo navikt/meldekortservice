@@ -10,6 +10,7 @@ import no.nav.meldeplikt.meldekortservice.config.DUMMY_URL
 import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.mapper.MeldekortdetaljerMapper
 import no.nav.meldeplikt.meldekortservice.model.AccessToken
+import no.nav.meldeplikt.meldekortservice.model.ArenaOrdsSkrivemodus
 import no.nav.meldeplikt.meldekortservice.model.feil.OrdsException
 import no.nav.meldeplikt.meldekortservice.model.korriger.KopierMeldekortResponse
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
@@ -70,10 +71,32 @@ class ArenaOrdsService(
             return nyMeldekortId
 
         } catch (e: Exception) {
-            defaultLog.warn("Feil ved opprettelse av meldekort for korrigering! Meldekort med id $meldekortId har ikke blitt kopiert.", e)
+            defaultLog.warn(
+                "Feil ved opprettelse av meldekort for korrigering! Meldekort med id $meldekortId har ikke blitt kopiert.",
+                e
+            )
         }
 
         return 0
+    }
+
+    suspend fun hentSkrivemodus(): ArenaOrdsSkrivemodus {
+        val execResult: Result<HttpResponse> = runCatching {
+            ordsClient.request("${env.ordsUrl}$ARENA_ORDS_HENT_SKRIVEMODUS") {
+                setupOrdsRequest()
+            }
+        }
+
+        val response = execResult.getOrNull()
+
+        if (execResult.isFailure || !HTTP_STATUS_CODES_2XX.contains(response!!.status.value)) {
+            return ArenaOrdsSkrivemodus(false)
+        }
+
+        val content =
+            defaultObjectMapper.readValue(response.body<String>(), ArenaOrdsSkrivemodus::class.java)
+
+        return ArenaOrdsSkrivemodus(content.skrivemodus)
     }
 
     private fun HttpRequestBuilder.setupOrdsRequestFnr(fnr: String? = null) {

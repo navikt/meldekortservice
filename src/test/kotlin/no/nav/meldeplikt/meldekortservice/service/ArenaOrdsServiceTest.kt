@@ -8,6 +8,7 @@ import io.mockk.every
 import io.mockk.mockkStatic
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.config.DUMMY_TOKEN
+import no.nav.meldeplikt.meldekortservice.model.ArenaOrdsSkrivemodus
 import no.nav.meldeplikt.meldekortservice.model.feil.OrdsException
 import no.nav.meldeplikt.meldekortservice.model.response.OrdsStringResponse
 import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
@@ -220,4 +221,55 @@ class ArenaOrdsServiceTest {
             assertEquals(0, actualResponse)
         }
     }
+
+    @Test
+    fun `test hente skrivemodus når ORDS er i skrivemodus returns true`() {
+        val response = ArenaOrdsSkrivemodus(true)
+        val client = HttpClient(MockEngine) {
+            engine {
+                addHandler { request ->
+                    if (request.url.toString() == "https://dummyurl.nav.no/api/v1/app/skrivemodus") {
+                        respond(
+                            defaultObjectMapper.writeValueAsString(response),
+                            headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                        )
+                    } else {
+                        respondError(HttpStatusCode.BadRequest)
+                    }
+                }
+            }
+        }
+        val arenaOrdsService = ArenaOrdsService(client)
+
+        runBlocking {
+            val actualResponse = arenaOrdsService.hentSkrivemodus()
+
+            assertEquals(true, actualResponse.skrivemodus)
+        }
+    }
+
+    @Test
+    fun `test hente skrivemodus når ORDS er utilgjengelig returns false`() {
+        val client = HttpClient(MockEngine) {
+            engine {
+                addHandler { request ->
+                    if (request.url.toString() == "https://dummyurl.nav.no/api/v1/app/dummy") {
+                        respond(
+                            "",
+                        )
+                    } else {
+                        respondError(HttpStatusCode.BadRequest)
+                    }
+                }
+            }
+        }
+        val arenaOrdsService = ArenaOrdsService(client)
+
+        runBlocking {
+            val actualResponse = arenaOrdsService.hentSkrivemodus()
+
+            assertEquals(false, actualResponse.skrivemodus)
+        }
+    }
+
 }
