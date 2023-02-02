@@ -3,28 +3,28 @@ import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransf
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
 val cxfVersion = "3.5.4"
-val flywayVersion = "9.8.1"
+val flywayVersion = "9.14.1"
 val h2Version = "2.1.214"
-val jacksonVersion = "2.14.0"
+val jacksonVersion = "2.14.2"
 val javaxActivationVersion = "1.1.1"
 val javaxAnnotationApiVersion = "1.3.2"
 val jaxbApiVersion = "2.4.0-b180830.0359"
 val jaxbRuntimeVersion = "4.0.1"
 val jaxwsApiVersion = "2.3.1"
 val jaxwsToolsVersion = "2.3.5" // Senere versjoner har ikke javax.jws.WebService
-val kotlinLoggerVersion = "3.0.4"
-val ktorVersion = "2.1.2"
-val logbackVersion = "1.4.4"
+val kotlinLoggerVersion = "3.0.5"
+val ktorVersion = "2.2.3"
+val logbackVersion = "1.4.5"
 val logstashVersion = "7.2"
-val micrometerVersion = "1.10.1"
-val mockOauthVersion = "0.5.6"
-val mockkVersion = "1.13.2"
+val micrometerVersion = "1.10.3"
+val mockOauthVersion = "0.5.7"
+val mockkVersion = "1.13.4"
 val navCommonCacheVersion = "2.2020.03.18_12.19-ac82e907ebc9"
-val navCommonVersion = "2.2022.11.16_15.18-421ec713e2a0"
+val navCommonVersion = "2.2023.01.10_13.49-81ddc732df3a"
 val ojdbc8Version = "19.3.0.0"
-val postgresVersion = "42.5.0"
+val postgresVersion = "42.5.2"
 val swaggerVersion = "4.15.5" // Husk å endre versjonen også i SwaggerUi.kt
-val tjenestespecVersion = "2606.1f6354e"
+val tjenestespecVersion = "2610.9b6de22"
 val tokenValidationVersion = "2.1.6"
 val vaultJdbcVersion = "1.3.10"
 val vaultVersion = "5.1.0"
@@ -42,16 +42,16 @@ plugins {
 
     id("com.github.ManifestClasspath") version "0.1.0-RELEASE"
 
-    id("org.jetbrains.kotlin.jvm") version "1.7.10"
-    id("org.jetbrains.kotlin.plugin.allopen") version "1.7.10"
+    id("org.jetbrains.kotlin.jvm") version "1.8.0"
+    id("org.jetbrains.kotlin.plugin.allopen") version "1.8.0"
 
     id("com.github.johnrengelman.shadow") version "7.1.2"
 
-    id("org.flywaydb.flyway") version ("9.8.1")
+    id("org.flywaydb.flyway") version ("9.14.1")
 
     id("org.sonarqube") version "3.5.0.2730"
 
-    id("com.github.ben-manes.versions") version "0.44.0"
+    id("com.github.ben-manes.versions") version "0.45.0"
 
     jacoco
 
