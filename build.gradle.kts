@@ -2,12 +2,9 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
-val cxfVersion = "3.5.4"
 val flywayVersion = "9.14.1"
 val h2Version = "2.1.214"
 val jacksonVersion = "2.14.2"
-val javaxActivationVersion = "1.1.1"
-val javaxAnnotationApiVersion = "1.3.2"
 val kotlinLoggerVersion = "3.0.5"
 val ktorVersion = "2.2.3"
 val logbackVersion = "1.4.5"
@@ -91,8 +88,6 @@ dependencies {
     implementation("io.ktor:ktor-server-metrics-micrometer:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.micrometer:micrometer-registry-prometheus:$micrometerVersion")
-    implementation("javax.activation:activation:$javaxActivationVersion")
-    implementation("javax.annotation:javax.annotation-api:$javaxAnnotationApiVersion")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashVersion")
     implementation("no.nav.common:cache:$navCommonCacheVersion")
     implementation("no.nav.common:cxf:$navCommonVersion")
