@@ -8,10 +8,6 @@ val h2Version = "2.1.214"
 val jacksonVersion = "2.14.2"
 val javaxActivationVersion = "1.1.1"
 val javaxAnnotationApiVersion = "1.3.2"
-val jaxbApiVersion = "2.4.0-b180830.0359"
-val jaxbRuntimeVersion = "4.0.1"
-val jaxwsApiVersion = "2.3.1"
-val jaxwsToolsVersion = "2.3.5" // Senere versjoner har ikke javax.jws.WebService
 val kotlinLoggerVersion = "3.0.5"
 val ktorVersion = "2.2.3"
 val logbackVersion = "1.4.5"
@@ -77,9 +73,6 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonVersion")
     implementation("com.oracle.ojdbc:ojdbc8:$ojdbc8Version")
-    implementation("com.sun.xml.ws:jaxws-tools:$jaxwsToolsVersion") {
-        exclude(group = "com.sun.xml.ws", module = "policy")
-    }
     implementation("io.github.microutils:kotlin-logging:$kotlinLoggerVersion")
     implementation("io.ktor:ktor-client-apache:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
@@ -100,15 +93,12 @@ dependencies {
     implementation("io.micrometer:micrometer-registry-prometheus:$micrometerVersion")
     implementation("javax.activation:activation:$javaxActivationVersion")
     implementation("javax.annotation:javax.annotation-api:$javaxAnnotationApiVersion")
-    implementation("javax.xml.bind:jaxb-api:$jaxbApiVersion")
-    implementation("javax.xml.ws:jaxws-api:$jaxwsApiVersion")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashVersion")
     implementation("no.nav.common:cache:$navCommonCacheVersion")
     implementation("no.nav.common:cxf:$navCommonVersion")
     implementation("no.nav.security:token-validation-ktor-v2:$tokenValidationVersion")
     implementation("com.github.navikt.tjenestespesifikasjoner:arena-sakogaktivitet_v1:$tjenestespecVersion")
     implementation("org.flywaydb:flyway-core:$flywayVersion")
-    implementation("org.glassfish.jaxb:jaxb-runtime:$jaxbRuntimeVersion")
     implementation("org.postgresql:postgresql:$postgresVersion")
     implementation("org.webjars:swagger-ui:$swaggerVersion")
     implementation("no.nav:vault-jdbc:$vaultJdbcVersion")
