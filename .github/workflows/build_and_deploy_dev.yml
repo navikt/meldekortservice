@@ -51,13 +51,14 @@ jobs:
 
       - name: Read version from version.json
         id: customVersion
-        run: echo "::set-output name=version::$(jq -r '.version' version.json)"
+        run: echo "VERSION=$(jq -r '.version' version.json)" >> $GITHUB_ENV
 
+      # Setter timestamp, eks. -20220104111118
       - name: Set snapshot timestamp
         id: snapshotTimestamp
         if: github.event.inputs.bump_patch != 'bump'
         run: |
-          echo "::set-output name=timestamp::$(date +'%Y%m%d%H%M%S')"
+          echo "TIMESTAMP=-$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
 
       # Version blir eksisterende versjon fra POM uten -SNAPSHOT
       # For release:  eks 1.0.1
@@ -66,16 +67,16 @@ jobs:
         uses: slime-hatena/semantic-versioning-calculator-action@main
         id: releaseVersion
         with:
-          version: ${{ steps.customVersion.outputs.version }}
+          version: ${{ env.VERSION }}
           increment_major: 'false'
           increment_minor: 'false'
           increment_patch: 'false'
-          prerelease: ${{ steps.snapshotTimestamp.outputs.timestamp }}
+          prerelease: ${{ env.TIMESTAMP }}
 
       - name: Set vars
         id: setVars
         run: |
-          echo "::set-output name=image::ghcr.io/${{ github.repository }}/${{ env.APPNAME }}:${{ steps.releaseVersion.outputs.version }}"
+          echo "IMAGE=ghcr.io/${{ github.repository }}/${{ env.APPNAME }}:${{ env.VERSION }}"  >> $GITHUB_ENV
 
       - name: Set release version in version.json
         run: |
@@ -88,10 +89,10 @@ jobs:
       - name: Build Docker image
         run: |
           ./gradlew clean build -x test
-          docker build -t ${{ steps.setVars.outputs.image }} .
+          docker build -t ${{ env.IMAGE }} .
 
       - name: Log in to the Container registry
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -99,7 +100,7 @@ jobs:
 
       - name: Push Docker image
         run: |
-          docker push ${{ steps.setVars.outputs.image }}
+          docker push ${{ env.IMAGE }}
 
       - name: Deploy to dev
         if: env.ENVIRONMENT == 'q1' || env.ENVIRONMENT == 'q2' || (github.event_name == 'push' && github.ref == env.MAIN_BRANCH)
@@ -109,7 +110,7 @@ jobs:
           PRINT_PAYLOAD: true
           CLUSTER: ${{ env.CLUSTER }}
           RESOURCE: ${{ env.NAIS_FILE }}
-          VAR: image=${{ steps.setVars.outputs.image }},appName=${{ env.APPNAME }}
+          VAR: image=${{ env.IMAGE }},appName=${{ env.APPNAME }}
           VARS: .nais/vars-${{ env.ENVIRONMENT }}.yaml
           WAIT: false
 
@@ -131,20 +132,14 @@ jobs:
       # Next version blir eksisterende versjon + 0.0.1, med postfix -SNAPSHOT
       - name: Calculate next version
         if: github.event.inputs.bump_patch == 'bump' && github.ref == env.MAIN_BRANCH
-        uses: slime-hatena/semantic-versioning-calculator-action@main
-        id: nextReleaseVersion
-        with:
-          version: ${{ steps.customVersion.outputs.version }}
-          increment_major: 'false'
-          increment_minor: 'false'
-          increment_patch: 'true'
-          prerelease: 'SNAPSHOT'
+        run: |
+          echo "NEXT_RELEASE_VERSION=$(echo "${{ steps.pomVersion.outputs.version }}" | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g' | sed 's/$/-SNAPSHOT/')" >> $GITHUB_ENV
 
       # Hvis det er ny versjon, oppdater version.json og utfør git commit/push
       - name: Set next version in version.json
         if: github.event.inputs.bump_patch == 'bump' && github.ref == env.MAIN_BRANCH
         run: |
-          jq '.version="${{ steps.nextReleaseVersion.outputs.version }}"' version.json > version.json.new
+          jq '.version="${{ env.NEXT_RELEASE_VERSION }}"' version.json > version.json.new
           mv version.json.new version.json
 
       - name: Commit bumped version
@@ -153,7 +148,7 @@ jobs:
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git commit -m "Bump version fra Github Actions" -a
-          git tag -a ${{ env.APPNAME }}-${{ steps.nextReleaseVersion.outputs.version }} -m ${{ env.APPNAME }}-${{ steps.nextReleaseVersion.outputs.version }}
+          git tag -a ${{ env.APPNAME }}-${{ env.NEXT_RELEASE_VERSION }} -m ${{ env.APPNAME }}-${{ env.NEXT_RELEASE_VERSION }}
 
       - name: Push changes
         if: github.event.inputs.bump_patch == 'bump' && github.ref == env.MAIN_BRANCH
