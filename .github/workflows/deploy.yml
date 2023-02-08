@@ -32,7 +32,7 @@ jobs:
       - name: Set vars
         id: setVars
         run: |
-          echo "IMAGE=ghcr.io/${{ github.repository }}/${{ env.APPNAME }}:${{ github.event.inputs.deploy_version }}"
+          echo "IMAGE=ghcr.io/${{ github.repository }}/${{ env.APPNAME }}:${{ github.event.inputs.deploy_version }}" >> $GITHUB_ENV
 
       - name: Set cluster
         uses: haya14busa/action-cond@v1
