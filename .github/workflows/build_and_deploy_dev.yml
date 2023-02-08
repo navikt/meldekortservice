@@ -65,7 +65,7 @@ jobs:
       # For snapshot: eks 1.0.1-20220104111118
       - name: Calculate release version
         run: |
-          echo "RELEASE_VERSION=$(echo "${{ steps.pomVersion.outputs.version }}${{ env.TIMESTAMP }}" | sed 's/-SNAPSHOT//g')" >> $GITHUB_ENV
+          echo "RELEASE_VERSION=$(echo "${{ env.VERSION }}${{ env.TIMESTAMP }}" | sed 's/-SNAPSHOT//g')" >> $GITHUB_ENV
 
       - name: Set vars
         id: setVars
