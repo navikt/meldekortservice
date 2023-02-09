@@ -127,7 +127,7 @@ jobs:
       - name: Calculate next version
         if: github.event.inputs.bump_patch == 'bump' && github.ref == env.MAIN_BRANCH
         run: |
-          echo "NEXT_RELEASE_VERSION=$(echo "${{ steps.pomVersion.outputs.version }}" | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g' | sed 's/$/-SNAPSHOT/')" >> $GITHUB_ENV
+          echo "NEXT_RELEASE_VERSION=$(echo "${{ env.VERSION }}" | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g' | sed 's/$/-SNAPSHOT/')" >> $GITHUB_ENV
 
       # Hvis det er ny versjon, oppdater version.json og utfør git commit/push
       - name: Set next version in version.json
