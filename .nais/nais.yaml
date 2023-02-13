@@ -48,10 +48,10 @@ spec:
   resources:
     limits:
       cpu: 1000m
-      memory: 768Mi
+      memory: 3Gi
     requests:
       cpu: 500m
-      memory: 512Mi
+      memory: 1024Mi
   env:
     - name: IDPORTEN_ACCEPTED_AUDIENCE
       value: '{{ idportenAcceptedAudience }}'
