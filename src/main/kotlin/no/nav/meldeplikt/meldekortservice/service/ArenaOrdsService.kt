@@ -72,7 +72,8 @@ class ArenaOrdsService(
         try {
             val responseMedNyMeldekortId: String = getResponseWithRetry(
                 "${env.ordsUrl}$ARENA_ORDS_KOPIER_MELDEKORT",
-                HttpMethod.Post, setupHeaders(meldekortId = meldekortId)
+                HttpMethod.Post,
+                setupHeaders(meldekortId = meldekortId)
             ).body()
 
             val nyMeldekortId = mapFraXml(responseMedNyMeldekortId, KopierMeldekortResponse::class.java).meldekortId
