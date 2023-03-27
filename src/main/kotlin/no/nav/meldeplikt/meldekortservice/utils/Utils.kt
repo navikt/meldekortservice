@@ -22,11 +22,7 @@ import io.ktor.server.application.*
 import io.ktor.server.locations.*
 import io.ktor.server.response.*
 import io.ktor.util.pipeline.*
-import no.nav.cache.Cache
-import no.nav.cache.CacheConfig
-import no.nav.cache.CacheUtils
 import no.nav.meldeplikt.meldekortservice.config.OutgoingCallLoggingPlugin
-import no.nav.meldeplikt.meldekortservice.model.AccessToken
 import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Contact
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Information
@@ -35,13 +31,6 @@ import org.apache.http.impl.conn.SystemDefaultRoutePlanner
 import org.slf4j.MDC
 import java.net.ProxySelector
 import java.util.*
-
-internal const val CACHE_ANTALL_MINUTTER = 55
-
-// Årsaken til å multiplisere med 2 er at cache-implementasjonen dividerer timeout-verdien med 2...
-internal const val CACHE_TIMEOUT: Long = CACHE_ANTALL_MINUTTER.toLong() * 60 * 1000 * 2
-internal var CACHE: Cache<String, AccessToken> =
-    CacheUtils.buildCache(CacheConfig.DEFAULT.withTimeToLiveMillis(CACHE_TIMEOUT))
 
 internal const val BASE_PATH = "/meldekortservice"
 

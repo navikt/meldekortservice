@@ -12,7 +12,6 @@ val logstashVersion = "7.2"
 val micrometerVersion = "1.10.4"
 val mockOauthVersion = "0.5.7"
 val mockkVersion = "1.13.4"
-val navCommonCacheVersion = "2.2020.03.18_12.19-ac82e907ebc9"
 val navCommonVersion = "2.2023.01.10_13.49-81ddc732df3a"
 val ojdbc8Version = "19.3.0.0"
 val postgresVersion = "42.5.3"
@@ -89,7 +88,6 @@ dependencies {
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.micrometer:micrometer-registry-prometheus:$micrometerVersion")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashVersion")
-    implementation("no.nav.common:cache:$navCommonCacheVersion")
     implementation("no.nav.common:cxf:$navCommonVersion")
     implementation("no.nav.security:token-validation-ktor-v2:$tokenValidationVersion")
     implementation("com.github.navikt.tjenestespesifikasjoner:arena-sakogaktivitet_v1:$tjenestespecVersion")
