@@ -1,5 +1,6 @@
 package no.nav.meldeplikt.meldekortservice.service
 
+import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -162,9 +163,11 @@ class ArenaOrdsService(
 
         if (env.ordsUrl != URL(DUMMY_URL)) {
             runBlocking {
-                token = ordsClient.post("${env.ordsUrl}$ARENA_ORDS_TOKEN_PATH?grant_type=client_credentials") {
+                val response = ordsClient.post("${env.ordsUrl}$ARENA_ORDS_TOKEN_PATH?grant_type=client_credentials") {
                     setupTokenRequest()
-                }.body()
+                }
+
+                token = defaultObjectMapper.readValue(response.bodyAsText())
             }
         } else {
             defaultLog.info("Henter ikke ORDS-token, da appen kjører lokalt")

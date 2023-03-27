@@ -8,14 +8,18 @@ import io.mockk.every
 import io.mockk.mockkStatic
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.config.DUMMY_TOKEN
+import no.nav.meldeplikt.meldekortservice.config.Environment
+import no.nav.meldeplikt.meldekortservice.model.AccessToken
 import no.nav.meldeplikt.meldekortservice.model.ArenaOrdsSkrivemodus
 import no.nav.meldeplikt.meldekortservice.model.feil.OrdsException
 import no.nav.meldeplikt.meldekortservice.model.response.OrdsStringResponse
+import no.nav.meldeplikt.meldekortservice.utils.ARENA_ORDS_TOKEN_PATH
 import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.net.URL
 import kotlin.test.assertEquals
 
 class ArenaOrdsServiceTest {
@@ -223,7 +227,7 @@ class ArenaOrdsServiceTest {
     }
 
     @Test
-    fun `test hente skrivemodus når ORDS er i skrivemodus returns true`() {
+    fun `test hente skrivemodus naar ORDS er i skrivemodus returns true`() {
         val response = ArenaOrdsSkrivemodus(true)
         val client = HttpClient(MockEngine) {
             engine {
@@ -249,7 +253,7 @@ class ArenaOrdsServiceTest {
     }
 
     @Test
-    fun `test hente skrivemodus når ORDS er utilgjengelig returns false`() {
+    fun `test hente skrivemodus naar ORDS er utilgjengelig returns false`() {
         val client = HttpClient(MockEngine) {
             engine {
                 addHandler { request ->
@@ -272,4 +276,50 @@ class ArenaOrdsServiceTest {
         }
     }
 
+    @Test
+    fun `test request retry`() {
+        var count = 0
+        val url = "https://not-so-dummyurl.nav.no"
+        val env = Environment(URL(url))
+
+        val token = AccessToken(
+            accessToken = DUMMY_TOKEN,
+            tokenType = "bearer",
+            expiresIn = 1
+        )
+
+        // Return token
+        // Return Unauthorized for the first skrivemodus-request
+        // Return valid response for the second skrivemodus-request
+        // Check that final response is valid, ie used the second response
+        val client = HttpClient(MockEngine) {
+            engine {
+                addHandler { request ->
+                    if (request.url.toString() == "$url$ARENA_ORDS_TOKEN_PATH?grant_type=client_credentials") {
+                        respond(
+                            defaultObjectMapper.writeValueAsString(token),
+                            headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                        )
+                    } else if (request.url.toString() == "$url/api/v1/app/skrivemodus" && count == 0) {
+                        count++
+                        respondError(HttpStatusCode.Unauthorized)
+                    } else if (request.url.toString() == "$url/api/v1/app/skrivemodus" && count == 1) {
+                        respond(
+                            defaultObjectMapper.writeValueAsString(ArenaOrdsSkrivemodus(true)),
+                            headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                        )
+                    } else {
+                        respondError(HttpStatusCode.BadRequest)
+                    }
+                }
+            }
+        }
+        val arenaOrdsService = ArenaOrdsService(client, env)
+
+        runBlocking {
+            val actualResponse = arenaOrdsService.hentSkrivemodus()
+
+            assertEquals(true, actualResponse.skrivemodus)
+        }
+    }
 }
