@@ -1,9 +1,12 @@
 package no.nav.meldeplikt.meldekortservice.service
 
+import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.http.*
+import io.ktor.util.*
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.config.DUMMY_TOKEN
 import no.nav.meldeplikt.meldekortservice.config.DUMMY_URL
@@ -19,18 +22,23 @@ import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.arena.Meldekor
 import no.nav.meldeplikt.meldekortservice.model.response.OrdsStringResponse
 import no.nav.meldeplikt.meldekortservice.utils.*
 import java.net.URL
+import java.time.LocalDateTime
 import java.util.*
 
 class ArenaOrdsService(
     private val ordsClient: HttpClient = defaultHttpClient(),
     private val env: Environment = Environment()
 ) {
+    private lateinit var currentToken: AccessToken
+    private lateinit var currentTokenValidUntil: LocalDateTime
 
     suspend fun hentMeldekort(fnr: String): OrdsStringResponse {
         val execResult: Result<HttpResponse> = runCatching {
-            ordsClient.request("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORT") {
-                setupOrdsRequestFnr(fnr)
-            }
+            getResponseWithRetry(
+                "${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORT",
+                HttpMethod.Get,
+                setupHeaders(fnr = fnr)
+            )
         }
 
         val meldekort = execResult.getOrNull()
@@ -42,29 +50,32 @@ class ArenaOrdsService(
     }
 
     suspend fun hentHistoriskeMeldekort(fnr: String, antallMeldeperioder: Int): Person {
-        val person: String = ordsClient.get(
-            "${env.ordsUrl}$ARENA_ORDS_HENT_HISTORISKE_MELDEKORT" +
-                    "$ARENA_ORDS_MELDEPERIODER_PARAM$antallMeldeperioder"
-        ) {
-            setupOrdsRequestFnr(fnr)
-        }.body()
+        val person: String = getResponseWithRetry(
+            "${env.ordsUrl}$ARENA_ORDS_HENT_HISTORISKE_MELDEKORT$ARENA_ORDS_MELDEPERIODER_PARAM$antallMeldeperioder",
+            HttpMethod.Get,
+            setupHeaders(fnr = fnr)
+        ).body()
 
         return mapFraXml(person, Person::class.java)
     }
 
     suspend fun hentMeldekortdetaljer(meldekortId: Long): Meldekortdetaljer {
-        val detaljer: String = ordsClient.get("${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORTDETALJER$meldekortId") {
-            setupOrdsRequest()
-        }.body()
+        val detaljer: String = getResponseWithRetry(
+            "${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORTDETALJER$meldekortId",
+            HttpMethod.Get,
+            setupHeaders()
+        ).body()
 
         return MeldekortdetaljerMapper.mapOrdsMeldekortTilMeldekortdetaljer(mapFraXml(detaljer, Meldekort::class.java))
     }
 
     suspend fun kopierMeldekort(meldekortId: Long): Long {
         try {
-            val responseMedNyMeldekortId: String = ordsClient.post("${env.ordsUrl}$ARENA_ORDS_KOPIER_MELDEKORT") {
-                setupOrdsRequest(meldekortId)
-            }.body()
+            val responseMedNyMeldekortId: String = getResponseWithRetry(
+                "${env.ordsUrl}$ARENA_ORDS_KOPIER_MELDEKORT",
+                HttpMethod.Post,
+                setupHeaders(meldekortId = meldekortId)
+            ).body()
 
             val nyMeldekortId = mapFraXml(responseMedNyMeldekortId, KopierMeldekortResponse::class.java).meldekortId
             defaultLog.info("Meldekort med id $nyMeldekortId er opprettet for korrigering. Kopiert fra meldekort med id $meldekortId")
@@ -82,9 +93,7 @@ class ArenaOrdsService(
 
     suspend fun hentSkrivemodus(): ArenaOrdsSkrivemodus {
         val execResult: Result<HttpResponse> = runCatching {
-            ordsClient.request("${env.ordsUrl}$ARENA_ORDS_HENT_SKRIVEMODUS") {
-                setupOrdsRequest()
-            }
+            getResponseWithRetry("${env.ordsUrl}$ARENA_ORDS_HENT_SKRIVEMODUS", HttpMethod.Get, setupHeaders())
         }
 
         val response = execResult.getOrNull()
@@ -99,11 +108,8 @@ class ArenaOrdsService(
         return ArenaOrdsSkrivemodus(content.skrivemodus)
     }
 
-    private fun HttpRequestBuilder.setupOrdsRequestFnr(fnr: String? = null) {
-        return setupOrdsRequest(null, fnr)
-    }
-
-    private fun HttpRequestBuilder.setupOrdsRequest(meldekortId: Long? = null, fnr: String? = null) {
+    private fun setupHeaders(meldekortId: Long? = null, fnr: String? = null): StringValuesBuilder {
+        val headers = HeadersBuilder()
         headers.append("Accept", "application/xml; charset=UTF-8")
         headers.append("Authorization", "Bearer ${hentToken().accessToken}")
         if (meldekortId != null) {
@@ -112,21 +118,56 @@ class ArenaOrdsService(
         if (fnr != null) {
             headers.append("fnr", fnr)
         }
+
+        return headers
+    }
+
+
+    private suspend fun getResponseWithRetry(
+        url: String,
+        httpMethod: HttpMethod,
+        httpHeaders: StringValuesBuilder
+    ): HttpResponse {
+        var response = getResponse(url, httpMethod, httpHeaders)
+
+        if (response.status == HttpStatusCode.Unauthorized) {
+            hentOrdsToken()
+            response = getResponse(url, httpMethod, httpHeaders)
+        }
+
+        return response
+    }
+
+    private suspend fun getResponse(
+        url: String,
+        httpMethod: HttpMethod,
+        httpHeaders: StringValuesBuilder
+    ): HttpResponse {
+        return ordsClient.request(url) {
+            method = httpMethod
+            headers.appendAll(httpHeaders)
+        }
     }
 
     private fun hentToken(): AccessToken {
-        return CACHE.get("ordsToken", this::hentOrdsToken)
+        if (!::currentToken.isInitialized || LocalDateTime.now().isAfter(currentTokenValidUntil.minusMinutes(5))) {
+            hentOrdsToken()
+        }
+
+        return currentToken
     }
 
-    private fun hentOrdsToken(): AccessToken {
+    private fun hentOrdsToken() {
         defaultLog.debug("Henter ORDS-token")
         var token = AccessToken(null, null, null)
 
         if (env.ordsUrl != URL(DUMMY_URL)) {
             runBlocking {
-                token = ordsClient.post("${env.ordsUrl}$ARENA_ORDS_TOKEN_PATH?grant_type=client_credentials") {
+                val response = ordsClient.post("${env.ordsUrl}$ARENA_ORDS_TOKEN_PATH?grant_type=client_credentials") {
                     setupTokenRequest()
-                }.body()
+                }
+
+                token = defaultObjectMapper.readValue(response.bodyAsText())
             }
         } else {
             defaultLog.info("Henter ikke ORDS-token, da appen kjører lokalt")
@@ -137,7 +178,8 @@ class ArenaOrdsService(
             )
         }
 
-        return token
+        currentToken = token
+        currentTokenValidUntil = LocalDateTime.now().plusSeconds(token.expiresIn?.toLong() ?: 0)
     }
 
     private fun HttpRequestBuilder.setupTokenRequest() {

@@ -2,23 +2,22 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
-val flywayVersion = "9.14.1"
+val flywayVersion = "9.16.1"
 val h2Version = "2.1.214"
 val jacksonVersion = "2.14.2"
 val kotlinLoggerVersion = "3.0.5"
-val ktorVersion = "2.2.3"
-val logbackVersion = "1.4.5"
-val logstashVersion = "7.2"
-val micrometerVersion = "1.10.4"
-val mockOauthVersion = "0.5.7"
+val ktorVersion = "2.2.4"
+val logbackVersion = "1.4.6"
+val logstashVersion = "7.3"
+val micrometerVersion = "1.10.5"
+val mockOauthVersion = "0.5.8"
 val mockkVersion = "1.13.4"
-val navCommonCacheVersion = "2.2020.03.18_12.19-ac82e907ebc9"
 val navCommonVersion = "2.2023.01.10_13.49-81ddc732df3a"
 val ojdbc8Version = "19.3.0.0"
-val postgresVersion = "42.5.3"
+val postgresVersion = "42.6.0"
 val swaggerVersion = "4.15.5" // Husk å endre versjonen også i SwaggerUi.kt
 val tjenestespecVersion = "2610.9b6de22"
-val tokenValidationVersion = "3.0.3"
+val tokenValidationVersion = "3.0.8"
 val vaultJdbcVersion = "1.3.10"
 val vaultVersion = "5.1.0"
 
@@ -40,11 +39,11 @@ plugins {
 
     id("com.github.johnrengelman.shadow") version "7.1.2"
 
-    id("org.flywaydb.flyway") version ("9.14.1")
+    id("org.flywaydb.flyway") version ("9.16.1")
 
     id("org.sonarqube") version "3.5.0.2730"
 
-    id("com.github.ben-manes.versions") version "0.45.0"
+    id("com.github.ben-manes.versions") version "0.46.0"
 
     jacoco
 
@@ -89,7 +88,6 @@ dependencies {
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.micrometer:micrometer-registry-prometheus:$micrometerVersion")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashVersion")
-    implementation("no.nav.common:cache:$navCommonCacheVersion")
     implementation("no.nav.common:cxf:$navCommonVersion")
     implementation("no.nav.security:token-validation-ktor-v2:$tokenValidationVersion")
     implementation("com.github.navikt.tjenestespesifikasjoner:arena-sakogaktivitet_v1:$tjenestespecVersion")
