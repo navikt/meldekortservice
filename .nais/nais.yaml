@@ -47,11 +47,10 @@ spec:
   webproxy: true
   resources:
     limits:
-      cpu: 1000m
       memory: 3Gi
     requests:
       cpu: 500m
-      memory: 1024Mi
+      memory: 3Gi
   env:
     - name: IDPORTEN_ACCEPTED_AUDIENCE
       value: '{{ idportenAcceptedAudience }}'
