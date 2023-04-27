@@ -205,9 +205,9 @@ fun extractSubject(authToken: String?): String {
         val pid = jwt.getClaim("pid")
         val sub = jwt.getClaim("sub")
 
-        if (!pid.isNull) {
+        if (!pid.isMissing) {
             return pid.asString()
-        } else if (!sub.isNull) {
+        } else if (!sub.isMissing) {
             return sub.asString()
         }
 
