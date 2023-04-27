@@ -2,22 +2,22 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
-val flywayVersion = "9.16.1"
+val flywayVersion = "9.16.3"
 val h2Version = "2.1.214"
-val jacksonVersion = "2.14.2"
+val jacksonVersion = "2.15.0"
 val kotlinLoggerVersion = "3.0.5"
-val ktorVersion = "2.2.4"
-val logbackVersion = "1.4.6"
+val ktorVersion = "2.3.0"
+val logbackVersion = "1.4.7"
 val logstashVersion = "7.3"
-val micrometerVersion = "1.10.5"
+val micrometerVersion = "1.10.6"
 val mockOauthVersion = "0.5.8"
-val mockkVersion = "1.13.4"
+val mockkVersion = "1.13.5"
 val navCommonVersion = "2.2023.01.10_13.49-81ddc732df3a"
 val ojdbc8Version = "19.3.0.0"
 val postgresVersion = "42.6.0"
-val swaggerVersion = "4.15.5" // Husk å endre versjonen også i SwaggerUi.kt
-val tjenestespecVersion = "2610.9b6de22"
-val tokenValidationVersion = "3.0.8"
+val swaggerVersion = "4.18.2" // Husk å endre versjonen også i SwaggerUi.kt
+val tjenestespecVersion = "2612.db4dc68"
+val tokenValidationVersion = "3.0.11"
 val vaultJdbcVersion = "1.3.10"
 val vaultVersion = "5.1.0"
 
@@ -34,14 +34,14 @@ plugins {
 
     id("com.github.ManifestClasspath") version "0.1.0-RELEASE"
 
-    id("org.jetbrains.kotlin.jvm") version "1.8.0"
-    id("org.jetbrains.kotlin.plugin.allopen") version "1.8.0"
+    id("org.jetbrains.kotlin.jvm") version "1.8.21"
+    id("org.jetbrains.kotlin.plugin.allopen") version "1.8.21"
 
     id("com.github.johnrengelman.shadow") version "7.1.2"
 
-    id("org.flywaydb.flyway") version ("9.16.1")
+    id("org.flywaydb.flyway") version ("9.16.3")
 
-    id("org.sonarqube") version "3.5.0.2730"
+    id("org.sonarqube") version "4.0.0.2929"
 
     id("com.github.ben-manes.versions") version "0.46.0"
 
