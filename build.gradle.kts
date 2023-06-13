@@ -15,7 +15,7 @@ val mockkVersion = "1.13.5"
 val navCommonVersion = "2.2023.01.10_13.49-81ddc732df3a"
 val ojdbc8Version = "19.3.0.0"
 val postgresVersion = "42.6.0"
-val swaggerVersion = "4.18.2" // Husk å endre versjonen også i SwaggerUi.kt
+val swaggerVersion = "4.19.0" // Husk å endre versjonen også i SwaggerUi.kt
 val tjenestespecVersion = "2616.df1f47c"
 val tokenValidationVersion = "3.1.0"
 val vaultJdbcVersion = "1.3.10"
@@ -72,7 +72,6 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging:$kotlinLoggerVersion")
     implementation("io.ktor:ktor-client-apache:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
-    implementation("io.ktor:ktor-client-jackson:$ktorVersion")
     implementation("io.ktor:ktor-client-jackson:$ktorVersion")
     implementation("io.ktor:ktor-client-json:$ktorVersion")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
