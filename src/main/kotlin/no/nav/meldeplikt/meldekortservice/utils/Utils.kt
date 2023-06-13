@@ -143,8 +143,6 @@ fun HttpClientConfig<*>.defaultHttpClientConfig() {
             ContentType.Application.Json,
             JacksonConverter(
                 defaultObjectMapper
-                    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                    .setSerializationInclusion(JsonInclude.Include.NON_NULL)
             )
         )
     }
