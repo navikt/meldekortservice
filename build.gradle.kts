@@ -3,20 +3,20 @@ import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransf
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
 val flywayVersion = "9.16.3"
-val h2Version = "2.1.214"
+val h2Version = "2.2.220"
 val jacksonVersion = "2.15.2"
 val kotlinLoggerVersion = "3.0.5"
-val ktorVersion = "2.3.1"
+val ktorVersion = "2.3.2"
 val logbackVersion = "1.4.8"
-val logstashVersion = "7.3"
-val micrometerVersion = "1.11.0"
+val logstashVersion = "7.4"
+val micrometerVersion = "1.11.2
 val mockOauthVersion = "0.5.8"
 val mockkVersion = "1.13.5"
 val navCommonVersion = "2.2023.01.10_13.49-81ddc732df3a"
 val ojdbc8Version = "19.3.0.0"
 val postgresVersion = "42.6.0"
 val swaggerVersion = "4.19.0" // Husk å endre versjonen også i SwaggerUi.kt
-val tjenestespecVersion = "2616.df1f47c"
+val tjenestespecVersion = "2618.0448179"
 val tokenValidationVersion = "3.1.0"
 val vaultJdbcVersion = "1.3.10"
 val vaultVersion = "5.1.0"
@@ -35,7 +35,7 @@ plugins {
     id("com.github.ManifestClasspath") version "0.1.0-RELEASE"
 
     id("org.jetbrains.kotlin.jvm") version "1.8.22"
-    id("org.jetbrains.kotlin.plugin.allopen") version "1.8.22"
+    id("org.jetbrains.kotlin.plugin.allopen") version "1.9.0"
 
     id("com.github.johnrengelman.shadow") version "8.1.1"
 
