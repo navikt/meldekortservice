@@ -91,6 +91,7 @@ dependencies {
     implementation("no.nav.security:token-validation-ktor-v2:$tokenValidationVersion")
     implementation("com.github.navikt.tjenestespesifikasjoner:arena-sakogaktivitet_v1:$tjenestespecVersion")
     implementation("org.flywaydb:flyway-core:$flywayVersion")
+    runtimeOnly("org.flywaydb:flyway-database-oracle:$flywayVersion")
     implementation("org.postgresql:postgresql:$postgresVersion")
     implementation("org.webjars:swagger-ui:$swaggerVersion")
     implementation("no.nav:vault-jdbc:$vaultJdbcVersion")
