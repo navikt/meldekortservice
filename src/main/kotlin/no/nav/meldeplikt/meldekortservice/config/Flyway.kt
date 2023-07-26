@@ -17,7 +17,7 @@ object Flyway {
     }
 
     fun configure(dataSource: DataSource): FluentConfiguration {
-        val configBuilder = Flyway.configure()
+        val configBuilder = Flyway.configure(this.javaClass.classLoader)
         configBuilder.dataSource(dataSource)
 
         val commonMigrationFiles = "classpath:db/migration/common"
