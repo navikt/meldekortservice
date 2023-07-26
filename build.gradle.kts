@@ -2,7 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
-val flywayVersion = "9.18.0" // Nyere versjoner støtter ikke Oracle 19.1?
+val flywayVersion = "9.19.0" // Nyere versjoner støtter ikke Oracle 19.1?
 val h2Version = "2.2.220"
 val jacksonVersion = "2.15.2"
 val kotlinLoggerVersion = "3.0.5"
@@ -91,6 +91,7 @@ dependencies {
     implementation("no.nav.security:token-validation-ktor-v2:$tokenValidationVersion")
     implementation("com.github.navikt.tjenestespesifikasjoner:arena-sakogaktivitet_v1:$tjenestespecVersion")
     implementation("org.flywaydb:flyway-core:$flywayVersion")
+    implementation("org.flywaydb:flyway-database-oracle:$flywayVersion")
     implementation("org.postgresql:postgresql:$postgresVersion")
     implementation("org.webjars:swagger-ui:$swaggerVersion")
     implementation("no.nav:vault-jdbc:$vaultJdbcVersion")
