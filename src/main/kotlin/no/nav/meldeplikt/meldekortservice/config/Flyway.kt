@@ -6,6 +6,7 @@ import no.nav.meldeplikt.meldekortservice.database.PostgreSqlDatabase
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.configuration.FluentConfiguration
+import org.flywaydb.core.internal.resource.CoreResourceTypeProvider
 import javax.sql.DataSource
 
 object Flyway {
@@ -17,7 +18,8 @@ object Flyway {
     }
 
     fun configure(dataSource: DataSource): FluentConfiguration {
-        val configBuilder = Flyway.configure(this.javaClass.classLoader)
+        val configBuilder = Flyway.configure()
+        configBuilder.pluginRegister.REGISTERED_PLUGINS.add(CoreResourceTypeProvider()) // Registreres ikke automatisk for Oracle
         configBuilder.dataSource(dataSource)
 
         val commonMigrationFiles = "classpath:db/migration/common"

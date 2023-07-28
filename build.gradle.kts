@@ -90,7 +90,6 @@ dependencies {
     implementation("no.nav.common:cxf:$navCommonVersion")
     implementation("no.nav.security:token-validation-ktor-v2:$tokenValidationVersion")
     implementation("com.github.navikt.tjenestespesifikasjoner:arena-sakogaktivitet_v1:$tjenestespecVersion")
-    implementation("org.flywaydb:flyway-core:$flywayVersion")
     implementation("org.flywaydb:flyway-database-oracle:$flywayVersion")
     implementation("org.postgresql:postgresql:$postgresVersion")
     implementation("org.webjars:swagger-ui:$swaggerVersion")
