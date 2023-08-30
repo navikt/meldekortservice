@@ -2,20 +2,20 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
-val flywayVersion = "9.21.0"
+val flywayVersion = "9.21.1"
 val h2Version = "2.2.220"
 val jacksonVersion = "2.15.2"
 val kotlinLoggerVersion = "3.0.5"
-val ktorVersion = "2.3.2"
-val logbackVersion = "1.4.8"
+val ktorVersion = "2.3.3"
+val logbackVersion = "1.4.11"
 val logstashVersion = "7.4"
-val micrometerVersion = "1.11.2"
+val micrometerVersion = "1.11.3"
 val mockOauthVersion = "1.0.0"
-val mockkVersion = "1.13.5"
+val mockkVersion = "1.13.7"
 val navCommonVersion = "2.2023.01.10_13.49-81ddc732df3a"
 val ojdbc8Version = "19.3.0.0"
 val postgresVersion = "42.6.0"
-val swaggerVersion = "5.1.3" // Husk å endre versjonen også i SwaggerUi.kt
+val swaggerVersion = "5.3.1" // Husk å endre versjonen også i SwaggerUi.kt
 val tjenestespecVersion = "2618.0448179"
 val tokenValidationVersion = "3.1.4"
 val vaultJdbcVersion = "1.3.10"
