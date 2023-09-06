@@ -52,8 +52,6 @@ spec:
       cpu: 500m
       memory: 2Gi
   env:
-    - name: IDPORTEN_ACCEPTED_AUDIENCE
-      value: '{{ idportenAcceptedAudience }}'
     - name: TOKEN_X_ACCEPTED_AUDIENCE
       value: '{{ tokenxAcceptedAudience }}'
   tokenx:

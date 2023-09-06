@@ -155,8 +155,6 @@ tasks {
     }
 
     register("runServerTest", JavaExec::class) {
-        systemProperties["IDPORTEN_WELL_KNOWN_URL"] = "idporten.dev.nav.no"
-        systemProperties["IDPORTEN_ACCEPTED_AUDIENCE"] = "nav.no"
         systemProperties["TOKEN_X_WELL_KNOWN_URL"] = "tokenx.dev.nav.no"
         systemProperties["TOKEN_X_ACCEPTED_AUDIENCE"] = "nav.no"
 
