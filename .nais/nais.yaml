@@ -56,3 +56,9 @@ spec:
       value: '{{ tokenxAcceptedAudience }}'
   tokenx:
     enabled: true
+  accessPolicy:
+    inbound:
+      rules:
+        - application: meldekort-api{{ dashEnv }}
+          namespace: meldekort
+          cluster: {{ vaultServiceuserEnv }}-gcp
