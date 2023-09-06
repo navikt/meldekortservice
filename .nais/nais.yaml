@@ -56,13 +56,5 @@ spec:
       value: '{{ idportenAcceptedAudience }}'
     - name: TOKEN_X_ACCEPTED_AUDIENCE
       value: '{{ tokenxAcceptedAudience }}'
-  idporten:
-    enabled: true
-    sidecar:
-      enabled: true
-      level: Level3
-      locale: nb
-      autoLogin: false
-      errorPath: ""
   tokenx:
     enabled: true
