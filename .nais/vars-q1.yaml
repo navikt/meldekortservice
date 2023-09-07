@@ -4,5 +4,4 @@ vaultKvEnv: preprod/fss
 vaultServiceuserEnv: dev
 ingresses:
   - "https://meldekortservice-q1.dev-fss-pub.nais.io"
-idportenAcceptedAudience: https://nav.no
-tokenxAcceptedAudience: dev-gcp:meldekort:meldekort-api-q1
+tokenxAcceptedAudience: dev-fss:meldekort:meldekortservice-q1
