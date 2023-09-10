@@ -43,7 +43,7 @@ plugins {
 
     id("org.sonarqube") version "4.3.1.3277"
 
-    id("com.github.ben-manes.versions") version "0.47.0"
+    id("com.github.ben-manes.versions") version "0.48.0"
 
     jacoco
 
