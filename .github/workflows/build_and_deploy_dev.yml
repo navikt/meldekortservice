@@ -34,7 +34,7 @@ jobs:
     name: Build and deploy
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: write
     steps:
       - name: Check if correct branch
