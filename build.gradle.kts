@@ -35,7 +35,7 @@ plugins {
     id("com.github.ManifestClasspath") version "0.1.0-RELEASE"
 
     id("org.jetbrains.kotlin.jvm") version "1.9.21"
-    id("org.jetbrains.kotlin.plugin.allopen") version "1.9.20"
+    id("org.jetbrains.kotlin.plugin.allopen") version "1.9.21"
 
     id("com.github.johnrengelman.shadow") version "8.1.1"
 
