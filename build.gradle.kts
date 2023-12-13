@@ -95,6 +95,9 @@ dependencies {
     implementation("org.webjars:swagger-ui:$swaggerVersion")
     implementation("no.nav:vault-jdbc:$vaultJdbcVersion")
 
+    // Lokal kjøring
+    implementation("org.flywaydb:flyway-database-postgresql:$flywayVersion")
+
     testImplementation(kotlin("test-junit5"))
     testImplementation("com.h2database:h2:$h2Version")
     testImplementation("io.ktor:ktor-client-mock:$ktorVersion")
