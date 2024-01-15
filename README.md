@@ -4,7 +4,7 @@ Microservice / proxy som henter data fra meldekort ORDS (Arena DB).
 
 ## Kom i gang
 Bygg meldekortservice ved å kjøre `./gradlew clean build`. Dette vil også kjøre testene.
-Det er også mulig å kjøre `gradle clean build`, men da må man ha en riktig versjon av gradle installert (som støtter Java 17)
+Det er også mulig å kjøre `gradle clean build`, men da må man ha en riktig versjon av gradle installert (som støtter Java 21)
 
 ## Lokal kjøring
 0. Ikke nødvendig: for å være sikker på at man får en ny tom database, kan man kjøre kommandoen: `docker-compose down -v`.

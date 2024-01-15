@@ -2,6 +2,7 @@ package no.nav.meldeplikt.meldekortservice.config
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import java.net.URI
 import java.net.URL
 
 const val DUMMY_URL = "https://dummyurl.nav.no"
@@ -14,7 +15,7 @@ val DUMMY_TOKEN = JWT.create()
     .toString()
 
 data class Environment(
-    val ordsUrl: URL = URL(getEnvVar("ORDS_URI", DUMMY_URL)),
+    val ordsUrl: URL = URI.create(getEnvVar("ORDS_URI", DUMMY_URL)).toURL(),
     val ordsClientId: String = getEnvVar("CLIENT_ID", "cLiEnTiD"),
     val ordsClientSecret: String = getEnvVar("CLIENT_SECRET", "cLiEnTsEcReT"),
 

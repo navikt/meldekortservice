@@ -19,7 +19,7 @@ import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.net.URL
+import java.net.URI
 import kotlin.test.assertEquals
 
 class ArenaOrdsServiceTest {
@@ -280,7 +280,7 @@ class ArenaOrdsServiceTest {
     fun `test request retry`() {
         var count = 0
         val url = "https://not-so-dummyurl.nav.no"
-        val env = Environment(URL(url))
+        val env = Environment(URI.create(url).toURL())
 
         val token = AccessToken(
             accessToken = DUMMY_TOKEN,
