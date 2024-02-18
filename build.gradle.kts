@@ -2,7 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
-val flywayVersion = "10.7.2"
+val flywayVersion = "10.8.1"
 val h2Version = "2.2.224"
 val jacksonVersion = "2.16.1"
 val kotlinLoggerVersion = "3.0.5"
