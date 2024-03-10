@@ -4,7 +4,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
 val flywayVersion = "10.8.1"
 val h2Version = "2.2.224"
-val jacksonVersion = "2.16.1"
+val jacksonVersion = "2.16.2"
 val kotlinLoggerVersion = "3.0.5"
 val ktorVersion = "2.3.8"
 val logbackVersion = "1.5.2"
