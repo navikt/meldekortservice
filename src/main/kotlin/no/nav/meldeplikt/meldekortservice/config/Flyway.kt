@@ -19,7 +19,6 @@ object Flyway {
 
     fun configure(dataSource: DataSource): FluentConfiguration {
         val configBuilder = Flyway.configure()
-        configBuilder.pluginRegister.REGISTERED_PLUGINS.add(CoreResourceTypeProvider()) // Registreres ikke automatisk for Oracle
         configBuilder.dataSource(dataSource)
 
         val commonMigrationFiles = "classpath:db/migration/common"
