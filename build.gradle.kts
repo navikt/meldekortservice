@@ -132,6 +132,8 @@ tasks {
         transform(ServiceFileTransformer::class.java) {
             setPath("META-INF/cxf")
         }
+
+        mergeServiceFiles()
     }
 
     withType<Test> {
