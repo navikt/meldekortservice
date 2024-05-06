@@ -62,3 +62,6 @@ spec:
         - application: meldekort-api{{ dashEnv }}
           namespace: meldekort
           cluster: {{ vaultServiceuserEnv }}-gcp
+        - application: dp-arena-meldeplikt-adapter
+          namespace: teamdagpenger
+          cluster: {{ vaultServiceuserEnv }}-gcp
