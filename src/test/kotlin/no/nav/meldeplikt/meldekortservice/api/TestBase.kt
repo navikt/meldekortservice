@@ -74,11 +74,13 @@ open class TestBase {
 
     fun setOidcConfig(): MapApplicationConfig {
         return MapApplicationConfig(
-            "ktor.environment" to "test",
-            "no.nav.security.jwt.issuers.size" to "1",
+            "no.nav.security.jwt.issuers.size" to "2",
             "no.nav.security.jwt.issuers.0.issuer_name" to ISSUER_ID,
             "no.nav.security.jwt.issuers.0.discoveryurl" to mockOAuth2Server.wellKnownUrl(ISSUER_ID).toString(),
             "no.nav.security.jwt.issuers.0.accepted_audience" to REQUIRED_AUDIENCE,
+            "no.nav.security.jwt.issuers.1.issuer_name" to "azureAd",
+            "no.nav.security.jwt.issuers.1.discoveryurl" to mockOAuth2Server.wellKnownUrl("azureAd").toString(),
+            "no.nav.security.jwt.issuers.1.accepted_audience" to REQUIRED_AUDIENCE,
             "ktor.environment" to "local"
         )
     }

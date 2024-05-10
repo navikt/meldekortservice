@@ -69,6 +69,7 @@ fun Routing.getKorrigertMeldekort(arenaOrdsService: ArenaOrdsService) =
     ) { korrigertMeldekortInput ->
         respondOrError {
 
+            // TODO: Må vi ikke sjekke her at bruker eier dette meldekortet?
             arenaOrdsService.kopierMeldekort(korrigertMeldekortInput.meldekortId)
         }
     }
