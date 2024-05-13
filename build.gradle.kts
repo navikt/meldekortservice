@@ -6,7 +6,7 @@ val flywayVersion = "10.12.0"
 val h2Version = "2.2.224"
 val jacksonVersion = "2.17.1"
 val kotlinLoggerVersion = "3.0.5"
-val ktorVersion = "2.3.10"
+val ktorVersion = "2.3.11"
 val logbackVersion = "1.5.6"
 val logstashVersion = "7.4"
 val micrometerVersion = "1.12.5"
@@ -34,8 +34,8 @@ plugins {
 
     id("com.github.ManifestClasspath") version "0.1.0-RELEASE"
 
-    id("org.jetbrains.kotlin.jvm") version "1.9.23"
-    id("org.jetbrains.kotlin.plugin.allopen") version "1.9.23"
+    id("org.jetbrains.kotlin.jvm") version "1.9.24"
+    id("org.jetbrains.kotlin.plugin.allopen") version "1.9.24"
 
     id("com.github.johnrengelman.shadow") version "8.1.1"
 
