@@ -162,8 +162,6 @@ tasks {
     register("runServerTest", JavaExec::class) {
         systemProperties["TOKEN_X_WELL_KNOWN_URL"] = "tokenx.dev.nav.no"
         systemProperties["TOKEN_X_ACCEPTED_AUDIENCE"] = "nav.no"
-        systemProperties["AZURE_APP_WELL_KNOWN_URL"] = "azuread.dev.nav.no"
-        systemProperties["AZURE_APP_CLIENT_ID"] = "dev-fss:meldekort:meldekortservice"
 
         mainClass.set(project.property("mainClassName").toString())
         classpath = sourceSets["main"].runtimeClasspath

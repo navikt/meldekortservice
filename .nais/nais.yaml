@@ -6,12 +6,6 @@ metadata:
   labels:
     team: meldekort
 spec:
-  azure:
-    application:
-      enabled: true
-      claims:
-        extra:
-          - "azp_name"
   image: {{image}}
   port: 8090
   prometheus:
