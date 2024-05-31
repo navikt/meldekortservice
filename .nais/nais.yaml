@@ -45,9 +45,6 @@ spec:
     requests:
       cpu: 500m
       memory: 2Gi
-  env:
-    - name: TOKEN_X_ACCEPTED_AUDIENCE
-      value: '{{ tokenxAcceptedAudience }}'
   tokenx:
     enabled: true
   accessPolicy:
