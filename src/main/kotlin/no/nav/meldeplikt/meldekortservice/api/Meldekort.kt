@@ -69,6 +69,13 @@ fun Routing.getKorrigertMeldekort(arenaOrdsService: ArenaOrdsService) =
     ) { korrigertMeldekortInput ->
         respondOrError {
 
+            val meldekortdetaljer = arenaOrdsService.hentMeldekortdetaljer(korrigertMeldekortInput.meldekortId)
+            if (meldekortdetaljer.fodselsnr != userIdent) {
+                val msg = "Personidentifikator matcher ikke. Bruker kan derfor ikke korrigere meldekort."
+                defaultLog.warn(msg)
+                throw SecurityException()
+            }
+
             arenaOrdsService.kopierMeldekort(korrigertMeldekortInput.meldekortId)
         }
     }

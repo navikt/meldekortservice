@@ -161,7 +161,7 @@ tasks {
 
     register("runServerTest", JavaExec::class) {
         systemProperties["TOKEN_X_WELL_KNOWN_URL"] = "tokenx.dev.nav.no"
-        systemProperties["TOKEN_X_ACCEPTED_AUDIENCE"] = "nav.no"
+        systemProperties["TOKEN_X_CLIENT_ID"] = "test:meldekort:meldekortservice"
 
         mainClass.set(project.property("mainClassName").toString())
         classpath = sourceSets["main"].runtimeClasspath

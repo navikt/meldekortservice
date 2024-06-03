@@ -94,6 +94,26 @@ class MeldekortKtTest : TestBase() {
     }
 
     @Test
+    fun `get korrigert meldekortid returns 400 Bad Request with invalid ident`() = setUpTestApplication {
+        val id: Long = 1
+        val nyId: Long = 123
+        val meldekortdetaljer = Meldekortdetaljer(
+            id = "1",
+            fodselsnr = "01020312346",
+            kortType = KortType.AAP
+        )
+
+        coEvery { arenaOrdsService.kopierMeldekort(any()) } returns (nyId)
+        coEvery { arenaOrdsService.hentMeldekortdetaljer(any()) } returns (meldekortdetaljer)
+
+        val response = client.get("/meldekortservice/api/meldekort/korrigering?meldekortId=${id}") {
+            header(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")
+        }
+
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+    }
+
+    @Test
     fun `get meldekortdetaljer returns 401-Unauthorized with invalid JWT`() = setUpTestApplication {
         val id: Long = 1
         val meldekortdetaljer = Meldekortdetaljer(
@@ -115,8 +135,14 @@ class MeldekortKtTest : TestBase() {
     fun `get korrigert meldekortid returns OK with valid JWT with sub`() = setUpTestApplication {
         val id: Long = 1
         val nyId: Long = 123
+        val meldekortdetaljer = Meldekortdetaljer(
+            id = "1",
+            fodselsnr = DUMMY_FNR,
+            kortType = KortType.AAP
+        )
 
         coEvery { arenaOrdsService.kopierMeldekort(any()) } returns (nyId)
+        coEvery { arenaOrdsService.hentMeldekortdetaljer(any()) } returns (meldekortdetaljer)
 
         val response = client.get("/meldekortservice/api/meldekort/korrigering?meldekortId=${id}") {
             header(HttpHeaders.Authorization, "Bearer ${issueTokenWithSub()}")
@@ -132,8 +158,14 @@ class MeldekortKtTest : TestBase() {
     fun `get korrigert meldekortid returns OK with valid JWT with pid`() = setUpTestApplication {
         val id: Long = 1
         val nyId: Long = 123
+        val meldekortdetaljer = Meldekortdetaljer(
+            id = "1",
+            fodselsnr = DUMMY_FNR,
+            kortType = KortType.AAP
+        )
 
         coEvery { arenaOrdsService.kopierMeldekort(any()) } returns (nyId)
+        coEvery { arenaOrdsService.hentMeldekortdetaljer(any()) } returns (meldekortdetaljer)
 
         val response = client.get("/meldekortservice/api/meldekort/korrigering?meldekortId=${id}") {
             header(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")

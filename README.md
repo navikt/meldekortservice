@@ -12,7 +12,7 @@ Det er også mulig å kjøre `gradle clean build`, men da må man ha en riktig v
 2. Start appen ved å kjøre `./gradlew runServerTest`.
 Det er også mulig å kjøre Server.kt sin main-metode eller `./gradlew runServer`, men da må man sette miljøvariablene:
 TOKEN_X_WELL_KNOWN_URL
-TOKEN_X_ACCEPTED_AUDIENCE
+TOKEN_X_CLIENT_ID
 For å kjøre mot f.eks Q1 kan man enten sette riktige miljøvariabler (manuelt eller ved hjelp av bat/bash script) eller midlertidig skrive disse inn i Environment.kt i stedet for defaultValue'er.  
 For eksempel, for å bruke ORDS i Q1 må man erstatte
 ```

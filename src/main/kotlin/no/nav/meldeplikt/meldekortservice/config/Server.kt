@@ -86,6 +86,7 @@ fun Application.mainModule(
         skrivemodusApi(arenaOrdsService)
         meldekortApi(arenaOrdsService)
         personApi(arenaOrdsService)
+        meldekortApiV2(arenaOrdsService)
     }
 
     install(DoubleReceive) {

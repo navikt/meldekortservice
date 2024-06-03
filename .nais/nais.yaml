@@ -6,12 +6,6 @@ metadata:
   labels:
     team: meldekort
 spec:
-  azure:
-    application:
-      enabled: true
-      claims:
-        extra:
-          - "azp_name"
   image: {{image}}
   port: 8090
   prometheus:
@@ -51,14 +45,14 @@ spec:
     requests:
       cpu: 500m
       memory: 2Gi
-  env:
-    - name: TOKEN_X_ACCEPTED_AUDIENCE
-      value: '{{ tokenxAcceptedAudience }}'
   tokenx:
     enabled: true
   accessPolicy:
     inbound:
       rules:
+        - application: tokenx-token-generator
+          namespace: aura
+          cluster: dev-gcp
         - application: meldekort-api{{ dashEnv }}
           namespace: meldekort
           cluster: {{ vaultServiceuserEnv }}-gcp

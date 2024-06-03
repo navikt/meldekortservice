@@ -21,7 +21,7 @@ import org.junit.jupiter.api.BeforeAll
 open class TestBase {
 
     companion object {
-        const val ISSUER_ID = "default"
+        const val TOKENX_ISSUER_ID = "tokenx"
         const val REQUIRED_AUDIENCE = "default"
 
         var mockOAuth2Server = MockOAuth2Server()
@@ -74,17 +74,16 @@ open class TestBase {
 
     fun setOidcConfig(): MapApplicationConfig {
         return MapApplicationConfig(
-            "ktor.environment" to "test",
             "no.nav.security.jwt.issuers.size" to "1",
-            "no.nav.security.jwt.issuers.0.issuer_name" to ISSUER_ID,
-            "no.nav.security.jwt.issuers.0.discoveryurl" to mockOAuth2Server.wellKnownUrl(ISSUER_ID).toString(),
+            "no.nav.security.jwt.issuers.0.issuer_name" to TOKENX_ISSUER_ID,
+            "no.nav.security.jwt.issuers.0.discoveryurl" to mockOAuth2Server.wellKnownUrl(TOKENX_ISSUER_ID).toString(),
             "no.nav.security.jwt.issuers.0.accepted_audience" to REQUIRED_AUDIENCE,
             "ktor.environment" to "local"
         )
     }
 
     fun issueTokenWithSub(): String = mockOAuth2Server.issueToken(
-        ISSUER_ID,
+        TOKENX_ISSUER_ID,
         "myclient",
         DefaultOAuth2TokenCallback(
             audience = listOf(REQUIRED_AUDIENCE),
@@ -93,7 +92,7 @@ open class TestBase {
     ).serialize()
 
     fun issueTokenWithPid(): String = mockOAuth2Server.issueToken(
-        ISSUER_ID,
+        TOKENX_ISSUER_ID,
         "myclient",
         DefaultOAuth2TokenCallback(
             audience = listOf(REQUIRED_AUDIENCE),
