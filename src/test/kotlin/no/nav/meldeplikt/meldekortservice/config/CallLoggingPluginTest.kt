@@ -43,7 +43,7 @@ class CallLoggingPluginTest : TestBase() {
 
         defaultDbService = dbService
         val flywayConfig = mockk<Flyway>()
-        every { flywayConfig.migrate() } returns MigrateResult("", "", "")
+        every { flywayConfig.migrate() } returns MigrateResult("", "", "", "")
 
         val callId = UUID.randomUUID().toString()
         val token = issueTokenWithSub()
@@ -187,7 +187,7 @@ class CallLoggingPluginTest : TestBase() {
 
         defaultDbService = dbService
         val flywayConfig = mockk<Flyway>()
-        every { flywayConfig.migrate() } returns MigrateResult("", "", "")
+        every { flywayConfig.migrate() } returns MigrateResult("", "", "", "")
 
         val callId = UUID.randomUUID().toString()
         val token = issueTokenWithSub()

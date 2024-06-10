@@ -54,7 +54,7 @@ open class TestBase {
     fun setUpTestApplication(block: suspend ApplicationTestBuilder.() -> Unit) {
         testApplication {
             val flywayConfig = mockk<Flyway>()
-            every { flywayConfig.migrate() } returns MigrateResult("", "", "")
+            every { flywayConfig.migrate() } returns MigrateResult("", "", "", "")
 
             environment {
                 config = setOidcConfig()
