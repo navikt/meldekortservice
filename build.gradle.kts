@@ -39,7 +39,7 @@ plugins {
 
     id("com.github.johnrengelman.shadow") version "8.1.1"
 
-    id("org.flywaydb.flyway") version ("10.10.0")
+    id("org.flywaydb.flyway") version ("10.15.2")
 
     id("org.sonarqube") version "5.1.0.4882"
 
