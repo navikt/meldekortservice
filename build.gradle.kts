@@ -1,6 +1,8 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 val flywayVersion = "10.15.2"
 val h2Version = "2.2.224"
@@ -20,7 +22,6 @@ val tjenestespecVersion = "2633.1685ed5"
 val tokenValidationVersion = "5.0.1"
 val vaultJdbcVersion = "1.3.10"
 val vaultVersion = "5.1.0"
-
 
 project.setProperty("mainClassName", "io.ktor.server.netty.EngineMain")
 
@@ -104,7 +105,6 @@ dependencies {
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("no.nav.security:mock-oauth2-server:$mockOauthVersion")
-
 }
 
 configure<JavaPluginExtension> {
@@ -113,9 +113,9 @@ configure<JavaPluginExtension> {
 }
 
 tasks {
-    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = "21"
+    withType<KotlinJvmCompile>().configureEach {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_21)
         }
     }
 
