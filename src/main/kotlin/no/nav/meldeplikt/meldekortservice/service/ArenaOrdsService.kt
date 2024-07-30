@@ -32,12 +32,12 @@ class ArenaOrdsService(
     private lateinit var currentToken: AccessToken
     private lateinit var currentTokenValidUntil: LocalDateTime
 
-    suspend fun hentMeldekort(fnr: String): OrdsStringResponse {
+    suspend fun hentMeldekort(ident: String): OrdsStringResponse {
         val execResult: Result<HttpResponse> = runCatching {
             getResponseWithRetry(
                 "${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORT",
                 HttpMethod.Get,
-                setupHeaders(fnr = fnr)
+                setupHeaders(ident = ident)
             )
         }
 
@@ -49,11 +49,11 @@ class ArenaOrdsService(
         return OrdsStringResponse(meldekort.status, meldekort.body())
     }
 
-    suspend fun hentHistoriskeMeldekort(fnr: String, antallMeldeperioder: Int): Person {
+    suspend fun hentHistoriskeMeldekort(ident: String, antallMeldeperioder: Int): Person {
         val person: String = getResponseWithRetry(
             "${env.ordsUrl}$ARENA_ORDS_HENT_HISTORISKE_MELDEKORT$ARENA_ORDS_MELDEPERIODER_PARAM$antallMeldeperioder",
             HttpMethod.Get,
-            setupHeaders(fnr = fnr)
+            setupHeaders(ident = ident)
         ).body()
 
         return mapFraXml(person, Person::class.java)
@@ -108,15 +108,15 @@ class ArenaOrdsService(
         return ArenaOrdsSkrivemodus(content.skrivemodus)
     }
 
-    private fun setupHeaders(meldekortId: Long? = null, fnr: String? = null): StringValuesBuilder {
+    private fun setupHeaders(meldekortId: Long? = null, ident: String? = null): StringValuesBuilder {
         val headers = HeadersBuilder()
         headers.append("Accept", "application/xml; charset=UTF-8")
         headers.append("Authorization", "Bearer ${hentToken().accessToken}")
         if (meldekortId != null) {
             headers.append("meldekortId", meldekortId.toString())
         }
-        if (fnr != null) {
-            headers.append("fnr", fnr)
+        if (ident != null) {
+            headers.append("fnr", ident)
         }
 
         return headers
