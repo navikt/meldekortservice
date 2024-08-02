@@ -203,22 +203,23 @@ class MeldekortV2KtTest : TestBase() {
     }
 
     @Test
-    fun `hentKorrigertMeldekort returns BadRequest status when valid token and ident in headers but wrong ident`() = setUpTestApplication {
-        val meldekortdetaljer = Meldekortdetaljer(
-            id = "1",
-            fodselsnr = DUMMY_FNR,
-            kortType = KortType.AAP
-        )
+    fun `hentKorrigertMeldekort returns BadRequest status when valid token and ident in headers but wrong ident`() =
+        setUpTestApplication {
+            val meldekortdetaljer = Meldekortdetaljer(
+                id = "1",
+                fodselsnr = DUMMY_FNR,
+                kortType = KortType.AAP
+            )
 
-        coEvery { arenaOrdsService.hentMeldekortdetaljer(any()) } returns (meldekortdetaljer)
+            coEvery { arenaOrdsService.hentMeldekortdetaljer(any()) } returns (meldekortdetaljer)
 
-        val response = client.get(hentKorrigertMeldekortUrl) {
-            header(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")
-            header("ident", "21020312345")
+            val response = client.get(hentKorrigertMeldekortUrl) {
+                header(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")
+                header("ident", "21020312345")
+            }
+
+            assertEquals(HttpStatusCode.BadRequest, response.status)
         }
-
-        assertEquals(HttpStatusCode.BadRequest, response.status)
-    }
 
     @Test
     fun `hentKorrigertMeldekort returns data when valid token and ident in headers`() = setUpTestApplication {
@@ -261,30 +262,29 @@ class MeldekortV2KtTest : TestBase() {
 
     @Test
     fun `hentMeldegrupper returns data when valid token and ident in headers`() = setUpTestApplication {
-        val meldegruppeResponse = MeldegruppeResponse(
-            listOf(
-                Meldegruppe(
-                    DUMMY_FNR,
-                    "ARBS",
-                    LocalDate.now(),
-                    null,
-                    LocalDate.now(),
-                    "J",
-                    "Aktivert med ingen ytelser",
-                    null
-                ),
-                Meldegruppe(
-                    DUMMY_FNR,
-                    "DAGP",
-                    LocalDate.now(),
-                    LocalDate.now(),
-                    LocalDate.now(),
-                    "J",
-                    "Iverksatt vedtak",
-                    1L
-                )
+        val meldegrupper = listOf(
+            Meldegruppe(
+                DUMMY_FNR,
+                "ARBS",
+                LocalDate.now(),
+                null,
+                LocalDate.now(),
+                "J",
+                "Aktivert med ingen ytelser",
+                null
+            ),
+            Meldegruppe(
+                DUMMY_FNR,
+                "DAGP",
+                LocalDate.now(),
+                LocalDate.now(),
+                LocalDate.now(),
+                "J",
+                "Iverksatt vedtak",
+                1L
             )
         )
+        val meldegruppeResponse = MeldegruppeResponse(meldegrupper)
 
         coEvery { arenaOrdsService.hentMeldegrupper(any(), any()) } returns (meldegruppeResponse)
 
@@ -294,7 +294,7 @@ class MeldekortV2KtTest : TestBase() {
         }
 
         assertEquals(HttpStatusCode.OK, response.status)
-        val responseObject = defaultObjectMapper.readValue<MeldegruppeResponse>(response.bodyAsText())
-        assertEquals(meldegruppeResponse, responseObject)
+        val responseObject = defaultObjectMapper.readValue<List<Meldegruppe>>(response.bodyAsText())
+        assertEquals(meldegrupper, responseObject)
     }
 }

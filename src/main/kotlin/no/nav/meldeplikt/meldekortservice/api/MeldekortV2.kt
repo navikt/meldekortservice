@@ -5,6 +5,7 @@ import io.ktor.server.application.*
 import io.ktor.server.locations.*
 import io.ktor.server.routing.*
 import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
+import no.nav.meldeplikt.meldekortservice.model.meldegruppe.Meldegruppe
 import no.nav.meldeplikt.meldekortservice.model.meldegruppe.MeldegruppeResponse
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
@@ -158,7 +159,7 @@ class HentMeldegrupperInput
 fun Routing.hentMeldegrupper(arenaOrdsService: ArenaOrdsService) = get<HentMeldegrupperInput>(
     "Hent meldegrupper".securityAndResponse(
         BearerTokenSecurity(),
-        ok<MeldegruppeResponse>(),
+        ok<List<Meldegruppe>>(),
         badRequest<ErrorMessage>(),
         serviceUnavailable<ErrorMessage>(),
         unAuthorized<Error>()
@@ -168,8 +169,8 @@ fun Routing.hentMeldegrupper(arenaOrdsService: ArenaOrdsService) = get<HentMelde
         val ident = getIdent(call)
 
         val result = arenaOrdsService.hentMeldegrupper(ident, LocalDate.now())
-        println(defaultObjectMapper.writeValueAsString(result))
-        result
+
+        result.meldegruppeListe
     }
 }
 
