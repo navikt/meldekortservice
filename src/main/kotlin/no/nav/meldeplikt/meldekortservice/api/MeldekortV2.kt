@@ -5,11 +5,13 @@ import io.ktor.server.application.*
 import io.ktor.server.locations.*
 import io.ktor.server.routing.*
 import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
+import no.nav.meldeplikt.meldekortservice.model.meldegruppe.MeldegruppeResponse
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
 import no.nav.meldeplikt.meldekortservice.utils.*
 import no.nav.meldeplikt.meldekortservice.utils.swagger.*
+import java.time.LocalDate
 
 /**
  * REST-controller som henter FNR fra ident-header og tilbyr operasjoner for å hente:
@@ -27,6 +29,7 @@ fun Routing.meldekortApiV2(arenaOrdsService: ArenaOrdsService) {
     hentHistoriskeMeldekort(arenaOrdsService)
     hentMeldekortdetaljer(arenaOrdsService)
     hentKorrigertMeldekort(arenaOrdsService)
+    hentMeldegrupper(arenaOrdsService)
 }
 
 private const val group = "Meldekort v2"
@@ -145,6 +148,30 @@ fun Routing.hentKorrigertMeldekort(arenaOrdsService: ArenaOrdsService) =
             arenaOrdsService.kopierMeldekort(hentKorrigertMeldekortInput.meldekortId)
         }
     }
+
+@Group(group)
+@Location("$API_PATH/v2/meldegrupper")
+@KtorExperimentalLocationsAPI
+class HentMeldegrupperInput
+
+@KtorExperimentalLocationsAPI
+fun Routing.hentMeldegrupper(arenaOrdsService: ArenaOrdsService) = get<HentMeldegrupperInput>(
+    "Hent meldegrupper".securityAndResponse(
+        BearerTokenSecurity(),
+        ok<MeldegruppeResponse>(),
+        badRequest<ErrorMessage>(),
+        serviceUnavailable<ErrorMessage>(),
+        unAuthorized<Error>()
+    ).header<Headers>()
+) {
+    respondOrError {
+        val ident = getIdent(call)
+
+        val result = arenaOrdsService.hentMeldegrupper(ident, LocalDate.now())
+        println(defaultObjectMapper.writeValueAsString(result))
+        result
+    }
+}
 
 private fun getIdent(call: ApplicationCall): String {
     val ident = call.request.headers["ident"]

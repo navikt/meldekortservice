@@ -12,7 +12,10 @@ import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.model.AccessToken
 import no.nav.meldeplikt.meldekortservice.model.ArenaOrdsSkrivemodus
 import no.nav.meldeplikt.meldekortservice.model.feil.OrdsException
+import no.nav.meldeplikt.meldekortservice.model.meldegruppe.Meldegruppe
+import no.nav.meldeplikt.meldekortservice.model.meldegruppe.MeldegruppeResponse
 import no.nav.meldeplikt.meldekortservice.model.response.OrdsStringResponse
+import no.nav.meldeplikt.meldekortservice.utils.ARENA_ORDS_HENT_MELDEGRUPPER
 import no.nav.meldeplikt.meldekortservice.utils.ARENA_ORDS_TOKEN_PATH
 import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
@@ -20,6 +23,7 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.net.URI
+import java.time.LocalDate
 import kotlin.test.assertEquals
 
 class ArenaOrdsServiceTest {
@@ -223,6 +227,49 @@ class ArenaOrdsServiceTest {
             val actualResponse = arenaOrdsService.kopierMeldekort(123)
 
             assertEquals(0, actualResponse)
+        }
+    }
+
+    @Test
+    fun `test hentMeldegrupper returns data`() {
+        val meldegruppeResponse = MeldegruppeResponse(
+            listOf(
+                Meldegruppe(
+                    "",
+                    "ARBS",
+                    LocalDate.now(),
+                    null,
+                    LocalDate.now(),
+                    "J",
+                    "",
+                    null
+                )
+            )
+        )
+
+        val client = HttpClient(MockEngine) {
+            engine {
+                addHandler { request ->
+                    assertEquals(HttpMethod.Get, request.method)
+                    assertEquals("Bearer $DUMMY_TOKEN", request.headers["Authorization"])
+                    assertEquals(fnr, request.headers["person_id"])
+                    assertEquals(
+                        "https://dummyurl.nav.no$ARENA_ORDS_HENT_MELDEGRUPPER",
+                        request.url.toString()
+                    )
+
+                    respond(
+                        defaultObjectMapper.writeValueAsString(meldegruppeResponse),
+                        headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    )
+                }
+            }
+        }
+        val arenaOrdsService = ArenaOrdsService(client)
+
+        runBlocking {
+            val actualResponse = arenaOrdsService.hentMeldegrupper(fnr, LocalDate.now())
+            assertEquals(meldegruppeResponse, actualResponse)
         }
     }
 

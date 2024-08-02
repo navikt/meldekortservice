@@ -8,6 +8,8 @@ import io.ktor.server.locations.*
 import io.mockk.coEvery
 import no.nav.meldeplikt.meldekortservice.config.DUMMY_FNR
 import no.nav.meldeplikt.meldekortservice.model.enum.KortType
+import no.nav.meldeplikt.meldekortservice.model.meldegruppe.Meldegruppe
+import no.nav.meldeplikt.meldekortservice.model.meldegruppe.MeldegruppeResponse
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Meldekort
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
@@ -17,15 +19,15 @@ import no.nav.meldeplikt.meldekortservice.utils.defaultXmlMapper
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 
 @KtorExperimentalLocationsAPI
 class MeldekortV2KtTest : TestBase() {
 
     private val hentMeldekortUrl = "/meldekortservice/api/v2/meldekort"
     private val hentHistoriskeMeldekortUrl = "/meldekortservice/api/v2/historiskemeldekort?antallMeldeperioder=1"
-    private val hentMeldekortdetaljer = "/meldekortservice/api/v2/meldekortdetaljer?meldekortId=123456789"
-    private val hentKorrigertMeldekort = "/meldekortservice/api/v2/korrigertMeldekort?meldekortId=123456789"
+    private val hentMeldekortdetaljerUrl = "/meldekortservice/api/v2/meldekortdetaljer?meldekortId=123456789"
+    private val hentKorrigertMeldekortUrl = "/meldekortservice/api/v2/korrigertMeldekort?meldekortId=123456789"
+    private val hentMeldegrupperUrl = "/meldekortservice/api/v2/meldegrupper"
 
     @Test
     fun `hentMeldekort returns Unauthorized status when no token in headers`() = setUpTestApplication {
@@ -93,7 +95,6 @@ class MeldekortV2KtTest : TestBase() {
         }
 
         assertEquals(HttpStatusCode.OK, response.status)
-        assertNotNull(response.bodyAsText())
         val responseObject = defaultObjectMapper.readValue<Person>(response.bodyAsText())
         assertEquals(person.personId, responseObject.personId)
         assertEquals(2, responseObject.meldekortListe?.size)
@@ -142,14 +143,13 @@ class MeldekortV2KtTest : TestBase() {
         }
 
         assertEquals(HttpStatusCode.OK, response.status)
-        assertNotNull(response.bodyAsText())
         val responseObject = defaultObjectMapper.readValue<Person>(response.bodyAsText())
         assertEquals(person.personId, responseObject.personId)
     }
 
     @Test
     fun `hentMeldekortdetaljer returns Unauthorized status when no token in headers`() = setUpTestApplication {
-        val response = client.get(hentMeldekortdetaljer) {
+        val response = client.get(hentMeldekortdetaljerUrl) {
         }
 
         assertEquals(HttpStatusCode.Unauthorized, response.status)
@@ -157,7 +157,7 @@ class MeldekortV2KtTest : TestBase() {
 
     @Test
     fun `hentMeldekortdetaljer returns BadRequest status when no ident in Headers`() = setUpTestApplication {
-        val response = client.get(hentMeldekortdetaljer) {
+        val response = client.get(hentMeldekortdetaljerUrl) {
             header(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")
         }
 
@@ -175,20 +175,19 @@ class MeldekortV2KtTest : TestBase() {
         coEvery { arenaOrdsService.hentMeldekortdetaljer(any()) } returns (meldekortdetaljer)
 
 
-        val response = client.get(hentMeldekortdetaljer) {
+        val response = client.get(hentMeldekortdetaljerUrl) {
             header(HttpHeaders.Authorization, "Bearer ${issueTokenWithSub()}")
             header("ident", DUMMY_FNR)
         }
 
         assertEquals(HttpStatusCode.OK, response.status)
-        assertNotNull(response.bodyAsText())
         val responseObject = defaultObjectMapper.readValue<Meldekortdetaljer>(response.bodyAsText())
         assertEquals(meldekortdetaljer.id, responseObject.id)
     }
 
     @Test
     fun `hentKorrigertMeldekort returns Unauthorized status when no token in headers`() = setUpTestApplication {
-        val response = client.get(hentKorrigertMeldekort) {
+        val response = client.get(hentKorrigertMeldekortUrl) {
         }
 
         assertEquals(HttpStatusCode.Unauthorized, response.status)
@@ -196,7 +195,7 @@ class MeldekortV2KtTest : TestBase() {
 
     @Test
     fun `hentKorrigertMeldekort returns BadRequest status when no ident in Headers`() = setUpTestApplication {
-        val response = client.get(hentKorrigertMeldekort) {
+        val response = client.get(hentKorrigertMeldekortUrl) {
             header(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")
         }
 
@@ -213,7 +212,7 @@ class MeldekortV2KtTest : TestBase() {
 
         coEvery { arenaOrdsService.hentMeldekortdetaljer(any()) } returns (meldekortdetaljer)
 
-        val response = client.get(hentKorrigertMeldekort) {
+        val response = client.get(hentKorrigertMeldekortUrl) {
             header(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")
             header("ident", "21020312345")
         }
@@ -233,14 +232,69 @@ class MeldekortV2KtTest : TestBase() {
         coEvery { arenaOrdsService.hentMeldekortdetaljer(any()) } returns (meldekortdetaljer)
         coEvery { arenaOrdsService.kopierMeldekort(any()) } returns (nyId)
 
-        val response = client.get(hentKorrigertMeldekort) {
+        val response = client.get(hentKorrigertMeldekortUrl) {
             header(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")
             header("ident", DUMMY_FNR)
         }
 
         assertEquals(HttpStatusCode.OK, response.status)
-        assertNotNull(response.bodyAsText())
         val responseObject = defaultObjectMapper.readValue<Long>(response.bodyAsText())
         assertEquals(nyId, responseObject)
+    }
+
+    @Test
+    fun `hentMeldegrupper returns Unauthorized status when no token in headers`() = setUpTestApplication {
+        val response = client.get(hentMeldegrupperUrl) {
+        }
+
+        assertEquals(HttpStatusCode.Unauthorized, response.status)
+    }
+
+    @Test
+    fun `hentMeldegrupper returns BadRequest status when no ident in Headers`() = setUpTestApplication {
+        val response = client.get(hentMeldegrupperUrl) {
+            header(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")
+        }
+
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+    }
+
+    @Test
+    fun `hentMeldegrupper returns data when valid token and ident in headers`() = setUpTestApplication {
+        val meldegruppeResponse = MeldegruppeResponse(
+            listOf(
+                Meldegruppe(
+                    DUMMY_FNR,
+                    "ARBS",
+                    LocalDate.now(),
+                    null,
+                    LocalDate.now(),
+                    "J",
+                    "Aktivert med ingen ytelser",
+                    null
+                ),
+                Meldegruppe(
+                    DUMMY_FNR,
+                    "DAGP",
+                    LocalDate.now(),
+                    LocalDate.now(),
+                    LocalDate.now(),
+                    "J",
+                    "Iverksatt vedtak",
+                    1L
+                )
+            )
+        )
+
+        coEvery { arenaOrdsService.hentMeldegrupper(any(), any()) } returns (meldegruppeResponse)
+
+        val response = client.get(hentMeldegrupperUrl) {
+            header(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")
+            header("ident", DUMMY_FNR)
+        }
+
+        assertEquals(HttpStatusCode.OK, response.status)
+        val responseObject = defaultObjectMapper.readValue<MeldegruppeResponse>(response.bodyAsText())
+        assertEquals(meldegruppeResponse, responseObject)
     }
 }

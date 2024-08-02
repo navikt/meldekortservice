@@ -16,13 +16,16 @@ import no.nav.meldeplikt.meldekortservice.model.AccessToken
 import no.nav.meldeplikt.meldekortservice.model.ArenaOrdsSkrivemodus
 import no.nav.meldeplikt.meldekortservice.model.feil.OrdsException
 import no.nav.meldeplikt.meldekortservice.model.korriger.KopierMeldekortResponse
+import no.nav.meldeplikt.meldekortservice.model.meldegruppe.MeldegruppeResponse
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.arena.Meldekort
 import no.nav.meldeplikt.meldekortservice.model.response.OrdsStringResponse
 import no.nav.meldeplikt.meldekortservice.utils.*
 import java.net.URI
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 class ArenaOrdsService(
@@ -91,6 +94,16 @@ class ArenaOrdsService(
         return 0
     }
 
+    suspend fun hentMeldegrupper(ident: String, fraDato: LocalDate): MeldegruppeResponse {
+        val response = getResponseWithRetry(
+            "${env.ordsUrl}$ARENA_ORDS_HENT_MELDEGRUPPER",
+            HttpMethod.Get,
+            setupHeaders(ident = ident, fraDato = fraDato)
+        )
+
+        return defaultObjectMapper.readValue(response.body<String>(), MeldegruppeResponse::class.java)
+    }
+
     suspend fun hentSkrivemodus(): ArenaOrdsSkrivemodus {
         val execResult: Result<HttpResponse> = runCatching {
             getResponseWithRetry("${env.ordsUrl}$ARENA_ORDS_HENT_SKRIVEMODUS", HttpMethod.Get, setupHeaders())
@@ -108,7 +121,11 @@ class ArenaOrdsService(
         return ArenaOrdsSkrivemodus(content.skrivemodus)
     }
 
-    private fun setupHeaders(meldekortId: Long? = null, ident: String? = null): StringValuesBuilder {
+    private fun setupHeaders(
+        meldekortId: Long? = null,
+        ident: String? = null,
+        fraDato: LocalDate? = null
+    ): StringValuesBuilder {
         val headers = HeadersBuilder()
         headers.append("Accept", "application/xml; charset=UTF-8")
         headers.append("Authorization", "Bearer ${hentToken().accessToken}")
@@ -117,6 +134,10 @@ class ArenaOrdsService(
         }
         if (ident != null) {
             headers.append("fnr", ident)
+        }
+        if (ident != null && fraDato != null) {
+            headers.append("person_id", ident)
+            headers.append("fraDato", fraDato.format(DateTimeFormatter.ISO_LOCAL_DATE))
         }
 
         return headers
