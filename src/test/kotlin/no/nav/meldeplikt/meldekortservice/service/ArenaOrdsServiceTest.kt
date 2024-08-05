@@ -274,7 +274,7 @@ class ArenaOrdsServiceTest {
                     } else {
                         assertEquals(HttpMethod.Get, request.method)
                         assertEquals("Bearer $DUMMY_TOKEN", request.headers["Authorization"])
-                        assertEquals(personId, request.headers["person_id"])
+                        assertEquals(personId, request.headers["personid"])
                         assertEquals(
                             "https://dummyurl.nav.no$ARENA_ORDS_HENT_MELDEGRUPPER",
                             request.url.toString()
