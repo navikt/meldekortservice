@@ -14,6 +14,7 @@ import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.mapper.MeldekortdetaljerMapper
 import no.nav.meldeplikt.meldekortservice.model.AccessToken
 import no.nav.meldeplikt.meldekortservice.model.ArenaOrdsSkrivemodus
+import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 import no.nav.meldeplikt.meldekortservice.model.feil.OrdsException
 import no.nav.meldeplikt.meldekortservice.model.korriger.KopierMeldekortResponse
 import no.nav.meldeplikt.meldekortservice.model.meldegruppe.MeldegruppeResponse
@@ -95,10 +96,20 @@ class ArenaOrdsService(
     }
 
     suspend fun hentMeldegrupper(ident: String, fraDato: LocalDate): MeldegruppeResponse {
+        val personId: String
+
+        val personResponse = hentMeldekort(ident)
+        if (personResponse.status == HttpStatusCode.OK) {
+            val person = mapFraXml(personResponse.content, Person::class.java)
+            personId = person.personId.toString()
+        } else {
+            throw NoContentException()
+        }
+
         val response = getResponseWithRetry(
             "${env.ordsUrl}$ARENA_ORDS_HENT_MELDEGRUPPER",
             HttpMethod.Get,
-            setupHeaders(ident = ident, fraDato = fraDato)
+            setupHeaders(personId = personId, fraDato = fraDato)
         )
 
         return defaultObjectMapper.readValue(response.body<String>(), MeldegruppeResponse::class.java)
@@ -124,6 +135,7 @@ class ArenaOrdsService(
     private fun setupHeaders(
         meldekortId: Long? = null,
         ident: String? = null,
+        personId: String? = null,
         fraDato: LocalDate? = null
     ): StringValuesBuilder {
         val headers = HeadersBuilder()
@@ -135,8 +147,8 @@ class ArenaOrdsService(
         if (ident != null) {
             headers.append("fnr", ident)
         }
-        if (ident != null && fraDato != null) {
-            headers.append("person_id", ident)
+        if (personId != null && fraDato != null) {
+            headers.append("person_id", personId)
             headers.append("fradato", fraDato.format(DateTimeFormatter.ISO_LOCAL_DATE))
         }
 

@@ -247,21 +247,45 @@ class ArenaOrdsServiceTest {
             )
         )
 
+        val personId = "1019108"
+        val person = "" +
+                "<Person>" +
+                "    <PersonId>$personId</PersonId>" +
+                "    <Etternavn>DUCK</Etternavn>" +
+                "    <Fornavn>DONALD</Fornavn>" +
+                "    <Maalformkode>NO</Maalformkode>" +
+                "    <Meldeform>EMELD</Meldeform>" +
+                "    <MeldekortListe/>" +
+                "    <FravaerListe/>" +
+                "</Person>"
+
         val client = HttpClient(MockEngine) {
             engine {
                 addHandler { request ->
-                    assertEquals(HttpMethod.Get, request.method)
-                    assertEquals("Bearer $DUMMY_TOKEN", request.headers["Authorization"])
-                    assertEquals(fnr, request.headers["person_id"])
-                    assertEquals(
-                        "https://dummyurl.nav.no$ARENA_ORDS_HENT_MELDEGRUPPER",
-                        request.url.toString()
-                    )
+                    if (request.url.toString() == "https://dummyurl.nav.no/api/v2/meldeplikt/meldekort") {
+                        assertEquals(HttpMethod.Get, request.method)
+                        assertEquals("Bearer $DUMMY_TOKEN", request.headers["Authorization"])
+                        assertEquals(fnr, request.headers["fnr"])
 
-                    respond(
-                        defaultObjectMapper.writeValueAsString(meldegruppeResponse),
-                        headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                    )
+                        respond(
+                            person,
+                            headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Xml.toString())
+                        )
+                    } else {
+                        assertEquals(HttpMethod.Get, request.method)
+                        assertEquals("Bearer $DUMMY_TOKEN", request.headers["Authorization"])
+                        assertEquals(personId, request.headers["person_id"])
+                        assertEquals(
+                            "https://dummyurl.nav.no$ARENA_ORDS_HENT_MELDEGRUPPER",
+                            request.url.toString()
+                        )
+
+                        respond(
+                            defaultObjectMapper.writeValueAsString(meldegruppeResponse),
+                            headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                        )
+                    }
+
                 }
             }
         }
