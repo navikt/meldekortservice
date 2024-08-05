@@ -137,7 +137,7 @@ class ArenaOrdsService(
         }
         if (ident != null && fraDato != null) {
             headers.append("person_id", ident)
-            headers.append("fraDato", fraDato.format(DateTimeFormatter.ISO_LOCAL_DATE))
+            headers.append("fradato", fraDato.format(DateTimeFormatter.ISO_LOCAL_DATE))
         }
 
         return headers
