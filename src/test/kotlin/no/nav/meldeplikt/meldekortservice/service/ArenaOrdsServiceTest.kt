@@ -36,7 +36,7 @@ class ArenaOrdsServiceTest {
     }
 
     @Test
-    fun `test hente meldekort returns OK status`() {
+    fun `hentMeldekort returnerer OK status`() {
         val response = OrdsStringResponse(HttpStatusCode.OK, "test")
         val client = HttpClient(MockEngine) {
             engine {
@@ -68,7 +68,7 @@ class ArenaOrdsServiceTest {
     }
 
     @Test
-    fun `test hente meldekort throws Exception`() {
+    fun `hentMeldekort kaster Exception`() {
         val client = HttpClient(MockEngine) {
             engine {
                 addHandler { request ->
@@ -95,7 +95,7 @@ class ArenaOrdsServiceTest {
     }
 
     @Test
-    fun `test hent historiskeMeldekort returns OK status`() {
+    fun `hentHistoriskeMeldekort returnerer OK status`() {
         val xmlString =
             """<Person><personId>1</personId><Etternavn>test</Etternavn><Fornavn>test</Fornavn><Maalformkode>test</Maalformkode><Meldeform>test</Meldeform><meldekortListe/><antallGjenstaaendeFeriedager>10</antallGjenstaaendeFeriedager><fravaerListe/></Person>"""
         val client = HttpClient(MockEngine) {
@@ -125,7 +125,7 @@ class ArenaOrdsServiceTest {
     }
 
     @Test
-    fun `test hent Meldekortdetaljer returns OK status`() {
+    fun `hentMeldekortdetaljer returnerer OK status`() {
         val xmlString = """<Meldekort>
 |                               <Hode>
 |                                   <PersonId><Verdi>1</Verdi></PersonId>
@@ -173,7 +173,7 @@ class ArenaOrdsServiceTest {
     }
 
     @Test
-    fun `test kopierMeldekort returns OK status`() {
+    fun `kopierMeldekort returnerer OK status`() {
         val xmlString = """<KopierMeldekortResponse><meldekortId>123</meldekortId></KopierMeldekortResponse>"""
         val client = HttpClient(MockEngine) {
             engine {
@@ -202,7 +202,7 @@ class ArenaOrdsServiceTest {
     }
 
     @Test
-    fun `test kopierMeldekort returns 0 hvis ikke OK`() {
+    fun `kopierMeldekort returnerer 0 hvis ikke OK`() {
         val xmlString = """NOT XML STRING"""
         val client = HttpClient(MockEngine) {
             engine {
@@ -231,7 +231,7 @@ class ArenaOrdsServiceTest {
     }
 
     @Test
-    fun `test hentMeldegrupper returns data`() {
+    fun `hentMeldegrupper returnerer data`() {
         val meldegruppeResponse = MeldegruppeResponse(
             listOf(
                 Meldegruppe(
@@ -298,7 +298,56 @@ class ArenaOrdsServiceTest {
     }
 
     @Test
-    fun `test hente skrivemodus naar ORDS er i skrivemodus returns true`() {
+    fun `test hentMeldegrupper returnerer emptyList for brukere uten meldpelikt`() {
+        val personId = "1019108"
+        val person = "" +
+                "<Person>" +
+                "    <PersonId>$personId</PersonId>" +
+                "    <Etternavn>DUCK</Etternavn>" +
+                "    <Fornavn>DONALD</Fornavn>" +
+                "    <Maalformkode>NO</Maalformkode>" +
+                "    <Meldeform>EMELD</Meldeform>" +
+                "    <MeldekortListe/>" +
+                "    <FravaerListe/>" +
+                "</Person>"
+
+        val client = HttpClient(MockEngine) {
+            engine {
+                addHandler { request ->
+                    if (request.url.toString() == "https://dummyurl.nav.no/api/v2/meldeplikt/meldekort") {
+                        assertEquals(HttpMethod.Get, request.method)
+                        assertEquals("Bearer $DUMMY_TOKEN", request.headers["Authorization"])
+                        assertEquals(fnr, request.headers["fnr"])
+
+                        respond(
+                            person,
+                            headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Xml.toString())
+                        )
+                    } else {
+                        assertEquals(HttpMethod.Get, request.method)
+                        assertEquals("Bearer $DUMMY_TOKEN", request.headers["Authorization"])
+                        assertEquals(personId, request.headers["personid"])
+                        assertEquals(
+                            "https://dummyurl.nav.no$ARENA_ORDS_HENT_MELDEGRUPPER",
+                            request.url.toString()
+                        )
+
+                        respond("", HttpStatusCode.NoContent)
+                    }
+
+                }
+            }
+        }
+        val arenaOrdsService = ArenaOrdsService(client)
+
+        runBlocking {
+            val actualResponse = arenaOrdsService.hentMeldegrupper(fnr, LocalDate.now())
+            assertEquals(emptyList(), actualResponse.meldegruppeListe)
+        }
+    }
+
+    @Test
+    fun `hentSkrivemodus returnerer true naar ORDS er i skrivemodus `() {
         val response = ArenaOrdsSkrivemodus(true)
         val client = HttpClient(MockEngine) {
             engine {
@@ -324,7 +373,7 @@ class ArenaOrdsServiceTest {
     }
 
     @Test
-    fun `test hente skrivemodus naar ORDS er utilgjengelig returns false`() {
+    fun `hentSkrivemodus returnerer false naar ORDS er utilgjengelig`() {
         val client = HttpClient(MockEngine) {
             engine {
                 addHandler { request ->

@@ -112,6 +112,10 @@ class ArenaOrdsService(
             setupHeaders(personId = personId, fraDato = fraDato)
         )
 
+        if (response.status == HttpStatusCode.NoContent) {
+            return MeldegruppeResponse(emptyList())
+        }
+
         return defaultObjectMapper.readValue(response.body<String>(), MeldegruppeResponse::class.java)
     }
 
