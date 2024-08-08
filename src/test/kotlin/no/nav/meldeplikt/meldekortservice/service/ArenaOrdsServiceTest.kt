@@ -285,10 +285,10 @@ class ArenaOrdsServiceTest {
                             headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                         )
                     }
-
                 }
             }
         }
+
         val arenaOrdsService = ArenaOrdsService(client)
 
         runBlocking {
@@ -299,6 +299,24 @@ class ArenaOrdsServiceTest {
 
     @Test
     fun `test hentMeldegrupper returnerer emptyList for brukere uten meldpelikt`() {
+        val client = HttpClient(MockEngine) {
+            engine {
+                addHandler { _ ->
+                    respond("", HttpStatusCode.NoContent)
+                }
+            }
+        }
+
+        val arenaOrdsService = ArenaOrdsService(client)
+
+        runBlocking {
+            val actualResponse = arenaOrdsService.hentMeldegrupper(fnr, LocalDate.now())
+            assertEquals(emptyList(), actualResponse.meldegruppeListe)
+        }
+    }
+
+    @Test
+    fun `test hentMeldegrupper returnerer emptyList for brukere uten meldpelikt2`() {
         val personId = "1019108"
         val person = "" +
                 "<Person>" +
@@ -334,16 +352,18 @@ class ArenaOrdsServiceTest {
 
                         respond("", HttpStatusCode.NoContent)
                     }
-
                 }
             }
         }
+
         val arenaOrdsService = ArenaOrdsService(client)
 
-        runBlocking {
-            val actualResponse = arenaOrdsService.hentMeldegrupper(fnr, LocalDate.now())
-            assertEquals(emptyList(), actualResponse.meldegruppeListe)
+        val exception = assertThrows<OrdsException> {
+            runBlocking {
+                arenaOrdsService.hentMeldegrupper(fnr, LocalDate.now())
+            }
         }
+        assertEquals("Kunne ikke hente meldegrupper fra Arena Ords", exception.localizedMessage)
     }
 
     @Test

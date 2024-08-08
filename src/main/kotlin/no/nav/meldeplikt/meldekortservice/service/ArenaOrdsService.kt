@@ -103,7 +103,7 @@ class ArenaOrdsService(
             val person = mapFraXml(personResponse.content, Person::class.java)
             personId = person.personId.toString()
         } else {
-            throw NoContentException()
+            return MeldegruppeResponse(emptyList())
         }
 
         val response = getResponseWithRetry(
@@ -112,8 +112,8 @@ class ArenaOrdsService(
             setupHeaders(personId = personId, fraDato = fraDato)
         )
 
-        if (response.status == HttpStatusCode.NoContent) {
-            return MeldegruppeResponse(emptyList())
+        if (response.status != HttpStatusCode.OK) {
+            throw OrdsException("Kunne ikke hente meldegrupper fra Arena Ords")
         }
 
         return defaultObjectMapper.readValue(response.body<String>(), MeldegruppeResponse::class.java)
