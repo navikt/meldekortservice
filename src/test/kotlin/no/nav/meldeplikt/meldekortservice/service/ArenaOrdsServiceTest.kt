@@ -243,6 +243,16 @@ class ArenaOrdsServiceTest {
                     "J",
                     "",
                     null
+                ),
+                Meldegruppe(
+                    "",
+                    "ARBS",
+                    LocalDate.now(),
+                    LocalDate.now(),
+                    LocalDate.now(),
+                    "J",
+                    null,
+                    null
                 )
             )
         )

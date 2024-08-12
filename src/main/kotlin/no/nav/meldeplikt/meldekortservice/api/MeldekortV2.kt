@@ -169,7 +169,7 @@ fun Routing.hentMeldegrupper(arenaOrdsService: ArenaOrdsService) = get<HentMelde
 
         val result = arenaOrdsService.hentMeldegrupper(ident, LocalDate.now())
 
-        result.meldegruppeListe
+        result.meldegruppeListe ?: emptyList<Meldegruppe>()
     }
 }
 

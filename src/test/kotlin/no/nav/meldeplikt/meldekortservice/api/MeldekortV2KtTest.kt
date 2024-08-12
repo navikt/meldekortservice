@@ -297,4 +297,20 @@ class MeldekortV2KtTest : TestBase() {
         val responseObject = defaultObjectMapper.readValue<List<Meldegruppe>>(response.bodyAsText())
         assertEquals(meldegrupper, responseObject)
     }
+
+    @Test
+    fun `hentMeldegrupper returns emptyList when meldegruppeListe is null`() = setUpTestApplication {
+        val meldegruppeResponse = MeldegruppeResponse(null)
+
+        coEvery { arenaOrdsService.hentMeldegrupper(any(), any()) } returns (meldegruppeResponse)
+
+        val response = client.get(hentMeldegrupperUrl) {
+            header(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")
+            header("ident", DUMMY_FNR)
+        }
+
+        assertEquals(HttpStatusCode.OK, response.status)
+        val responseObject = defaultObjectMapper.readValue<List<Meldegruppe>>(response.bodyAsText())
+        assertEquals(emptyList(), responseObject)
+    }
 }
