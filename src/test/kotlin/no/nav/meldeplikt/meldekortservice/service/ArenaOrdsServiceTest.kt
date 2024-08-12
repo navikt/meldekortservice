@@ -316,7 +316,7 @@ class ArenaOrdsServiceTest {
     }
 
     @Test
-    fun `test hentMeldegrupper returnerer emptyList for brukere uten meldpelikt2`() {
+    fun `test hentMeldegrupper kaster Exception når ikke kan hente meldegrupper fra Arena ORDS`() {
         val personId = "1019108"
         val person = "" +
                 "<Person>" +

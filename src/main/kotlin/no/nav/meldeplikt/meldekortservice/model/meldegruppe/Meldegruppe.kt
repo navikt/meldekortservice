@@ -23,6 +23,6 @@ data class Meldegruppe(
     @JsonDeserialize(using = LocalDateDeserializer::class)
     val hendelsesdato: LocalDate,
     val statusAktiv: String,
-    val begrunnelse: String,
+    val begrunnelse: String? = null,
     val styrendeVedtakId: Long? = null
 )
