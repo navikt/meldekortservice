@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 val flywayVersion = "10.17.0"
-val h2Version = "2.3.230"
+val h2Version = "2.3.232"
 val jacksonVersion = "2.17.2"
 val kotlinLoggerVersion = "3.0.5"
 val ktorVersion = "2.3.12"
