@@ -38,7 +38,7 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version "2.0.20"
     id("org.jetbrains.kotlin.plugin.allopen") version "2.0.20"
 
-    id("com.gradleup.shadow") version "8.3.2"
+    id("com.gradleup.shadow") version "8.3.3"
 
     id("org.flywaydb.flyway") version ("10.15.2")
 
