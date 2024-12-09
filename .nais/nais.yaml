@@ -59,3 +59,6 @@ spec:
         - application: dp-arena-meldeplikt-adapter
           namespace: teamdagpenger
           cluster: {{ vaultServiceuserEnv }}-gcp
+        - application: meldekort-backend
+          namespace: aap
+          cluster: {{ vaultServiceuserEnv }}-gcp
