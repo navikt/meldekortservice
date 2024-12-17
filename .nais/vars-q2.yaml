@@ -1,3 +1,4 @@
+appName: meldekortservice
 dashEnv: -q2
 dbEnv: _q2
 vaultKvEnv: preprod/fss

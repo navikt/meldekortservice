@@ -1,4 +1,4 @@
-name: Build and deploy to dev
+name: Build and deploy
 
 on:
   push:
@@ -14,39 +14,19 @@ on:
         options:
           - q1
           - q2
-      bump_patch:
-        description: 'Velg "bump" her for å bygge release og øke patchversjon på snapshot. Kun for master branch.'
-        default: ''
-        type: choice
-        options:
-          - ''
-          - bump
+          - p
 
 env:
-  APPNAME: meldekortservice
   ENVIRONMENT: ${{ github.event.inputs.environment }}
-  CLUSTER: dev-fss
-  NAIS_FILE: .nais/nais.yaml
-  MAIN_BRANCH: refs/heads/master
 
 jobs:
   build:
-    name: Build and deploy
+    name: Build and publish Docker image
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      packages: write
+      contents: read
+      id-token: write
     steps:
-      - name: Check if correct branch
-        if: github.event.inputs.bump_patch == 'bump' && github.ref != env.MAIN_BRANCH
-        run: |
-          echo "Release skal kun bygges fra ${{ env.MAIN_BRANCH }} branch!"
-          exit 1
-
-      - name: Set default environment for push
-        if: github.event_name == 'push' && github.ref == env.MAIN_BRANCH
-        run: echo "ENVIRONMENT=q2" >> $GITHUB_ENV
-
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -59,104 +39,48 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v3
 
-      - name: Read version from version.json
-        id: customVersion
-        run: echo "VERSION=$(jq -r '.version' version.json)" >> $GITHUB_ENV
-
-      # Setter timestamp, eks. -20220104111118
-      - name: Set snapshot timestamp
-        id: snapshotTimestamp
-        if: github.event.inputs.bump_patch != 'bump'
-        run: |
-          echo "TIMESTAMP=-$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
-
-      # Version blir eksisterende versjon fra POM uten -SNAPSHOT
-      # For release:  eks 1.0.1
-      # For snapshot: eks 1.0.1-20220104111118
-      - name: Calculate release version
-        run: |
-          echo "RELEASE_VERSION=$(echo "${{ env.VERSION }}${{ env.TIMESTAMP }}" | sed 's/-SNAPSHOT//g')" >> $GITHUB_ENV
-
-      - name: Set vars
-        id: setVars
-        run: |
-          echo "IMAGE=ghcr.io/${{ github.repository }}/${{ env.APPNAME }}:${{ env.RELEASE_VERSION }}" >> $GITHUB_ENV
-
-      - name: Set release version in version.json
-        run: |
-          jq '.version="${{ env.RELEASE_VERSION }}"' version.json > version.json.new
-          mv version.json.new version.json
-
       - name: Build application
         run: ./gradlew build
 
-      - name: Build Docker image
-        run: |
-          ./gradlew clean build -x test
-          docker build -t ${{ env.IMAGE }} .
-
-      - name: Log in to the Container registry
-        uses: docker/login-action@v3
+      - name: Build and publish Docker image
+        uses: nais/docker-build-push@v0
+        id: docker-build-push
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          team: meldekort
+          identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
+          project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
+    outputs:
+      image: ${{ steps.docker-build-push.outputs.image }}
 
-      - name: Push Docker image
-        run: |
-          docker push ${{ env.IMAGE }}
-
-      - name: Deploy to dev
-        if: env.ENVIRONMENT == 'q1' || env.ENVIRONMENT == 'q2' || (github.event_name == 'push' && github.ref == env.MAIN_BRANCH)
-        uses: nais/deploy/actions/deploy@v2
+  deploy-dev:
+    if: github.event.inputs.environment != 'p'
+    name: Deploy to dev
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set default environment for push to main
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: echo 'ENVIRONMENT=q2' >> $GITHUB_ENV
+      - uses: actions/checkout@v4
+      - uses: nais/deploy/actions/deploy@v2
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-          PRINT_PAYLOAD: true
-          CLUSTER: ${{ env.CLUSTER }}
-          RESOURCE: ${{ env.NAIS_FILE }}
-          VAR: image=${{ env.IMAGE }},appName=${{ env.APPNAME }}
+          CLUSTER: dev-fss
+          RESOURCE: .nais/nais.yaml
+          VAR: image=${{ needs.build.outputs.image }}
           VARS: .nais/vars-${{ env.ENVIRONMENT }}.yaml
-          WAIT: false
 
-      - name: Archive files in .nais
-        if: github.event.inputs.bump_patch == 'bump' && github.ref == env.MAIN_BRANCH
-        uses: thedoctor0/zip-release@master
-        with:
-          path: .nais
-          filename: '${{ env.APPNAME }}-${{ env.RELEASE_VERSION }}.zip'
-
-      - name: Create release
-        if: github.event.inputs.bump_patch == 'bump' && github.ref == env.MAIN_BRANCH
-        uses: ncipollo/release-action@v1
-        with:
-          tag: 'v${{ env.RELEASE_VERSION }}'
-          artifacts: '${{ env.APPNAME }}-${{ env.RELEASE_VERSION }}.zip'
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      # Next version blir eksisterende versjon + 0.0.1, med postfix -SNAPSHOT
-      - name: Calculate next version
-        if: github.event.inputs.bump_patch == 'bump' && github.ref == env.MAIN_BRANCH
-        run: |
-          echo "NEXT_RELEASE_VERSION=$(echo "${{ env.VERSION }}" | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g' | sed 's/$/-SNAPSHOT/')" >> $GITHUB_ENV
-
-      # Hvis det er ny versjon, oppdater version.json og utfør git commit/push
-      - name: Set next version in version.json
-        if: github.event.inputs.bump_patch == 'bump' && github.ref == env.MAIN_BRANCH
-        run: |
-          jq '.version="${{ env.NEXT_RELEASE_VERSION }}"' version.json > version.json.new
-          mv version.json.new version.json
-
-      - name: Commit bumped version
-        if: github.event.inputs.bump_patch == 'bump' && github.ref == env.MAIN_BRANCH
-        run: |
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git commit -m "Bump version fra Github Actions" -a
-          git tag -a ${{ env.APPNAME }}-${{ env.NEXT_RELEASE_VERSION }} -m ${{ env.APPNAME }}-${{ env.NEXT_RELEASE_VERSION }}
-
-      - name: Push changes
-        if: github.event.inputs.bump_patch == 'bump' && github.ref == env.MAIN_BRANCH
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
+  deploy-prod:
+    if: github.event.inputs.environment == 'p'
+    name: Deploy to prod
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: nais/deploy/actions/deploy@v2
+        env:
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          CLUSTER: prod-fss
+          RESOURCE: .nais/nais.yaml
+          VAR: image=${{ needs.build.outputs.image }}
+          VARS: .nais/vars-${{ env.ENVIRONMENT }}.yaml
