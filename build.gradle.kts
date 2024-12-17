@@ -14,11 +14,11 @@ val logstashVersion = "8.0"
 val micrometerVersion = "1.14.2"
 val mockOauthVersion = "2.1.10"
 val mockkVersion = "1.13.13"
-val navCommonVersion = "2.2023.01.10_13.49-81ddc732df3a"
+val navCommonVersion = "3.2024.11.26_16.35-432a29107830"
 val ojdbc8Version = "19.3.0.0"
 val postgresVersion = "42.7.4"
 val swaggerVersion = "5.18.2" // Husk å endre versjonen også i resource i SwaggerUi.kt
-val tjenestespecVersion = "2639.36f9120"
+val tjenestespecVersion = "2641.575768a"
 val tokenValidationVersion = "5.0.13"
 val vaultJdbcVersion = "1.3.10"
 val vaultVersion = "5.1.0"
@@ -29,6 +29,8 @@ repositories {
     mavenCentral()
     maven("https://plugins.gradle.org/m2/")
     maven("https://jitpack.io")
+    maven("https://github-package-registry-mirror.gc.nav.no/cached/maven-release")
+    maven("https://build.shibboleth.net/maven/releases/")
 }
 
 plugins {
@@ -89,6 +91,9 @@ dependencies {
     implementation("io.micrometer:micrometer-registry-prometheus:$micrometerVersion")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashVersion")
     implementation("no.nav.common:cxf:$navCommonVersion")
+    implementation("org.checkerframework:checker-qual:3.48.3")
+    implementation("com.google.errorprone:error_prone_annotations:2.36.0")
+    implementation("com.google.j2objc:j2objc-annotations:3.0.0")
     implementation("no.nav.security:token-validation-ktor-v2:$tokenValidationVersion")
     implementation("com.github.navikt.tjenestespesifikasjoner:arena-sakogaktivitet_v1:$tjenestespecVersion")
     implementation("org.flywaydb:flyway-database-oracle:$flywayVersion")
