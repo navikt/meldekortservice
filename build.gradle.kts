@@ -92,13 +92,7 @@ dependencies {
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.micrometer:micrometer-registry-prometheus:$micrometerVersion")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashVersion")
-    implementation("no.nav.common:cxf:$navCommonVersion")
-    // 3 neste kreves av no.nav.common:cxf, men importeres ikke automatisk
-    implementation("org.checkerframework:checker-qual:3.48.3")
-    implementation("com.google.errorprone:error_prone_annotations:2.36.0")
-    implementation("com.google.j2objc:j2objc-annotations:3.0.0")
-    // For å fikse sårbarheter i commons-io 2.8.0
-    implementation("commons-io:commons-io:2.18.0")
+    implementation("no.nav.common:util:$navCommonVersion")
     implementation("no.nav.security:token-validation-ktor-v3:$tokenValidationVersion")
     implementation("com.github.navikt.tjenestespesifikasjoner:arena-sakogaktivitet_v1:$tjenestespecVersion")
     implementation("org.flywaydb:flyway-database-oracle:$flywayVersion")
@@ -138,10 +132,6 @@ tasks {
 
     withType<ShadowJar> {
         isZip64 = true
-
-        transform(ServiceFileTransformer::class.java) {
-            setPath("META-INF/cxf")
-        }
 
         mergeServiceFiles()
     }
