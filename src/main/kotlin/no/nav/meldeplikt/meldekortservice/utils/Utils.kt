@@ -18,10 +18,8 @@ import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.http.*
 import io.ktor.serialization.jackson.*
-import io.ktor.server.application.*
-import io.ktor.server.locations.*
 import io.ktor.server.response.*
-import io.ktor.util.pipeline.*
+import io.ktor.server.routing.*
 import no.nav.meldeplikt.meldekortservice.config.OutgoingCallLoggingPlugin
 import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Contact
@@ -68,7 +66,6 @@ internal data class ErrorMessage(val error: String)
 
 internal class Error
 
-@KtorExperimentalLocationsAPI
 val swagger = Swagger(
     info = Information(
         version = "1",
@@ -102,7 +99,7 @@ val defaultObjectMapper: ObjectMapper = ObjectMapper()
     .setSerializationInclusion(JsonInclude.Include.NON_NULL)
     .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
-internal suspend fun PipelineContext<Unit, ApplicationCall>.respondOrError(block: suspend () -> Any) =
+internal suspend fun RoutingContext.respondOrError(block: suspend () -> Any) =
     try {
         val res = block()
         call.respond(HttpStatusCode.OK, res)

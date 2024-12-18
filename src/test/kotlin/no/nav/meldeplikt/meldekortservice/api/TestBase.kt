@@ -1,7 +1,6 @@
 package no.nav.meldeplikt.meldekortservice.api
 
 import io.ktor.server.config.*
-import io.ktor.server.locations.*
 import io.ktor.server.testing.*
 import io.mockk.*
 import no.nav.meldeplikt.meldekortservice.config.DUMMY_FNR
@@ -17,7 +16,6 @@ import org.flywaydb.core.api.output.MigrateResult
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 
-@KtorExperimentalLocationsAPI
 open class TestBase {
 
     companion object {

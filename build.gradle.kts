@@ -8,7 +8,7 @@ val flywayVersion = "11.1.0"
 val h2Version = "2.3.232"
 val jacksonVersion = "2.18.2"
 val kotlinLoggerVersion = "3.0.5"
-val ktorVersion = "2.3.13"
+val ktorVersion = "3.0.2"
 val logbackVersion = "1.5.12"
 val logstashVersion = "8.0"
 val micrometerVersion = "1.14.2"
@@ -37,8 +37,9 @@ plugins {
 
     id("com.github.ManifestClasspath") version "0.1.0-RELEASE"
 
-    id("org.jetbrains.kotlin.jvm") version "2.1.0"
-    id("org.jetbrains.kotlin.plugin.allopen") version "2.1.0"
+    kotlin("jvm") version "2.1.0"
+    kotlin("plugin.allopen") version "2.1.0"
+    kotlin("plugin.serialization") version "2.1.0"
 
     id("com.gradleup.shadow") version "8.3.5"
 
@@ -85,7 +86,8 @@ dependencies {
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-server-default-headers:$ktorVersion")
     implementation("io.ktor:ktor-server-double-receive:$ktorVersion")
-    implementation("io.ktor:ktor-server-locations:$ktorVersion")
+    implementation("io.ktor:ktor-server-resources:$ktorVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0-RC")
     implementation("io.ktor:ktor-server-metrics-micrometer:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.micrometer:micrometer-registry-prometheus:$micrometerVersion")
@@ -97,7 +99,7 @@ dependencies {
     implementation("com.google.j2objc:j2objc-annotations:3.0.0")
     // For å fikse sårbarheter i commons-io 2.8.0
     implementation("commons-io:commons-io:2.18.0")
-    implementation("no.nav.security:token-validation-ktor-v2:$tokenValidationVersion")
+    implementation("no.nav.security:token-validation-ktor-v3:$tokenValidationVersion")
     implementation("com.github.navikt.tjenestespesifikasjoner:arena-sakogaktivitet_v1:$tjenestespecVersion")
     implementation("org.flywaydb:flyway-database-oracle:$flywayVersion")
     implementation("org.postgresql:postgresql:$postgresVersion")

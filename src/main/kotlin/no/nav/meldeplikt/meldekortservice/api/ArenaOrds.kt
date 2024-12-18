@@ -1,6 +1,6 @@
 package no.nav.meldeplikt.meldekortservice.api
 
-import io.ktor.server.locations.*
+import io.ktor.resources.*
 import io.ktor.server.routing.*
 import no.nav.meldeplikt.meldekortservice.model.ArenaOrdsSkrivemodus
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
@@ -10,7 +10,6 @@ import no.nav.meldeplikt.meldekortservice.utils.swagger.*
 /**
 REST-controller for meldekort-api som tilbyr operasjon for å sjekke om Arena ORDS er i skrivemodus.
  */
-@KtorExperimentalLocationsAPI
 fun Routing.skrivemodusApi(arenaOrdsService: ArenaOrdsService) {
     getSkrivemodus(arenaOrdsService)
 }
@@ -18,12 +17,10 @@ fun Routing.skrivemodusApi(arenaOrdsService: ArenaOrdsService) {
 private const val arenaOrdsGroup = "Arena ORDS"
 
 @Group(arenaOrdsGroup)
-@Location(SKRIVEMODUS_PATH)
-@KtorExperimentalLocationsAPI
+@Resource(SKRIVEMODUS_PATH)
 class SkrivemodusInput
 
 // Hent skrivemodus
-@KtorExperimentalLocationsAPI
 fun Routing.getSkrivemodus(arenaOrdsService: ArenaOrdsService) =
     get<SkrivemodusInput>(
         "Hent Arena ORDS skrivemodus".securityAndResponse(

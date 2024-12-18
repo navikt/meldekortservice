@@ -7,12 +7,13 @@ import io.ktor.http.HttpStatusCode.Companion.NoContent
 import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.http.HttpStatusCode.Companion.ServiceUnavailable
 import io.ktor.http.HttpStatusCode.Companion.Unauthorized
-import io.ktor.server.application.*
+import io.ktor.resources.*
 import io.ktor.server.auth.*
-import io.ktor.server.locations.*
 import io.ktor.server.request.*
-import io.ktor.server.routing.Route
-import io.ktor.util.pipeline.*
+import io.ktor.server.resources.*
+import io.ktor.server.resources.post
+import io.ktor.server.resources.put
+import io.ktor.server.routing.*
 import no.nav.meldeplikt.meldekortservice.utils.defaultLog
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import no.nav.meldeplikt.meldekortservice.utils.swagger
@@ -50,30 +51,27 @@ data class Metadata(
     }
 }
 
-@KtorExperimentalLocationsAPI
-inline fun <reified LOCATION : Any, reified ENTITY_TYPE : Any> Metadata.apply(method: HttpMethod) {
-    val clazz = LOCATION::class.java
-    val location = clazz.getAnnotation(Location::class.java)
+inline fun <reified RESOURCE : Any, reified ENTITY_TYPE : Any> Metadata.apply(method: HttpMethod) {
+    val clazz = RESOURCE::class.java
+    val resource = clazz.getAnnotation(Resource::class.java)
     val tags = clazz.getAnnotation(Group::class.java)
     applyResponseDefinitions()
-    applyOperations(location, tags, method, LOCATION::class, ENTITY_TYPE::class)
+    applyOperations(resource, tags, method, RESOURCE::class, ENTITY_TYPE::class)
 }
 
-@KtorExperimentalLocationsAPI
 fun Metadata.applyResponseDefinitions() =
     responses.values.forEach { addDefinition(it) }
 
-@KtorExperimentalLocationsAPI
-fun <LOCATION : Any, BODY_TYPE : Any> Metadata.applyOperations(
-    location: Location,
+fun <RESOURCE : Any, BODY_TYPE : Any> Metadata.applyOperations(
+    resource: Resource,
     group: Group?,
     method: HttpMethod,
-    locationType: KClass<LOCATION>,
+    resourceType: KClass<RESOURCE>,
     entityType: KClass<BODY_TYPE>
 ) {
     swagger.paths
-        .getOrPut(location.path) { mutableMapOf() }[method.value.lowercase(Locale.getDefault())] =
-        Operation(this, location, group, locationType, entityType, method)
+        .getOrPut(resource.path) { mutableMapOf() }[method.value.lowercase(Locale.getDefault())] =
+        Operation(this, resource, group, resourceType, entityType, method)
 
     if (group != null && swagger.tags.find { tag -> tag.name == group.name } == null) {
         swagger.tags.add(Tag(group.name, group.description))
@@ -93,78 +91,74 @@ inline fun <reified T> serviceUnavailable(): Pair<HttpStatusCode, KClass<*>> = S
 inline fun <reified T> badRequest(): Pair<HttpStatusCode, KClass<*>> = BadRequest to T::class
 inline fun <reified T> unAuthorized(): Pair<HttpStatusCode, KClass<*>> = Unauthorized to T::class
 
-@KtorExperimentalLocationsAPI
-inline fun <reified LOCATION : Any, reified ENTITY : Any> Route.post(
+inline fun <reified RESOURCE : Any, reified ENTITY : Any> Route.post(
     metadata: Metadata,
-    noinline body: suspend PipelineContext<Unit, ApplicationCall>.(LOCATION, ENTITY) -> Unit
+    noinline body: suspend RoutingContext.(RESOURCE, ENTITY) -> Unit
 ): Route {
 
-    defaultLog.debug("Generating swagger spec for POST ${LOCATION::class.java.getAnnotation(Location::class.java)}")
-    metadata.apply<LOCATION, ENTITY>(HttpMethod.Post)
+    defaultLog.debug("Generating swagger spec for POST ${RESOURCE::class.java.getAnnotation(Resource::class.java)}")
+    metadata.apply<RESOURCE, ENTITY>(HttpMethod.Post)
 
     return when (metadata.security) {
-        is NoSecurity -> post<LOCATION> { body(this, it, call.receive()) }
+        is NoSecurity -> post<RESOURCE> { body(this, it, call.receive()) }
         is BearerTokenSecurity ->
             if (isCurrentlyRunningOnNais())
-                authenticate { post<LOCATION> { body(this, it, call.receive()) } }
+                authenticate { post<RESOURCE> { body(this, it, call.receive()) } }
             else
-                post<LOCATION> { body(this, it, call.receive()) }
+                post<RESOURCE> { body(this, it, call.receive()) }
     }
 }
 
-@KtorExperimentalLocationsAPI
-inline fun <reified LOCATION : Any, reified ENTITY : Any> Route.put(
+inline fun <reified RESOURCE : Any, reified ENTITY : Any> Route.put(
     metadata: Metadata,
-    noinline body: suspend PipelineContext<Unit, ApplicationCall>.(LOCATION, ENTITY) -> Unit
+    noinline body: suspend RoutingContext.(RESOURCE, ENTITY) -> Unit
 ): Route {
 
-    defaultLog.debug("Generating swagger spec for PUT ${LOCATION::class.java.getAnnotation(Location::class.java)}")
-    metadata.apply<LOCATION, ENTITY>(HttpMethod.Put)
+    defaultLog.debug("Generating swagger spec for PUT ${RESOURCE::class.java.getAnnotation(Resource::class.java)}")
+    metadata.apply<RESOURCE, ENTITY>(HttpMethod.Put)
 
     return when (metadata.security) {
-        is NoSecurity -> put<LOCATION> { body(this, it, call.receive()) }
+        is NoSecurity -> put<RESOURCE> { body(this, it, call.receive()) }
         is BearerTokenSecurity ->
             if (isCurrentlyRunningOnNais())
-                authenticate { put<LOCATION> { body(this, it, call.receive()) } }
+                authenticate { put<RESOURCE> { body(this, it, call.receive()) } }
             else
-                put<LOCATION> { body(this, it, call.receive()) }
+                put<RESOURCE> { body(this, it, call.receive()) }
     }
 }
 
-@KtorExperimentalLocationsAPI
-inline fun <reified LOCATION : Any> Route.get(
+inline fun <reified RESOURCE : Any> Route.get(
     metadata: Metadata,
-    noinline body: suspend PipelineContext<Unit, ApplicationCall>.(LOCATION) -> Unit
+    noinline body: suspend RoutingContext.(RESOURCE) -> Unit
 ): Route {
 
-    defaultLog.debug("Generating swagger spec for GET ${LOCATION::class.java.getAnnotation(Location::class.java)}")
-    metadata.apply<LOCATION, Unit>(HttpMethod.Get)
+    defaultLog.debug("Generating swagger spec for GET ${RESOURCE::class.java.getAnnotation(Resource::class.java)}")
+    metadata.apply<RESOURCE, Unit>(HttpMethod.Get)
 
     return when (metadata.security) {
-        is NoSecurity -> get<LOCATION> { body(this, it) }
+        is NoSecurity -> get<RESOURCE> { body(this, it) }
         is BearerTokenSecurity ->
             if (isCurrentlyRunningOnNais())
-                authenticate { get<LOCATION> { body(this, it) } }
+                authenticate { get<RESOURCE> { body(this, it) } }
             else
-                get<LOCATION> { body(this, it) }
+                get<RESOURCE> { body(this, it) }
     }
 }
 
-@KtorExperimentalLocationsAPI
-inline fun <reified LOCATION : Any> Route.delete(
+inline fun <reified RESOURCE : Any> Route.delete(
     metadata: Metadata,
-    noinline body: suspend PipelineContext<Unit, ApplicationCall>.(LOCATION) -> Unit
+    noinline body: suspend RoutingContext.(RESOURCE) -> Unit
 ): Route {
 
-    defaultLog.debug("Generating swagger spec for DELETE ${LOCATION::class.java.getAnnotation(Location::class.java)}")
-    metadata.apply<LOCATION, Unit>(HttpMethod.Delete)
+    defaultLog.debug("Generating swagger spec for DELETE ${RESOURCE::class.java.getAnnotation(Resource::class.java)}")
+    metadata.apply<RESOURCE, Unit>(HttpMethod.Delete)
 
     return when (metadata.security) {
-        is NoSecurity -> delete<LOCATION> { body(this, it) }
+        is NoSecurity -> delete<RESOURCE> { body(this, it) }
         is BearerTokenSecurity ->
             if (isCurrentlyRunningOnNais())
-                authenticate { delete<LOCATION> { body(this, it) } }
+                authenticate { delete<RESOURCE> { body(this, it) } }
             else
-                delete<LOCATION> { body(this, it) }
+                delete<RESOURCE> { body(this, it) }
     }
 }

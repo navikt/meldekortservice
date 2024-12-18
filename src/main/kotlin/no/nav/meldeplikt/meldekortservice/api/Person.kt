@@ -1,7 +1,7 @@
 package no.nav.meldeplikt.meldekortservice.api
 
 import io.ktor.http.*
-import io.ktor.server.locations.*
+import io.ktor.resources.*
 import io.ktor.server.routing.*
 import no.nav.meldeplikt.meldekortservice.config.userIdent
 import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
@@ -16,7 +16,6 @@ REST-controller for meldekort-api som tilbyr operasjoner for å hente:
 - Historiske meldekort
 - Meldekort
  */
-@KtorExperimentalLocationsAPI
 fun Routing.personApi(arenaOrdsService: ArenaOrdsService) {
     getHistoriskeMeldekort(arenaOrdsService)
     getMeldekort(arenaOrdsService)
@@ -25,12 +24,10 @@ fun Routing.personApi(arenaOrdsService: ArenaOrdsService) {
 private const val personGroup = "Person"
 
 @Group(personGroup)
-@Location(HISTORISKE_MELDEKORT_PATH)
-@KtorExperimentalLocationsAPI
+@Resource(HISTORISKE_MELDEKORT_PATH)
 data class HistoriskeMeldekortInput(val antallMeldeperioder: Int)
 
 // Henter historiske meldekort
-@KtorExperimentalLocationsAPI
 fun Routing.getHistoriskeMeldekort(arenaOrdsService: ArenaOrdsService) =
     get<HistoriskeMeldekortInput>(
         "Hent tidligere/historiske meldekort".securityAndResponse(
@@ -49,12 +46,10 @@ fun Routing.getHistoriskeMeldekort(arenaOrdsService: ArenaOrdsService) =
     }
 
 @Group(personGroup)
-@Location(PERSON_MELDEKORT_PATH)
-@KtorExperimentalLocationsAPI
+@Resource(PERSON_MELDEKORT_PATH)
 class MeldekortInput
 
 // Henter meldekort
-@KtorExperimentalLocationsAPI
 fun Routing.getMeldekort(arenaOrdsService: ArenaOrdsService) =
     get<MeldekortInput>(
         "Hent meldekort".securityAndResponse(

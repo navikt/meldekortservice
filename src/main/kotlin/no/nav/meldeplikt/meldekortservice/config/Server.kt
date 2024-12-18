@@ -4,13 +4,13 @@ import io.ktor.http.*
 import io.ktor.serialization.jackson.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
-import io.ktor.server.locations.*
 import io.ktor.server.metrics.micrometer.*
 import io.ktor.server.plugins.callid.*
-import io.ktor.server.plugins.callloging.*
+import io.ktor.server.plugins.calllogging.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.defaultheaders.*
 import io.ktor.server.plugins.doublereceive.*
+import io.ktor.server.resources.*
 import io.ktor.server.routing.*
 import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics
@@ -27,14 +27,13 @@ import no.nav.meldeplikt.meldekortservice.database.PostgreSqlDatabase
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
 import no.nav.meldeplikt.meldekortservice.service.DBService
 import no.nav.meldeplikt.meldekortservice.utils.*
-import no.nav.security.token.support.v2.tokenValidationSupport
+import no.nav.security.token.support.v3.tokenValidationSupport
 import org.slf4j.event.Level
 
 lateinit var defaultDbService: DBService
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
-@KtorExperimentalLocationsAPI
 fun Application.mainModule(
     env: Environment = Environment(),
     mockDBService: DBService? = null,
@@ -78,9 +77,9 @@ fun Application.mainModule(
         }
     }
 
-    install(Locations)
+    install(Resources)
 
-    install(Routing) {
+    routing {
         healthApi(appMicrometerRegistry)
         swaggerRoutes()
         skrivemodusApi(arenaOrdsService)

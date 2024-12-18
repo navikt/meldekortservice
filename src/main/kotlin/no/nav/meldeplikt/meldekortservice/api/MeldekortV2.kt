@@ -1,8 +1,8 @@
 package no.nav.meldeplikt.meldekortservice.api
 
 import io.ktor.http.*
+import io.ktor.resources.*
 import io.ktor.server.application.*
-import io.ktor.server.locations.*
 import io.ktor.server.routing.*
 import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 import no.nav.meldeplikt.meldekortservice.model.meldegruppe.Meldegruppe
@@ -23,7 +23,6 @@ import java.time.LocalDate
 
 class Headers(val ident: String)
 
-@KtorExperimentalLocationsAPI
 fun Routing.meldekortApiV2(arenaOrdsService: ArenaOrdsService) {
     hentMeldekort(arenaOrdsService)
     hentHistoriskeMeldekort(arenaOrdsService)
@@ -35,11 +34,9 @@ fun Routing.meldekortApiV2(arenaOrdsService: ArenaOrdsService) {
 private const val group = "Meldekort v2"
 
 @Group(group)
-@Location("$API_PATH/v2/meldekort")
-@KtorExperimentalLocationsAPI
+@Resource("$API_PATH/v2/meldekort")
 class HentMeldekortInput
 
-@KtorExperimentalLocationsAPI
 fun Routing.hentMeldekort(arenaOrdsService: ArenaOrdsService) = get<HentMeldekortInput>(
     "Hent meldekort".securityAndResponse(
         BearerTokenSecurity(),
@@ -62,11 +59,9 @@ fun Routing.hentMeldekort(arenaOrdsService: ArenaOrdsService) = get<HentMeldekor
 }
 
 @Group(group)
-@Location("$API_PATH/v2/historiskemeldekort")
-@KtorExperimentalLocationsAPI
+@Resource("$API_PATH/v2/historiskemeldekort")
 class HentHistoriskeMeldekortInput(val antallMeldeperioder: Int)
 
-@KtorExperimentalLocationsAPI
 fun Routing.hentHistoriskeMeldekort(arenaOrdsService: ArenaOrdsService) = get<HentHistoriskeMeldekortInput>(
     "Hent tidligere/historiske meldekort".securityAndResponse(
         BearerTokenSecurity(),
@@ -87,11 +82,9 @@ fun Routing.hentHistoriskeMeldekort(arenaOrdsService: ArenaOrdsService) = get<He
 }
 
 @Group(group)
-@Location("$API_PATH/v2/meldekortdetaljer")
-@KtorExperimentalLocationsAPI
+@Resource("$API_PATH/v2/meldekortdetaljer")
 data class HentMeldekortdetaljerInput(val meldekortId: Long)
 
-@KtorExperimentalLocationsAPI
 fun Routing.hentMeldekortdetaljer(arenaOrdsService: ArenaOrdsService) =
     get<HentMeldekortdetaljerInput>(
         "Hent meldekortdetaljer".securityAndResponse(
@@ -118,13 +111,11 @@ fun Routing.hentMeldekortdetaljer(arenaOrdsService: ArenaOrdsService) =
     }
 
 @Group(group)
-@Location("$API_PATH/v2/korrigertMeldekort")
-@KtorExperimentalLocationsAPI
+@Resource("$API_PATH/v2/korrigertMeldekort")
 data class HentKorrigertMeldekortInput(
     val meldekortId: Long
 )
 
-@KtorExperimentalLocationsAPI
 fun Routing.hentKorrigertMeldekort(arenaOrdsService: ArenaOrdsService) =
     get<HentKorrigertMeldekortInput>(
         "Hent korrigert meldekortid".securityAndResponse(
@@ -150,11 +141,9 @@ fun Routing.hentKorrigertMeldekort(arenaOrdsService: ArenaOrdsService) =
     }
 
 @Group(group)
-@Location("$API_PATH/v2/meldegrupper")
-@KtorExperimentalLocationsAPI
+@Resource("$API_PATH/v2/meldegrupper")
 class HentMeldegrupperInput
 
-@KtorExperimentalLocationsAPI
 fun Routing.hentMeldegrupper(arenaOrdsService: ArenaOrdsService) = get<HentMeldegrupperInput>(
     "Hent meldegrupper".securityAndResponse(
         BearerTokenSecurity(),

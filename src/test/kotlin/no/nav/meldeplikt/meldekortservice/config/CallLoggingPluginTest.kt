@@ -6,7 +6,6 @@ import io.ktor.client.engine.mock.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.server.locations.*
 import io.ktor.server.testing.*
 import io.mockk.every
 import io.mockk.mockk
@@ -25,7 +24,6 @@ import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-@KtorExperimentalLocationsAPI
 class CallLoggingPluginTest : TestBase() {
 
     private lateinit var database: H2Database
@@ -80,7 +78,7 @@ class CallLoggingPluginTest : TestBase() {
                 "X-Request-ID: $callId\n" +
                 "Accept-Charset: UTF-8\n" +
                 "Accept: */*\n" +
-                "User-Agent: Ktor client\n" +
+                "User-Agent: ktor-client\n" +
                 "Content-Length: 0\n" +
                 "\n" +
                 "\n"
@@ -223,7 +221,7 @@ class CallLoggingPluginTest : TestBase() {
                 "X-Request-ID: $callId\n" +
                 "Accept-Charset: UTF-8\n" +
                 "Accept: */*\n" +
-                "User-Agent: Ktor client\n" +
+                "User-Agent: ktor-client\n" +
                 "Content-Length: 0\n" +
                 "\n" +
                 "\n"

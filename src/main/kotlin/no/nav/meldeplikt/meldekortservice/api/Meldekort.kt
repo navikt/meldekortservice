@@ -1,6 +1,6 @@
 package no.nav.meldeplikt.meldekortservice.api
 
-import io.ktor.server.locations.*
+import io.ktor.resources.*
 import io.ktor.server.routing.*
 import no.nav.meldeplikt.meldekortservice.config.userIdent
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
@@ -11,7 +11,6 @@ import no.nav.meldeplikt.meldekortservice.utils.swagger.*
 /**
 REST-controller for meldekort-api som tilbyr operasjoner for å hente meldekortdetaljer og korrigering for en NAV-bruker.
  */
-@KtorExperimentalLocationsAPI
 fun Routing.meldekortApi(arenaOrdsService: ArenaOrdsService) {
     getMeldekortdetaljer(arenaOrdsService)
     getKorrigertMeldekort(arenaOrdsService)
@@ -20,12 +19,10 @@ fun Routing.meldekortApi(arenaOrdsService: ArenaOrdsService) {
 private const val meldekortGroup = "Meldekort"
 
 @Group(meldekortGroup)
-@Location(MELDEKORT_PATH)
-@KtorExperimentalLocationsAPI
+@Resource(MELDEKORT_PATH)
 data class MeldekortdetaljerInput(val meldekortId: Long)
 
 // Hent meldekortdetaljer
-@KtorExperimentalLocationsAPI
 fun Routing.getMeldekortdetaljer(arenaOrdsService: ArenaOrdsService) =
     get<MeldekortdetaljerInput>(
         "Hent meldekortdetaljer".securityAndResponse(
@@ -51,12 +48,10 @@ fun Routing.getMeldekortdetaljer(arenaOrdsService: ArenaOrdsService) =
     }
 
 @Group(meldekortGroup)
-@Location("$MELDEKORT_PATH/korrigering")
-@KtorExperimentalLocationsAPI
+@Resource("$MELDEKORT_PATH/korrigering")
 data class KorrigertMeldekortInput(val meldekortId: Long)
 
 // Henter meldekortid for nytt (korrigert) kort
-@KtorExperimentalLocationsAPI
 fun Routing.getKorrigertMeldekort(arenaOrdsService: ArenaOrdsService) =
     get<KorrigertMeldekortInput>(
         "Hent korrigert meldekortid".securityAndResponse(

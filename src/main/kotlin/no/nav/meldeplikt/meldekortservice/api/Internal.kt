@@ -1,8 +1,6 @@
 package no.nav.meldeplikt.meldekortservice.api
 
 import io.ktor.http.*
-import io.ktor.server.application.*
-import io.ktor.server.locations.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
@@ -12,7 +10,6 @@ import no.nav.meldeplikt.meldekortservice.utils.SWAGGER_URL_V1
 import no.nav.meldeplikt.meldekortservice.utils.swagger
 import no.nav.meldeplikt.meldekortservice.utils.swagger.SwaggerUi
 
-@KtorExperimentalLocationsAPI
 fun Route.healthApi(appMicrometerRegistry: PrometheusMeterRegistry) {
 
     route(INTERNAL_PATH) {

@@ -1,13 +1,12 @@
 package no.nav.meldeplikt.meldekortservice.config
 
 import io.ktor.http.*
-import io.ktor.server.application.*
-import io.ktor.util.pipeline.*
+import io.ktor.server.routing.*
 import no.nav.meldeplikt.meldekortservice.utils.defaultLog
 import no.nav.meldeplikt.meldekortservice.utils.extractSubject
 import no.nav.meldeplikt.meldekortservice.utils.getCallId
 
-fun PipelineContext<Unit, ApplicationCall>.extractIdentFromToken(): String {
+fun RoutingContext.extractIdentFromToken(): String {
     val authTokenHeader = getTokenFromHeader()
     val authTokenCookie = getTokenFromCookie()
 
@@ -20,7 +19,7 @@ fun PipelineContext<Unit, ApplicationCall>.extractIdentFromToken(): String {
     return extractSubject(authToken)
 }
 
-val PipelineContext<Unit, ApplicationCall>.userIdent get() = extractIdentFromToken()
+val RoutingContext.userIdent get() = extractIdentFromToken()
 
 private fun verifyThatATokenWasFound(authToken: String?) {
     if (authToken == null) {
@@ -43,8 +42,8 @@ private fun verifyThatIdentIsConsistent(authTokenHeader: String?, authTokenCooki
     }
 }
 
-private fun PipelineContext<Unit, ApplicationCall>.getTokenFromHeader() =
+private fun RoutingContext.getTokenFromHeader() =
     call.request.headers[HttpHeaders.Authorization]?.replace("Bearer ", "")
 
-private fun PipelineContext<Unit, ApplicationCall>.getTokenFromCookie() =
+private fun RoutingContext.getTokenFromCookie() =
     call.request.cookies["selvbetjening-idtoken"]

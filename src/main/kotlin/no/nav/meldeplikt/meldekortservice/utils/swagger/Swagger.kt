@@ -4,7 +4,7 @@ package no.nav.meldeplikt.meldekortservice.utils.swagger
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import io.ktor.http.*
-import io.ktor.server.locations.*
+import io.ktor.resources.*
 import no.nav.meldeplikt.meldekortservice.utils.defaultLog
 import no.nav.meldeplikt.meldekortservice.utils.swagger
 import java.time.Instant
@@ -27,13 +27,10 @@ import kotlin.reflect.full.memberProperties
 typealias ModelName = String
 typealias PropertyName = String
 typealias Path = String
-@OptIn(KtorExperimentalLocationsAPI::class)
 typealias Definitions = MutableMap<ModelName, ModelData>
-@OptIn(KtorExperimentalLocationsAPI::class)
 typealias Paths = MutableMap<Path, Methods>
 typealias MethodName = String
 typealias HttpStatus = String
-@OptIn(KtorExperimentalLocationsAPI::class)
 typealias Methods = MutableMap<MethodName, Operation>
 typealias Content = MutableMap<String, MutableMap<String, ModelReference?>>
 
@@ -44,7 +41,6 @@ data class Key(
     val `in`: String
 )
 
-@KtorExperimentalLocationsAPI
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class Swagger(
     val openapi: String = "3.0.0",
@@ -62,7 +58,6 @@ data class Swagger(
     )
 )
 
-@KtorExperimentalLocationsAPI
 data class Components(
     val securitySchemes: SecuritySchemes,
     val schemas: Definitions = mutableMapOf()
@@ -97,20 +92,19 @@ data class Tag(
     val description: String
 )
 
-@KtorExperimentalLocationsAPI
 @JsonInclude(JsonInclude.Include.NON_NULL)
 class Operation(
     metadata: Metadata,
-    location: Location,
+    resource: Resource,
     group: Group?,
-    locationType: KClass<*>,
+    resourceType: KClass<*>,
     entityType: KClass<*>,
     method: HttpMethod
 ) {
     val tags = group?.toList() // Operation tags are not objects, but strings, don't mix with toplevel tags
     val summary = metadata.summary
-    val parameters = setParameterList(entityType, locationType, location, metadata, method)
-    val requestBody = setRequestBody(entityType, locationType, location, metadata, method)
+    val parameters = setParameterList(entityType, resourceType, resource, metadata, method)
+    val requestBody = setRequestBody(entityType, resourceType, resource, metadata, method)
 
     val responses: Map<HttpStatus, Response> = metadata.responses.map {
         val (status, kClass) = it
@@ -124,11 +118,10 @@ class Operation(
     }
 }
 
-@KtorExperimentalLocationsAPI
 private fun setRequestBody(
     entityType: KClass<*>,
-    locationType: KClass<*>,
-    location: Location,
+    resourceType: KClass<*>,
+    resource: Resource,
     metadata: Metadata,
     method: HttpMethod
 ): Any? {
@@ -138,12 +131,12 @@ private fun setRequestBody(
                 addDefinition(entityType)
                 add(entityType.bodyRequest())
             }
-            addAll(locationType.memberProperties.map { it.toRequestBody(location.path) })
+            addAll(resourceType.memberProperties.map { it.toRequestBody(resource.path) })
             metadata.parameter?.let { param ->
-                addAll(param.memberProperties.map { it.toRequestBody(location.path, ParameterInputType.Query) })
+                addAll(param.memberProperties.map { it.toRequestBody(resource.path, ParameterInputType.Query) })
             }
             metadata.headers?.let { header ->
-                addAll(header.memberProperties.map { it.toRequestBody(location.path, ParameterInputType.Header) })
+                addAll(header.memberProperties.map { it.toRequestBody(resource.path, ParameterInputType.Header) })
             }
         }.firstOrNull() ?: emptyList<RequestBody>()
     } else {
@@ -151,11 +144,10 @@ private fun setRequestBody(
     }
 }
 
-@KtorExperimentalLocationsAPI
 private fun setParameterList(
     entityType: KClass<*>,
-    locationType: KClass<*>,
-    location: Location,
+    resourceType: KClass<*>,
+    resource: Resource,
     metadata: Metadata,
     method: HttpMethod
 ): List<Parameter> {
@@ -165,12 +157,12 @@ private fun setParameterList(
                 addDefinition(entityType)
                 add(entityType.bodyParameter())
             }
-            addAll(locationType.memberProperties.map { it.toParameter(location.path) })
+            addAll(resourceType.memberProperties.map { it.toParameter(resource.path) })
             metadata.parameter?.let { param ->
-                addAll(param.memberProperties.map { it.toParameter(location.path, ParameterInputType.Query) })
+                addAll(param.memberProperties.map { it.toParameter(resource.path, ParameterInputType.Query) })
             }
             metadata.headers?.let { header ->
-                addAll(header.memberProperties.map { it.toParameter(location.path, ParameterInputType.Header) })
+                addAll(header.memberProperties.map { it.toParameter(resource.path, ParameterInputType.Header) })
             }
         }
     } else {
@@ -182,7 +174,6 @@ private fun Group.toList(): List<String> {
     return listOf(name)
 }
 
-@KtorExperimentalLocationsAPI
 fun <T, R> KProperty1<T, R>.toParameter(
     path: String,
     inputType: ParameterInputType =
@@ -211,7 +202,6 @@ private fun KClass<*>.bodyParameter() =
         `in` = ParameterInputType.Body.name.lowercase()
     )
 
-@KtorExperimentalLocationsAPI
 fun <T, R> KProperty1<T, R>.toRequestBody(
     path: String,
     inputType: ParameterInputType =
@@ -274,7 +264,6 @@ enum class ParameterInputType {
     Query, Path, Body, Header
 }
 
-@KtorExperimentalLocationsAPI
 class ModelData(kClass: KClass<*>) {
     val properties: Map<PropertyName, Property> =
         kClass.memberProperties.associate { it.name to it.toModelProperty() }
@@ -293,12 +282,10 @@ val propertyTypes = mapOf(
     LocalDate::class to Property("string", "date")
 ).mapKeys { it.key.qualifiedName }
 
-@KtorExperimentalLocationsAPI
 fun <T, R> KProperty1<T, R>.toModelProperty(): Property =
     (returnType.classifier as KClass<*>)
         .toModelProperty(returnType)
 
-@KtorExperimentalLocationsAPI
 private fun KClass<*>.toModelProperty(returnType: KType? = null): Property =
     propertyTypes[qualifiedName?.removeSuffix("?")]
         ?: if (returnType != null && (isSubclassOf(Collection::class) || this.isSubclassOf(Set::class))) {
@@ -333,7 +320,6 @@ open class Property(
     val `$ref`: String = ""
 )
 
-@KtorExperimentalLocationsAPI
 fun addDefinition(kClass: KClass<*>) {
     if ((kClass != Unit::class) && !swagger.components.schemas.containsKey(kClass.modelName())) {
         defaultLog.debug("Generating swagger spec for model ${kClass.modelName()}")
