@@ -2,9 +2,12 @@ package no.nav.meldeplikt.meldekortservice.config
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import java.io.File
 import java.net.URI
 import java.net.URL
 
+const val dbUserSecretPath = "/secrets/dbuser/meldekortservicedbuser"
+const val dbConfigSecretPath = "/secrets/dbconf/meldekortservicedbconf"
 const val DUMMY_URL = "https://dummyurl.nav.no"
 const val DUMMY_FNR = "01020312345"
 val DUMMY_TOKEN = JWT.create()
@@ -28,10 +31,12 @@ data class Environment(
 
     // Oracle
     val dbUserOracle: VaultCredentials = VaultCredentials(
-        getEnvVar("DB_USER_MELDEKORTSERVICE_USERNAME", "username"),
-        getEnvVar("DB_USER_MELDEKORTSERVICE_PASSWORD", "password")
+        File("$dbUserSecretPath/username").takeIf { it.exists() }?.readText() ?: "username",
+        File("$dbUserSecretPath/password").takeIf { it.exists() }?.readText() ?: "password"
     ),
-    val dbConfOracle: VaultDbConfig = VaultDbConfig(getEnvVar("DB_CONFIG_MELDEKORTSERVICE_JDBCURL", "jdbcUrl")),
+    val dbConfOracle: VaultDbConfig = VaultDbConfig(
+        File("$dbConfigSecretPath/jdbc_url").takeIf { it.exists() }?.readText() ?: "jdbcUrl"
+    ),
 )
 
 fun getEnvVar(varName: String, defaultValue: String? = null): String {
