@@ -3,9 +3,8 @@ package no.nav.meldeplikt.meldekortservice.config
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import java.io.File
-import java.net.URI
-import java.net.URL
 
+const val ordsSecretPath = "/var/run/secrets/nais.io/vault/arenaOrds.env"
 const val dbUserSecretPath = "/secrets/dbuser/meldekortservicedbuser"
 const val dbConfigSecretPath = "/secrets/dbconf/meldekortservicedbconf"
 const val DUMMY_URL = "https://dummyurl.nav.no"
@@ -16,11 +15,16 @@ val DUMMY_TOKEN = JWT.create()
     .withClaim("iat", 1616239022)
     .sign(Algorithm.none())
     .toString()
+val ordsSettings: Map<String, String> = File(ordsSecretPath)
+    .takeIf { it.exists() }
+    ?.readLines()
+    ?.associate { it.substringBefore("=") to it.substringAfter("=") }
+    ?: emptyMap()
 
 data class Environment(
-    val ordsUrl: URL = URI.create(getEnvVar("ORDS_URI", DUMMY_URL)).toURL(),
-    val ordsClientId: String = getEnvVar("CLIENT_ID", "cLiEnTiD"),
-    val ordsClientSecret: String = getEnvVar("CLIENT_SECRET", "cLiEnTsEcReT"),
+    val ordsUrl: String = ordsSettings["ORDS_URI"] ?: DUMMY_URL,
+    val ordsClientId: String = ordsSettings["CLIENT_ID"] ?: "cLiEnTiD",
+    val ordsClientSecret: String = ordsSettings["CLIENT_SECRET"] ?: "cLiEnTsEcReT",
 
     // PostgreSQL
     val dbHostPostgreSQL: String = getEnvVar("DB_HOST", "localhost:5434"),

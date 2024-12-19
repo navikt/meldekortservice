@@ -14,7 +14,6 @@ import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.mapper.MeldekortdetaljerMapper
 import no.nav.meldeplikt.meldekortservice.model.AccessToken
 import no.nav.meldeplikt.meldekortservice.model.ArenaOrdsSkrivemodus
-import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 import no.nav.meldeplikt.meldekortservice.model.feil.OrdsException
 import no.nav.meldeplikt.meldekortservice.model.korriger.KopierMeldekortResponse
 import no.nav.meldeplikt.meldekortservice.model.meldegruppe.MeldegruppeResponse
@@ -23,7 +22,6 @@ import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetal
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.arena.Meldekort
 import no.nav.meldeplikt.meldekortservice.model.response.OrdsStringResponse
 import no.nav.meldeplikt.meldekortservice.utils.*
-import java.net.URI
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -198,7 +196,7 @@ class ArenaOrdsService(
         defaultLog.debug("Henter ORDS-token")
         var token = AccessToken(null, null, null)
 
-        if (env.ordsUrl != URI.create(DUMMY_URL).toURL()) {
+        if (env.ordsUrl != DUMMY_URL) {
             runBlocking {
                 val response = ordsClient.post("${env.ordsUrl}$ARENA_ORDS_TOKEN_PATH?grant_type=client_credentials") {
                     setupTokenRequest()

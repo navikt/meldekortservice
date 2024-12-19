@@ -16,15 +16,15 @@ TOKEN_X_CLIENT_ID
 For å kjøre mot f.eks Q1 kan man enten sette riktige miljøvariabler (manuelt eller ved hjelp av bat/bash script) eller midlertidig skrive disse inn i Environment.kt i stedet for defaultValue'er.  
 For eksempel, for å bruke ORDS i Q1 må man erstatte
 ```
-val ordsUrl: URL = URL(getEnvVar("ORDS_URI", DUMMY_URL)),
-val ordsClientId: String = getEnvVar("CLIENT_ID", "cLiEnTiD"),
-val ordsClientSecret: String = getEnvVar("CLIENT_SECRET", "cLiEnTsEcReT"),
+val ordsUrl: String = ordsSettings["ORDS_URI"] ?: DUMMY_URL,
+val ordsClientId: String = ordsSettings["CLIENT_ID"] ?: "cLiEnTiD",
+val ordsClientSecret: String = ordsSettings["CLIENT_SECRET"] ?: "cLiEnTsEcReT",
 ```
 med
 ```
-val ordsUrl: URL = URL(getEnvVar("ORDS_URI", "https://arena-ords-q1.dev.adeo.no/arena")),
-val ordsClientId: String = getEnvVar("CLIENT_ID", "%CLIENT_ID_FRA_VAULT%"),
-val ordsClientSecret: String = getEnvVar("CLIENT_SECRET", "%CLIENT_SECRET_FRA_VAULT%"),
+val ordsUrl: String = "https://arena-ords-q1.dev.adeo.no/arena",
+val ordsClientId: String = "%CLIENT_ID_FRA_VAULT%",
+val ordsClientSecret: String = "%CLIENT_SECRET_FRA_VAULT%",
 ```
 Appen starter på http://localhost:8090. Sjekk for eksempel at ping svarer på http://localhost:8090/meldekortservice/internal/ping.  
 Swagger er tilgjengelig på http://localhost:8090/meldekortservice/internal/apidocs/index.html
