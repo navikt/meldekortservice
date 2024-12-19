@@ -1,3 +1,4 @@
-FROM ghcr.io/navikt/baseimages/temurin:21
+FROM gcr.io/distroless/java21-debian12
 
-COPY build/libs/meldekortservice-all.jar /app/app.jar
+COPY build/libs/meldekortservice-all.jar /app.jar
+CMD ["/app.jar"]
