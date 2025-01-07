@@ -57,6 +57,8 @@ jobs:
     name: Deploy to dev
     needs: [ build ]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Set default environment for push to main
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
@@ -75,6 +77,8 @@ jobs:
     name: Deploy to prod
     needs: [ build ]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: nais/deploy/actions/deploy@v2
