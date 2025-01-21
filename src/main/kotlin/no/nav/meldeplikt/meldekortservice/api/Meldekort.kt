@@ -9,7 +9,7 @@ import no.nav.meldeplikt.meldekortservice.utils.*
 import no.nav.meldeplikt.meldekortservice.utils.swagger.*
 
 /**
-REST-controller for meldekort-api som tilbyr operasjoner for å hente meldekortdetaljer og korrigering for en NAV-bruker.
+REST-controller for meldekort-api som tilbyr operasjoner for å hente meldekortdetaljer og korrigering for en Nav-bruker.
  */
 fun Routing.meldekortApi(arenaOrdsService: ArenaOrdsService) {
     getMeldekortdetaljer(arenaOrdsService)

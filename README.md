@@ -35,7 +35,7 @@ For å være sikker på at man får en ny tom database, kan man kjøre kommandoe
 ## Henvendelser
 Spørsmål knyttet til koden eller prosjektet kan rettes mot https://github.com/orgs/navikt/teams/meldekort.
 
-## For NAV-ansatte
+## For Nav-ansatte
 Interne henvendelser kan sendes via Slack i kanalen #meldekort.
 
 ## Dokumentasjon
