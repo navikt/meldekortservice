@@ -39,7 +39,7 @@ plugins {
 
     kotlin("jvm") version "2.1.0"
     kotlin("plugin.allopen") version "2.1.0"
-    kotlin("plugin.serialization") version "2.1.0"
+    kotlin("plugin.serialization") version "2.1.10"
 
     id("com.gradleup.shadow") version "8.3.5"
 
