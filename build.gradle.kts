@@ -4,7 +4,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
-val flywayVersion = "11.3.1"
+val flywayVersion = "11.3.2"
 val h2Version = "2.3.232"
 val jacksonVersion = "2.18.2"
 val kotlinLoggerVersion = "3.0.5"
