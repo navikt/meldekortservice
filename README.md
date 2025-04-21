@@ -13,6 +13,8 @@ Det er også mulig å kjøre `gradle clean build`, men da må man ha en riktig v
 Det er også mulig å kjøre Server.kt sin main-metode eller `./gradlew runServer`, men da må man sette miljøvariablene:
 TOKEN_X_WELL_KNOWN_URL
 TOKEN_X_CLIENT_ID
+AZURE_APP_WELL_KNOWN_URL
+AZURE_APP_CLIENT_ID
 For å kjøre mot f.eks Q1 kan man enten sette riktige miljøvariabler (manuelt eller ved hjelp av bat/bash script) eller midlertidig skrive disse inn i Environment.kt i stedet for defaultValue'er.  
 For eksempel, for å bruke ORDS i Q1 må man erstatte
 ```
