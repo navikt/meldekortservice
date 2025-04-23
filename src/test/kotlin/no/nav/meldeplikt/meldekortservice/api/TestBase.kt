@@ -38,7 +38,7 @@ open class TestBase {
             every { dbService.lagreKallLogg(any()) } returns 1L
             every { dbService.lagreResponse(any(), any(), any()) } just Runs
 
-            mockkStatic(::isCurrentlyRunningOnNais)
+            mockkStatic("no.nav.meldeplikt.meldekortservice.utils.UtilsKt")
             every { isCurrentlyRunningOnNais() } returns true
         }
 
