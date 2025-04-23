@@ -6,7 +6,6 @@ import no.nav.meldeplikt.meldekortservice.database.PostgreSqlDatabase
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
 import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.configuration.FluentConfiguration
-import org.flywaydb.core.internal.resource.CoreResourceTypeProvider
 import javax.sql.DataSource
 
 object Flyway {

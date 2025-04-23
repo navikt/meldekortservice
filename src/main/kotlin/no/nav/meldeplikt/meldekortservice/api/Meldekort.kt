@@ -1,7 +1,7 @@
 package no.nav.meldeplikt.meldekortservice.api
 
-import io.ktor.resources.*
-import io.ktor.server.routing.*
+import io.ktor.resources.Resource
+import io.ktor.server.routing.Routing
 import no.nav.meldeplikt.meldekortservice.config.userIdent
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService

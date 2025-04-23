@@ -1,8 +1,8 @@
 package no.nav.meldeplikt.meldekortservice.api
 
-import io.ktor.http.*
-import io.ktor.resources.*
-import io.ktor.server.routing.*
+import io.ktor.http.HttpStatusCode
+import io.ktor.resources.Resource
+import io.ktor.server.routing.Routing
 import no.nav.meldeplikt.meldekortservice.config.userIdent
 import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person

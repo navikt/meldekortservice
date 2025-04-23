@@ -1,8 +1,11 @@
 package no.nav.meldeplikt.meldekortservice.service
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.ktor.client.*
-import io.ktor.client.engine.mock.*
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.respond
+import io.ktor.client.engine.mock.respondError
+import io.ktor.client.engine.mock.respondOk
 import io.ktor.http.*
 import io.mockk.every
 import io.mockk.mockkStatic

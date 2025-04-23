@@ -1,8 +1,9 @@
 package no.nav.meldeplikt.meldekortservice.api
 
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
+import io.ktor.client.request.get
+import io.ktor.client.statement.bodyAsText
+import io.ktor.client.statement.request
+import io.ktor.http.HttpStatusCode
 import no.nav.meldeplikt.meldekortservice.utils.*
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals

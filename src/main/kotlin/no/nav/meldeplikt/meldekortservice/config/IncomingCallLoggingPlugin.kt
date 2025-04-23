@@ -1,12 +1,17 @@
 package no.nav.meldeplikt.meldekortservice.config
 
-import io.ktor.http.*
-import io.ktor.http.content.*
-import io.ktor.server.application.*
-import io.ktor.server.application.hooks.*
+import io.ktor.http.HttpHeaders
+import io.ktor.http.content.OutputStreamContent
+import io.ktor.http.content.TextContent
+import io.ktor.server.application.ApplicationPlugin
+import io.ktor.server.application.createApplicationPlugin
+import io.ktor.server.application.hooks.ResponseBodyReadyForSend
+import io.ktor.server.application.hooks.ResponseSent
 import io.ktor.server.request.*
-import io.ktor.util.*
-import io.ktor.utils.io.*
+import io.ktor.util.AttributeKey
+import io.ktor.utils.io.ByteChannel
+import io.ktor.utils.io.readUTF8LineTo
+import io.ktor.utils.io.writer
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.model.database.KallLogg

@@ -1,12 +1,18 @@
 package no.nav.meldeplikt.meldekortservice.service
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
-import io.ktor.util.*
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.post
+import io.ktor.client.request.request
+import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.HeadersBuilder
+import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
+import io.ktor.util.StringValuesBuilder
+import io.ktor.util.appendAll
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.config.DUMMY_TOKEN
 import no.nav.meldeplikt.meldekortservice.config.DUMMY_URL

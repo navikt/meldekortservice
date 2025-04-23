@@ -1,9 +1,11 @@
 package no.nav.meldeplikt.meldekortservice.api
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
+import io.ktor.client.request.get
+import io.ktor.client.request.header
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
 import io.mockk.coEvery
 import no.nav.meldeplikt.meldekortservice.config.DUMMY_FNR
 import no.nav.meldeplikt.meldekortservice.model.enum.KortType

@@ -3,8 +3,9 @@
 package no.nav.meldeplikt.meldekortservice.utils.swagger
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import io.ktor.http.*
-import io.ktor.resources.*
+import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
+import io.ktor.resources.Resource
 import no.nav.meldeplikt.meldekortservice.utils.defaultLog
 import no.nav.meldeplikt.meldekortservice.utils.swagger
 import java.time.Instant

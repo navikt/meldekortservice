@@ -1,7 +1,7 @@
 package no.nav.meldeplikt.meldekortservice.config
 
-import io.ktor.http.*
-import io.ktor.server.routing.*
+import io.ktor.http.HttpHeaders
+import io.ktor.server.routing.RoutingContext
 import no.nav.meldeplikt.meldekortservice.utils.defaultLog
 import no.nav.meldeplikt.meldekortservice.utils.extractSubject
 import no.nav.meldeplikt.meldekortservice.utils.getCallId

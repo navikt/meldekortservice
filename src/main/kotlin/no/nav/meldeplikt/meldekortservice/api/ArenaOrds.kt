@@ -1,10 +1,13 @@
 package no.nav.meldeplikt.meldekortservice.api
 
-import io.ktor.resources.*
-import io.ktor.server.routing.*
+import io.ktor.resources.Resource
+import io.ktor.server.routing.Routing
 import no.nav.meldeplikt.meldekortservice.model.ArenaOrdsSkrivemodus
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
-import no.nav.meldeplikt.meldekortservice.utils.*
+import no.nav.meldeplikt.meldekortservice.utils.Error
+import no.nav.meldeplikt.meldekortservice.utils.ErrorMessage
+import no.nav.meldeplikt.meldekortservice.utils.SKRIVEMODUS_PATH
+import no.nav.meldeplikt.meldekortservice.utils.respondOrError
 import no.nav.meldeplikt.meldekortservice.utils.swagger.*
 
 /**
