@@ -73,3 +73,6 @@ spec:
         - application: meldekort-backend
           namespace: aap
           cluster: {{ vaultServiceuserEnv }}-gcp
+        - application: tiltakspenger-meldekort-api
+          namespace: tpts
+          cluster: {{ vaultServiceuserEnv }}-gcp
