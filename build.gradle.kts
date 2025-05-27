@@ -3,22 +3,22 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
-val flywayVersion = "11.8.0"
+val flywayVersion = "11.8.2"
 val h2Version = "2.3.232"
 val jacksonVersion = "2.19.0"
 val kotlinLoggerVersion = "3.0.5"
-val ktorVersion = "3.1.2"
+val ktorVersion = "3.1.3"
 val logbackVersion = "1.5.18"
 val logstashVersion = "8.1"
-val micrometerVersion = "1.14.6"
-val mockOauthVersion = "2.1.10"
+val micrometerVersion = "1.15.0"
+val mockOauthVersion = "2.1.11"
 val mockkVersion = "1.14.2"
 val navCommonVersion = "3.2025.03.25_13.00-69496eec5820"
 val ojdbc8Version = "19.3.0.0"
 val postgresVersion = "42.7.5"
-val swaggerVersion = "5.21.0" // Husk å endre versjonen også i resource i SwaggerUi.kt
+val swaggerVersion = "5.22.0" // Husk å endre versjonen også i resource i SwaggerUi.kt
 val tjenestespecVersion = "2643.2f3e8e9"
-val tokenValidationVersion = "5.0.25"
+val tokenValidationVersion = "5.0.28"
 val vaultJdbcVersion = "1.3.10"
 val vaultVersion = "5.1.0"
 
@@ -36,15 +36,15 @@ plugins {
 
     id("com.github.ManifestClasspath") version "0.1.0-RELEASE"
 
-    kotlin("jvm") version "2.1.20"
-    kotlin("plugin.allopen") version "2.1.20"
-    kotlin("plugin.serialization") version "2.1.20"
+    kotlin("jvm") version "2.1.21"
+    kotlin("plugin.allopen") version "2.1.21"
+    kotlin("plugin.serialization") version "2.1.21"
 
     id("com.gradleup.shadow") version "8.3.6"
 
     id("org.flywaydb.flyway") version ("11.1.0")
 
-    id("org.sonarqube") version "6.1.0.5360"
+    id("org.sonarqube") version "6.2.0.5505"
 
     id("com.github.ben-manes.versions") version "0.52.0"
 
