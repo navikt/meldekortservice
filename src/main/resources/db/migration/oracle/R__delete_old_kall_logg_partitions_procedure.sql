@@ -7,7 +7,7 @@ IS
 BEGIN
     FOR rec IN kall_logg_partitions
         LOOP
-            IF to_date(substr(rec.high_value, 12, 10), 'YYYY-MM-DD') < CURRENT_DATE - 30 THEN
+            IF to_date(substr(rec.high_value, 12, 10), 'YYYY-MM-DD') < CURRENT_DATE - 120 THEN
                 EXECUTE IMMEDIATE 'ALTER TABLE kall_logg DROP PARTITION ' || rec.partition_name || ' UPDATE INDEXES';
             END IF;
         END LOOP;
