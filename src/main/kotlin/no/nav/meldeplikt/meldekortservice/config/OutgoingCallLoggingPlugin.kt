@@ -19,11 +19,13 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.model.database.KallLogg
 import no.nav.meldeplikt.meldekortservice.utils.defaultLog
+import no.nav.meldeplikt.meldekortservice.utils.extractSubject
 import no.nav.meldeplikt.meldekortservice.utils.getCallId
 import no.nav.meldeplikt.meldekortservice.utils.headersToString
 import java.time.Instant
 import java.time.LocalDateTime
 import kotlin.coroutines.CoroutineContext
+import kotlin.text.replace
 
 class OutgoingCallLoggingPlugin {
 
@@ -43,6 +45,9 @@ class OutgoingCallLoggingPlugin {
             val request = originalCall.request
             val response = originalCall.response
 
+            val token = originalCall.request.headers[HttpHeaders.Authorization]?.replace("Bearer ", "")
+            val ident = extractSubject(token)
+
             val responseBody = response.bodyAsText(Charsets.UTF_8)
 
             try {
@@ -58,7 +63,8 @@ class OutgoingCallLoggingPlugin {
                         kallTid = Instant.now().toEpochMilli() - kallTid,
                         request = buildRequest(requestBuilder.executionContext, request),
                         response = buildResponse(response, responseBody),
-                        logginfo = ""
+                        logginfo = "",
+                        ident = ident
                     )
                 )
             } catch (e: Exception) {

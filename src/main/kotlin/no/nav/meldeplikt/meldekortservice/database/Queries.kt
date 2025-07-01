@@ -16,8 +16,8 @@ fun Connection.lagreKallLogg(kallLogg: KallLogg): Long {
     val productName = metaData.databaseProductName
 
     val sql = "INSERT INTO kall_logg " +
-            "(korrelasjon_id, type, tidspunkt, kall_retning, method, operation, status, kalltid, request, response, logginfo) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+            "(korrelasjon_id, type, tidspunkt, kall_retning, method, operation, status, kalltid, request, response, logginfo, ident) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
 
     prepareStatement(sql, arrayOf("kall_logg_id"))
         .use {
@@ -63,6 +63,7 @@ fun Connection.lagreKallLogg(kallLogg: KallLogg): Long {
             it.setClob(9, requestClob)
             it.setClob(10, responseClob)
             it.setClob(11, logginfoClob)
+            it.setString(12, kallLogg.ident)
 
             it.executeUpdate()
 
@@ -114,7 +115,7 @@ fun Connection.hentKallLoggFelterListeByKorrelasjonId(korrelasjonId: String): Li
 
     // Oracle default
     var query = "SELECT " +
-            "kall_logg_id, korrelasjon_id, tidspunkt, type, kall_retning, method, operation, status, kalltid, " +
+            "kall_logg_id, korrelasjon_id, tidspunkt, type, kall_retning, method, operation, status, kalltid, ident, " +
             "request, " +
             "response, " +
             "logginfo " +
@@ -122,7 +123,7 @@ fun Connection.hentKallLoggFelterListeByKorrelasjonId(korrelasjonId: String): Li
             "WHERE korrelasjon_id = ?"
     if (productName == "PostgreSQL") {
         query = "SELECT " +
-                "kall_logg_id, korrelasjon_id, tidspunkt, type, kall_retning, method, operation, status, kalltid, " +
+                "kall_logg_id, korrelasjon_id, tidspunkt, type, kall_retning, method, operation, status, kalltid, ident, " +
                 "convert_from(lo_get(request::oid), 'UTF8') as request," +
                 "convert_from(lo_get(response::oid), 'UTF8') as response," +
                 "convert_from(lo_get(logginfo::oid), 'UTF8') as logginfo " +
@@ -149,7 +150,8 @@ fun Connection.hentKallLoggFelterListeByKorrelasjonId(korrelasjonId: String): Li
                                 kallTid = resultSet.getLong("kalltid"),
                                 request = clobToString(resultSet.getCharacterStream("request")),
                                 response = clobToString(resultSet.getCharacterStream("response")),
-                                logginfo = clobToString(resultSet.getCharacterStream("logginfo"))
+                                logginfo = clobToString(resultSet.getCharacterStream("logginfo")),
+                                ident =  resultSet.getString("ident")
                             )
                         )
                     }

@@ -36,7 +36,8 @@ class DBServiceTest {
                 kallTid,
                 "ping",
                 "",
-                "test"
+                "test",
+                "01020312345"
             )
 
             val kallLoggId = dbService.lagreKallLogg(kallLogg)
@@ -62,5 +63,6 @@ class DBServiceTest {
         assertEquals(kallLogg.request, kallLoggListe[0].request)
         assertEquals(response, kallLoggListe[0].response)
         assertEquals(kallLogg.logginfo, kallLoggListe[0].logginfo)
+        assertEquals(kallLogg.ident, kallLoggListe[0].ident)
     }
 }

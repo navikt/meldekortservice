@@ -65,7 +65,8 @@ val IncomingCallLoggingPlugin: ApplicationPlugin<ICDLPConfig> =
                         kallTid = Instant.now().toEpochMilli(),
                         request = requestData,
                         response = "",
-                        logginfo = fnr
+                        logginfo = "",
+                        ident = fnr
                     )
                 )
                 call.attributes.put(kallLoggIdAttr, kallLoggId)

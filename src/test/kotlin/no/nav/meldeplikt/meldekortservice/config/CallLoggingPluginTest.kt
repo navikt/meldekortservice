@@ -162,7 +162,8 @@ class CallLoggingPluginTest : TestBase() {
         assertEquals(expectedInnRequest, kall1.request)
         assertTrue(kall1.response.startsWith(expectedInnResponseStart))
         assertTrue(kall1.response.replace("NULL", "").endsWith(expectedInnResponseEnd))
-        assertEquals(DUMMY_FNR, kall1.logginfo)
+        assertEquals("", kall1.logginfo)
+        assertEquals(DUMMY_FNR, kall1.ident)
 
         val kall2 = kallLoggListe[1]
         assertEquals(callId, kall2.korrelasjonId)
@@ -305,7 +306,8 @@ class CallLoggingPluginTest : TestBase() {
         assertEquals(expectedInnRequest, kall1.request)
         assertTrue(kall1.response.startsWith(expectedInnResponseStart))
         assertTrue(kall1.response.replace("NULL", "").endsWith(expectedInnResponseEnd))
-        assertEquals(DUMMY_FNR, kall1.logginfo)
+        assertEquals("", kall1.logginfo)
+        assertEquals(DUMMY_FNR, kall1.ident)
 
         val kall2 = kallLoggListe[1]
         assertEquals(callId, kall2.korrelasjonId)
@@ -317,6 +319,7 @@ class CallLoggingPluginTest : TestBase() {
         assertEquals(expectedUtRequest, kall2.request)
         assertEquals(expectedUtResponse, kall2.response)
         assertEquals("", kall2.logginfo)
+        assertEquals(DUMMY_FNR, kall2.ident)
 
         database.closeConnection()
     }
