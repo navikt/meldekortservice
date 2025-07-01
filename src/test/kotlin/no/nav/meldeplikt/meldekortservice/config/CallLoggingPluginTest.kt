@@ -222,7 +222,7 @@ class CallLoggingPluginTest : TestBase() {
         val json = "{\"error\":\"Personidentifikator matcher ikke. Bruker kan derfor ikke hente ut meldekortdetaljer.\"}"
 
         val expectedInnRequest = "" +
-                "GET localhost:80$MELDEKORT_PATH?meldekortId=${id} HTTP/1.1\n" +
+                "GET localhost:80$MELDEKORT_PATH?meldekortId=$id HTTP/1.1\n" +
                 "Authorization: Bearer $token\n" +
                 "X-Request-ID: $callId\n" +
                 "Accept-Charset: UTF-8\n" +
@@ -240,7 +240,7 @@ class CallLoggingPluginTest : TestBase() {
                 "\n" +
                 "$json\n"
         val expectedUtRequest = "" +
-                "GET https://dummyurl.nav.no:443/api/v2/meldeplikt/meldekort/detaljer?meldekortId=1\n" +
+                "GET https://dummyurl.nav.no:443/api/v2/meldeplikt/meldekort/detaljer?meldekortId=$id\n" +
                 "Accept: [application/xml; charset=UTF-8,application/json]\n" +
                 "Authorization: Bearer $DUMMY_TOKEN\n" +
                 "Accept-Charset: UTF-8\n" +
@@ -282,19 +282,26 @@ class CallLoggingPluginTest : TestBase() {
         //
         // Run
         //
-        val response = client.get("$MELDEKORT_PATH?meldekortId=${id}") {
+        val response1 = client.get("$MELDEKORT_PATH?meldekortId=$id") {
             header(HttpHeaders.Authorization, "Bearer $token")
+            header(HttpHeaders.XRequestId, callId)
+        }
+
+        val response2 = client.get("/meldekortservice/api/v2/historiskemeldekort?antallMeldeperioder=1") {
+            header(HttpHeaders.Authorization, "Bearer $token")
+            header("ident", DUMMY_FNR)
             header(HttpHeaders.XRequestId, callId)
         }
 
         //
         // Check
         //
-        assertEquals(HttpStatusCode.BadRequest, response.status)
-        assertEquals(json, response.bodyAsText())
+        assertEquals(HttpStatusCode.BadRequest, response1.status)
+        assertEquals(json, response1.bodyAsText())
+        assertEquals(HttpStatusCode.ServiceUnavailable, response2.status)
 
         val kallLoggListe = database.dbQuery { hentAlleKallLogg() }
-        assertEquals(2, kallLoggListe.size)
+        assertEquals(4, kallLoggListe.size)
 
         val kall1 = kallLoggListe[0]
         assertEquals(callId, kall1.korrelasjonId)
@@ -319,7 +326,17 @@ class CallLoggingPluginTest : TestBase() {
         assertEquals(expectedUtRequest, kall2.request)
         assertEquals(expectedUtResponse, kall2.response)
         assertEquals("", kall2.logginfo)
-        assertEquals(DUMMY_FNR, kall2.ident)
+        assertEquals("", kall2.ident)
+
+        val kall4 = kallLoggListe[3]
+        assertEquals(callId, kall4.korrelasjonId)
+        assertEquals("REST", kall4.type)
+        assertEquals("UT", kall4.kallRetning)
+        assertEquals("GET", kall4.method)
+        assertEquals(ARENA_ORDS_HENT_HISTORISKE_MELDEKORT.replace("?", ""), kall4.operation)
+        assertEquals(200, kall4.status)
+        assertEquals("", kall4.logginfo)
+        assertEquals(DUMMY_FNR, kall4.ident)
 
         database.closeConnection()
     }
