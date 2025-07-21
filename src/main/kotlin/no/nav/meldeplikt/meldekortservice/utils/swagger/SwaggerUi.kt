@@ -19,7 +19,7 @@ class SwaggerUi {
             in notFound -> return
             null -> return
             else -> {
-                val resource = this::class.java.getResource("/META-INF/resources/webjars/swagger-ui/5.25.3/$filename")
+                val resource = this::class.java.getResource("/META-INF/resources/webjars/swagger-ui/5.26.2/$filename")
                 if (resource == null) {
                     notFound.add(filename)
                     return
