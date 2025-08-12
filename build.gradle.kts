@@ -22,7 +22,7 @@ val tokenValidationVersion = "5.0.34"
 val vaultJdbcVersion = "1.3.10"
 val vaultVersion = "5.1.0"
 
-project.setProperty("mainClassName", "io.ktor.server.netty.EngineMain")
+project.ext.set("mainClassName", "io.ktor.server.netty.EngineMain")
 
 repositories {
     mavenCentral()
@@ -58,7 +58,7 @@ jacoco {
 }
 
 application {
-    mainClass.set(project.property("mainClassName").toString())
+    mainClass.set(project.ext.get("mainClassName").toString())
 }
 
 dependencies {
@@ -125,7 +125,7 @@ tasks {
     withType<Jar> {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
-        manifest.attributes["Main-Class"] = project.property("mainClassName").toString()
+        manifest.attributes["Main-Class"] = project.ext.get("mainClassName").toString()
         from(configurations.compileClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
     }
 
@@ -154,7 +154,7 @@ tasks {
     }
 
     register("runServer", JavaExec::class) {
-        mainClass.set(project.property("mainClassName").toString())
+        mainClass.set(project.ext.get("mainClassName").toString())
         classpath = sourceSets["main"].runtimeClasspath
     }
 
@@ -164,7 +164,7 @@ tasks {
         systemProperties["AZURE_APP_WELL_KNOWN_URL"] = "azure.dev.nav.no"
         systemProperties["AZURE_APP_CLIENT_ID"] = "test:meldekort:meldekortservice"
 
-        mainClass.set(project.property("mainClassName").toString())
+        mainClass.set(project.ext.get("mainClassName").toString())
         classpath = sourceSets["main"].runtimeClasspath
     }
 }
