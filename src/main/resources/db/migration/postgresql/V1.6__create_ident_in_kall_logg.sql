@@ -1,4 +1,4 @@
-ALTER TABLE kall_logg ADD ident VARCHAR2(11);
+ALTER TABLE kall_logg ADD ident VARCHAR(11);
 
 CREATE INDEX kalo_4 ON kall_logg (ident);
 
