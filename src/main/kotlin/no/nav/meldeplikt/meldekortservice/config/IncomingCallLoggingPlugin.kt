@@ -12,6 +12,7 @@ import io.ktor.util.AttributeKey
 import io.ktor.utils.io.ByteChannel
 import io.ktor.utils.io.readUTF8LineTo
 import io.ktor.utils.io.writer
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.model.database.KallLogg
@@ -114,6 +115,7 @@ class ICDLPConfig {
     lateinit var dbs: DBService
 }
 
+@OptIn(DelicateCoroutinesApi::class)
 private fun readBody(subject: Any): String = when (subject) {
     is TextContent -> subject.text
     is OutputStreamContent -> {

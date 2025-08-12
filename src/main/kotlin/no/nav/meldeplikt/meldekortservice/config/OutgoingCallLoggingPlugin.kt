@@ -1,8 +1,8 @@
 package no.nav.meldeplikt.meldekortservice.config
 
 import io.ktor.client.HttpClient
+import io.ktor.client.call.replaceResponse
 import io.ktor.client.plugins.HttpSend
-import io.ktor.client.plugins.observer.wrapWithContent
 import io.ktor.client.plugins.plugin
 import io.ktor.client.request.HttpRequest
 import io.ktor.client.statement.HttpResponse
@@ -15,6 +15,7 @@ import io.ktor.utils.io.ByteChannel
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.readUTF8LineTo
 import io.ktor.utils.io.writer
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.runBlocking
 import no.nav.meldeplikt.meldekortservice.model.database.KallLogg
@@ -69,10 +70,11 @@ class OutgoingCallLoggingPlugin {
             }
 
             // Response content can be read only once. Wrap the call with the content we have read
-            originalCall.wrapWithContent(ByteReadChannel(responseBody.toByteArray()))
+            originalCall.replaceResponse { ByteReadChannel(responseBody.toByteArray()) }
         }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     private fun buildRequest(coroutineContext: CoroutineContext, request: HttpRequest): String {
         return StringBuilder().apply {
             appendLine("${request.method.value} ${request.url.protocol.name}://${request.url.hostWithPort}${request.url.fullPath}")
