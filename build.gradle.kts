@@ -40,7 +40,7 @@ plugins {
     kotlin("plugin.allopen") version "2.2.0"
     kotlin("plugin.serialization") version "2.2.0"
 
-    id("com.gradleup.shadow") version "9.0.1"
+    id("com.gradleup.shadow") version "9.0.0"
 
     id("org.flywaydb.flyway") version ("11.11.0")
 
