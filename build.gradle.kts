@@ -36,7 +36,7 @@ plugins {
 
     id("com.github.ManifestClasspath") version "0.1.0-RELEASE"
 
-    kotlin("jvm") version "2.2.0"
+    kotlin("jvm") version "2.2.10"
     kotlin("plugin.allopen") version "2.2.10"
     kotlin("plugin.serialization") version "2.2.0"
 
