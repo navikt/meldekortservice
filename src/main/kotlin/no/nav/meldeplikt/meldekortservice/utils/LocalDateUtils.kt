@@ -9,9 +9,10 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import java.io.IOException
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-class LocalDateDeserializer: StdDeserializer<LocalDate>(LocalDate::class.java) {
+class LocalDateDeserializer : StdDeserializer<LocalDate>(LocalDate::class.java) {
 
     @Throws(IOException::class, JsonProcessingException::class)
     override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): LocalDate {
@@ -28,6 +29,30 @@ class LocalDateSerializer : StdSerializer<LocalDate>(LocalDate::class.java) {
     @Throws(IOException::class, JsonProcessingException::class)
     override fun serialize(value: LocalDate, gen: JsonGenerator, sp: SerializerProvider) {
         gen.writeString(value.format(DateTimeFormatter.ISO_LOCAL_DATE))
+    }
+
+    companion object {
+        private const val serialVersionUID = 1L
+    }
+}
+
+class LocalDateTimeDeserializer : StdDeserializer<LocalDateTime>(LocalDateTime::class.java) {
+
+    @Throws(IOException::class, JsonProcessingException::class)
+    override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): LocalDateTime {
+        return LocalDateTime.parse(jp.readValueAs(String::class.java))
+    }
+
+    companion object {
+        private const val serialVersionUID = 1L
+    }
+}
+
+class LocalDateTimeSerializer : StdSerializer<LocalDateTime>(LocalDateTime::class.java) {
+
+    @Throws(IOException::class, JsonProcessingException::class)
+    override fun serialize(value: LocalDateTime, gen: JsonGenerator, sp: SerializerProvider) {
+        gen.writeString(value.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
     }
 
     companion object {

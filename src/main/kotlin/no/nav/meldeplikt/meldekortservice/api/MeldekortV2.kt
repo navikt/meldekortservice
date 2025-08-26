@@ -8,6 +8,8 @@ import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 import no.nav.meldeplikt.meldekortservice.model.meldegruppe.Meldegruppe
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
+import no.nav.meldeplikt.meldekortservice.model.meldestatus.MeldestatusRequest
+import no.nav.meldeplikt.meldekortservice.model.meldestatus.MeldestatusResponse
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
 import no.nav.meldeplikt.meldekortservice.utils.*
 import no.nav.meldeplikt.meldekortservice.utils.swagger.*
@@ -29,6 +31,7 @@ fun Routing.meldekortApiV2(arenaOrdsService: ArenaOrdsService) {
     hentMeldekortdetaljer(arenaOrdsService)
     hentKorrigertMeldekort(arenaOrdsService)
     hentMeldegrupper(arenaOrdsService)
+    hentMeldestatus(arenaOrdsService)
 }
 
 private const val group = "Meldekort v2"
@@ -159,6 +162,28 @@ fun Routing.hentMeldegrupper(arenaOrdsService: ArenaOrdsService) = get<HentMelde
         val result = arenaOrdsService.hentMeldegrupper(ident, LocalDate.now())
 
         result.meldegruppeListe ?: emptyList<Meldegruppe>()
+    }
+}
+
+@Group(group)
+@Resource("$API_PATH/v2/meldestatus")
+class MeldestatusInput
+
+fun Routing.hentMeldestatus(arenaOrdsService: ArenaOrdsService) = post<MeldestatusInput, MeldestatusRequest>(
+    "Hent meldestatus".securityAndResponse(
+        BearerTokenSecurity(),
+        ok<MeldestatusResponse>(),
+        badRequest<ErrorMessage>(),
+        serviceUnavailable<ErrorMessage>(),
+        unAuthorized<Error>()
+    ).header<Headers>(),
+) { _, meldestatusRequest ->
+    respondOrError {
+        arenaOrdsService.hentMeldestatus(
+            meldestatusRequest.arenaPersonId,
+            meldestatusRequest.personident,
+            meldestatusRequest.sokeDato
+        )
     }
 }
 

@@ -6,11 +6,10 @@ import io.ktor.client.call.body
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.post
 import io.ktor.client.request.request
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
-import io.ktor.http.HeadersBuilder
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
+import io.ktor.http.*
 import io.ktor.util.StringValuesBuilder
 import io.ktor.util.appendAll
 import kotlinx.coroutines.runBlocking
@@ -26,6 +25,8 @@ import no.nav.meldeplikt.meldekortservice.model.meldegruppe.MeldegruppeResponse
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.arena.Meldekort
+import no.nav.meldeplikt.meldekortservice.model.meldestatus.MeldestatusRequest
+import no.nav.meldeplikt.meldekortservice.model.meldestatus.MeldestatusResponse
 import no.nav.meldeplikt.meldekortservice.model.response.OrdsStringResponse
 import no.nav.meldeplikt.meldekortservice.utils.*
 import java.time.LocalDate
@@ -123,6 +124,30 @@ class ArenaOrdsService(
         return defaultObjectMapper.readValue(response.body<String>(), MeldegruppeResponse::class.java)
     }
 
+    suspend fun hentMeldestatus(
+        arenaPersonId: Long? = null,
+        personIdent: String? = null,
+        sokeDato: LocalDate? = null
+    ): MeldestatusResponse {
+        val headers = HeadersBuilder()
+        headers.append(HttpHeaders.Accept, ContentType.Application.Json.toString())
+        headers.append(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+        headers.append("Authorization", "Bearer ${hentToken().accessToken}")
+
+        val response = getResponseWithRetry(
+            "${env.ordsUrl}$ARENA_ORDS_HENT_MELDESTATUS",
+            HttpMethod.Post,
+            headers,
+            defaultObjectMapper.writeValueAsString(MeldestatusRequest(arenaPersonId, personIdent, sokeDato))
+        )
+
+        if (response.status != HttpStatusCode.OK) {
+            throw OrdsException("Kunne ikke hente meldestatus fra Arena Ords")
+        }
+
+        return defaultObjectMapper.readValue(response.body<String>(), MeldestatusResponse::class.java)
+    }
+
     suspend fun hentSkrivemodus(): ArenaOrdsSkrivemodus {
         val execResult: Result<HttpResponse> = runCatching {
             getResponseWithRetry("${env.ordsUrl}$ARENA_ORDS_HENT_SKRIVEMODUS", HttpMethod.Get, setupHeaders())
@@ -167,13 +192,14 @@ class ArenaOrdsService(
     private suspend fun getResponseWithRetry(
         url: String,
         httpMethod: HttpMethod,
-        httpHeaders: StringValuesBuilder
+        httpHeaders: StringValuesBuilder,
+        body: String? = null,
     ): HttpResponse {
-        var response = getResponse(url, httpMethod, httpHeaders)
+        var response = getResponse(url, httpMethod, httpHeaders, body)
 
         if (response.status == HttpStatusCode.Unauthorized) {
             hentOrdsToken()
-            response = getResponse(url, httpMethod, httpHeaders)
+            response = getResponse(url, httpMethod, httpHeaders, body)
         }
 
         return response
@@ -182,11 +208,15 @@ class ArenaOrdsService(
     private suspend fun getResponse(
         url: String,
         httpMethod: HttpMethod,
-        httpHeaders: StringValuesBuilder
+        httpHeaders: StringValuesBuilder,
+        body: String? = null,
     ): HttpResponse {
         return ordsClient.request(url) {
             method = httpMethod
             headers.appendAll(httpHeaders)
+            if (body != null) {
+                this.setBody(body)
+            }
         }
     }
 

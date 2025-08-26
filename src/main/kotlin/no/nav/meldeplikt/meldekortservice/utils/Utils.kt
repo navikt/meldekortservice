@@ -55,6 +55,7 @@ internal const val ARENA_ORDS_MELDEPERIODER_PARAM = "antMeldeperioder="
 internal const val ARENA_ORDS_HENT_MELDEKORTDETALJER = "$ARENA_ORDS_API_V2_MELDEPLIKT/meldekort/detaljer?meldekortId="
 internal const val ARENA_ORDS_KOPIER_MELDEKORT = "$ARENA_ORDS_API_V2_MELDEPLIKT/meldekort/kopi"
 internal const val ARENA_ORDS_HENT_MELDEGRUPPER = "$ARENA_ORDS_API_V3_MELDEPLIKT/kontroll/meldegruppe"
+internal const val ARENA_ORDS_HENT_MELDESTATUS = "$ARENA_ORDS_API_V3_MELDEPLIKT/meldestatus"
 
 internal const val DB_ORACLE_USERNAME = "oracleDbUser.username"
 internal const val DB_ORACLE_PASSWORD = "oracleDbUser.password"
@@ -112,7 +113,7 @@ internal suspend fun RoutingContext.respondOrError(block: suspend () -> Any) =
             defaultLog.error("Feil i meldekortservice", e)
             val eMsg = when (e) {
                 is java.util.concurrent.TimeoutException -> "Arena ikke tilgjengelig"
-                else -> if (e.localizedMessage != null) e.localizedMessage else "exception occurred"
+                else -> e.localizedMessage ?: "exception occurred"
             }
             if (e is SecurityException || eMsg.contains("400 Bad Request", true)) {
                 call.respond(HttpStatusCode.BadRequest, ErrorMessage(eMsg))
