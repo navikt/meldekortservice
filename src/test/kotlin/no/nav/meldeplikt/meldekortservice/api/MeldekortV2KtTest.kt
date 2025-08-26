@@ -358,8 +358,11 @@ class MeldekortV2KtTest : TestBase() {
 
         @Test
         fun `hentMeldestatus returns data`() = setUpTestApplication {
+            val arenaPersonId = 123456789L
+            val sokeDato = LocalDate.now()
+
             val meldestatusResponse = MeldestatusResponse(
-                123,
+                arenaPersonId,
                 DUMMY_FNR,
                 "DAGP",
                 true,
@@ -395,8 +398,6 @@ class MeldekortV2KtTest : TestBase() {
                 )
             )
 
-            val arenaPersonId = 123456789L
-            val sokeDato = LocalDate.now()
             coEvery {
                 arenaOrdsService.hentMeldestatus(
                     eq(arenaPersonId),
