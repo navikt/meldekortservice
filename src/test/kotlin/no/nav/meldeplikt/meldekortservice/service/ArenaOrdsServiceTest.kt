@@ -14,6 +14,7 @@ import no.nav.meldeplikt.meldekortservice.config.DUMMY_TOKEN
 import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.model.AccessToken
 import no.nav.meldeplikt.meldekortservice.model.ArenaOrdsSkrivemodus
+import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 import no.nav.meldeplikt.meldekortservice.model.feil.OrdsException
 import no.nav.meldeplikt.meldekortservice.model.meldegruppe.Meldegruppe
 import no.nav.meldeplikt.meldekortservice.model.meldegruppe.MeldegruppeResponse
@@ -452,7 +453,7 @@ class ArenaOrdsServiceTest {
         }
 
         @Test
-        fun `hentMeldestatus kaster Exception når ikke kan hente meldegrupper fra Arena ORDS`() {
+        fun `hentMeldestatus kaster OrdsException når ikke kan hente meldegrupper fra Arena ORDS`() {
             val client = HttpClient(MockEngine) {
                 engine {
                     addHandler {
@@ -463,13 +464,31 @@ class ArenaOrdsServiceTest {
 
             val arenaOrdsService = ArenaOrdsService(client)
 
-
             val exception = assertThrows<OrdsException> {
                 runBlocking {
                     arenaOrdsService.hentMeldestatus(null, fnr, null)
                 }
             }
             assertEquals("Kunne ikke hente meldestatus fra Arena Ords", exception.localizedMessage)
+        }
+
+        @Test
+        fun `hentMeldestatus kaster NoContentException når Arena ORDS returnerer NoContent`() {
+            val client = HttpClient(MockEngine) {
+                engine {
+                    addHandler {
+                        respond("", HttpStatusCode.NoContent)
+                    }
+                }
+            }
+
+            val arenaOrdsService = ArenaOrdsService(client)
+
+            assertThrows<NoContentException> {
+                runBlocking {
+                    arenaOrdsService.hentMeldestatus(null, fnr, null)
+                }
+            }
         }
     }
 

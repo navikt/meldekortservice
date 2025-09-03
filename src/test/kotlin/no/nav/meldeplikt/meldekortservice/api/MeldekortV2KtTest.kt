@@ -12,6 +12,7 @@ import io.ktor.http.HttpStatusCode
 import io.mockk.coEvery
 import no.nav.meldeplikt.meldekortservice.config.DUMMY_FNR
 import no.nav.meldeplikt.meldekortservice.model.enum.KortType
+import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 import no.nav.meldeplikt.meldekortservice.model.meldegruppe.Meldegruppe
 import no.nav.meldeplikt.meldekortservice.model.meldegruppe.MeldegruppeResponse
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Meldekort
@@ -354,6 +355,24 @@ class MeldekortV2KtTest : TestBase() {
             }
 
             assertEquals(HttpStatusCode.BadRequest, response.status)
+        }
+
+        @Test
+        fun `hentMeldestatus returns NoContent when Arena returns NoContent`() = setUpTestApplication {
+            coEvery {
+                arenaOrdsService.hentMeldestatus(
+                    personIdent = eq(DUMMY_FNR),
+                )
+            } throws NoContentException()
+
+            val response = client.post(hentMeldestatusUrl) {
+                header(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")
+                header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                header(HttpHeaders.Accept, ContentType.Application.Json.toString())
+                setBody(defaultObjectMapper.writeValueAsString(MeldestatusRequest(personident = DUMMY_FNR)))
+            }
+
+            assertEquals(HttpStatusCode.NoContent, response.status)
         }
 
         @Test

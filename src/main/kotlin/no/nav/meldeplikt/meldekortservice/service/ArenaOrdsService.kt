@@ -19,6 +19,7 @@ import no.nav.meldeplikt.meldekortservice.config.Environment
 import no.nav.meldeplikt.meldekortservice.mapper.MeldekortdetaljerMapper
 import no.nav.meldeplikt.meldekortservice.model.AccessToken
 import no.nav.meldeplikt.meldekortservice.model.ArenaOrdsSkrivemodus
+import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 import no.nav.meldeplikt.meldekortservice.model.feil.OrdsException
 import no.nav.meldeplikt.meldekortservice.model.korriger.KopierMeldekortResponse
 import no.nav.meldeplikt.meldekortservice.model.meldegruppe.MeldegruppeResponse
@@ -141,11 +142,17 @@ class ArenaOrdsService(
             defaultObjectMapper.writeValueAsString(MeldestatusRequest(arenaPersonId, personIdent, sokeDato))
         )
 
-        if (response.status != HttpStatusCode.OK) {
-            throw OrdsException("Kunne ikke hente meldestatus fra Arena Ords")
+        when (response.status) {
+            HttpStatusCode.OK -> {
+                return defaultObjectMapper.readValue(response.body<String>(), MeldestatusResponse::class.java)
+            }
+            HttpStatusCode.NoContent -> {
+                throw NoContentException()
+            }
+            else -> {
+                throw OrdsException("Kunne ikke hente meldestatus fra Arena Ords")
+            }
         }
-
-        return defaultObjectMapper.readValue(response.body<String>(), MeldestatusResponse::class.java)
     }
 
     suspend fun hentSkrivemodus(): ArenaOrdsSkrivemodus {
