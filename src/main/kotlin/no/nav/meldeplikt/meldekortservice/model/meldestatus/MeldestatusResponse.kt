@@ -23,7 +23,7 @@ data class MeldestatusResponse(
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Meldeplikt(
     val meldeplikt: Boolean,
-    val meldepliktperiode: Periode,
+    val meldepliktperiode: Periode? = null,
     val begrunnelse: String? = null,
     val stemplingsdata: Endring
 )
@@ -32,7 +32,7 @@ data class Meldeplikt(
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Meldegruppe(
     val meldegruppe: String,
-    val meldegruppeperiode: Periode,
+    val meldegruppeperiode: Periode? = null,
     val begrunnelse: String? = null,
     val stemplingsdata: Endring
 )
