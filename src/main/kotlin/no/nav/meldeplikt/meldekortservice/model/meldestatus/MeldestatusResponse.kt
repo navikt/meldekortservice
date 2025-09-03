@@ -25,7 +25,7 @@ data class Meldeplikt(
     val meldeplikt: Boolean,
     val meldepliktperiode: Periode? = null,
     val begrunnelse: String? = null,
-    val stemplingsdata: Endring
+    val endringsdata: Endring? = null,
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -34,7 +34,7 @@ data class Meldegruppe(
     val meldegruppe: String,
     val meldegruppeperiode: Periode? = null,
     val begrunnelse: String? = null,
-    val stemplingsdata: Endring
+    val endringsdata: Endring? = null,
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
