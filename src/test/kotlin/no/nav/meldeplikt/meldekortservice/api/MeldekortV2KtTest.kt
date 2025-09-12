@@ -13,8 +13,6 @@ import io.mockk.coEvery
 import no.nav.meldeplikt.meldekortservice.config.DUMMY_FNR
 import no.nav.meldeplikt.meldekortservice.model.enum.KortType
 import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
-import no.nav.meldeplikt.meldekortservice.model.meldegruppe.Meldegruppe
-import no.nav.meldeplikt.meldekortservice.model.meldegruppe.MeldegruppeResponse
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Meldekort
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
@@ -27,6 +25,7 @@ import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
+import no.nav.meldeplikt.meldekortservice.model.meldegruppe.Meldegruppe as ArenaMeldegruppe
 
 class MeldekortV2KtTest : TestBase() {
 
@@ -284,31 +283,41 @@ class MeldekortV2KtTest : TestBase() {
 
         @Test
         fun `hentMeldegrupper returns data when valid token and ident in headers`() = setUpTestApplication {
+            val meldegruppe1 = "ARBS"
+            val fom1 = LocalDateTime.now().minusDays(15)
+            val tom1 = LocalDateTime.now().minusDays(1)
+            val begrunnelse1 = "Bla bla bla"
+
+            val meldegruppe2 = "DAGP"
+            val fom2 = LocalDateTime.now()
+            val tom2 = null
+            val begrunnelse2 = null
+
             val meldegrupper = listOf(
                 Meldegruppe(
-                    DUMMY_FNR,
-                    "ARBS",
-                    LocalDate.now(),
-                    null,
-                    LocalDate.now(),
-                    "J",
-                    "Aktivert med ingen ytelser",
+                    meldegruppe = meldegruppe1,
+                    meldegruppeperiode = Periode(fom1, tom1),
+                    begrunnelse1,
                     null
                 ),
                 Meldegruppe(
-                    DUMMY_FNR,
-                    "DAGP",
-                    LocalDate.now(),
-                    LocalDate.now(),
-                    LocalDate.now(),
-                    "J",
-                    "Iverksatt vedtak",
-                    1L
+                    meldegruppe = meldegruppe2,
+                    meldegruppeperiode = Periode(fom2, tom2),
+                    begrunnelse2,
+                    null
                 )
             )
-            val meldegruppeResponse = MeldegruppeResponse(meldegrupper)
 
-            coEvery { arenaOrdsService.hentMeldegrupper(any(), any()) } returns (meldegruppeResponse)
+            val meldestatusResponse = MeldestatusResponse(
+                arenaPersonId = 1L,
+                personIdent = DUMMY_FNR,
+                formidlingsgruppe = "",
+                harMeldtSeg = true,
+                meldepliktListe = emptyList(),
+                meldegruppeListe = meldegrupper,
+            )
+
+            coEvery { arenaOrdsService.hentMeldestatus(any(), any()) } returns (meldestatusResponse)
 
             val response = client.get(hentMeldegrupperUrl) {
                 header(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")
@@ -316,15 +325,41 @@ class MeldekortV2KtTest : TestBase() {
             }
 
             assertEquals(HttpStatusCode.OK, response.status)
-            val responseObject = defaultObjectMapper.readValue<List<Meldegruppe>>(response.bodyAsText())
-            assertEquals(meldegrupper, responseObject)
+            val responseObject = defaultObjectMapper.readValue<List<ArenaMeldegruppe>>(response.bodyAsText())
+
+            val mk1 = responseObject[0]
+            assertEquals(mk1.fodselsnr, DUMMY_FNR)
+            assertEquals(mk1.meldegruppeKode, meldegruppe1)
+            assertEquals(mk1.datoFra, fom1.toLocalDate())
+            assertEquals(mk1.datoTil, tom1.toLocalDate())
+            assertEquals(mk1.hendelsesdato, LocalDate.now())
+            assertEquals(mk1.statusAktiv, "J")
+            assertEquals(mk1.begrunnelse, begrunnelse1)
+            assertEquals(mk1.styrendeVedtakId, null)
+
+            val mk2 = responseObject[1]
+            assertEquals(mk2.fodselsnr, DUMMY_FNR)
+            assertEquals(mk2.meldegruppeKode, meldegruppe2)
+            assertEquals(mk2.datoFra, fom2.toLocalDate())
+            assertEquals(mk2.datoTil, tom2)
+            assertEquals(mk2.hendelsesdato, LocalDate.now())
+            assertEquals(mk2.statusAktiv, "J")
+            assertEquals(mk2.begrunnelse, begrunnelse2)
+            assertEquals(mk2.styrendeVedtakId, null)
         }
 
         @Test
         fun `hentMeldegrupper returns emptyList when meldegruppeListe is null`() = setUpTestApplication {
-            val meldegruppeResponse = MeldegruppeResponse(null)
+            val meldestatusResponse = MeldestatusResponse(
+                arenaPersonId = 1L,
+                personIdent = DUMMY_FNR,
+                formidlingsgruppe = "",
+                harMeldtSeg = true,
+                meldepliktListe = null,
+                meldegruppeListe = null,
+            )
 
-            coEvery { arenaOrdsService.hentMeldegrupper(any(), any()) } returns (meldegruppeResponse)
+            coEvery { arenaOrdsService.hentMeldestatus(any(), any()) } returns (meldestatusResponse)
 
             val response = client.get(hentMeldegrupperUrl) {
                 header(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")

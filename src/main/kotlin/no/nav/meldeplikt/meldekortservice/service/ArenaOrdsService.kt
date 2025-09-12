@@ -101,6 +101,7 @@ class ArenaOrdsService(
         return 0
     }
 
+    @Deprecated("Bruk hentMeldestatus(arenaPersonId: Long? = null, personIdent: String? = null, sokeDato: LocalDate? = null) istedenfor.")
     suspend fun hentMeldegrupper(ident: String, fraDato: LocalDate): MeldegruppeResponse {
         val personId: String
 
