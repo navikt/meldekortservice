@@ -159,9 +159,18 @@ fun Routing.hentMeldegrupper(arenaOrdsService: ArenaOrdsService) = get<HentMelde
     respondOrError {
         val ident = getIdent(call)
 
-        val result = arenaOrdsService.hentMeldegrupper(ident, LocalDate.now())
+        val result = arenaOrdsService.hentMeldestatus(personIdent = ident)
 
-        result.meldegruppeListe ?: emptyList<Meldegruppe>()
+        result.meldegruppeListe?.map { Meldegruppe(
+            fodselsnr = ident,
+            meldegruppeKode = it.meldegruppe,
+            datoFra = it.meldegruppeperiode?.fom?.toLocalDate() ?: LocalDate.now(),
+            datoTil = it.meldegruppeperiode?.tom?.toLocalDate(),
+            hendelsesdato = LocalDate.now(),
+            statusAktiv = "J",
+            begrunnelse = it.begrunnelse,
+            styrendeVedtakId = null
+        ) } ?: emptyList<Meldegruppe>()
     }
 }
 

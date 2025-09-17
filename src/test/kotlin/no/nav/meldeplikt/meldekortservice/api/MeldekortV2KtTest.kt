@@ -22,7 +22,6 @@ import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
 import no.nav.meldeplikt.meldekortservice.utils.defaultXmlMapper
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.Disabled
 import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
@@ -282,7 +281,6 @@ class MeldekortV2KtTest : TestBase() {
             assertEquals(HttpStatusCode.BadRequest, response.status)
         }
 
-        @Disabled
         @Test
         fun `hentMeldegrupper returns data when valid token and ident in headers`() = setUpTestApplication {
             val meldegruppe1 = "ARBS"
@@ -350,7 +348,6 @@ class MeldekortV2KtTest : TestBase() {
             assertEquals(mk2.styrendeVedtakId, null)
         }
 
-        @Disabled
         @Test
         fun `hentMeldegrupper returns emptyList when meldegruppeListe is null`() = setUpTestApplication {
             val meldestatusResponse = MeldestatusResponse(
