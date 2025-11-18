@@ -81,12 +81,12 @@ open class TestBase {
         )
     }
 
-    fun issueTokenWithSub(): String = mockOAuth2Server.issueToken(
+    fun issueTokenWithSub(ident: String = DUMMY_FNR): String = mockOAuth2Server.issueToken(
         TOKENX_ISSUER_ID,
         "myclient",
         DefaultOAuth2TokenCallback(
             audience = listOf(REQUIRED_AUDIENCE),
-            claims = mapOf("sub" to DUMMY_FNR)
+            claims = mapOf("sub" to ident)
         )
     ).serialize()
 
