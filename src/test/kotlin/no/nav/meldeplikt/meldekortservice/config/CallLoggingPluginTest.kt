@@ -35,7 +35,7 @@ class CallLoggingPluginTest : TestBase() {
     private lateinit var dbService: DBService
 
     @Test
-    fun `skal lagre request og response`() = testApplication {
+    fun `skal lagre request og response med FNR i token`() = testApplication {
         //
         // Prepare
         //
@@ -287,7 +287,7 @@ class CallLoggingPluginTest : TestBase() {
             header(HttpHeaders.XRequestId, callId)
         }
 
-        val response2 = client.get("/meldekortservice/api/v2/historiskemeldekort?antallMeldeperioder=1") {
+        val response2 = client.get("$API_PATH/v2/historiskemeldekort?antallMeldeperioder=1") {
             header(HttpHeaders.Authorization, "Bearer $token")
             header("ident", DUMMY_FNR)
             header(HttpHeaders.XRequestId, callId)
@@ -337,6 +337,127 @@ class CallLoggingPluginTest : TestBase() {
         assertEquals(200, kall4.status)
         assertEquals("", kall4.logginfo)
         assertEquals(DUMMY_FNR, kall4.ident)
+
+        database.closeConnection()
+    }
+
+
+    @Test
+    fun `skal lagre request og response med system id i token`() = testApplication {
+        //
+        // Prepare
+        //
+        database = H2Database("IncomingCallLoggingPluginTest3")
+        dbService = DBService(database)
+
+        defaultDbService = dbService
+        val flywayConfig = mockk<Flyway>()
+        every { flywayConfig.migrate() } returns MigrateResult("", "", "", "")
+
+        val callId = UUID.randomUUID().toString()
+        val token = issueTokenWithSub("HKZpfaHyWadeOouYlitjrI-KffTm222X5rrV3xDqfKQ")
+
+        val xml =
+            """<Person><personId>1</personId><Etternavn>test</Etternavn><Fornavn>test</Fornavn><Maalformkode>test</Maalformkode><Meldeform>test</Meldeform><meldekortListe/><antallGjenstaaendeFeriedager>10</antallGjenstaaendeFeriedager><fravaerListe/></Person>"""
+        val json = "{\"personId\":1,\"etternavn\":\"test\",\"fornavn\":\"test\",\"maalformkode\":\"test\",\"meldeform\":\"test\",\"meldekortListe\":[],\"antallGjenstaaendeFeriedager\":10,\"fravaerListe\":[]}"
+        val expectedInnRequest = "GET localhost:80/meldekortservice/api/v2/historiskemeldekort?antallMeldeperioder=1 HTTP/1.1\n" +
+                "Authorization: Bearer $token\n" +
+                "ident: $DUMMY_FNR\n" +
+                "X-Request-ID: $callId\n" +
+                "Accept-Charset: UTF-8\n" +
+                "Accept: */*\n" +
+                "User-Agent: ktor-client\n" +
+                "Content-Length: 0\n" +
+                "\n" +
+                "\n"
+        val expectedInnResponseStart = "200 OK\n" +
+                "X-Request-ID: $callId\n"
+        val expectedInnResponseEnd =
+                "Server: Ktor/3.3.2\n" +
+                "Transfer-Encoding: chunked\n" +
+                "Content-Type: application/json; charset=UTF-8\n" +
+                "\n" +
+                json + "\n"
+        val expectedUtRequest = "GET https://dummyurl.nav.no:443/api/v2/meldeplikt/meldekort/historiske?antMeldeperioder=1\n" +
+                "Accept: [application/xml; charset=UTF-8,application/json]\n" +
+                "Authorization: Bearer $DUMMY_TOKEN\n" +
+                "fnr: $DUMMY_FNR\n" +
+                "Accept-Charset: UTF-8\n" +
+                "X-Request-ID: $callId\n" +
+                "\n" +
+                "EmptyContent\n"
+        val expectedUtResponse = "HTTP/1.1 200 OK\n" +
+                "Content-Type: application/xml\n" +
+                "\n" +
+                xml + "\n"
+
+        val arenaOrdsClient = HttpClient(MockEngine) {
+            defaultHttpClientConfig()
+
+            engine {
+                addHandler {
+                    respond(
+                        xml,
+                        headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Xml.toString())
+                    )
+                }
+            }
+        }
+        val arenaOrdsService = ArenaOrdsService(arenaOrdsClient)
+
+        environment {
+            config = setOidcConfig()
+        }
+        application {
+            mainModule(
+                env = env,
+                mockDBService = dbService,
+                mockFlywayConfig = flywayConfig,
+                mockArenaOrdsService = arenaOrdsService
+            )
+        }
+
+        //
+        // Run
+        //
+        val response = client.get("$API_PATH/v2/historiskemeldekort?antallMeldeperioder=1") {
+            header(HttpHeaders.Authorization, "Bearer $token")
+            header("ident", DUMMY_FNR)
+            header(HttpHeaders.XRequestId, callId)
+        }
+
+        //
+        // Check
+        //
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals(json, response.bodyAsText().replace("NULL", ""))
+
+        val kallLoggListe = database.dbQuery { hentAlleKallLogg() }
+        assertEquals(2, kallLoggListe.size)
+
+        val kall1 = kallLoggListe[0]
+        assertEquals(callId, kall1.korrelasjonId)
+        assertEquals("REST", kall1.type)
+        assertEquals("INN", kall1.kallRetning)
+        assertEquals("GET", kall1.method)
+        assertEquals("$API_PATH/v2/historiskemeldekort", kall1.operation)
+        assertEquals(200, kall1.status)
+        assertEquals(expectedInnRequest, kall1.request)
+        assertTrue(kall1.response.startsWith(expectedInnResponseStart))
+        assertTrue(kall1.response.replace("NULL", "").endsWith(expectedInnResponseEnd))
+        assertEquals("", kall1.logginfo)
+        assertEquals(DUMMY_FNR, kall1.ident)
+
+        val kall2 = kallLoggListe[1]
+        assertEquals(callId, kall2.korrelasjonId)
+        assertEquals("REST", kall2.type)
+        assertEquals("UT", kall2.kallRetning)
+        assertEquals("GET", kall2.method)
+        assertEquals(ARENA_ORDS_HENT_HISTORISKE_MELDEKORT.replace("?", ""), kall2.operation)
+        assertEquals(200, kall2.status)
+        assertEquals(expectedUtRequest, kall2.request)
+        assertEquals(expectedUtResponse, kall2.response)
+        assertEquals("", kall2.logginfo)
 
         database.closeConnection()
     }

@@ -35,10 +35,14 @@ val IncomingCallLoggingPlugin: ApplicationPlugin<ICDLPConfig> =
             }
 
             val token = call.request.headers[HttpHeaders.Authorization]?.replace("Bearer ", "")
-            val fnr = extractSubject(token)
+            var fnr = extractSubject(token)
 
             val requestData = StringBuilder().apply {
                 val request = call.request
+
+                if (fnr.length > 11) {
+                    fnr = request.headers["ident"] ?: ""
+                }
 
                 appendLine("${request.httpMethod.value} ${request.host()}:${request.port()}${request.uri} ${request.httpVersion}")
 
