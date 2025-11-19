@@ -1,10 +1,8 @@
 package no.nav.meldeplikt.meldekortservice.api
 
-import io.ktor.http.HttpStatusCode
 import io.ktor.resources.Resource
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.routing.Routing
-import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 import no.nav.meldeplikt.meldekortservice.model.meldegruppe.Meldegruppe
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
@@ -45,19 +43,15 @@ fun Routing.hentMeldekort(arenaOrdsService: ArenaOrdsService) = get<HentMeldekor
         BearerTokenSecurity(),
         ok<Person>(),
         badRequest<ErrorMessage>(),
-        serviceUnavailable<ErrorMessage>(),
-        unAuthorized<Error>()
+        noContent<ErrorMessage>(),
+        failed<ErrorMessage>(),
+        unAuthorized<Error>(),
     ).header<Headers>()
 ) {
     respondOrError {
         val ident = getIdent(call)
 
-        val response = arenaOrdsService.hentMeldekort(ident)
-        if (response.status == HttpStatusCode.OK) {
-            mapFraXml(response.content, Person::class.java)
-        } else {
-            throw NoContentException()
-        }
+        arenaOrdsService.hentMeldekort(ident)
     }
 }
 
@@ -70,8 +64,9 @@ fun Routing.hentHistoriskeMeldekort(arenaOrdsService: ArenaOrdsService) = get<He
         BearerTokenSecurity(),
         ok<Person>(),
         badRequest<ErrorMessage>(),
-        serviceUnavailable<ErrorMessage>(),
-        unAuthorized<Error>()
+        noContent<ErrorMessage>(),
+        failed<ErrorMessage>(),
+        unAuthorized<Error>(),
     ).header<Headers>()
 ) { hentHistoriskeMeldekortInput ->
     respondOrError {
@@ -161,16 +156,18 @@ fun Routing.hentMeldegrupper(arenaOrdsService: ArenaOrdsService) = get<HentMelde
 
         val result = arenaOrdsService.hentMeldestatus(personIdent = ident)
 
-        result.meldegruppeListe?.map { Meldegruppe(
-            fodselsnr = ident,
-            meldegruppeKode = it.meldegruppe,
-            datoFra = it.meldegruppeperiode?.fom?.toLocalDate() ?: LocalDate.now(),
-            datoTil = it.meldegruppeperiode?.tom?.toLocalDate(),
-            hendelsesdato = LocalDate.now(),
-            statusAktiv = "J",
-            begrunnelse = it.begrunnelse,
-            styrendeVedtakId = null
-        ) } ?: emptyList<Meldegruppe>()
+        result.meldegruppeListe?.map {
+            Meldegruppe(
+                fodselsnr = ident,
+                meldegruppeKode = it.meldegruppe,
+                datoFra = it.meldegruppeperiode?.fom?.toLocalDate() ?: LocalDate.now(),
+                datoTil = it.meldegruppeperiode?.tom?.toLocalDate(),
+                hendelsesdato = LocalDate.now(),
+                statusAktiv = "J",
+                begrunnelse = it.begrunnelse,
+                styrendeVedtakId = null
+            )
+        } ?: emptyList<Meldegruppe>()
     }
 }
 

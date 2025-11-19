@@ -8,8 +8,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinFeature
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
 import io.ktor.client.HttpClient
@@ -54,7 +52,6 @@ internal const val ARENA_ORDS_HENT_HISTORISKE_MELDEKORT = "$ARENA_ORDS_API_V2_ME
 internal const val ARENA_ORDS_MELDEPERIODER_PARAM = "antMeldeperioder="
 internal const val ARENA_ORDS_HENT_MELDEKORTDETALJER = "$ARENA_ORDS_API_V2_MELDEPLIKT/meldekort/detaljer?meldekortId="
 internal const val ARENA_ORDS_KOPIER_MELDEKORT = "$ARENA_ORDS_API_V2_MELDEPLIKT/meldekort/kopi"
-internal const val ARENA_ORDS_HENT_MELDEGRUPPER = "$ARENA_ORDS_API_V3_MELDEPLIKT/kontroll/meldegruppe"
 internal const val ARENA_ORDS_HENT_MELDESTATUS = "$ARENA_ORDS_API_V3_MELDEPLIKT/meldestatus"
 
 internal const val DB_ORACLE_USERNAME = "oracleDbUser.username"
@@ -80,17 +77,6 @@ val swagger = Swagger(
             email = "meldeplikt@nav.no"
         )
     )
-)
-
-val defaultXmlMapper: ObjectMapper = XmlMapper().registerModule(
-    KotlinModule.Builder()
-        .withReflectionCacheSize(512)
-        .configure(KotlinFeature.NullToEmptyCollection, false)
-        .configure(KotlinFeature.NullToEmptyMap, false)
-        .configure(KotlinFeature.NullIsSameAsDefault, false)
-        .configure(KotlinFeature.SingletonSupport, false)
-        .configure(KotlinFeature.StrictNullChecks, false)
-        .build()
 )
 
 val defaultObjectMapper: ObjectMapper = ObjectMapper()
@@ -188,7 +174,7 @@ fun getCallId(): String {
 
     // DB has max 54 signs in the korrelasjon_id field, so we must not have more otherwise we will get SQL error
     if (korrelasjonId.length > 54) {
-        korrelasjonId = korrelasjonId.substring(0, 54)
+        korrelasjonId = korrelasjonId.take(54)
     }
 
     return korrelasjonId

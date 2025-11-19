@@ -17,9 +17,7 @@ import no.nav.meldeplikt.meldekortservice.model.meldekort.Meldekort
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.model.meldestatus.*
-import no.nav.meldeplikt.meldekortservice.model.response.OrdsStringResponse
 import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
-import no.nav.meldeplikt.meldekortservice.utils.defaultXmlMapper
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
@@ -91,12 +89,8 @@ class MeldekortV2KtTest : TestBase() {
                 10,
                 listOf()
             )
-            val ordsStringResponse = OrdsStringResponse(
-                status = HttpStatusCode.OK,
-                content = defaultXmlMapper.writeValueAsString(person)
-            )
 
-            coEvery { arenaOrdsService.hentMeldekort(any()) } returns (ordsStringResponse)
+            coEvery { arenaOrdsService.hentMeldekort(any()) } returns person
 
             val response = client.get(hentMeldekortUrl) {
                 header(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")
@@ -111,9 +105,7 @@ class MeldekortV2KtTest : TestBase() {
 
         @Test
         fun `hentMeldekort returns NoContent status when no response from ORDS`() = setUpTestApplication {
-            val ordsStringResponse = OrdsStringResponse(status = HttpStatusCode.BadRequest, content = "")
-
-            coEvery { arenaOrdsService.hentMeldekort(any()) } returns (ordsStringResponse)
+            coEvery { arenaOrdsService.hentMeldekort(any()) } throws NoContentException()
 
             val response = client.get(hentMeldekortUrl) {
                 header(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")
