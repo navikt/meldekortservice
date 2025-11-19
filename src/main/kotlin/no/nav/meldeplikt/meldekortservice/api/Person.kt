@@ -1,10 +1,8 @@
 package no.nav.meldeplikt.meldekortservice.api
 
-import io.ktor.http.HttpStatusCode
 import io.ktor.resources.Resource
 import io.ktor.server.routing.Routing
 import no.nav.meldeplikt.meldekortservice.config.userIdent
-import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.model.response.EmptyResponse
 import no.nav.meldeplikt.meldekortservice.service.ArenaOrdsService
@@ -61,11 +59,6 @@ fun Routing.getMeldekort(arenaOrdsService: ArenaOrdsService) =
         )
     ) {
         respondOrError {
-            val response = arenaOrdsService.hentMeldekort(userIdent)
-            if (response.status == HttpStatusCode.OK) {
-                mapFraXml(response.content, Person::class.java)
-            } else {
-                throw NoContentException()
-            }
+            arenaOrdsService.hentMeldekort(userIdent)
         }
     }

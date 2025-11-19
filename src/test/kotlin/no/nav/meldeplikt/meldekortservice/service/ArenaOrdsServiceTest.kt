@@ -1,6 +1,5 @@
 package no.nav.meldeplikt.meldekortservice.service
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -16,14 +15,10 @@ import no.nav.meldeplikt.meldekortservice.model.AccessToken
 import no.nav.meldeplikt.meldekortservice.model.ArenaOrdsSkrivemodus
 import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 import no.nav.meldeplikt.meldekortservice.model.feil.OrdsException
-import no.nav.meldeplikt.meldekortservice.model.meldegruppe.Meldegruppe
-import no.nav.meldeplikt.meldekortservice.model.meldegruppe.MeldegruppeResponse
 import no.nav.meldeplikt.meldekortservice.model.meldestatus.Endring
 import no.nav.meldeplikt.meldekortservice.model.meldestatus.Meldeplikt
 import no.nav.meldeplikt.meldekortservice.model.meldestatus.MeldestatusResponse
 import no.nav.meldeplikt.meldekortservice.model.meldestatus.Periode
-import no.nav.meldeplikt.meldekortservice.model.response.OrdsStringResponse
-import no.nav.meldeplikt.meldekortservice.utils.ARENA_ORDS_HENT_MELDEGRUPPER
 import no.nav.meldeplikt.meldekortservice.utils.ARENA_ORDS_TOKEN_PATH
 import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
 import no.nav.meldeplikt.meldekortservice.utils.isCurrentlyRunningOnNais
@@ -31,12 +26,30 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
 
 class ArenaOrdsServiceTest {
-    private val fnr = "1111111111"
+    private val fnr = "01020312345"
+    private val id = 1234L
+    private val fornavn = "Test"
+    private val etternavn = "Testesen"
+    private val maalformkode = "NO"
+    private val meldeform = "EMELD"
+    private val antallGjenstaaendeFeriedager = 10
+    private val personXml =
+        """
+            <Person>
+                <PersonId>$id</PersonId>
+                <Fornavn>$fornavn</Fornavn>
+                <Etternavn>$etternavn</Etternavn>
+                <Maalformkode>$maalformkode</Maalformkode>
+                <Meldeform>$meldeform</Meldeform>
+                <MeldekortListe/>
+                <AntallGjenstaaendeFeriedager>$antallGjenstaaendeFeriedager</AntallGjenstaaendeFeriedager>
+                <FravaerListe/>
+            </Person>""".trimIndent()
+
 
     @BeforeAll
     fun setup() {
@@ -48,7 +61,6 @@ class ArenaOrdsServiceTest {
     inner class HentMeldekort {
         @Test
         fun `hentMeldekort returnerer OK status`() {
-            val response = OrdsStringResponse(HttpStatusCode.OK, "test")
             val client = HttpClient(MockEngine) {
                 engine {
                     addHandler { request ->
@@ -58,8 +70,7 @@ class ArenaOrdsServiceTest {
                             assertEquals(fnr, request.headers["fnr"])
 
                             respond(
-                                defaultObjectMapper.writeValueAsString(response),
-                                headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                                personXml
                             )
                         } else {
                             respondError(HttpStatusCode.BadRequest)
@@ -71,10 +82,15 @@ class ArenaOrdsServiceTest {
 
             runBlocking {
                 val actualResponse = arenaOrdsService.hentMeldekort(fnr)
-                val ordsResponse: OrdsStringResponse = defaultObjectMapper.readValue(actualResponse.content)
 
-                assertEquals(HttpStatusCode.OK, actualResponse.status)
-                assertEquals(response.content, ordsResponse.content)
+                assertEquals(id, actualResponse.personId)
+                assertEquals(fornavn, actualResponse.fornavn)
+                assertEquals(etternavn, actualResponse.etternavn)
+                assertEquals(maalformkode, actualResponse.maalformkode)
+                assertEquals(meldeform, actualResponse.meldeform)
+                assertEquals(0, actualResponse.meldekortListe?.size)
+                assertEquals(antallGjenstaaendeFeriedager, actualResponse.antallGjenstaaendeFeriedager)
+                assertEquals(0, actualResponse.fravaerListe?.size)
             }
         }
 
@@ -102,7 +118,7 @@ class ArenaOrdsServiceTest {
                     arenaOrdsService.hentMeldekort(fnr)
                 }
             }
-            assertEquals("Kunne ikke hente meldekort fra Arena Ords.", exception.localizedMessage)
+            assertEquals("Kunne ikke hente meldekort fra Arena Ords. Status: 400", exception.localizedMessage)
         }
     }
 
@@ -110,8 +126,6 @@ class ArenaOrdsServiceTest {
     inner class HentHistoriskeMeldekort {
         @Test
         fun `hentHistoriskeMeldekort returnerer OK status`() {
-            val xmlString =
-                """<Person><personId>1</personId><Etternavn>test</Etternavn><Fornavn>test</Fornavn><Maalformkode>test</Maalformkode><Meldeform>test</Meldeform><meldekortListe/><antallGjenstaaendeFeriedager>10</antallGjenstaaendeFeriedager><fravaerListe/></Person>"""
             val client = HttpClient(MockEngine) {
                 engine {
                     addHandler { request ->
@@ -124,7 +138,7 @@ class ArenaOrdsServiceTest {
                         )
 
                         respond(
-                            xmlString
+                            personXml
                         )
                     }
                 }
@@ -134,7 +148,14 @@ class ArenaOrdsServiceTest {
             runBlocking {
                 val actualResponse = arenaOrdsService.hentHistoriskeMeldekort(fnr, 10)
 
-                assertEquals(1, actualResponse.personId)
+                assertEquals(id, actualResponse.personId)
+                assertEquals(fornavn, actualResponse.fornavn)
+                assertEquals(etternavn, actualResponse.etternavn)
+                assertEquals(maalformkode, actualResponse.maalformkode)
+                assertEquals(meldeform, actualResponse.meldeform)
+                assertEquals(0, actualResponse.meldekortListe?.size)
+                assertEquals(antallGjenstaaendeFeriedager, actualResponse.antallGjenstaaendeFeriedager)
+                assertEquals(0, actualResponse.fravaerListe?.size)
             }
         }
     }
@@ -248,155 +269,6 @@ class ArenaOrdsServiceTest {
 
                 assertEquals(0, actualResponse)
             }
-        }
-    }
-
-    @Nested
-    inner class HentMeldegrupper {
-        @Test
-        fun `hentMeldegrupper returnerer data`() {
-            val meldegruppeResponse = MeldegruppeResponse(
-                listOf(
-                    Meldegruppe(
-                        "",
-                        "ARBS",
-                        LocalDate.now(),
-                        null,
-                        LocalDate.now(),
-                        "J",
-                        "",
-                        null
-                    ),
-                    Meldegruppe(
-                        "",
-                        "ARBS",
-                        LocalDate.now(),
-                        LocalDate.now(),
-                        LocalDate.now(),
-                        "J",
-                        null,
-                        null
-                    )
-                )
-            )
-
-            val personId = "1019108"
-            val person = "" +
-                    "<Person>" +
-                    "    <PersonId>$personId</PersonId>" +
-                    "    <Etternavn>DUCK</Etternavn>" +
-                    "    <Fornavn>DONALD</Fornavn>" +
-                    "    <Maalformkode>NO</Maalformkode>" +
-                    "    <Meldeform>EMELD</Meldeform>" +
-                    "    <MeldekortListe/>" +
-                    "    <FravaerListe/>" +
-                    "</Person>"
-
-            val client = HttpClient(MockEngine) {
-                engine {
-                    addHandler { request ->
-                        if (request.url.toString() == "https://dummyurl.nav.no/api/v2/meldeplikt/meldekort") {
-                            assertEquals(HttpMethod.Get, request.method)
-                            assertEquals("Bearer $DUMMY_TOKEN", request.headers["Authorization"])
-                            assertEquals(fnr, request.headers["fnr"])
-
-                            respond(
-                                person,
-                                headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Xml.toString())
-                            )
-                        } else {
-                            assertEquals(HttpMethod.Get, request.method)
-                            assertEquals("Bearer $DUMMY_TOKEN", request.headers["Authorization"])
-                            assertEquals(personId, request.headers["personid"])
-                            assertEquals(
-                                "https://dummyurl.nav.no$ARENA_ORDS_HENT_MELDEGRUPPER",
-                                request.url.toString()
-                            )
-
-                            respond(
-                                defaultObjectMapper.writeValueAsString(meldegruppeResponse),
-                                headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                            )
-                        }
-                    }
-                }
-            }
-
-            val arenaOrdsService = ArenaOrdsService(client)
-
-            runBlocking {
-                val actualResponse = arenaOrdsService.hentMeldegrupper(fnr, LocalDate.now())
-                assertEquals(meldegruppeResponse, actualResponse)
-            }
-        }
-
-        @Test
-        fun `hentMeldegrupper returnerer emptyList for brukere uten meldpelikt`() {
-            val client = HttpClient(MockEngine) {
-                engine {
-                    addHandler { _ ->
-                        respond("", HttpStatusCode.NoContent)
-                    }
-                }
-            }
-
-            val arenaOrdsService = ArenaOrdsService(client)
-
-            runBlocking {
-                val actualResponse = arenaOrdsService.hentMeldegrupper(fnr, LocalDate.now())
-                assertEquals(emptyList(), actualResponse.meldegruppeListe)
-            }
-        }
-
-        @Test
-        fun `hentMeldegrupper kaster Exception når ikke kan hente meldegrupper fra Arena ORDS`() {
-            val personId = "1019108"
-            val person = "" +
-                    "<Person>" +
-                    "    <PersonId>$personId</PersonId>" +
-                    "    <Etternavn>DUCK</Etternavn>" +
-                    "    <Fornavn>DONALD</Fornavn>" +
-                    "    <Maalformkode>NO</Maalformkode>" +
-                    "    <Meldeform>EMELD</Meldeform>" +
-                    "    <MeldekortListe/>" +
-                    "    <FravaerListe/>" +
-                    "</Person>"
-
-            val client = HttpClient(MockEngine) {
-                engine {
-                    addHandler { request ->
-                        if (request.url.toString() == "https://dummyurl.nav.no/api/v2/meldeplikt/meldekort") {
-                            assertEquals(HttpMethod.Get, request.method)
-                            assertEquals("Bearer $DUMMY_TOKEN", request.headers["Authorization"])
-                            assertEquals(fnr, request.headers["fnr"])
-
-                            respond(
-                                person,
-                                headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Xml.toString())
-                            )
-                        } else {
-                            assertEquals(HttpMethod.Get, request.method)
-                            assertEquals("Bearer $DUMMY_TOKEN", request.headers["Authorization"])
-                            assertEquals(personId, request.headers["personid"])
-                            assertEquals(
-                                "https://dummyurl.nav.no$ARENA_ORDS_HENT_MELDEGRUPPER",
-                                request.url.toString()
-                            )
-
-                            respond("", HttpStatusCode.NoContent)
-                        }
-                    }
-                }
-            }
-
-            val arenaOrdsService = ArenaOrdsService(client)
-
-            val exception = assertThrows<OrdsException> {
-                runBlocking {
-                    arenaOrdsService.hentMeldegrupper(fnr, LocalDate.now())
-                }
-            }
-            assertEquals("Kunne ikke hente meldegrupper fra Arena Ords", exception.localizedMessage)
         }
     }
 
@@ -560,7 +432,7 @@ class ArenaOrdsServiceTest {
         // Return token
         // Return Unauthorized for the first skrivemodus-request
         // Return valid response for the second skrivemodus-request
-        // Check that final response is valid, ie used the second response
+        // Check that the final response is valid, ie used the second response
         val client = HttpClient(MockEngine) {
             engine {
                 addHandler { request ->

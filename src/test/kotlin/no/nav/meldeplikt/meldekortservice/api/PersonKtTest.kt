@@ -9,11 +9,10 @@ import io.ktor.http.HttpStatusCode
 import io.mockk.coEvery
 import no.nav.meldeplikt.meldekortservice.config.DUMMY_FNR
 import no.nav.meldeplikt.meldekortservice.model.enum.KortType
+import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Meldekort
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
-import no.nav.meldeplikt.meldekortservice.model.response.OrdsStringResponse
 import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
-import no.nav.meldeplikt.meldekortservice.utils.defaultXmlMapper
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import kotlin.test.assertEquals
@@ -86,12 +85,8 @@ class PersonKtTest : TestBase() {
             10,
             listOf()
         )
-        val ordsStringResponse = OrdsStringResponse(
-            status = HttpStatusCode.OK,
-            content = defaultXmlMapper.writeValueAsString(person)
-        )
 
-        coEvery { arenaOrdsService.hentMeldekort(any()) } returns (ordsStringResponse)
+        coEvery { arenaOrdsService.hentMeldekort(any()) } returns person
 
         val response = client.get("/meldekortservice/api/person/meldekort") {
             header(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")
@@ -106,9 +101,7 @@ class PersonKtTest : TestBase() {
 
     @Test
     fun `get person meldekort returns NoContent status when no response from ORDS`() = setUpTestApplication {
-        val ordsStringResponse = OrdsStringResponse(status = HttpStatusCode.BadRequest, content = "")
-
-        coEvery { arenaOrdsService.hentMeldekort(any()) } returns (ordsStringResponse)
+        coEvery { arenaOrdsService.hentMeldekort(any()) } throws NoContentException()
 
         val response = client.get("/meldekortservice/api/person/meldekort") {
             header(HttpHeaders.Authorization, "Bearer ${issueTokenWithPid()}")

@@ -22,13 +22,11 @@ import no.nav.meldeplikt.meldekortservice.model.ArenaOrdsSkrivemodus
 import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 import no.nav.meldeplikt.meldekortservice.model.feil.OrdsException
 import no.nav.meldeplikt.meldekortservice.model.korriger.KopierMeldekortResponse
-import no.nav.meldeplikt.meldekortservice.model.meldegruppe.MeldegruppeResponse
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetaljer
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.arena.Meldekort
 import no.nav.meldeplikt.meldekortservice.model.meldestatus.MeldestatusRequest
 import no.nav.meldeplikt.meldekortservice.model.meldestatus.MeldestatusResponse
-import no.nav.meldeplikt.meldekortservice.model.response.OrdsStringResponse
 import no.nav.meldeplikt.meldekortservice.utils.*
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -42,31 +40,48 @@ class ArenaOrdsService(
     private lateinit var currentToken: AccessToken
     private lateinit var currentTokenValidUntil: LocalDateTime
 
-    suspend fun hentMeldekort(ident: String): OrdsStringResponse {
-        val execResult: Result<HttpResponse> = runCatching {
-            getResponseWithRetry(
-                "${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORT",
-                HttpMethod.Get,
-                setupHeaders(ident = ident)
-            )
-        }
+    suspend fun hentMeldekort(ident: String): Person {
+        val response = getResponseWithRetry(
+            "${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORT",
+            HttpMethod.Get,
+            setupHeaders(ident = ident)
+        )
 
-        val meldekort = execResult.getOrNull()
-        if (execResult.isFailure || !HTTP_STATUS_CODES_2XX.contains(meldekort!!.status.value)) {
-            throw OrdsException("Kunne ikke hente meldekort fra Arena Ords.")
-        }
+        when (response.status) {
+            HttpStatusCode.OK -> {
+                return mapFraXml(response.bodyAsText(), Person::class.java)
+            }
 
-        return OrdsStringResponse(meldekort.status, meldekort.body())
+            HttpStatusCode.NoContent -> {
+                throw NoContentException()
+            }
+
+            else -> {
+                throw OrdsException("Kunne ikke hente meldekort fra Arena Ords. Status: ${response.status.value}")
+            }
+        }
     }
 
     suspend fun hentHistoriskeMeldekort(ident: String, antallMeldeperioder: Int): Person {
-        val person: String = getResponseWithRetry(
+        val response = getResponseWithRetry(
             "${env.ordsUrl}$ARENA_ORDS_HENT_HISTORISKE_MELDEKORT$ARENA_ORDS_MELDEPERIODER_PARAM$antallMeldeperioder",
             HttpMethod.Get,
             setupHeaders(ident = ident)
-        ).body()
+        )
 
-        return mapFraXml(person, Person::class.java)
+        when (response.status) {
+            HttpStatusCode.OK -> {
+                return mapFraXml(response.bodyAsText(), Person::class.java)
+            }
+
+            HttpStatusCode.NoContent -> {
+                throw NoContentException()
+            }
+
+            else -> {
+                throw OrdsException("Kunne ikke hente historiske meldekort fra Arena Ords. Status: ${response.status.value}")
+            }
+        }
     }
 
     suspend fun hentMeldekortdetaljer(meldekortId: Long): Meldekortdetaljer {
@@ -101,31 +116,6 @@ class ArenaOrdsService(
         return 0
     }
 
-    @Deprecated("Bruk hentMeldestatus(arenaPersonId: Long? = null, personIdent: String? = null, sokeDato: LocalDate? = null) istedenfor.")
-    suspend fun hentMeldegrupper(ident: String, fraDato: LocalDate): MeldegruppeResponse {
-        val personId: String
-
-        val personResponse = hentMeldekort(ident)
-        if (personResponse.status == HttpStatusCode.OK) {
-            val person = mapFraXml(personResponse.content, Person::class.java)
-            personId = person.personId.toString()
-        } else {
-            return MeldegruppeResponse(emptyList())
-        }
-
-        val response = getResponseWithRetry(
-            "${env.ordsUrl}$ARENA_ORDS_HENT_MELDEGRUPPER",
-            HttpMethod.Get,
-            setupHeaders(personId = personId, fraDato = fraDato)
-        )
-
-        if (response.status != HttpStatusCode.OK) {
-            throw OrdsException("Kunne ikke hente meldegrupper fra Arena Ords")
-        }
-
-        return defaultObjectMapper.readValue(response.body<String>(), MeldegruppeResponse::class.java)
-    }
-
     suspend fun hentMeldestatus(
         arenaPersonId: Long? = null,
         personIdent: String? = null,
@@ -147,9 +137,11 @@ class ArenaOrdsService(
             HttpStatusCode.OK -> {
                 return defaultObjectMapper.readValue(response.body<String>(), MeldestatusResponse::class.java)
             }
+
             HttpStatusCode.NoContent -> {
                 throw NoContentException()
             }
+
             else -> {
                 throw OrdsException("Kunne ikke hente meldestatus fra Arena Ords")
             }
