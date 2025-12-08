@@ -15,8 +15,6 @@ spec:
   prometheus:
     enabled: true
     path: /meldekortservice/internal/metrics
-  secureLogs:
-    enabled: true
   ingresses:
   {{#each ingresses as |url|}}
      - {{url}}
