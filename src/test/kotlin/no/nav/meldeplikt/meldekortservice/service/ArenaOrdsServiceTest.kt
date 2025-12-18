@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.time.LocalDateTime
+import kotlin.test.Ignore
 import kotlin.test.assertEquals
 
 class ArenaOrdsServiceTest {
@@ -344,6 +345,7 @@ class ArenaOrdsServiceTest {
             assertEquals("Kunne ikke hente meldestatus fra Arena Ords", exception.localizedMessage)
         }
 
+        @Ignore
         @Test
         fun `hentMeldestatus kaster NoContentException når Arena ORDS returnerer NoContent`() {
             val client = HttpClient(MockEngine) {

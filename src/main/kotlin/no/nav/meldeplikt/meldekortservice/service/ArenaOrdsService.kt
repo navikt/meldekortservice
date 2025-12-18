@@ -42,7 +42,7 @@ class ArenaOrdsService(
 
     suspend fun hentMeldekort(ident: String): Person {
         val response = getResponseWithRetry(
-            "${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORT",
+            "${hentOrdsUrl()}$ARENA_ORDS_HENT_MELDEKORT",
             HttpMethod.Get,
             setupHeaders(ident = ident)
         )
@@ -64,7 +64,7 @@ class ArenaOrdsService(
 
     suspend fun hentHistoriskeMeldekort(ident: String, antallMeldeperioder: Int): Person {
         val response = getResponseWithRetry(
-            "${env.ordsUrl}$ARENA_ORDS_HENT_HISTORISKE_MELDEKORT$ARENA_ORDS_MELDEPERIODER_PARAM$antallMeldeperioder",
+            "${hentOrdsUrl()}$ARENA_ORDS_HENT_HISTORISKE_MELDEKORT$ARENA_ORDS_MELDEPERIODER_PARAM$antallMeldeperioder",
             HttpMethod.Get,
             setupHeaders(ident = ident)
         )
@@ -86,7 +86,7 @@ class ArenaOrdsService(
 
     suspend fun hentMeldekortdetaljer(meldekortId: Long): Meldekortdetaljer {
         val detaljer: String = getResponseWithRetry(
-            "${env.ordsUrl}$ARENA_ORDS_HENT_MELDEKORTDETALJER$meldekortId",
+            "${hentOrdsUrl()}$ARENA_ORDS_HENT_MELDEKORTDETALJER$meldekortId",
             HttpMethod.Get,
             setupHeaders()
         ).body()
@@ -97,7 +97,7 @@ class ArenaOrdsService(
     suspend fun kopierMeldekort(meldekortId: Long): Long {
         try {
             val responseMedNyMeldekortId: String = getResponseWithRetry(
-                "${env.ordsUrl}$ARENA_ORDS_KOPIER_MELDEKORT",
+                "${hentOrdsUrl()}$ARENA_ORDS_KOPIER_MELDEKORT",
                 HttpMethod.Post,
                 setupHeaders(meldekortId = meldekortId)
             ).body()
@@ -127,7 +127,7 @@ class ArenaOrdsService(
         headers.append("Authorization", "Bearer ${hentToken().accessToken}")
 
         val response = getResponseWithRetry(
-            "${env.ordsUrl}$ARENA_ORDS_HENT_MELDESTATUS",
+            "${hentOrdsUrl()}$ARENA_ORDS_HENT_MELDESTATUS",
             HttpMethod.Post,
             headers,
             defaultObjectMapper.writeValueAsString(MeldestatusRequest(arenaPersonId, personIdent, sokeDato))
@@ -257,5 +257,15 @@ class ArenaOrdsService(
         val base = "${env.ordsClientId}:${env.ordsClientSecret}"
         headers.append("Accept", "application/json; charset=UTF-8")
         headers.append("Authorization", "Basic ${Base64.getEncoder().encodeToString(base.toByteArray())}")
+    }
+
+    private suspend fun hentOrdsUrl(): String {
+        var ordsUrl = env.ordsUrl
+        val skrivemodus = hentSkrivemodus()
+        if (skrivemodus.skrivemodus) {
+            ordsUrl = "https://arena-ords-q1.dev.intern.nav.no/arena/api/v2/meldeplikt/meldekort/kopi"
+        }
+
+        return ordsUrl
     }
 }

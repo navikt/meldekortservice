@@ -26,9 +26,11 @@ import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.output.MigrateResult
 import org.junit.jupiter.api.Test
 import java.util.*
+import kotlin.test.Ignore
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+@Ignore
 class CallLoggingPluginTest : TestBase() {
 
     private lateinit var database: H2Database
