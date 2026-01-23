@@ -25,7 +25,6 @@ import no.nav.meldeplikt.meldekortservice.utils.*
 import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.output.MigrateResult
 import org.junit.jupiter.api.Test
-import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -48,7 +47,7 @@ class CallLoggingPluginTest : TestBase() {
         val flywayConfig = mockk<Flyway>()
         every { flywayConfig.migrate() } returns MigrateResult("", "", "", "")
 
-        val callId = UUID.randomUUID().toString()
+        val callId = UUIDv7.newUuid().toString()
         val token = issueTokenWithSub()
 
         val xml = """
@@ -193,7 +192,7 @@ class CallLoggingPluginTest : TestBase() {
         val flywayConfig = mockk<Flyway>()
         every { flywayConfig.migrate() } returns MigrateResult("", "", "", "")
 
-        val callId = UUID.randomUUID().toString()
+        val callId = UUIDv7.newUuid().toString()
         val token = issueTokenWithSub()
 
         val xml = """
@@ -354,7 +353,7 @@ class CallLoggingPluginTest : TestBase() {
         val flywayConfig = mockk<Flyway>()
         every { flywayConfig.migrate() } returns MigrateResult("", "", "", "")
 
-        val callId = UUID.randomUUID().toString()
+        val callId = UUIDv7.newUuid().toString()
         val token = issueTokenWithSub("HKZpfaHyWadeOouYlitjrI-KffTm222X5rrV3xDqfKQ")
 
         val xml =

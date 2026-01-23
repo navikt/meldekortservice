@@ -101,6 +101,8 @@ dependencies {
     implementation("org.webjars:swagger-ui:$swaggerVersion")
     implementation("no.nav:vault-jdbc:$vaultJdbcVersion")
 
+    implementation("com.fasterxml.uuid:java-uuid-generator:5.1.0")
+
     // Lokal kjøring
     implementation("org.flywaydb:flyway-database-postgresql:$flywayVersion")
 
