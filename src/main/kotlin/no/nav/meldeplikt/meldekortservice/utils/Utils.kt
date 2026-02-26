@@ -28,7 +28,6 @@ import no.nav.meldeplikt.meldekortservice.utils.swagger.Swagger
 import org.apache.http.impl.conn.SystemDefaultRoutePlanner
 import org.slf4j.MDC
 import java.net.ProxySelector
-import java.util.*
 
 internal const val BASE_PATH = "/meldekortservice"
 
@@ -161,7 +160,7 @@ fun defaultHttpClient(): HttpClient {
 }
 
 fun generateCallId(): String {
-    return "meldekortservice-${UUID.randomUUID()}"
+    return "meldekortservice-${UUIDv7.newUuid()}"
 }
 
 fun getCallId(): String {

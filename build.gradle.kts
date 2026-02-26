@@ -3,22 +3,22 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
-val flywayVersion = "11.19.0"
+val flywayVersion = "12.0.2"
 val h2Version = "2.4.240"
-val jacksonVersion = "2.20.1"
+val jacksonVersion = "2.21.0"
 val kotlinLoggerVersion = "3.0.5"
-val ktorVersion = "3.3.3"
-val logbackVersion = "1.5.22"
+val ktorVersion = "3.4.0"
+val logbackVersion = "1.5.32"
 val logstashVersion = "9.0"
-val micrometerVersion = "1.16.1"
+val micrometerVersion = "1.16.3"
 val mockOauthVersion = "3.0.1"
-val mockkVersion = "1.14.7"
+val mockkVersion = "1.14.9"
 val navCommonVersion = "3.2025.10.10_08.21-bb7c7830d93c"
 val ojdbc8Version = "19.3.0.0"
-val postgresVersion = "42.7.8"
-val swaggerVersion = "5.30.3" // Husk å endre versjonen også i resource i SwaggerUi.kt
-val tjenestespecVersion = "2643.2f3e8e9"
-val tokenValidationVersion = "6.0.0"
+val postgresVersion = "42.7.10"
+val swaggerVersion = "5.31.2" // Husk å endre versjonen også i resource i SwaggerUi.kt
+val tjenestespecVersion = "2648.7dd4e44"
+val tokenValidationVersion = "6.0.3"
 val vaultJdbcVersion = "1.3.10"
 val vaultVersion = "5.1.0"
 
@@ -36,15 +36,15 @@ plugins {
 
     id("com.github.ManifestClasspath") version "0.1.0-RELEASE"
 
-    kotlin("jvm") version "2.2.21"
-    kotlin("plugin.allopen") version "2.2.21"
-    kotlin("plugin.serialization") version "2.2.21"
+    kotlin("jvm") version "2.3.10"
+    kotlin("plugin.allopen") version "2.3.10"
+    kotlin("plugin.serialization") version "2.3.10"
 
-    id("com.gradleup.shadow") version "9.3.0"
+    id("com.gradleup.shadow") version "9.3.1"
 
     id("org.flywaydb.flyway") version ("11.11.0")
 
-    id("org.sonarqube") version "7.2.1.6560"
+    id("org.sonarqube") version "7.2.2.6593"
 
     id("com.github.ben-manes.versions") version "0.53.0"
 
@@ -86,9 +86,11 @@ dependencies {
     implementation("io.ktor:ktor-server-default-headers:$ktorVersion")
     implementation("io.ktor:ktor-server-double-receive:$ktorVersion")
     implementation("io.ktor:ktor-server-resources:$ktorVersion")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
     implementation("io.ktor:ktor-server-metrics-micrometer:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
+    // For å fikse CVE-2025-67735 i io.ktor:ktor-server-netty:3.3.3
+    implementation("io.netty:netty-codec-http:4.2.10.Final")
     implementation("io.micrometer:micrometer-registry-prometheus:$micrometerVersion")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashVersion")
     implementation("no.nav.common:util:$navCommonVersion")
@@ -98,6 +100,8 @@ dependencies {
     implementation("org.postgresql:postgresql:$postgresVersion")
     implementation("org.webjars:swagger-ui:$swaggerVersion")
     implementation("no.nav:vault-jdbc:$vaultJdbcVersion")
+
+    implementation("com.fasterxml.uuid:java-uuid-generator:5.2.0")
 
     // Lokal kjøring
     implementation("org.flywaydb:flyway-database-postgresql:$flywayVersion")
