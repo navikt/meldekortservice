@@ -12,6 +12,10 @@ spec:
     autoInstrumentation:
       enabled: true
       runtime: java
+    logging:
+      destinations:
+        - id: loki
+        - id: elastic
   prometheus:
     enabled: true
     path: /meldekortservice/internal/metrics
@@ -74,3 +78,7 @@ spec:
         - application: tiltakspenger-meldekort-api
           namespace: tpts
           cluster: {{ vaultServiceuserEnv }}-gcp
+    outbound:
+      rules:
+        - application: logging
+          namespace: nais-system
