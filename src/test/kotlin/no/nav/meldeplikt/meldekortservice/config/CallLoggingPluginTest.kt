@@ -80,7 +80,6 @@ class CallLoggingPluginTest : TestBase() {
                 "GET localhost:80$MELDEKORT_PATH?meldekortId=${id} HTTP/1.1\n" +
                 "Authorization: Bearer $token\n" +
                 "X-Request-ID: $callId\n" +
-                "Accept-Charset: UTF-8\n" +
                 "Accept: */*\n" +
                 "User-Agent: ktor-client\n" +
                 "Content-Length: 0\n" +
@@ -91,14 +90,13 @@ class CallLoggingPluginTest : TestBase() {
                 "X-Request-ID: $callId\n"
         val expectedInnResponseEnd = "" +
                 "Transfer-Encoding: chunked\n" +
-                "Content-Type: application/json; charset=UTF-8\n" +
+                "Content-Type: application/json\n" +
                 "\n" +
                 "$json\n"
         val expectedUtRequest = "" +
                 "GET https://dummyurl.nav.no:443/api/v2/meldeplikt/meldekort/detaljer?meldekortId=1\n" +
                 "Accept: [application/xml; charset=UTF-8,application/json]\n" +
                 "Authorization: Bearer $DUMMY_TOKEN\n" +
-                "Accept-Charset: UTF-8\n" +
                 "X-Request-ID: $callId\n" +
                 "\n" +
                 "EmptyContent\n"
@@ -224,7 +222,6 @@ class CallLoggingPluginTest : TestBase() {
                 "GET localhost:80$MELDEKORT_PATH?meldekortId=$id HTTP/1.1\n" +
                 "Authorization: Bearer $token\n" +
                 "X-Request-ID: $callId\n" +
-                "Accept-Charset: UTF-8\n" +
                 "Accept: */*\n" +
                 "User-Agent: ktor-client\n" +
                 "Content-Length: 0\n" +
@@ -235,14 +232,13 @@ class CallLoggingPluginTest : TestBase() {
                 "X-Request-ID: $callId\n"
         val expectedInnResponseEnd = "" +
                 "Transfer-Encoding: chunked\n" +
-                "Content-Type: application/json; charset=UTF-8\n" +
+                "Content-Type: application/json\n" +
                 "\n" +
                 "$json\n"
         val expectedUtRequest = "" +
                 "GET https://dummyurl.nav.no:443/api/v2/meldeplikt/meldekort/detaljer?meldekortId=$id\n" +
                 "Accept: [application/xml; charset=UTF-8,application/json]\n" +
                 "Authorization: Bearer $DUMMY_TOKEN\n" +
-                "Accept-Charset: UTF-8\n" +
                 "X-Request-ID: $callId\n" +
                 "\n" +
                 "EmptyContent\n"
@@ -363,7 +359,6 @@ class CallLoggingPluginTest : TestBase() {
                 "Authorization: Bearer $token\n" +
                 "ident: $DUMMY_FNR\n" +
                 "X-Request-ID: $callId\n" +
-                "Accept-Charset: UTF-8\n" +
                 "Accept: */*\n" +
                 "User-Agent: ktor-client\n" +
                 "Content-Length: 0\n" +
@@ -373,14 +368,13 @@ class CallLoggingPluginTest : TestBase() {
                 "X-Request-ID: $callId\n"
         val expectedInnResponseEnd =
                 "Transfer-Encoding: chunked\n" +
-                "Content-Type: application/json; charset=UTF-8\n" +
+                "Content-Type: application/json\n" +
                 "\n" +
                 json + "\n"
         val expectedUtRequest = "GET https://dummyurl.nav.no:443/api/v2/meldeplikt/meldekort/historiske?antMeldeperioder=1\n" +
                 "Accept: [application/xml; charset=UTF-8,application/json]\n" +
                 "Authorization: Bearer $DUMMY_TOKEN\n" +
                 "fnr: $DUMMY_FNR\n" +
-                "Accept-Charset: UTF-8\n" +
                 "X-Request-ID: $callId\n" +
                 "\n" +
                 "EmptyContent\n"
