@@ -89,8 +89,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
     implementation("io.ktor:ktor-server-metrics-micrometer:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
-    // For å fikse CVE-2025-67735 i io.ktor:ktor-server-netty:3.3.3
-    implementation("io.netty:netty-codec-http:4.2.13.Final")
+    // For å fikse CVE-2026-42587 i io.ktor:ktor-server-netty:3.3.3
+    implementation("io.netty:netty-codec-http2:4.2.13.Final")
     implementation("io.micrometer:micrometer-registry-prometheus:$micrometerVersion")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashVersion")
     implementation("no.nav.common:util:$navCommonVersion")
