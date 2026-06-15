@@ -353,8 +353,8 @@ class CallLoggingPluginTest : TestBase() {
         val token = issueTokenWithSub("HKZpfaHyWadeOouYlitjrI-KffTm222X5rrV3xDqfKQ")
 
         val xml =
-            """<Person><personId>1</personId><Etternavn>test</Etternavn><Fornavn>test</Fornavn><Maalformkode>test</Maalformkode><Meldeform>test</Meldeform><meldekortListe/><antallGjenstaaendeFeriedager>10</antallGjenstaaendeFeriedager><fravaerListe/></Person>"""
-        val json = "{\"personId\":1,\"etternavn\":\"test\",\"fornavn\":\"test\",\"maalformkode\":\"test\",\"meldeform\":\"test\",\"meldekortListe\":[],\"antallGjenstaaendeFeriedager\":10,\"fravaerListe\":[]}"
+            """<Person><PersonId>1</PersonId><Etternavn>Testesen</Etternavn><Fornavn>Test</Fornavn><Maalformkode>NO</Maalformkode><Meldeform>EMELD</Meldeform><MeldekortListe></MeldekortListe><AntallGjenstaaendeFeriedager>10</AntallGjenstaaendeFeriedager><FravaerListe></FravaerListe></Person>"""
+        val json = "{\"personId\":1,\"etternavn\":\"Testesen\",\"fornavn\":\"Test\",\"maalformkode\":\"NO\",\"meldeform\":\"EMELD\",\"meldekortListe\":[],\"antallGjenstaaendeFeriedager\":10,\"fravaerListe\":[]}"
         val expectedInnRequest = "GET localhost:80/meldekortservice/api/v2/historiskemeldekort?antallMeldeperioder=1 HTTP/1.1\n" +
                 "Authorization: Bearer $token\n" +
                 "ident: $DUMMY_FNR\n" +
