@@ -3,12 +3,12 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
-val flywayVersion = "12.6.2"
+val flywayVersion = "12.8.1"
 val h2Version = "2.4.240"
-val jacksonVersion = "2.21.4"
+val jacksonVersion = "2.22.0"
 val kotlinLoggerVersion = "3.0.5"
 val ktorVersion = "3.4.3"
-val logbackVersion = "1.5.33"
+val logbackVersion = "1.5.34"
 val logstashVersion = "9.0"
 val micrometerVersion = "1.16.5"
 val mockOauthVersion = "4.0.0"
@@ -38,13 +38,13 @@ plugins {
 
     kotlin("jvm") version "2.3.21"
     kotlin("plugin.allopen") version "2.4.0"
-    kotlin("plugin.serialization") version "2.3.21"
+    kotlin("plugin.serialization") version "2.4.0"
 
     id("com.gradleup.shadow") version "9.4.2"
 
     id("org.flywaydb.flyway") version ("11.11.0")
 
-    id("org.sonarqube") version "7.3.0.8198"
+    id("org.sonarqube") version "7.3.1.8318"
 
     id("com.github.ben-manes.versions") version "0.54.0"
 
@@ -90,9 +90,9 @@ dependencies {
     implementation("io.ktor:ktor-server-metrics-micrometer:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     // For å fikse CVE-2026-42587 i io.ktor:ktor-server-netty:3.3.3
-    implementation("io.netty:netty-codec-http2:4.2.14.Final")
+    implementation("io.netty:netty-codec-http2:4.2.15.Final")
     // For å fikse CVE-2026-42577 i io.ktor:ktor-server-netty:3.3.3
-    implementation("io.netty:netty-transport-native-epoll:4.2.14.Final")
+    implementation("io.netty:netty-transport-native-epoll:4.2.15.Final")
     implementation("io.micrometer:micrometer-registry-prometheus:$micrometerVersion")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashVersion")
     implementation("no.nav.common:util:$navCommonVersion")
