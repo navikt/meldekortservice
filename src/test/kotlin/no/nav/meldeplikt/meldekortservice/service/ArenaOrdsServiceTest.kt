@@ -215,7 +215,7 @@ class ArenaOrdsServiceTest {
     inner class KopierMeldekort {
         @Test
         fun `kopierMeldekort returnerer OK status`() {
-            val xmlString = """<KopierMeldekortResponse><meldekortId>123</meldekortId></KopierMeldekortResponse>"""
+            val xmlString = """<KopierMeldekortResponse><MeldekortId>123</MeldekortId></KopierMeldekortResponse>"""
             val client = HttpClient(MockEngine) {
                 engine {
                     addHandler { request ->
