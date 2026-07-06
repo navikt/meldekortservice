@@ -1,7 +1,7 @@
 package no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.arena
 
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.arena.verdi.BooleanVerdi
+import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty
 
 data class Svar (
     @JacksonXmlProperty(localName = "SvarJa")
