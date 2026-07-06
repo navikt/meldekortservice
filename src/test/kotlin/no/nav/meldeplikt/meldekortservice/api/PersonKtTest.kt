@@ -1,6 +1,5 @@
 package no.nav.meldeplikt.meldekortservice.api
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.statement.bodyAsText
@@ -14,6 +13,7 @@ import no.nav.meldeplikt.meldekortservice.model.meldekort.Meldekort
 import no.nav.meldeplikt.meldekortservice.model.meldekort.Person
 import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
 import org.junit.jupiter.api.Test
+import tools.jackson.module.kotlin.readValue
 import java.time.LocalDate
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull

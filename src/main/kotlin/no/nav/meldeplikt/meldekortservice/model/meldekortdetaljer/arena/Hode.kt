@@ -1,13 +1,13 @@
 package no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.arena
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.arena.verdi.LongVerdi
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.arena.verdi.StringVerdi
 import no.nav.meldeplikt.meldekortservice.utils.LocalDateDeserializer
 import no.nav.meldeplikt.meldekortservice.utils.LocalDateSerializer
+import tools.jackson.databind.annotation.JsonDeserialize
+import tools.jackson.databind.annotation.JsonSerialize
+import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty
 import java.time.LocalDate
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

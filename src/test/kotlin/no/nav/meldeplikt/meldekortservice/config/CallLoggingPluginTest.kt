@@ -1,6 +1,5 @@
 package no.nav.meldeplikt.meldekortservice.config
 
-import com.fasterxml.jackson.databind.SerializationFeature
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -25,6 +24,7 @@ import no.nav.meldeplikt.meldekortservice.utils.*
 import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.output.MigrateResult
 import org.junit.jupiter.api.Test
+import tools.jackson.databind.SerializationFeature
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -75,7 +75,10 @@ class CallLoggingPluginTest : TestBase() {
 
         val meldekort = mapFraXml(xml, Meldekort::class.java)
         val meldekortdetaljer = MeldekortdetaljerMapper.mapOrdsMeldekortTilMeldekortdetaljer(meldekort)
-        val json = defaultObjectMapper.disable(SerializationFeature.INDENT_OUTPUT).writeValueAsString(meldekortdetaljer)
+        val json = defaultObjectMapper
+            .writer()
+            .without(SerializationFeature.INDENT_OUTPUT)
+            .writeValueAsString(meldekortdetaljer)
         val expectedInnRequest = "" +
                 "GET localhost:80$MELDEKORT_PATH?meldekortId=${id} HTTP/1.1\n" +
                 "Authorization: Bearer $token\n" +
