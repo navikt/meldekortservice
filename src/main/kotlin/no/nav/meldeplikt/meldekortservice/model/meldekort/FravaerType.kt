@@ -1,10 +1,10 @@
 package no.nav.meldeplikt.meldekortservice.model.meldekort
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 import no.nav.meldeplikt.meldekortservice.utils.LocalDateDeserializer
 import no.nav.meldeplikt.meldekortservice.utils.LocalDateSerializer
-import tools.jackson.databind.annotation.JsonDeserialize
-import tools.jackson.databind.annotation.JsonSerialize
-import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty
 import java.time.LocalDate
 
 data class FravaerType (

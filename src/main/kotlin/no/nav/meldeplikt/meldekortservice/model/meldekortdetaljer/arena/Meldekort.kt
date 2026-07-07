@@ -1,6 +1,6 @@
 package no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.arena
 
-import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 
 class Meldekort (
     @JacksonXmlProperty(localName = "Hode")

@@ -1,9 +1,9 @@
 package no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.arena
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.arena.verdi.BooleanVerdi
 import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.arena.verdi.StringVerdi
-import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class MeldekortDag (
