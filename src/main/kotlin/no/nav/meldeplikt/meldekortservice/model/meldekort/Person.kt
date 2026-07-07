@@ -1,7 +1,7 @@
 package no.nav.meldeplikt.meldekortservice.model.meldekort
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class Person (

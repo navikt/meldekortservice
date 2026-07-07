@@ -1,5 +1,6 @@
 package no.nav.meldeplikt.meldekortservice.service
 
+import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.HttpRequestBuilder
@@ -27,7 +28,6 @@ import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.arena.Meldekor
 import no.nav.meldeplikt.meldekortservice.model.meldestatus.MeldestatusRequest
 import no.nav.meldeplikt.meldekortservice.model.meldestatus.MeldestatusResponse
 import no.nav.meldeplikt.meldekortservice.utils.*
-import tools.jackson.module.kotlin.readValue
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
