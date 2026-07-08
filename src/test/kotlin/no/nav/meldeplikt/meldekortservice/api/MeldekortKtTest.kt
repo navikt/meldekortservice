@@ -1,6 +1,5 @@
 package no.nav.meldeplikt.meldekortservice.api
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.statement.bodyAsText
@@ -13,6 +12,7 @@ import no.nav.meldeplikt.meldekortservice.model.meldekortdetaljer.Meldekortdetal
 import no.nav.meldeplikt.meldekortservice.utils.ErrorMessage
 import no.nav.meldeplikt.meldekortservice.utils.defaultObjectMapper
 import org.junit.jupiter.api.Test
+import tools.jackson.module.kotlin.readValue
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -35,9 +35,12 @@ class MeldekortKtTest : TestBase() {
         }
 
         assertEquals(HttpStatusCode.OK, response.status)
-        assertNotNull(response.bodyAsText())
-        val responseObject = defaultObjectMapper.readValue<Meldekortdetaljer>(response.bodyAsText())
-        assertEquals(meldekortdetaljer.id, responseObject.id)
+        val responseText = response.bodyAsText()
+        assertNotNull(responseText)
+        // Converterer til Map og ikke Meldekortdetaljer slik at vi kan sjekke ren returnert JSON
+        val map = defaultObjectMapper.readValue(responseText, MutableMap::class.java)
+        assertEquals(meldekortdetaljer.id, map?.get("id"))
+        assertEquals(meldekortdetaljer.kortType.name, map?.get("kortType"))
     }
 
     @Test
