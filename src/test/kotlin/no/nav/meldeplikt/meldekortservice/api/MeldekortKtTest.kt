@@ -35,9 +35,12 @@ class MeldekortKtTest : TestBase() {
         }
 
         assertEquals(HttpStatusCode.OK, response.status)
-        assertNotNull(response.bodyAsText())
-        val responseObject = defaultObjectMapper.readValue<Meldekortdetaljer>(response.bodyAsText())
-        assertEquals(meldekortdetaljer.id, responseObject.id)
+        val responseText = response.bodyAsText()
+        assertNotNull(responseText)
+        // Converterer til Map og ikke Meldekortdetaljer slik at vi kan sjekke ren returnert JSON
+        val map = defaultObjectMapper.readValue(responseText, MutableMap::class.java)
+        assertEquals(meldekortdetaljer.id, map?.get("id"))
+        assertEquals(meldekortdetaljer.kortType.name, map?.get("kortType"))
     }
 
     @Test
