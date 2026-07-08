@@ -3,21 +3,14 @@ package no.nav.meldeplikt.meldekortservice.utils
 import com.auth0.jwt.JWT
 import com.auth0.jwt.exceptions.JWTDecodeException
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.dataformat.xml.XmlMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
-import io.ktor.client.engine.apache.Apache
+import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
-import io.ktor.serialization.jackson.JacksonConverter
+import io.ktor.serialization.jackson3.JacksonConverter
 import io.ktor.server.response.respond
 import io.ktor.server.routing.RoutingContext
 import no.nav.meldeplikt.meldekortservice.config.OutgoingCallLoggingPlugin
@@ -25,9 +18,14 @@ import no.nav.meldeplikt.meldekortservice.model.feil.NoContentException
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Contact
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Information
 import no.nav.meldeplikt.meldekortservice.utils.swagger.Swagger
-import org.apache.http.impl.conn.SystemDefaultRoutePlanner
 import org.slf4j.MDC
-import java.net.ProxySelector
+import tools.jackson.databind.DeserializationFeature
+import tools.jackson.databind.ObjectMapper
+import tools.jackson.databind.SerializationFeature
+import tools.jackson.databind.cfg.DateTimeFeature
+import tools.jackson.databind.json.JsonMapper
+import tools.jackson.dataformat.xml.XmlMapper
+import tools.jackson.module.kotlin.KotlinModule
 
 internal const val BASE_PATH = "/meldekortservice"
 
@@ -78,14 +76,15 @@ val swagger = Swagger(
     )
 )
 
-val defaultObjectMapper: ObjectMapper = ObjectMapper()
-    .registerKotlinModule()
-    .registerModule(JavaTimeModule())
-    .registerModule(ParameterNamesModule())
-    .enable(SerializationFeature.INDENT_OUTPUT)
-    .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-    .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+val defaultObjectMapper: ObjectMapper = JsonMapper.builder()
+    .addModule(KotlinModule.Builder().build())
+    .configure(SerializationFeature.INDENT_OUTPUT, true)
+    .configure(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS, false)
     .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+    .changeDefaultPropertyInclusion { inclusion ->
+        inclusion.withValueInclusion(JsonInclude.Include.NON_NULL)
+    }
+    .build()
 
 internal suspend fun RoutingContext.respondOrError(block: suspend () -> Any) =
     try {
@@ -148,11 +147,8 @@ fun HttpClientConfig<*>.defaultHttpClientConfig() {
 lateinit var httpClient: HttpClient
 fun defaultHttpClient(): HttpClient {
     if (!::httpClient.isInitialized) {
-        httpClient = HttpClient(Apache) {
+        httpClient = HttpClient(CIO) {
             defaultHttpClientConfig()
-            engine {
-                customizeClient { setRoutePlanner(SystemDefaultRoutePlanner(ProxySelector.getDefault())) }
-            }
         }
     }
 
