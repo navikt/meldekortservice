@@ -92,8 +92,6 @@ class CallLoggingPluginTest : TestBase() {
                 "200 OK\n" +
                 "X-Request-ID: $callId\n"
         val expectedInnResponseEnd = "" +
-                "Transfer-Encoding: chunked\n" +
-                "Content-Type: application/json\n" +
                 "\n" +
                 "$json\n"
         val expectedUtRequest = "" +
@@ -234,8 +232,6 @@ class CallLoggingPluginTest : TestBase() {
                 "400 Bad Request\n" +
                 "X-Request-ID: $callId\n"
         val expectedInnResponseEnd = "" +
-                "Transfer-Encoding: chunked\n" +
-                "Content-Type: application/json\n" +
                 "\n" +
                 "$json\n"
         val expectedUtRequest = "" +
@@ -369,9 +365,7 @@ class CallLoggingPluginTest : TestBase() {
                 "\n"
         val expectedInnResponseStart = "200 OK\n" +
                 "X-Request-ID: $callId\n"
-        val expectedInnResponseEnd =
-                "Transfer-Encoding: chunked\n" +
-                "Content-Type: application/json\n" +
+        val expectedInnResponseEnd = "" +
                 "\n" +
                 json + "\n"
         val expectedUtRequest = "GET https://dummyurl.nav.no:443/api/v2/meldeplikt/meldekort/historiske?antMeldeperioder=1\n" +

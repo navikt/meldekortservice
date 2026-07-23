@@ -1,23 +1,18 @@
 package no.nav.meldeplikt.meldekortservice.config
 
 import io.ktor.http.HttpHeaders
-import io.ktor.http.content.OutputStreamContent
-import io.ktor.http.content.TextContent
+import io.ktor.http.content.OutgoingContent
 import io.ktor.server.application.ApplicationPlugin
 import io.ktor.server.application.createApplicationPlugin
 import io.ktor.server.application.hooks.ResponseBodyReadyForSend
 import io.ktor.server.application.hooks.ResponseSent
 import io.ktor.server.request.*
 import io.ktor.util.AttributeKey
-import io.ktor.utils.io.ByteChannel
-import io.ktor.utils.io.readUTF8LineTo
-import io.ktor.utils.io.writer
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.runBlocking
+import io.ktor.utils.io.streams.asByteWriteChannel
 import no.nav.meldeplikt.meldekortservice.model.database.KallLogg
 import no.nav.meldeplikt.meldekortservice.service.DBService
 import no.nav.meldeplikt.meldekortservice.utils.*
+import java.io.ByteArrayOutputStream
 import java.time.Instant
 import java.time.LocalDateTime
 
@@ -119,21 +114,18 @@ class ICDLPConfig {
     lateinit var dbs: DBService
 }
 
-@OptIn(DelicateCoroutinesApi::class)
-private fun readBody(subject: Any): String = when (subject) {
-    is TextContent -> subject.text
-    is OutputStreamContent -> {
-        val channel = ByteChannel(true)
-        runBlocking {
-            GlobalScope.writer(coroutineContext, autoFlush = true) {
-                subject.writeTo(channel)
-            }
-            val buffer = StringBuilder()
-            while (!channel.isClosedForRead) {
-                channel.readUTF8LineTo(buffer)
-            }
-            buffer.toString()
-        }
+private suspend fun readBody(content: Any): String {
+    var bytes = ByteArray(0)
+
+    if (content is OutgoingContent.ByteArrayContent) {
+        bytes = content.bytes()
+    } else if (content is OutgoingContent.WriteChannelContent) {
+        val stream = ByteArrayOutputStream()
+        val channel = stream.asByteWriteChannel()
+        content.writeTo(channel)
+        channel.flushAndClose()
+        bytes = stream.toByteArray()
     }
-    else -> String()
+
+    return bytes.toString(Charsets.UTF_8)
 }
