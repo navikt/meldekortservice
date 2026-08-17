@@ -44,7 +44,7 @@ plugins {
 
     id("org.flywaydb.flyway") version ("11.11.0")
 
-    id("org.sonarqube") version "7.3.1.8318"
+    id("org.sonarqube") version "7.4.0.8496"
 
     id("com.github.ben-manes.versions") version "0.59.0"
 
