@@ -10,10 +10,10 @@ val kotlinLoggerVersion = "3.0.5"
 val ktorVersion = "3.5.2"
 val logbackVersion = "1.6.3"
 val logstashVersion = "9.0"
-val micrometerVersion = "1.17.0"
-val mockOauthVersion = "6.0.1"
+val micrometerVersion = "1.17.1"
+val mockOauthVersion = "6.0.2"
 val mockkVersion = "1.14.11"
-val navCommonVersion = "4.2026.07.17_11.36-f5bba2c96561"
+val navCommonVersion = "4.2026.08.25_05.34-09cd908e1f27"
 val ojdbc8Version = "19.3.0.0"
 val postgresVersion = "42.7.13"
 val swaggerVersion = "5.32.13" // Husk å endre versjonen også i resource i SwaggerUi.kt
@@ -54,7 +54,7 @@ plugins {
 }
 
 jacoco {
-    toolVersion = "0.8.11"
+    toolVersion = "0.8.15"
 }
 
 application {
