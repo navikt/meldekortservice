@@ -42,7 +42,7 @@ plugins {
 
     id("com.gradleup.shadow") version "9.6.1"
 
-    id("org.flywaydb.flyway") version ("13.4.0")
+    id("org.flywaydb.flyway") version ("13.5.0")
 
     id("org.sonarqube") version "7.5.0.8588"
 
