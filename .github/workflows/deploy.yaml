@@ -45,6 +45,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
+    environment: dev-fss
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: nais/deploy/actions/deploy@v2
@@ -61,6 +62,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
+    environment: prod-fss
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: nais/deploy/actions/deploy@v2
