@@ -88,7 +88,7 @@ dependencies {
     implementation("io.ktor:ktor-server-metrics-micrometer:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     // For å fikse CVE-2026-42587 i io.ktor:ktor-server-netty:3.3.3
-    implementation("io.netty:netty-codec-http2:4.2.17.Final")
+    implementation("io.netty:netty-codec-http2:4.2.18.Final")
     // For å fikse CVE-2026-42577 i io.ktor:ktor-server-netty:3.3.3
     implementation("io.netty:netty-transport-native-epoll:4.2.17.Final")
     implementation("io.micrometer:micrometer-registry-prometheus:$micrometerVersion")
