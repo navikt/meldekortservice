@@ -115,14 +115,14 @@ dependencies {
 }
 
 configure<JavaPluginExtension> {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 }
 
 tasks {
     withType<KotlinJvmCompile>().configureEach {
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_21)
+            jvmTarget.set(JvmTarget.JVM_25)
         }
     }
 
