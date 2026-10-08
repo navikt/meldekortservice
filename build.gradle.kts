@@ -3,7 +3,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
-val flywayVersion = "13.9.0"
+val flywayVersion = "13.10.0"
 val h2Version = "2.5.252"
 val jacksonVersion = "3.2.3"
 val kotlinLoggerVersion = "3.0.5"
@@ -36,13 +36,13 @@ plugins {
 
     id("com.github.ManifestClasspath") version "0.1.0-RELEASE"
 
-    kotlin("jvm") version "2.4.20"
+    kotlin("jvm") version "2.4.21"
     kotlin("plugin.allopen") version "2.4.21"
     kotlin("plugin.serialization") version "2.4.20"
 
     id("com.gradleup.shadow") version "9.6.1"
 
-    id("org.flywaydb.flyway") version ("13.9.0")
+    id("org.flywaydb.flyway") version ("13.10.0")
 
     id("org.sonarqube") version "7.5.0.8588"
 
