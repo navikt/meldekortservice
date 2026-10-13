@@ -19,7 +19,7 @@ val postgresVersion = "42.7.14"
 val swaggerVersion = "5.33.2" // Husk å endre versjonen også i resource i SwaggerUi.kt
 val tjenestespecVersion = "2648.7dd4e44"
 val tokenValidationVersion = "6.0.13"
-val vaultJdbcVersion = "1.3.10"
+val vaultJdbcVersion = "1.4.1"
 val vaultVersion = "5.1.0"
 
 project.ext.set("mainClassName", "io.ktor.server.netty.EngineMain")
