@@ -4,7 +4,10 @@ metadata:
   name: {{ appName }}{{ dashEnv }}
   namespace: meldekort
   labels:
-    team: meldekort
+    team: "meldekort"
+    fagsystem: "DAGPENGER"
+    domene: "meldekort"
+    okonomisystem: "true"
 spec:
   image: {{image}}
   port: 8090
