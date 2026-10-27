@@ -94,7 +94,7 @@ internal suspend fun RoutingContext.respondOrError(block: suspend () -> Any) =
         if (e is NoContentException) {
             call.respond(HttpStatusCode.NoContent)
         } else {
-            defaultLog.error("Feil i meldekortservice", e)
+            defaultLog.error(e) { "Feil i meldekortservice" }
             val eMsg = when (e) {
                 is java.util.concurrent.TimeoutException -> "Arena ikke tilgjengelig"
                 else -> e.localizedMessage ?: "exception occurred"

@@ -24,7 +24,7 @@ val RoutingContext.userIdent get() = extractIdentFromToken()
 private fun verifyThatATokenWasFound(authToken: String?) {
     if (authToken == null) {
         val melding = "Token ble ikke funnet. Dette skal ikke kunne skje. callId = ${getCallId()}"
-        defaultLog.error(melding)
+        defaultLog.error { melding }
         throw Exception(melding)
     }
 }
@@ -36,7 +36,7 @@ private fun verifyThatIdentIsConsistent(authTokenHeader: String?, authTokenCooki
 
         if (headerIdent != cookieIdent) {
             val melding = "Ident i header er ulik ident i cookie. Dette skal ikke kunne skje. callId = ${getCallId()}"
-            defaultLog.error(melding)
+            defaultLog.error { melding }
             throw Exception(melding)
         }
     }

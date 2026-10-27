@@ -6,7 +6,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 val flywayVersion = "13.11.1"
 val h2Version = "2.5.252"
 val jacksonVersion = "3.2.4"
-val kotlinLoggerVersion = "3.0.5"
+val kotlinLoggerVersion = "8.0.4"
 val ktorVersion = "3.6.0"
 val logbackVersion = "1.6.6"
 val logstashVersion = "9.0"
@@ -17,7 +17,7 @@ val navCommonVersion = "4.2026.09.24_06.17-80dfc0eacb29"
 val ojdbc8Version = "19.3.0.0"
 val postgresVersion = "42.7.14"
 val swaggerVersion = "5.34.0" // Husk å endre versjonen også i resource i SwaggerUi.kt
-val tjenestespecVersion = "2648.7dd4e44"
+val tjenestespecVersion = "2649.f2b69e9"
 val tokenValidationVersion = "7.0.1"
 val vaultJdbcVersion = "1.4.1"
 val vaultVersion = "5.1.0"
@@ -70,7 +70,7 @@ dependencies {
     implementation("tools.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion")
     implementation("tools.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("com.oracle.ojdbc:ojdbc8:$ojdbc8Version")
-    implementation("io.github.microutils:kotlin-logging:$kotlinLoggerVersion")
+    implementation("io.github.oshai:kotlin-logging:$kotlinLoggerVersion")
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-client-jackson:$ktorVersion")
