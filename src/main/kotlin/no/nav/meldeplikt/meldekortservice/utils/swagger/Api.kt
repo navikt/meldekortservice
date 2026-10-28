@@ -99,7 +99,7 @@ inline fun <reified RESOURCE : Any, reified ENTITY : Any> Route.post(
     noinline body: suspend RoutingContext.(RESOURCE, ENTITY) -> Unit
 ): Route {
 
-    defaultLog.debug("Generating swagger spec for POST ${RESOURCE::class.java.getAnnotation(Resource::class.java)}")
+    defaultLog.debug { "Generating swagger spec for POST ${RESOURCE::class.java.getAnnotation(Resource::class.java)}" }
     metadata.apply<RESOURCE, ENTITY>(HttpMethod.Post)
 
     return when (metadata.security) {
@@ -117,7 +117,7 @@ inline fun <reified RESOURCE : Any, reified ENTITY : Any> Route.put(
     noinline body: suspend RoutingContext.(RESOURCE, ENTITY) -> Unit
 ): Route {
 
-    defaultLog.debug("Generating swagger spec for PUT ${RESOURCE::class.java.getAnnotation(Resource::class.java)}")
+    defaultLog.debug { "Generating swagger spec for PUT ${RESOURCE::class.java.getAnnotation(Resource::class.java)}" }
     metadata.apply<RESOURCE, ENTITY>(HttpMethod.Put)
 
     return when (metadata.security) {
@@ -135,7 +135,7 @@ inline fun <reified RESOURCE : Any> Route.get(
     noinline body: suspend RoutingContext.(RESOURCE) -> Unit
 ): Route {
 
-    defaultLog.debug("Generating swagger spec for GET ${RESOURCE::class.java.getAnnotation(Resource::class.java)}")
+    defaultLog.debug { "Generating swagger spec for GET ${RESOURCE::class.java.getAnnotation(Resource::class.java)}" }
     metadata.apply<RESOURCE, Unit>(HttpMethod.Get)
 
     return when (metadata.security) {
@@ -153,7 +153,7 @@ inline fun <reified RESOURCE : Any> Route.delete(
     noinline body: suspend RoutingContext.(RESOURCE) -> Unit
 ): Route {
 
-    defaultLog.debug("Generating swagger spec for DELETE ${RESOURCE::class.java.getAnnotation(Resource::class.java)}")
+    defaultLog.debug { "Generating swagger spec for DELETE ${RESOURCE::class.java.getAnnotation(Resource::class.java)}" }
     metadata.apply<RESOURCE, Unit>(HttpMethod.Delete)
 
     return when (metadata.security) {

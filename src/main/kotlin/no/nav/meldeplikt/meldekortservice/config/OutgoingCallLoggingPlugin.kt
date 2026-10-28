@@ -13,7 +13,7 @@ import io.ktor.http.fullPath
 import io.ktor.http.hostWithPort
 import io.ktor.utils.io.ByteChannel
 import io.ktor.utils.io.ByteReadChannel
-import io.ktor.utils.io.readUTF8LineTo
+import io.ktor.utils.io.readLineTo
 import io.ktor.utils.io.writer
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -66,7 +66,7 @@ class OutgoingCallLoggingPlugin {
                     )
                 )
             } catch (e: Exception) {
-                defaultLog.error("Kunne ikke lagre kall logg", e)
+                defaultLog.error(e) { "Kunne ikke lagre kall logg" }
             }
 
             // Response content can be read only once. Wrap the call with the content we have read
@@ -105,7 +105,7 @@ class OutgoingCallLoggingPlugin {
                         }
 
                         while (!channel.isClosedForRead) {
-                            channel.readUTF8LineTo(buffer)
+                            channel.readLineTo(buffer)
                         }
                     }
 

@@ -103,14 +103,13 @@ class ArenaOrdsService(
             ).body()
 
             val nyMeldekortId = mapFraXml(responseMedNyMeldekortId, KopierMeldekortResponse::class.java).meldekortId
-            defaultLog.info("Meldekort med id $nyMeldekortId er opprettet for korrigering. Kopiert fra meldekort med id $meldekortId")
+            defaultLog.info { "Meldekort med id $nyMeldekortId er opprettet for korrigering. Kopiert fra meldekort med id $meldekortId" }
             return nyMeldekortId
 
         } catch (e: Exception) {
-            defaultLog.warn(
-                "Feil ved opprettelse av meldekort for korrigering! Meldekort med id $meldekortId har ikke blitt kopiert.",
-                e
-            )
+            defaultLog.warn(e) {
+                "Feil ved opprettelse av meldekort for korrigering! Meldekort med id $meldekortId har ikke blitt kopiert."
+            }
         }
 
         return 0
@@ -229,7 +228,7 @@ class ArenaOrdsService(
     }
 
     private fun hentOrdsToken() {
-        defaultLog.debug("Henter ORDS-token")
+        defaultLog.debug { "Henter ORDS-token" }
         var token = AccessToken(null, null, null)
 
         if (env.ordsUrl != DUMMY_URL) {
@@ -241,7 +240,7 @@ class ArenaOrdsService(
                 token = defaultObjectMapper.readValue(response.bodyAsText())
             }
         } else {
-            defaultLog.info("Henter ikke ORDS-token, da appen kjører lokalt")
+            defaultLog.info { "Henter ikke ORDS-token, da appen kjører lokalt" }
             token = AccessToken(
                 accessToken = DUMMY_TOKEN,
                 tokenType = "bearer",
