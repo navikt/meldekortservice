@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 val flywayVersion = "13.12.1"
 val h2Version = "2.5.252"
-val jacksonVersion = "3.2.4"
+val jacksonVersion = "3.3.0"
 val kotlinLoggerVersion = "8.0.6"
 val ktorVersion = "3.6.1"
 val logbackVersion = "1.6.6"
